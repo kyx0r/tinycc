@@ -13,9 +13,9 @@ Many people prefer single header libraries, and this is just that, entire compil
 The most simple command will be
 
 ```
-gcc tinycc.h -ldl -lpthread
+gcc tinycc.c -ldl -lpthread
 or bootstrap:
-tcc tinycc.h -ldl -lpthread
+tcc tinycc.c -ldl -lpthread
 ```
 
 You can add compile defines options youself, look into the file and see what is available or what you need.
