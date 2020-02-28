@@ -29,21 +29,30 @@
 #endif
 #define TCC_VERSION "0.9.27 Paro Edition"
 
-//#include <stdlib.h>
-//#include <stdio.h>
 #include <stdarg.h>
 #include <stddef.h>
-#include <string.h>
-#include <errno.h>
-#include <math.h>
-#include <fcntl.h>
 #include <setjmp.h>
-#include <time.h>
+
+#ifndef NCLIB
+#include <stdlib.h>
+#include <stdio.h>
+#include <errno.h>
+#include <string.h>
+#include <fcntl.h>
 #include <assert.h>
+#include <math.h>
+#include <time.h>
+#else
+void __stack_chk_fail(){};
+#endif
 
 #ifndef _WIN32
 # include <unistd.h>
 # include <sys/time.h>
+# include <sys/types.h>
+# include <sys/stat.h>
+# include <sys/mman.h>
+# include <fcntl.h>
 # ifndef CONFIG_TCC_STATIC
 #  include <dlfcn.h>
 # endif
@@ -6224,13 +6233,462 @@ static stbsp__int32 stbsp__real_to_str(char const **start, stbsp__uint32 *len, c
 
 //END stb_sprintf
 
+#ifdef NCLIB
 
 //START CLIB
 //Functions replacing Clib
 
-typedef int FILE;
+int errno;
+#define EINTR 1
+#define ERANGE 2
 
 double strtod (const char* str, char** endptr)
+{
+
+}
+
+#ifndef ULONG_MAX
+#define	ULONG_MAX	((unsigned long)(~0L))		/* 0xFFFFFFFF */
+#endif
+
+#ifndef LONG_MAX
+#define	LONG_MAX	((long)(ULONG_MAX >> 1))	/* 0x7FFFFFFF */
+#endif
+
+#ifndef LONG_MIN
+#define	LONG_MIN	((long)(~LONG_MAX))		/* 0x80000000 */
+#endif
+
+struct _f64
+{
+	unsigned int low_word;
+	unsigned int high_word;
+};
+
+#define F64_SIGN_SHIFT	31
+#define F64_SIGN_MASK	1
+
+#define F64_EXP_SHIFT	20
+#define F64_EXP_MASK	0x7ff
+#define F64_EXP_BIAS	1023
+#define F64_EXP_MAX	2047
+
+#define F64_MANT_SHIFT	0
+#define F64_MANT_MASK	0xfffff
+
+#define F64_GET_SIGN(fp)	(((fp)->high_word >> F64_SIGN_SHIFT) & \
+					F64_SIGN_MASK)
+#define F64_GET_EXP(fp)		(((fp)->high_word >> F64_EXP_SHIFT) & \
+					F64_EXP_MASK)
+#define F64_SET_EXP(fp, val)	((fp)->high_word= ((fp)->high_word &	\
+				~(F64_EXP_MASK << F64_EXP_SHIFT)) | 	\
+				(((val) & F64_EXP_MASK) << F64_EXP_SHIFT))
+
+#define F64_GET_MANT_LOW(fp)		((fp)->low_word)
+#define F64_SET_MANT_LOW(fp, val)	((fp)->low_word= (val))
+#define F64_GET_MANT_HIGH(fp)	(((fp)->high_word >> F64_MANT_SHIFT) & \
+					F64_MANT_MASK)
+#define F64_SET_MANT_HIGH(fp, val)	((fp)->high_word= ((fp)->high_word & \
+				~(F64_MANT_MASK << F64_MANT_SHIFT)) |	\
+				(((val) & F64_MANT_MASK) << F64_MANT_SHIFT))
+#define HUGE_VAL ULONG_MAX
+
+double ldexp(double value, int exp)
+{
+	struct _f64 *f64p;
+	int oldexp, exp_bias;
+	double factor;
+
+	f64p= (struct _f64 *)&value;
+	exp_bias= 0;
+
+	oldexp= F64_GET_EXP(f64p);
+	if (oldexp == F64_EXP_MAX)
+	{	/* Either infinity or Nan */
+		return value;
+	}
+	if (oldexp == 0)
+	{
+		/* Either 0 or denormal */
+		if (F64_GET_MANT_LOW(f64p) == 0 &&
+			F64_GET_MANT_HIGH(f64p) == 0)
+		{
+			return value;
+		}
+	}
+
+	/* If exp is too large (> 2*F64_EXP_MAX) or too small
+	 * (< -2*F64_EXP_MAX) return HUGE_VAL or 0. This prevents overflows
+	 * in exp if exp is really weird
+	 */
+	if (exp >= 2*F64_EXP_MAX)
+	{
+		errno= ERANGE;
+		return HUGE_VAL;
+	}
+	if (exp <= -2*F64_EXP_MAX)
+	{
+		errno= ERANGE;
+		return 0;
+	}
+	
+	/* Normalize a denormal */
+	if (oldexp == 0)
+	{
+		/* Multiply by 2^64 */
+		factor= 65536.0;	/* 2^16 */
+		factor *= factor;	/* 2^32 */
+		factor *= factor;	/* 2^64 */
+		value *= factor;
+		exp= -64;
+		oldexp= F64_GET_EXP(f64p);
+	}
+
+	exp= oldexp + exp;
+	if (exp >= F64_EXP_MAX)
+	{	/* Overflow */
+		errno= ERANGE;
+		return HUGE_VAL;
+	}
+	if (exp > 0)
+	{
+		/* Normal */
+		F64_SET_EXP(f64p, exp);
+		return value;
+	}
+	/* Denormal, or underflow. */
+	exp += 64;
+	F64_SET_EXP(f64p, exp);
+	/* Divide by 2^64 */
+	factor= 65536.0;	/* 2^16 */
+	factor *= factor;	/* 2^32 */
+	factor *= factor;	/* 2^64 */
+	value /= factor;
+	if (value == 0.0)
+	{
+		/* Underflow */
+		errno= ERANGE;
+	}
+	return value;
+}
+
+int isalpha(int c)
+{
+    char alphabet[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+                      "abcdefghijklmnopqrstuvwxyz";
+    char *letter = alphabet;
+
+    while(*letter != '\0' && *letter != c)
+        ++letter;
+
+    if (*letter)
+        return 1;
+
+    return 0;
+}
+
+int isdigit(int c)
+{
+        if (c >= '0' && c <= '9')
+                return c;
+        else
+                return 0;
+}
+
+int isupper(int c)
+{
+	if (c >= 'A' && c <= 'Z')
+		return c;
+	else
+		return 0;
+}
+
+long strtol(const char *nptr, char **endptr, register int base)
+{
+	register const char *s = nptr;
+	register unsigned long acc;
+	register int c;
+	register unsigned long cutoff;
+	register int neg = 0, any, cutlim;
+
+	/*
+	 * Skip white space and pick up leading +/- sign if any.
+	 * If base is 0, allow 0x for hex and 0 for octal, else
+	 * assume decimal; if base is already 16, allow 0x.
+	 */
+	do {
+		c = *s++;
+	} while (c == ' ');
+	if (c == '-') {
+		neg = 1;
+		c = *s++;
+	} else if (c == '+')
+		c = *s++;
+	if ((base == 0 || base == 16) &&
+	    c == '0' && (*s == 'x' || *s == 'X')) {
+		c = s[1];
+		s += 2;
+		base = 16;
+	}
+	if (base == 0)
+		base = c == '0' ? 8 : 10;
+
+	/*
+	 * Compute the cutoff value between legal numbers and illegal
+	 * numbers.  That is the largest legal value, divided by the
+	 * base.  An input number that is greater than this value, if
+	 * followed by a legal input character, is too big.  One that
+	 * is equal to this value may be valid or not; the limit
+	 * between valid and invalid numbers is then based on the last
+	 * digit.  For instance, if the range for longs is
+	 * [-2147483648..2147483647] and the input base is 10,
+	 * cutoff will be set to 214748364 and cutlim to either
+	 * 7 (neg==0) or 8 (neg==1), meaning that if we have accumulated
+	 * a value > 214748364, or equal but the next digit is > 7 (or 8),
+	 * the number is too big, and we will return a range error.
+	 *
+	 * Set any if any `digits' consumed; make it negative to indicate
+	 * overflow.
+	 */
+	cutoff = neg ? -(unsigned long)LONG_MIN : LONG_MAX;
+	cutlim = cutoff % (unsigned long)base;
+	cutoff /= (unsigned long)base;
+	for (acc = 0, any = 0;; c = *s++) {
+		if (isdigit(c))
+			c -= '0';
+		else if (isalpha(c))
+			c -= isupper(c) ? 'A' - 10 : 'a' - 10;
+		else
+			break;
+		if (c >= base)
+			break;
+		if (any < 0 || acc > cutoff || (acc == cutoff && c > cutlim))
+			any = -1;
+		else {
+			any = 1;
+			acc *= base;
+			acc += c;
+		}
+	}
+	if (any < 0) {
+		acc = neg ? LONG_MIN : LONG_MAX;
+		errno = ERANGE;
+	} else if (neg)
+		acc = -acc;
+	if (endptr != 0)
+		*endptr = (char *) (any ? s - 1 : nptr);
+	return (acc);
+}
+
+unsigned long int strtoul (const char* str, char** endptr, int base)
+{
+
+}
+
+void memset(void *dest, int fill, long unsigned int count)
+{
+	size_t		i;
+
+	if ( (((size_t)dest | count) & 3) == 0)
+	{
+		count >>= 2;
+		fill = fill | (fill<<8) | (fill<<16) | (fill<<24);
+		for (i = 0; i < count; i++)
+			((int *)dest)[i] = fill;
+	}
+	else
+		for (i = 0; i < count; i++)
+			((unsigned char *)dest)[i] = fill;
+}
+
+void memcpy(void *dest, const void *src, long unsigned int count)
+{
+	size_t		i;
+
+	if (( ( (size_t)dest | (size_t)src | count) & 3) == 0 )
+	{
+		count >>= 2;
+		for (i = 0; i < count; i++)
+			((int *)dest)[i] = ((int *)src)[i];
+	}
+	else
+		for (i = 0; i < count; i++)
+			((unsigned char *)dest)[i] = ((unsigned char *)src)[i];
+}
+
+int memcmp(const void *m1, const void *m2, long unsigned int count)
+{
+	while(count)
+	{
+		count--;
+		if (((unsigned char *)m1)[count] != ((unsigned char *)m2)[count])
+			return -1;
+	}
+	return 0;
+}
+
+void memmove(void *dest, const void *src, size_t n) 
+{ 
+   // Typecast src and dest addresses to (char *) 
+   char *csrc = (char *)src; 
+   char *cdest = (char *)dest; 
+  
+   // Create a temporary array to hold data of src 
+   char temp[n]; 
+  
+   // Copy data from csrc[] to temp[] 
+   for (int i=0; i<n; i++) 
+       temp[i] = csrc[i]; 
+  
+   // Copy data from temp[] to cdest[] 
+   for (int i=0; i<n; i++) 
+       cdest[i] = temp[i]; 
+  
+} 
+
+char *strcpy(char *dest, const char *src)
+{
+	while (*src)
+	{
+		*dest++ = *src++;
+	}
+	*dest++ = 0;
+	return dest;
+}
+
+void strncpy (char *dest, const char *src, int count)
+{
+	while (*src && count--)
+	{
+		*dest++ = *src++;
+	}
+	if (count)
+		*dest++ = 0;
+}
+
+int strlen(const char *str)
+{
+	int		count;
+
+	count = 0;
+	while (str[count])
+		count++;
+
+	return count;
+}
+
+int sstrlen (const char* s)
+{
+	register const char* i;
+	for(i=s; *i != ' '; ++i);
+	return (i-s);
+}
+
+char *strrchr(const char *s, char c)
+{
+	int len = strlen(s);
+	s += len;
+	while (len--)
+	{
+		if (*--s == c)
+			return (char *)s;
+	}
+	return NULL;
+}
+
+void strcat(char *dest, const char *src)
+{
+	dest += strlen(dest);
+	strcpy (dest, src);
+}
+
+char *strchr(const char *s, int c)
+{
+    while (*s != (char)c)
+        if (!*s++)
+            return 0;
+    return (char *)s;
+}
+
+int strcmp(const char *s1, const char *s2)
+{
+	while (1)
+	{
+		if (*s1 != *s2)
+			return -1;		// strings not equal
+		if (!*s1)
+			return 0;		// strings are equal
+		s1++;
+		s2++;
+	}
+
+	return -1;
+}
+
+int strncmp(const char *s1, const char *s2, int count)
+{
+	while (1)
+	{
+		if (!count--)
+			return 0;
+		if (*s1 != *s2)
+			return -1;		// strings not equal
+		if (!*s1)
+			return 0;		// strings are equal
+		s1++;
+		s2++;
+	}
+
+	return -1;
+}
+
+void qsort (void* base, size_t num, size_t size,
+            int (*compar)(const void*,const void*))
+{
+
+}
+
+const char * strstr ( const char * str1, const char * str2 )
+{
+
+}
+
+unsigned long long int strtoull (const char* str, char** endptr, int base)
+{
+
+}
+
+int atoi(const char* str) 
+{ 
+    if (*str == '\0') 
+        return 0; 
+  
+    int res = 0; // Initialize result 
+    int sign = 1; // Initialize sign as positive 
+    int i = 0; // Initialize index of first digit 
+  
+    if (str[0] == '-') { 
+        sign = -1; 
+        i++; // Also update index of first digit 
+    } 
+    for (; str[i] != '\0'; ++i) { 
+        if (isdigit(str[i]) == 0) 
+            return 0; 
+        res = res * 10 + str[i] - '0'; 
+    } 
+    return sign * res; 
+} 
+
+#define assert(Expression) if(!(Expression)) {*(int *)0 = 0;}
+
+// platform implementations.
+
+typedef int FILE;
+FILE *stdout;
+FILE *stdin;
+FILE *stderr;
+
+char *getenv(const char *name)
 {
 
 }
@@ -6240,13 +6698,28 @@ int fputs ( const char * str, FILE * stream )
 
 }
 
-void qsort (void* base, size_t num, size_t size,
-            int (*compar)(const void*,const void*))
+int fputc ( int character, FILE * stream )
 {
 
 }
 
+FILE *fdopen(int fildes, const char *mode)
+{
+
+}
+
+void fclose(FILE* stream)
+{
+
+}
+
+
 int printf(const char* str, ...)
+{
+
+}
+
+int vfprintf ( FILE * stream, const char * format, va_list arg )
 {
 
 }
@@ -6260,12 +6733,8 @@ int sprintf( char * str, const char * format, ... )
 {
 
 }
+
 int fprintf ( FILE * stream, const char * format, ... )
-{
-
-}
-
-unsigned long int strtoul (const char* str, char** endptr, int base)
 {
 
 }
@@ -6295,12 +6764,44 @@ void *realloc(void *ptr, long unsigned int size)
 
 }
 
+int fseek ( FILE * stream, long int offset, int origin )
+{
+
+}
+
+size_t fread ( void * ptr, size_t size, size_t count, FILE * stream )
+{
+
+}
+
+long int ftell ( FILE * stream )
+{
+
+}
+
+void free(void *ptr)
+{
+
+}
+
 void fflush(FILE *f)
 {
 
 }
 
+int remove(const char *filename)
+{
+
+}
+
+int sscanf ( const char * s, const char * format, ...)
+{
+
+}
+
 //END CLIB
+
+#endif
 
 /* -------------------------------------------- */
 
@@ -24368,9 +24869,9 @@ static int macro_subst_tok(
         cstrval = file->filename;
         goto add_cstr;
     } else if (tok == TOK___DATE__ || tok == TOK___TIME__) {
+#ifndef NCLIB
         time_t ti;
         struct tm *tm;
-
         time(&ti);
         tm = localtime(&ti);
         if (tok == TOK___DATE__) {
@@ -24380,6 +24881,7 @@ static int macro_subst_tok(
             snprintf(buf, sizeof(buf), "%02d:%02d:%02d", 
                      tm->tm_hour, tm->tm_min, tm->tm_sec);
         }
+#endif
         cstrval = buf;
     add_cstr:
         t1 = TOK_STR;
@@ -36569,9 +37071,6 @@ static void rt_exit(int code);
 /* defined when included from lib/bt-exe.c */
 #ifndef CONFIG_TCC_BACKTRACE_ONLY
 
-#ifndef _WIN32
-# include <sys/mman.h>
-#endif
 
 static void set_pages_executable(TCCState *s1, void *ptr, unsigned long length);
 static int tcc_relocate_ex(TCCState *s1, void *ptr, addr_t ptr_diff);
@@ -40025,6 +40524,7 @@ ST_FUNC void asm_gen_code(ASMOperand *operands, int nb_operands,
 			sv.type.t = VT_PTR;
                         load(out_reg, &sv);
 
+
 			sv = *op->vt;
                         sv.r = (sv.r & ~VT_VALMASK) | out_reg;
                         store(op->reg, &sv);
@@ -40083,10 +40583,6 @@ ST_FUNC void asm_clobber(uint8_t *clobber_regs, const char *str)
 }
 //END i386-asm.c
 
-
-#elif defined(TCC_TARGET_RISCV64)
-#include "riscv64-gen.c"
-#include "riscv64-link.c"
 #else
 #error unknown target
 #endif
