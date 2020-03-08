@@ -8759,6 +8759,9 @@ ST_FUNC void gen_vla_alloc(CType *type, int align) {
 
 //START i386-link.c
 
+#undef TCC_STATE_VAR
+#undef TCC_SET_STATE
+
 # define TCC_STATE_VAR(sym) s1->sym
 # define TCC_SET_STATE(fn) (tcc_enter_state(s1),fn)
 
@@ -20691,7 +20694,8 @@ static const char tcc_keywords[] =
 
 //END x86_64-asm.h
 #else
-# include "i386-asm.h"
+#define i386ASMOPCODE
+#include "tinycc.h"
 #endif
 
 #define ALT(x)
@@ -20710,7 +20714,8 @@ static const char tcc_keywords[] =
 //END x86_64-asm.h
 
 #else
-# include "i386-asm.h"
+#define i386ASMOPCODE
+#include "tinycc.h"
 #endif
 //END i386-tok.h
 
@@ -40962,7 +40967,11 @@ ST_FUNC void asm_global_instr(void)
 
 #endif
 #ifdef TCC_TARGET_PE
-#include "tccpe.c"
+
+//START tccpe.c
+
+//END tccpe.c
+
 #endif
 #endif /* ONE_SOURCE */
 
