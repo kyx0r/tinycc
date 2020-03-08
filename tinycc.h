@@ -6403,6 +6403,26 @@ int isupper(int c)
 		return 0;
 }
 
+int isspace(int c)
+{
+	switch (c)
+	{
+		case ' ':
+			return 1;
+		case '\n':
+			return 1;
+		case '\t':
+			return 1;
+		case '\r':
+			return 1;
+		case '\v':
+			return 1;
+		case '\f':
+			return 1;
+	}
+	return 0;
+}
+
 long strtol(const char *nptr, char **endptr, register int base)
 {
 	register const char *s = nptr;
@@ -6418,7 +6438,7 @@ long strtol(const char *nptr, char **endptr, register int base)
 	 */
 	do {
 		c = *s++;
-	} while (c == ' ');
+	} while (isspace(c));
 	if (c == '-') {
 		neg = 1;
 		c = *s++;
@@ -6480,12 +6500,64 @@ long strtol(const char *nptr, char **endptr, register int base)
 	return (acc);
 }
 
-unsigned long int strtoul (const char* str, char** endptr, int base)
+unsigned long
+strtoul(const char *nptr, char **endptr, register int base)
 {
+	register const char *s = nptr;
+	register unsigned long acc;
+	register int c;
+	register unsigned long cutoff;
+	register int neg = 0, any, cutlim;
 
+	/*
+	 * See strtol for comments as to the logic used.
+	 */
+	do {
+		c = *s++;
+	} while (isspace(c));
+	if (c == '-') {
+		neg = 1;
+		c = *s++;
+	} else if (c == '+')
+		c = *s++;
+	if ((base == 0 || base == 16) &&
+	    c == '0' && (*s == 'x' || *s == 'X')) {
+		c = s[1];
+		s += 2;
+		base = 16;
+	}
+	if (base == 0)
+		base = c == '0' ? 8 : 10;
+	cutoff = (unsigned long)ULONG_MAX / (unsigned long)base;
+	cutlim = (unsigned long)ULONG_MAX % (unsigned long)base;
+	for (acc = 0, any = 0;; c = *s++) {
+		if (isdigit(c))
+			c -= '0';
+		else if (isalpha(c))
+			c -= isupper(c) ? 'A' - 10 : 'a' - 10;
+		else
+			break;
+		if (c >= base)
+			break;
+		if (any < 0 || acc > cutoff || (acc == cutoff && c > cutlim))
+			any = -1;
+		else {
+			any = 1;
+			acc *= base;
+			acc += c;
+		}
+	}
+	if (any < 0) {
+		acc = ULONG_MAX;
+		errno = ERANGE;
+	} else if (neg)
+		acc = -acc;
+	if (endptr != 0)
+		*endptr = (char *) (any ? s - 1 : nptr);
+	return (acc);
 }
 
-void memset(void *dest, int fill, long unsigned int count)
+void *memset(void *dest, int fill, long unsigned int count)
 {
 	size_t		i;
 
@@ -6499,9 +6571,10 @@ void memset(void *dest, int fill, long unsigned int count)
 	else
 		for (i = 0; i < count; i++)
 			((unsigned char *)dest)[i] = fill;
+	return dest;
 }
 
-void memcpy(void *dest, const void *src, long unsigned int count)
+void *memcpy(void *dest, const void *src, long unsigned int count)
 {
 	size_t		i;
 
@@ -6514,6 +6587,7 @@ void memcpy(void *dest, const void *src, long unsigned int count)
 	else
 		for (i = 0; i < count; i++)
 			((unsigned char *)dest)[i] = ((unsigned char *)src)[i];
+	return dest;
 }
 
 int memcmp(const void *m1, const void *m2, long unsigned int count)
@@ -6527,7 +6601,7 @@ int memcmp(const void *m1, const void *m2, long unsigned int count)
 	return 0;
 }
 
-void memmove(void *dest, const void *src, size_t n) 
+void *memmove(void *dest, const void *src, size_t n) 
 { 
    // Typecast src and dest addresses to (char *) 
    char *csrc = (char *)src; 
@@ -6544,6 +6618,7 @@ void memmove(void *dest, const void *src, size_t n)
    for (int i=0; i<n; i++) 
        cdest[i] = temp[i]; 
   
+   return dest;
 } 
 
 char *strcpy(char *dest, const char *src)
@@ -6556,7 +6631,7 @@ char *strcpy(char *dest, const char *src)
 	return dest;
 }
 
-void strncpy (char *dest, const char *src, int count)
+void *strncpy(char *dest, const char *src, size_t count)
 {
 	while (*src && count--)
 	{
@@ -6564,9 +6639,10 @@ void strncpy (char *dest, const char *src, int count)
 	}
 	if (count)
 		*dest++ = 0;
+	return dest;
 }
 
-int strlen(const char *str)
+size_t strlen(const char *str)
 {
 	int		count;
 
@@ -6584,7 +6660,7 @@ int sstrlen (const char* s)
 	return (i-s);
 }
 
-char *strrchr(const char *s, char c)
+char *strrchr(const char *s, int c)
 {
 	int len = strlen(s);
 	s += len;
@@ -6596,10 +6672,11 @@ char *strrchr(const char *s, char c)
 	return NULL;
 }
 
-void strcat(char *dest, const char *src)
+char *strcat(char *dest, const char *src)
 {
 	dest += strlen(dest);
 	strcpy (dest, src);
+	return dest;
 }
 
 char *strchr(const char *s, int c)
@@ -6625,7 +6702,7 @@ int strcmp(const char *s1, const char *s2)
 	return -1;
 }
 
-int strncmp(const char *s1, const char *s2, int count)
+int strncmp(const char *s1, const char *s2, size_t count)
 {
 	while (1)
 	{
@@ -6642,20 +6719,275 @@ int strncmp(const char *s1, const char *s2, int count)
 	return -1;
 }
 
-void qsort (void* base, size_t num, size_t size,
-            int (*compar)(const void*,const void*))
-{
+/* Byte-wise swap two items of size SIZE. */
+#define SWAP(a, b, size)                                                      \
+  do                                                                              \
+    {                                                                              \
+      size_t __size = (size);                                                      \
+      char *__a = (a), *__b = (b);                                              \
+      do                                                                      \
+        {                                                                      \
+          char __tmp = *__a;                                                      \
+          *__a++ = *__b;                                                      \
+          *__b++ = __tmp;                                                      \
+        } while (--__size > 0);                                                      \
+    } while (0)
+/* Discontinue quicksort algorithm when partition gets below this size.
+   This particular magic number was chosen to work best on a Sun 4/260. */
+#define MAX_THRESH 4
+/* Stack node declarations used to store unfulfilled partition obligations. */
+typedef struct
+  {
+    char *lo;
+    char *hi;
+  } stack_node;
+/* The next 4 #defines implement a very fast in-line stack abstraction. */
+/* The stack needs log (total_elements) entries (we could even subtract
+   log(MAX_THRESH)).  Since total_elements has type size_t, we get as
+   upper bound for log (total_elements):
+   bits per byte (CHAR_BIT) * sizeof(size_t).  */
 
+#ifndef CHAR_BIT
+#define CHAR_BIT 8
+#endif
+
+#define STACK_SIZE        (CHAR_BIT * sizeof (size_t))
+#define PUSH(low, high)        ((void) ((top->lo = (low)), (top->hi = (high)), ++top))
+#define        POP(low, high)        ((void) (--top, (low = top->lo), (high = top->hi)))
+#define        STACK_NOT_EMPTY        (stack < top)
+/* Order size using quicksort.  This implementation incorporates
+   four optimizations discussed in Sedgewick:
+   1. Non-recursive, using an explicit stack of pointer that store the
+      next array partition to sort.  To save time, this maximum amount
+      of space required to store an array of SIZE_MAX is allocated on the
+      stack.  Assuming a 32-bit (64 bit) integer for size_t, this needs
+      only 32 * sizeof(stack_node) == 256 bytes (for 64 bit: 1024 bytes).
+      Pretty cheap, actually.
+   2. Chose the pivot element using a median-of-three decision tree.
+      This reduces the probability of selecting a bad pivot value and
+      eliminates certain extraneous comparisons.
+   3. Only quicksorts TOTAL_ELEMS / MAX_THRESH partitions, leaving
+      insertion sort to order the MAX_THRESH items within each partition.
+      This is a big win, since insertion sort is faster for small, mostly
+      sorted array segments.
+   4. The larger of the two sub-partitions is always pushed onto the
+      stack first, with the algorithm then concentrating on the
+      smaller partition.  This *guarantees* no more than log (total_elems)
+      stack size is needed (actually O(1) in this case)!  */
+
+void qsort(void *const pbase, size_t total_elems, size_t size,
+            int (*cmp)(const void*,const void*))
+{
+  char *base_ptr = (char *) pbase;
+  const size_t max_thresh = MAX_THRESH * size;
+  if (total_elems == 0)
+    /* Avoid lossage with unsigned arithmetic below.  */
+    return;
+  if (total_elems > MAX_THRESH)
+    {
+      char *lo = base_ptr;
+      char *hi = &lo[size * (total_elems - 1)];
+      stack_node stack[STACK_SIZE];
+      stack_node *top = stack;
+      PUSH (NULL, NULL);
+      while (STACK_NOT_EMPTY)
+        {
+          char *left_ptr;
+          char *right_ptr;
+          /* Select median value from among LO, MID, and HI. Rearrange
+             LO and HI so the three values are sorted. This lowers the
+             probability of picking a pathological pivot value and
+             skips a comparison for both the LEFT_PTR and RIGHT_PTR in
+             the while loops. */
+          char *mid = lo + size * ((hi - lo) / size >> 1);
+          if ((*cmp) ((void *) mid, (void *) lo) < 0)
+            SWAP (mid, lo, size);
+          if ((*cmp) ((void *) hi, (void *) mid) < 0)
+            SWAP (mid, hi, size);
+          else
+            goto jump_over;
+          if ((*cmp) ((void *) mid, (void *) lo) < 0)
+            SWAP (mid, lo, size);
+        jump_over:;
+          left_ptr  = lo + size;
+          right_ptr = hi - size;
+          /* Here's the famous ``collapse the walls'' section of quicksort.
+             Gotta like those tight inner loops!  They are the main reason
+             that this algorithm runs much faster than others. */
+          do
+            {
+              while ((*cmp) ((void *) left_ptr, (void *) mid) < 0)
+                left_ptr += size;
+              while ((*cmp) ((void *) mid, (void *) right_ptr) < 0)
+                right_ptr -= size;
+              if (left_ptr < right_ptr)
+                {
+                  SWAP (left_ptr, right_ptr, size);
+                  if (mid == left_ptr)
+                    mid = right_ptr;
+                  else if (mid == right_ptr)
+                    mid = left_ptr;
+                  left_ptr += size;
+                  right_ptr -= size;
+                }
+              else if (left_ptr == right_ptr)
+                {
+                  left_ptr += size;
+                  right_ptr -= size;
+                  break;
+                }
+            }
+          while (left_ptr <= right_ptr);
+          /* Set up pointers for next iteration.  First determine whether
+             left and right partitions are below the threshold size.  If so,
+             ignore one or both.  Otherwise, push the larger partition's
+             bounds on the stack and continue sorting the smaller one. */
+          if ((size_t) (right_ptr - lo) <= max_thresh)
+            {
+              if ((size_t) (hi - left_ptr) <= max_thresh)
+                /* Ignore both small partitions. */
+                POP (lo, hi);
+              else
+                /* Ignore small left partition. */
+                lo = left_ptr;
+            }
+          else if ((size_t) (hi - left_ptr) <= max_thresh)
+            /* Ignore small right partition. */
+            hi = right_ptr;
+          else if ((right_ptr - lo) > (hi - left_ptr))
+            {
+              /* Push larger left partition indices. */
+              PUSH (lo, right_ptr);
+              lo = left_ptr;
+            }
+          else
+            {
+              /* Push larger right partition indices. */
+              PUSH (left_ptr, hi);
+              hi = right_ptr;
+            }
+        }
+    }
+  /* Once the BASE_PTR array is partially sorted by quicksort the rest
+     is completely sorted using insertion sort, since this is efficient
+     for partitions below MAX_THRESH size. BASE_PTR points to the beginning
+     of the array to sort, and END_PTR points at the very last element in
+     the array (*not* one beyond it!). */
+#define min(x, y) ((x) < (y) ? (x) : (y))
+  {
+    char *const end_ptr = &base_ptr[size * (total_elems - 1)];
+    char *tmp_ptr = base_ptr;
+    char *thresh = min(end_ptr, base_ptr + max_thresh);
+    char *run_ptr;
+    /* Find smallest element in first threshold and place it at the
+       array's beginning.  This is the smallest array element,
+       and the operation speeds up insertion sort's inner loop. */
+    for (run_ptr = tmp_ptr + size; run_ptr <= thresh; run_ptr += size)
+      if ((*cmp) ((void *) run_ptr, (void *) tmp_ptr) < 0)
+        tmp_ptr = run_ptr;
+    if (tmp_ptr != base_ptr)
+      SWAP (tmp_ptr, base_ptr, size);
+    /* Insertion sort, running from left-hand-side up to right-hand-side.  */
+    run_ptr = base_ptr + size;
+    while ((run_ptr += size) <= end_ptr)
+      {
+        tmp_ptr = run_ptr - size;
+        while ((*cmp) ((void *) run_ptr, (void *) tmp_ptr) < 0)
+          tmp_ptr -= size;
+        tmp_ptr += size;
+        if (tmp_ptr != run_ptr)
+          {
+            char *trav;
+            trav = run_ptr + size;
+            while (--trav >= run_ptr)
+              {
+                char c = *trav;
+                char *hi, *lo;
+                for (hi = lo = trav; (lo -= size) >= tmp_ptr; hi = lo)
+                  *hi = *lo;
+                *hi = c;
+              }
+          }
+      }
+  }
 }
 
-const char * strstr ( const char * str1, const char * str2 )
+const char *strstr(const char *str1, const char *str2)
 {
+	while (*str1 != '\0')
+	{
+		if ((*str1 == *str2) && strcmp(str1, str2) == 0)
+			return str1;
+		str1++;
+	}
 
+	return NULL;
 }
 
-unsigned long long int strtoull (const char* str, char** endptr, int base)
+typedef unsigned long long ullong_type;
+#ifndef ULLONG_MAX
+#define ULLONG_MAX (~(ullong_type)0) /* 0xFFFFFFFFFFFFFFFF */
+#endif
+/*
+ * Convert a string to an unsigned long long integer.
+ *
+ * Ignores `locale' stuff.  Assumes that the upper and lower case
+ * alphabets and digits are each contiguous.
+ */
+ullong_type
+strtoull(const char *nptr, char **endptr, register int base)
 {
-
+        register const char *s = nptr;
+        register ullong_type acc;
+        register int c;
+        register ullong_type cutoff;
+        register int neg = 0, any, cutlim;
+        /*
+         * See strtol for comments as to the logic used.
+         */
+        do {
+                c = *s++;
+        } while (isspace(c));
+        if (c == '-') {
+                neg = 1;
+                c = *s++;
+        } else if (c == '+')
+                c = *s++;
+        if ((base == 0 || base == 16) &&
+            c == '0' && (*s == 'x' || *s == 'X')) {
+                c = s[1];
+                s += 2;
+                base = 16;
+        }
+        if (base == 0)
+                base = c == '0' ? 8 : 10;
+        cutoff = (ullong_type)ULLONG_MAX / (ullong_type)base;
+        cutlim = (ullong_type)ULLONG_MAX % (ullong_type)base;
+        for (acc = 0, any = 0;; c = *s++) {
+                if (isdigit(c))
+                        c -= '0';
+                else if (isalpha(c))
+                        c -= isupper(c) ? 'A' - 10 : 'a' - 10;
+                else
+                        break;
+                if (c >= base)
+                        break;
+                if (any < 0 || acc > cutoff || (acc == cutoff && c > cutlim))
+                        any = -1;
+                else {
+                        any = 1;
+                        acc *= base;
+                        acc += c;
+                }
+        }
+        if (any < 0) {
+                acc = ULLONG_MAX;
+                errno = ERANGE;
+        } else if (neg)
+                acc = -acc;
+        if (endptr != 0)
+                *endptr = (char *) (any ? s - 1 : nptr);
+        return (acc);
 }
 
 int atoi(const char* str) 
