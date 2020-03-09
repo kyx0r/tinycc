@@ -37962,7 +37962,7 @@ ST_FUNC int tcc_load_coff(TCCState * s1, int fd)
 }
 //END tcccoff.c
 
-#elif defined(TCC_TARGET_X86_64)
+#elif defined(TCC_TARGET_X86_64) || defined(TCC_TARGET_I386)
 
 //START i386-asm.c
 
@@ -38189,7 +38189,8 @@ static const ASMInstr asm_instrs[] = {
 
 //END x86_64-asm.h
 #else
-# include "i386-asm.h"
+#define i386ASMOPCODE
+#include "tinycc.h"
 #endif
     /* last operation */
     { 0, },
@@ -38210,7 +38211,8 @@ static const uint16_t op0_codes[] = {
 
 //END x86_64-asm.h
 #else
-# include "i386-asm.h"
+#define i386ASMOPCODE
+#include "tinycc.h"
 #endif
 };
 
@@ -42878,7 +42880,9 @@ static void pe_add_runtime(TCCState *s1, struct pe_info *pe)
             "msvcrt", "kernel32", "", "user32", "gdi32", NULL
         };
         const char **pp, *p;
+		#ifdef TCC_LIBTCC1
         tcc_add_support(s1, TCC_LIBTCC1);
+		#endif
         for (pp = libs; 0 != (p = *pp); ++pp) {
             if (*p)
                 tcc_add_library_err(s1, p);
