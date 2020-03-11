@@ -1,6 +1,49 @@
+
 #include "tinycc.h"
 
+int _main(int argc0, char **argv0);
+
+
+#ifdef TCC_TARGET_PE
+void __chkstk(){}
+#if defined __GNUC__ || defined __MINGW32__ || defined __MINGW64__
+
 int main(int argc0, char **argv0)
+{
+	_main(argc0, argv0);
+}
+
+#else
+	
+#include <tchar.h>
+#define __UNKNOWN_APP    0
+#define __CONSOLE_APP    1
+#define __GUI_APP        2
+extern void __set_app_type(int);
+typedef struct { int newmode; } _startupinfo;
+extern int __cdecl __getmainargs(int *pargc, _TCHAR ***pargv, _TCHAR ***penv, int globb, _startupinfo*);
+int _start()
+{
+	_startupinfo start_info = {0};
+	__set_app_type(__GUI_APP);
+	//assume no unicode.
+	__getmainargs( &__argc, &__targv, &_tenviron, 0, &start_info);
+	_main(__argc, __targv);
+	return 1;
+}
+
+#endif  //!__GNUC__
+
+#else
+	
+int _start()
+{
+	return 0;
+}
+
+#endif //!TCC_TARGET_PE
+
+int _main(int argc0, char **argv0)
 {
     TCCState *s, *s1;
     int ret, opt, n = 0, t = 0, done;
@@ -12,6 +55,12 @@ int main(int argc0, char **argv0)
 redo:
     argc = argc0, argv = argv0;
     s = s1 = tcc_new();
+	
+	#ifdef TCC_TARGET_PE
+	tcc_add_include_path(s, "./include/windows/winapi");
+	tcc_add_include_path(s, "./include/windows/");
+	#endif
+	
     opt = tcc_parse_args(s, &argc, &argv, 1);
 
     if (n == 0) {
