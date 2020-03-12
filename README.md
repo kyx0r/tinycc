@@ -31,7 +31,7 @@ gcc tinycc.c -DTCC_TARGET_PE -DTCC_TARGET_I386
 For win64
 
 ```
-gcc tinycc.c -DTCC_TARGET_PE -TCC_TARGET_X86_64
+gcc tinycc.c -DTCC_TARGET_PE -DTCC_TARGET_X86_64
 ```
 
 You can add compile defines options youself, look into the file and see what is available or what you need.
