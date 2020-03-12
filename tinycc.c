@@ -19,9 +19,11 @@ int main(int argc0, char **argv0)
 #define __UNKNOWN_APP    0
 #define __CONSOLE_APP    1
 #define __GUI_APP        2
+
 extern void __set_app_type(int);
 typedef struct { int newmode; } _startupinfo;
 extern int __cdecl __getmainargs(int *pargc, _TCHAR ***pargv, _TCHAR ***penv, int globb, _startupinfo*);
+
 int _start()
 {
 	_startupinfo start_info = {0};
@@ -34,14 +36,15 @@ int _start()
 
 #endif  //!__GNUC__
 
-#else
-	
-int _start()
-{
-	return 0;
-}
 
-#endif //!TCC_TARGET_PE
+#else  //!TCC_TARGET_PE
+
+int main(int argc0, char **argv0)
+{
+	_main(argc0, argv0);
+}
+	
+#endif
 
 int _main(int argc0, char **argv0)
 {
