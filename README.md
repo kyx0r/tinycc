@@ -47,7 +47,4 @@ For reference refer to tinycc.c file.
 # Notes & TODO
 Have not tested on Arm, riscv64 but it should work unless i screwed up.
 
-Move the rest of compiler files needed to actually start using the compiler here.
-They are not part of the compiler, but need to be scoped when you compile C programs.
-
 - Add intel assembly support and vector instructions properly. 
