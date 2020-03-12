@@ -36,8 +36,6 @@ gcc tinycc.c -DTCC_TARGET_PE -TCC_TARGET_X86_64
 
 You can add compile defines options youself, look into the file and see what is available or what you need.
 
-Using to build
-
 # Using Tcc
 
 Make _start() function.
@@ -46,7 +44,10 @@ To include CRT on windows link library using -luser32 for example. This will lin
 For reference refer to tinycc.c file. 
 
 ------------------------------------------------------------------------
+# Notes & TODO
 Have not tested on Arm, riscv64 but it should work unless i screwed up.
 
 Move the rest of compiler files needed to actually start using the compiler here.
 They are not part of the compiler, but need to be scoped when you compile C programs.
+
+- Add intel assembly support and vector instructions properly. 
