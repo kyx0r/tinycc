@@ -1,7 +1,7 @@
 # Tinycc
 Single header C99 compiler (TCC)
 
-Entire core of TCC compiler in one file. Including all achitectures. 43000 LOC
+Entire core of TCC compiler in one file. Including all architectures. 43000 LOC
 
 # Why?
 
@@ -24,7 +24,7 @@ For win32
 
 ```
 gcc tinycc.c 
-or more explicit, both commands equalent.
+or more explicit, both commands equalent, x86 is default.
 gcc tinycc.c -DTCC_TARGET_PE -DTCC_TARGET_I386
 ```
 
@@ -38,10 +38,26 @@ You can add compile defines options youself, look into the file and see what is 
 
 # Using Tcc
 
-Make _start() function.
+```cpp
+#include <windows.h> /*or on unix*/ #include <stdlib.h>
+
+//This declaration is required to make printf external.
+int printf(char *format, ...);
+
+//See tinycc.c on how to do argc and argv
+int _start()
+{
+	MessageBox(NULL, NULL, "Hello World", 0); //windows only
+	printf("Hello World\n"); //crt is usable
+	return 1;
+}
+```
 
 To include CRT on windows link library using -luser32 for example. This will link to a dll using user32.def file in ./lib
 For reference refer to tinycc.c file. 
+```
+tcc test.c -luser32
+```
 
 ------------------------------------------------------------------------
 # Notes & TODO
