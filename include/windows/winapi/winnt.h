@@ -137,8 +137,8 @@ extern "C" {
 #define DECLSPEC_DEPRECATED_DDK
 #define PRAGMA_DEPRECATED_DDK 0
 
-  typedef void *PVOID;
-  typedef void *PVOID64;
+typedef void *PVOID;
+typedef void *PVOID64;
 
 #define NTAPI __stdcall
 #define NTSYSAPI DECLSPEC_IMPORT
@@ -146,72 +146,72 @@ extern "C" {
 
 #ifndef VOID
 #define VOID void
-  typedef char CHAR;
-  typedef short SHORT;
-  typedef long LONG;
+typedef char CHAR;
+typedef short SHORT;
+typedef long LONG;
 #endif
 
-  typedef wchar_t WCHAR;
-  typedef WCHAR *PWCHAR,*LPWCH,*PWCH;
-  typedef CONST WCHAR *LPCWCH,*PCWCH;
-  typedef WCHAR *NWPSTR,*LPWSTR,*PWSTR;
-  typedef PWSTR *PZPWSTR;
-  typedef CONST PWSTR *PCZPWSTR;
-  typedef WCHAR UNALIGNED *LPUWSTR,*PUWSTR;
-  typedef CONST WCHAR *LPCWSTR,*PCWSTR;
-  typedef PCWSTR *PZPCWSTR;
-  typedef CONST WCHAR UNALIGNED *LPCUWSTR,*PCUWSTR;
-  typedef CHAR *PCHAR,*LPCH,*PCH;
-  typedef CONST CHAR *LPCCH,*PCCH;
-  typedef CHAR *NPSTR,*LPSTR,*PSTR;
-  typedef PSTR *PZPSTR;
-  typedef CONST PSTR *PCZPSTR;
-  typedef CONST CHAR *LPCSTR,*PCSTR;
-  typedef PCSTR *PZPCSTR;
+typedef wchar_t WCHAR;
+typedef WCHAR *PWCHAR,*LPWCH,*PWCH;
+typedef CONST WCHAR *LPCWCH,*PCWCH;
+typedef WCHAR *NWPSTR,*LPWSTR,*PWSTR;
+typedef PWSTR *PZPWSTR;
+typedef CONST PWSTR *PCZPWSTR;
+typedef WCHAR UNALIGNED *LPUWSTR,*PUWSTR;
+typedef CONST WCHAR *LPCWSTR,*PCWSTR;
+typedef PCWSTR *PZPCWSTR;
+typedef CONST WCHAR UNALIGNED *LPCUWSTR,*PCUWSTR;
+typedef CHAR *PCHAR,*LPCH,*PCH;
+typedef CONST CHAR *LPCCH,*PCCH;
+typedef CHAR *NPSTR,*LPSTR,*PSTR;
+typedef PSTR *PZPSTR;
+typedef CONST PSTR *PCZPSTR;
+typedef CONST CHAR *LPCSTR,*PCSTR;
+typedef PCSTR *PZPCSTR;
 
 #ifdef UNICODE
 #ifndef _TCHAR_DEFINED
 #define _TCHAR_DEFINED
-  typedef WCHAR TCHAR,*PTCHAR;
-  typedef WCHAR TBYTE ,*PTBYTE;
+typedef WCHAR TCHAR,*PTCHAR;
+typedef WCHAR TBYTE,*PTBYTE;
 #endif
 
-  typedef LPWSTR LPTCH,PTCH;
-  typedef LPWSTR PTSTR,LPTSTR;
-  typedef LPCWSTR PCTSTR,LPCTSTR;
-  typedef LPUWSTR PUTSTR,LPUTSTR;
-  typedef LPCUWSTR PCUTSTR,LPCUTSTR;
-  typedef LPWSTR LP;
+typedef LPWSTR LPTCH,PTCH;
+typedef LPWSTR PTSTR,LPTSTR;
+typedef LPCWSTR PCTSTR,LPCTSTR;
+typedef LPUWSTR PUTSTR,LPUTSTR;
+typedef LPCUWSTR PCUTSTR,LPCUTSTR;
+typedef LPWSTR LP;
 #define __TEXT(quote) L##quote
 #else
 #ifndef _TCHAR_DEFINED
 #define _TCHAR_DEFINED
-  typedef char TCHAR,*PTCHAR;
-  typedef unsigned char TBYTE ,*PTBYTE;
+typedef char TCHAR,*PTCHAR;
+typedef unsigned char TBYTE,*PTBYTE;
 #endif
 
-  typedef LPSTR LPTCH,PTCH;
-  typedef LPSTR PTSTR,LPTSTR,PUTSTR,LPUTSTR;
-  typedef LPCSTR PCTSTR,LPCTSTR,PCUTSTR,LPCUTSTR;
+typedef LPSTR LPTCH,PTCH;
+typedef LPSTR PTSTR,LPTSTR,PUTSTR,LPUTSTR;
+typedef LPCSTR PCTSTR,LPCTSTR,PCUTSTR,LPCUTSTR;
 #define __TEXT(quote) quote
 #endif
 
 #define TEXT(quote) __TEXT(quote)
 
-  typedef SHORT *PSHORT;
-  typedef LONG *PLONG;
+typedef SHORT *PSHORT;
+typedef LONG *PLONG;
 
-  typedef void *HANDLE;
+typedef void *HANDLE;
 #define DECLARE_HANDLE(name) struct name##__ { int unused; }; typedef struct name##__ *name
-  typedef HANDLE *PHANDLE;
+typedef HANDLE *PHANDLE;
 
-  typedef BYTE FCHAR;
-  typedef WORD FSHORT;
-  typedef DWORD FLONG;
+typedef BYTE FCHAR;
+typedef WORD FSHORT;
+typedef DWORD FLONG;
 
 #ifndef _HRESULT_DEFINED
 #define _HRESULT_DEFINED
-  typedef LONG HRESULT;
+typedef LONG HRESULT;
 #endif
 
 #ifdef __cplusplus
@@ -233,15 +233,15 @@ extern "C" {
 #define STDMETHODIMPV HRESULT STDMETHODVCALLTYPE
 #define STDMETHODIMPV_(type) type STDMETHODVCALLTYPE
 
-  typedef char CCHAR;
+typedef char CCHAR;
 #ifndef _LCID_DEFINED
 #define _LCID_DEFINED
 typedef DWORD LCID;
 #endif
-  typedef PDWORD PLCID;
+typedef PDWORD PLCID;
 #ifndef _LANGID_DEFINED
 #define _LANGID_DEFINED
-  typedef WORD LANGID;
+typedef WORD LANGID;
 #endif
 #define APPLICATION_ERROR_MASK 0x20000000
 #define ERROR_SEVERITY_SUCCESS 0x00000000
@@ -250,68 +250,76 @@ typedef DWORD LCID;
 #define ERROR_SEVERITY_ERROR 0xC0000000
 
 #ifdef __ia64__
-  __declspec(align(16))
+__declspec(align(16))
 #endif
-    typedef struct _FLOAT128 {
-      __int64 LowPart;
-      __int64 HighPart;
-  } FLOAT128;
+typedef struct _FLOAT128
+{
+	__int64 LowPart;
+	__int64 HighPart;
+} FLOAT128;
 
-  typedef FLOAT128 *PFLOAT128;
+typedef FLOAT128 *PFLOAT128;
 
 #define _ULONGLONG_
 #if((!(defined(_X86_) && !defined(__x86_64)) || (defined(_INTEGRAL_MAX_BITS) && _INTEGRAL_MAX_BITS >= 64)))
-  typedef __int64 LONGLONG;
-  typedef unsigned __int64 ULONGLONG;
+typedef __int64 LONGLONG;
+typedef unsigned __int64 ULONGLONG;
 
 #define MAXLONGLONG (0x7fffffffffffffff)
 #else
 
-  typedef double LONGLONG;
-  typedef double ULONGLONG;
+typedef double LONGLONG;
+typedef double ULONGLONG;
 #endif
 
-  typedef LONGLONG *PLONGLONG;
-  typedef ULONGLONG *PULONGLONG;
+typedef LONGLONG *PLONGLONG;
+typedef ULONGLONG *PULONGLONG;
 
-  typedef LONGLONG USN;
+typedef LONGLONG USN;
 
-  typedef union _LARGE_INTEGER {
-    struct {
-      DWORD LowPart;
-      LONG HighPart;
-    };
-    struct {
-      DWORD LowPart;
-      LONG HighPart;
-    } u;
-    LONGLONG QuadPart;
-  } LARGE_INTEGER;
+typedef union _LARGE_INTEGER
+{
+	struct
+	{
+		DWORD LowPart;
+		LONG HighPart;
+	};
+	struct
+	{
+		DWORD LowPart;
+		LONG HighPart;
+	} u;
+	LONGLONG QuadPart;
+} LARGE_INTEGER;
 
-  typedef LARGE_INTEGER *PLARGE_INTEGER;
+typedef LARGE_INTEGER *PLARGE_INTEGER;
 
-  typedef union _ULARGE_INTEGER {
-    struct {
-      DWORD LowPart;
-      DWORD HighPart;
-    };
-    struct {
-      DWORD LowPart;
-      DWORD HighPart;
-    } u;
-    ULONGLONG QuadPart;
-  } ULARGE_INTEGER;
+typedef union _ULARGE_INTEGER
+{
+	struct
+	{
+		DWORD LowPart;
+		DWORD HighPart;
+	};
+	struct
+	{
+		DWORD LowPart;
+		DWORD HighPart;
+	} u;
+	ULONGLONG QuadPart;
+} ULARGE_INTEGER;
 
-  typedef ULARGE_INTEGER *PULARGE_INTEGER;
+typedef ULARGE_INTEGER *PULARGE_INTEGER;
 
-  typedef struct _LUID {
-    DWORD LowPart;
-    LONG HighPart;
-  } LUID,*PLUID;
+typedef struct _LUID
+{
+	DWORD LowPart;
+	LONG HighPart;
+} LUID,*PLUID;
 
 #define _DWORDLONG_
-  typedef ULONGLONG DWORDLONG;
-  typedef DWORDLONG *PDWORDLONG;
+typedef ULONGLONG DWORDLONG;
+typedef DWORDLONG *PDWORDLONG;
 
 #ifdef RC_INVOKED
 #define Int32x32To64(a,b) ((LONGLONG)((LONG)(a)) *(LONGLONG)((LONG)(b)))
@@ -333,7 +341,7 @@ typedef DWORD LCID;
 #define Int64ShllMod32(a,b) ((ULONGLONG)(a) << (b))
 
 #ifdef __cplusplus
-  extern "C" {
+extern "C" {
 #endif
 
 #ifdef __x86_64
@@ -343,10 +351,10 @@ typedef DWORD LCID;
 #define RotateRight8 _rotr8
 #define RotateRight16 _rotr16
 
-    unsigned char __cdecl _rotl8(unsigned char Value,unsigned char Shift);
-    unsigned short __cdecl _rotl16(unsigned short Value,unsigned char Shift);
-    unsigned char __cdecl _rotr8(unsigned char Value,unsigned char Shift);
-    unsigned short __cdecl _rotr16(unsigned short Value,unsigned char Shift);
+	unsigned char __cdecl _rotl8(unsigned char Value,unsigned char Shift);
+	unsigned short __cdecl _rotl16(unsigned short Value,unsigned char Shift);
+	unsigned char __cdecl _rotr8(unsigned char Value,unsigned char Shift);
+	unsigned short __cdecl _rotr16(unsigned short Value,unsigned char Shift);
 #endif
 
 #define RotateLeft32 _rotl
@@ -354,12 +362,12 @@ typedef DWORD LCID;
 #define RotateRight32 _rotr
 #define RotateRight64 _rotr64
 
-    unsigned int __cdecl _rotl(unsigned int Value,int Shift);
-    unsigned __int64 __cdecl _rotl64(unsigned __int64 Value,int Shift);
-    unsigned int __cdecl _rotr(unsigned int Value,int Shift);
-    unsigned __int64 __cdecl _rotr64(unsigned __int64 Value,int Shift);
+	unsigned int __cdecl _rotl(unsigned int Value,int Shift);
+	unsigned __int64 __cdecl _rotl64(unsigned __int64 Value,int Shift);
+	unsigned int __cdecl _rotr(unsigned int Value,int Shift);
+	unsigned __int64 __cdecl _rotr64(unsigned __int64 Value,int Shift);
 #ifdef __cplusplus
-  }
+}
 #endif
 
 #define ANSI_NULL ((CHAR)0)
@@ -369,39 +377,44 @@ typedef DWORD LCID;
 
 #ifndef _BOOLEAN_
 #define _BOOLEAN_
-  typedef BYTE BOOLEAN;
+typedef BYTE BOOLEAN;
 #endif
-  typedef BOOLEAN *PBOOLEAN;
+typedef BOOLEAN *PBOOLEAN;
 
-  typedef struct _LIST_ENTRY {
-    struct _LIST_ENTRY *Flink;
-    struct _LIST_ENTRY *Blink;
-  } LIST_ENTRY,*PLIST_ENTRY,*RESTRICTED_POINTER PRLIST_ENTRY;
+typedef struct _LIST_ENTRY
+{
+	struct _LIST_ENTRY *Flink;
+	struct _LIST_ENTRY *Blink;
+} LIST_ENTRY,*PLIST_ENTRY,*RESTRICTED_POINTER PRLIST_ENTRY;
 
-  typedef struct _SINGLE_LIST_ENTRY {
-    struct _SINGLE_LIST_ENTRY *Next;
-  } SINGLE_LIST_ENTRY,*PSINGLE_LIST_ENTRY;
+typedef struct _SINGLE_LIST_ENTRY
+{
+	struct _SINGLE_LIST_ENTRY *Next;
+} SINGLE_LIST_ENTRY,*PSINGLE_LIST_ENTRY;
 
-  typedef struct LIST_ENTRY32 {
-    DWORD Flink;
-    DWORD Blink;
-  } LIST_ENTRY32;
-  typedef LIST_ENTRY32 *PLIST_ENTRY32;
+typedef struct LIST_ENTRY32
+{
+	DWORD Flink;
+	DWORD Blink;
+} LIST_ENTRY32;
+typedef LIST_ENTRY32 *PLIST_ENTRY32;
 
-  typedef struct LIST_ENTRY64 {
-    ULONGLONG Flink;
-    ULONGLONG Blink;
-  } LIST_ENTRY64;
-  typedef LIST_ENTRY64 *PLIST_ENTRY64;
+typedef struct LIST_ENTRY64
+{
+	ULONGLONG Flink;
+	ULONGLONG Blink;
+} LIST_ENTRY64;
+typedef LIST_ENTRY64 *PLIST_ENTRY64;
 
 #include <guiddef.h>
 
 #ifndef __OBJECTID_DEFINED
 #define __OBJECTID_DEFINED
-  typedef struct _OBJECTID {
-    GUID Lineage;
-    DWORD Uniquifier;
-  } OBJECTID;
+typedef struct _OBJECTID
+{
+	GUID Lineage;
+	DWORD Uniquifier;
+} OBJECTID;
 #endif
 
 #define MINCHAR 0x80
@@ -826,15 +839,15 @@ typedef DWORD LCID;
 #define MAXIMUM_WAIT_OBJECTS 64
 #define MAXIMUM_SUSPEND_COUNT MAXCHAR
 
-  typedef ULONG_PTR KSPIN_LOCK;
-  typedef KSPIN_LOCK *PKSPIN_LOCK;
+typedef ULONG_PTR KSPIN_LOCK;
+typedef KSPIN_LOCK *PKSPIN_LOCK;
 
 #ifdef _AMD64_
 
 #if defined(__x86_64) && !defined(RC_INVOKED)
 
 #ifdef __cplusplus
-  extern "C" {
+extern "C" {
 #endif
 
 #define BitTest _bittest
@@ -850,118 +863,135 @@ typedef DWORD LCID;
 #define InterlockedBitTestAndSet64 _interlockedbittestandset64
 #define InterlockedBitTestAndReset64 _interlockedbittestandreset64
 
-    __CRT_INLINE BOOLEAN _bittest(LONG const *Base,LONG Offset) {
-      int old = 0;
-      __asm__ __volatile__("btl %2,%1\n\tsbbl %0,%0 "
-	:"=r" (old),"=m" ((*(volatile long *) Base))
-	:"Ir" (Offset));
-      return (BOOLEAN) (old!=0);
-    }
-    __CRT_INLINE BOOLEAN _bittestandcomplement(LONG *Base,LONG Offset) {
-      int old = 0;
-      __asm__ __volatile__("btcl %2,%1\n\tsbbl %0,%0 "
-	:"=r" (old),"=m" ((*(volatile long *) Base))
-	:"Ir" (Offset));
-      return (BOOLEAN) (old!=0);
-    }
-    __CRT_INLINE BOOLEAN InterlockedBitTestAndComplement(LONG *Base,LONG Bit) {
-      int old = 0;
-      __asm__ __volatile__("lock ; btcl %2,%1\n\tsbbl %0,%0 "
-	:"=r" (old),"=m" ((*(volatile long *) Base))
-	:"Ir" (Bit));
-      return (BOOLEAN) (old!=0);
-    }
-    __CRT_INLINE BOOLEAN _bittestandset(LONG *Base,LONG Offset) {
-      int old = 0;
-      __asm__ __volatile__("btsl %2,%1\n\tsbbl %0,%0 "
-	:"=r" (old),"=m" ((*(volatile long *) Base))
-	:"Ir" (Offset));
-      return (BOOLEAN) (old!=0);
-    }
-    __CRT_INLINE BOOLEAN _bittestandreset(LONG *Base,LONG Offset) {
-      int old = 0;
-      __asm__ __volatile__("btrl %2,%1\n\tsbbl %0,%0 "
-	:"=r" (old),"=m" ((*(volatile long *) Base))
-	:"Ir" (Offset));
-      return (BOOLEAN) (old!=0);
-    }
-    __CRT_INLINE BOOLEAN _interlockedbittestandset(LONG *Base,LONG Offset) {
-      int old = 0;
-      __asm__ __volatile__("lock ; btsl %2,%1\n\tsbbl %0,%0 "
-	:"=r" (old),"=m" ((*(volatile long *) Base))
-	:"Ir" (Offset));
-      return (BOOLEAN) (old!=0);
-    }
-    __CRT_INLINE BOOLEAN _interlockedbittestandreset(LONG *Base,LONG Offset) {
-      int old = 0;
-      __asm__ __volatile__("lock ; btrl %2,%1\n\tsbbl %0,%0 "
-	:"=r" (old),"=m" ((*(volatile long *) Base))
-	:"Ir" (Offset));
-      return (BOOLEAN) (old!=0);
-    }
-    __CRT_INLINE BOOLEAN _bittest64(LONG64 const *Base,LONG64 Offset) {
-      int old = 0;
-      __asm__ __volatile__("btq %2,%1\n\tsbbl %0,%0 "
-	:"=r" (old),"=m" ((*(volatile long long *) Base))
-	:"Ir" (Offset));
-      return (BOOLEAN) (old!=0);
-    }
-    __CRT_INLINE BOOLEAN _bittestandcomplement64(LONG64 *Base,LONG64 Offset) {
-      int old = 0;
-      __asm__ __volatile__("btcq %2,%1\n\tsbbl %0,%0 "
-	:"=r" (old),"=m" ((*(volatile long long *) Base))
-	:"Ir" (Offset));
-      return (BOOLEAN) (old!=0);
-    }
-    __CRT_INLINE BOOLEAN _bittestandset64(LONG64 *Base,LONG64 Offset) {
-      int old = 0;
-      __asm__ __volatile__("btsq %2,%1\n\tsbbl %0,%0 "
-	:"=r" (old),"=m" ((*(volatile long long *) Base))
-	:"Ir" (Offset));
-      return (BOOLEAN) (old!=0);
-    }
-    __CRT_INLINE BOOLEAN _bittestandreset64(LONG64 *Base,LONG64 Offset) {
-      int old = 0;
-      __asm__ __volatile__("btrq %2,%1\n\tsbbl %0,%0 "
-	:"=r" (old),"=m" ((*(volatile long long *) Base))
-	:"Ir" (Offset));
-      return (BOOLEAN) (old!=0);
-    }
-    __CRT_INLINE BOOLEAN _interlockedbittestandset64(LONG64 *Base,LONG64 Offset) {
-      int old = 0;
-      __asm__ __volatile__("lock ; btsq %2,%1\n\tsbbl %0,%0 "
-	:"=r" (old),"=m" ((*(volatile long long *) Base))
-	:"Ir" (Offset));
-      return (BOOLEAN) (old!=0);
-    }
-    __CRT_INLINE BOOLEAN _interlockedbittestandreset64(LONG64 *Base,LONG64 Offset) {
-      int old = 0;
-      __asm__ __volatile__("lock ; btrq %2,%1\n\tsbbl %0,%0 "
-	:"=r" (old),"=m" ((*(volatile long long *) Base))
-	:"Ir" (Offset));
-      return (BOOLEAN) (old!=0);
-    }
+	__CRT_INLINE BOOLEAN _bittest(LONG const *Base,LONG Offset)
+	{
+		int old = 0;
+		__asm__ __volatile__("btl %2,%1\n\tsbbl %0,%0 "
+		                     :"=r" (old),"=m" ((*(volatile long *) Base))
+		                     :"Ir" (Offset));
+		return (BOOLEAN) (old!=0);
+	}
+	__CRT_INLINE BOOLEAN _bittestandcomplement(LONG *Base,LONG Offset)
+	{
+		int old = 0;
+		__asm__ __volatile__("btcl %2,%1\n\tsbbl %0,%0 "
+		                     :"=r" (old),"=m" ((*(volatile long *) Base))
+		                     :"Ir" (Offset));
+		return (BOOLEAN) (old!=0);
+	}
+	__CRT_INLINE BOOLEAN InterlockedBitTestAndComplement(LONG *Base,LONG Bit)
+	{
+		int old = 0;
+		__asm__ __volatile__("lock ; btcl %2,%1\n\tsbbl %0,%0 "
+		                     :"=r" (old),"=m" ((*(volatile long *) Base))
+		                     :"Ir" (Bit));
+		return (BOOLEAN) (old!=0);
+	}
+	__CRT_INLINE BOOLEAN _bittestandset(LONG *Base,LONG Offset)
+	{
+		int old = 0;
+		__asm__ __volatile__("btsl %2,%1\n\tsbbl %0,%0 "
+		                     :"=r" (old),"=m" ((*(volatile long *) Base))
+		                     :"Ir" (Offset));
+		return (BOOLEAN) (old!=0);
+	}
+	__CRT_INLINE BOOLEAN _bittestandreset(LONG *Base,LONG Offset)
+	{
+		int old = 0;
+		__asm__ __volatile__("btrl %2,%1\n\tsbbl %0,%0 "
+		                     :"=r" (old),"=m" ((*(volatile long *) Base))
+		                     :"Ir" (Offset));
+		return (BOOLEAN) (old!=0);
+	}
+	__CRT_INLINE BOOLEAN _interlockedbittestandset(LONG *Base,LONG Offset)
+	{
+		int old = 0;
+		__asm__ __volatile__("lock ; btsl %2,%1\n\tsbbl %0,%0 "
+		                     :"=r" (old),"=m" ((*(volatile long *) Base))
+		                     :"Ir" (Offset));
+		return (BOOLEAN) (old!=0);
+	}
+	__CRT_INLINE BOOLEAN _interlockedbittestandreset(LONG *Base,LONG Offset)
+	{
+		int old = 0;
+		__asm__ __volatile__("lock ; btrl %2,%1\n\tsbbl %0,%0 "
+		                     :"=r" (old),"=m" ((*(volatile long *) Base))
+		                     :"Ir" (Offset));
+		return (BOOLEAN) (old!=0);
+	}
+	__CRT_INLINE BOOLEAN _bittest64(LONG64 const *Base,LONG64 Offset)
+	{
+		int old = 0;
+		__asm__ __volatile__("btq %2,%1\n\tsbbl %0,%0 "
+		                     :"=r" (old),"=m" ((*(volatile long long *) Base))
+		                     :"Ir" (Offset));
+		return (BOOLEAN) (old!=0);
+	}
+	__CRT_INLINE BOOLEAN _bittestandcomplement64(LONG64 *Base,LONG64 Offset)
+	{
+		int old = 0;
+		__asm__ __volatile__("btcq %2,%1\n\tsbbl %0,%0 "
+		                     :"=r" (old),"=m" ((*(volatile long long *) Base))
+		                     :"Ir" (Offset));
+		return (BOOLEAN) (old!=0);
+	}
+	__CRT_INLINE BOOLEAN _bittestandset64(LONG64 *Base,LONG64 Offset)
+	{
+		int old = 0;
+		__asm__ __volatile__("btsq %2,%1\n\tsbbl %0,%0 "
+		                     :"=r" (old),"=m" ((*(volatile long long *) Base))
+		                     :"Ir" (Offset));
+		return (BOOLEAN) (old!=0);
+	}
+	__CRT_INLINE BOOLEAN _bittestandreset64(LONG64 *Base,LONG64 Offset)
+	{
+		int old = 0;
+		__asm__ __volatile__("btrq %2,%1\n\tsbbl %0,%0 "
+		                     :"=r" (old),"=m" ((*(volatile long long *) Base))
+		                     :"Ir" (Offset));
+		return (BOOLEAN) (old!=0);
+	}
+	__CRT_INLINE BOOLEAN _interlockedbittestandset64(LONG64 *Base,LONG64 Offset)
+	{
+		int old = 0;
+		__asm__ __volatile__("lock ; btsq %2,%1\n\tsbbl %0,%0 "
+		                     :"=r" (old),"=m" ((*(volatile long long *) Base))
+		                     :"Ir" (Offset));
+		return (BOOLEAN) (old!=0);
+	}
+	__CRT_INLINE BOOLEAN _interlockedbittestandreset64(LONG64 *Base,LONG64 Offset)
+	{
+		int old = 0;
+		__asm__ __volatile__("lock ; btrq %2,%1\n\tsbbl %0,%0 "
+		                     :"=r" (old),"=m" ((*(volatile long long *) Base))
+		                     :"Ir" (Offset));
+		return (BOOLEAN) (old!=0);
+	}
 #define BitScanForward _BitScanForward
 #define BitScanReverse _BitScanReverse
 #define BitScanForward64 _BitScanForward64
 #define BitScanReverse64 _BitScanReverse64
 
-    __CRT_INLINE BOOLEAN _BitScanForward(DWORD *Index,DWORD Mask) {
-      __asm__ __volatile__("bsfl %1,%0" : "=r" (Mask),"=m" ((*(volatile long *)Index)));
-      return Mask!=0;
-    }
-    __CRT_INLINE BOOLEAN _BitScanReverse(DWORD *Index,DWORD Mask) {
-      __asm__ __volatile__("bsrl %1,%0" : "=r" (Mask),"=m" ((*(volatile long *)Index)));
-      return Mask!=0;
-    }
-    __CRT_INLINE BOOLEAN _BitScanForward64(DWORD *Index,DWORD64 Mask) {
-      __asm__ __volatile__("bsfq %1,%0" : "=r" (Mask),"=m" ((*(volatile long long *)Index)));
-      return Mask!=0;
-    }
-    __CRT_INLINE BOOLEAN _BitScanReverse64(DWORD *Index,DWORD64 Mask) {
-      __asm__ __volatile__("bsrq %1,%0" : "=r" (Mask),"=m" ((*(volatile long long *)Index)));
-      return Mask!=0;
-    }
+	__CRT_INLINE BOOLEAN _BitScanForward(DWORD *Index,DWORD Mask)
+	{
+		__asm__ __volatile__("bsfl %1,%0" : "=r" (Mask),"=m" ((*(volatile long *)Index)));
+		return Mask!=0;
+	}
+	__CRT_INLINE BOOLEAN _BitScanReverse(DWORD *Index,DWORD Mask)
+	{
+		__asm__ __volatile__("bsrl %1,%0" : "=r" (Mask),"=m" ((*(volatile long *)Index)));
+		return Mask!=0;
+	}
+	__CRT_INLINE BOOLEAN _BitScanForward64(DWORD *Index,DWORD64 Mask)
+	{
+		__asm__ __volatile__("bsfq %1,%0" : "=r" (Mask),"=m" ((*(volatile long long *)Index)));
+		return Mask!=0;
+	}
+	__CRT_INLINE BOOLEAN _BitScanReverse64(DWORD *Index,DWORD64 Mask)
+	{
+		__asm__ __volatile__("bsrq %1,%0" : "=r" (Mask),"=m" ((*(volatile long long *)Index)));
+		return Mask!=0;
+	}
 
 #define InterlockedIncrement16 _InterlockedIncrement16
 #define InterlockedDecrement16 _InterlockedDecrement16
@@ -1007,159 +1037,184 @@ typedef DWORD LCID;
 #define InterlockedIncrementSizeT(a) InterlockedIncrement64((LONG64 *)a)
 #define InterlockedDecrementSizeT(a) InterlockedDecrement64((LONG64 *)a)
 
-    __CRT_INLINE SHORT InterlockedIncrement16(SHORT volatile *Addend) {
-      unsigned char c;
-      unsigned char s;
-      __asm__ __volatile__(
-	"lock ; addw $1,%0; sete %1 ; sets %2"
-	:"=m" (*Addend), "=qm" (c), "=qm" (s)
-	:"m" (*Addend) : "memory");
-      return (c != 0 ? 0 : (s != 0 ? -1 : 1));
-    }
-    __CRT_INLINE SHORT InterlockedDecrement16(SHORT volatile *Addend) {
-      unsigned char c;
-      unsigned char s;
-      __asm__ __volatile__(
-	"lock ; subw $1,%0; sete %1 ; sets %2"
-	:"=m" (*Addend), "=qm" (c), "=qm" (s)
-	:"m" (*Addend) : "memory");
-      return (c != 0 ? 0 : (s != 0 ? -1 : 1));
-    }
-    __CRT_INLINE SHORT InterlockedCompareExchange16(SHORT volatile *Destination,SHORT ExChange,SHORT Comperand) {
-      SHORT prev;
-      __asm__ __volatile__("lock ; cmpxchgw %w1,%2"
-	:"=a"(prev)
-	:"q"(ExChange), "m"(*Destination), "0"(Comperand)
-	: "memory");
-      return prev;
-    }
-    __CRT_INLINE LONG InterlockedAnd(LONG volatile *Destination,LONG Value) {
-      __asm__ __volatile__("lock ; andl %0,%1"
-	: :"r"(Value),"m"(*Destination)
-	: "memory");
-      return *Destination;
-    }
-    __CRT_INLINE LONG InterlockedOr(LONG volatile *Destination,LONG Value) {
-      __asm__ __volatile__("lock ; orl %0,%1"
-	: : "r"(Value),"m"(*Destination) : "memory");
-      return *Destination;
-    }
-    __CRT_INLINE LONG InterlockedXor(LONG volatile *Destination,LONG Value) {
-      __asm__ __volatile__("lock ; xorl %0,%1"
-	: : "r"(Value),"m"(*Destination) : "memory");
-      return *Destination;
-    }
-    //		$$$$
-    __CRT_INLINE LONG64 InterlockedAnd64(LONG64 volatile *Destination,LONG64 Value) {
-      __asm__ __volatile__("lock ; andq %0,%1"
-	: : "r"(Value),"m"(*Destination) : "memory");
-      return *Destination;
-    }
-    __CRT_INLINE LONG64 InterlockedOr64(LONG64 volatile *Destination,LONG64 Value) {
-      __asm__ __volatile__("lock ; orq %0,%1"
-	: : "r"(Value),"m"(*Destination) : "memory");
-      return *Destination;
-    }
-    __CRT_INLINE LONG64 InterlockedXor64(LONG64 volatile *Destination,LONG64 Value) {
-      __asm__ __volatile__("lock ; xorq %0,%1"
-	: : "r"(Value),"m"(*Destination) : "memory");
-      return *Destination;
-    }
-    __CRT_INLINE LONG InterlockedIncrement(LONG volatile *Addend) {
-      unsigned char c;
-      unsigned char s;
-      __asm__ __volatile__(
-	"lock ; addl $1,%0; sete %1 ; sets %2"
-	:"=m" (*Addend), "=qm" (c), "=qm" (s)
-	:"m" (*Addend) : "memory");
-      return (c != 0 ? 0 : (s != 0 ? -1 : 1));
-    }
-    __CRT_INLINE LONG InterlockedDecrement(LONG volatile *Addend) {
-      unsigned char c;
-      unsigned char s;
-      __asm__ __volatile__(
-	"lock ; subl $1,%0; sete %1 ; sets %2"
-	:"=m" (*Addend), "=qm" (c), "=qm" (s)
-	:"m" (*Addend) : "memory");
-      return (c != 0 ? 0 : (s != 0 ? -1 : 1));
-    }
-    __CRT_INLINE LONG InterlockedExchange(LONG volatile *Target,LONG Value) {
-      __asm__ __volatile("lock ; xchgl %0,%1"
-	: "=r"(Value)
-	: "m"(*Target),"0"(Value)
-	: "memory");
-      return Value;
-    }
-    LONG InterlockedExchangeAdd(LONG volatile *Addend,LONG Value);
+	__CRT_INLINE SHORT InterlockedIncrement16(SHORT volatile *Addend)
+	{
+		unsigned char c;
+		unsigned char s;
+		__asm__ __volatile__(
+		    "lock ; addw $1,%0; sete %1 ; sets %2"
+		    :"=m" (*Addend), "=qm" (c), "=qm" (s)
+		    :"m" (*Addend) : "memory");
+		return (c != 0 ? 0 : (s != 0 ? -1 : 1));
+	}
+	__CRT_INLINE SHORT InterlockedDecrement16(SHORT volatile *Addend)
+	{
+		unsigned char c;
+		unsigned char s;
+		__asm__ __volatile__(
+		    "lock ; subw $1,%0; sete %1 ; sets %2"
+		    :"=m" (*Addend), "=qm" (c), "=qm" (s)
+		    :"m" (*Addend) : "memory");
+		return (c != 0 ? 0 : (s != 0 ? -1 : 1));
+	}
+	__CRT_INLINE SHORT InterlockedCompareExchange16(SHORT volatile *Destination,SHORT ExChange,SHORT Comperand)
+	{
+		SHORT prev;
+		__asm__ __volatile__("lock ; cmpxchgw %w1,%2"
+		                     :"=a"(prev)
+		                     :"q"(ExChange), "m"(*Destination), "0"(Comperand)
+		                     : "memory");
+		return prev;
+	}
+	__CRT_INLINE LONG InterlockedAnd(LONG volatile *Destination,LONG Value)
+	{
+		__asm__ __volatile__("lock ; andl %0,%1"
+		                     : :"r"(Value),"m"(*Destination)
+		                     : "memory");
+		return *Destination;
+	}
+	__CRT_INLINE LONG InterlockedOr(LONG volatile *Destination,LONG Value)
+	{
+		__asm__ __volatile__("lock ; orl %0,%1"
+		                     : : "r"(Value),"m"(*Destination) : "memory");
+		return *Destination;
+	}
+	__CRT_INLINE LONG InterlockedXor(LONG volatile *Destination,LONG Value)
+	{
+		__asm__ __volatile__("lock ; xorl %0,%1"
+		                     : : "r"(Value),"m"(*Destination) : "memory");
+		return *Destination;
+	}
+	//		$$$$
+	__CRT_INLINE LONG64 InterlockedAnd64(LONG64 volatile *Destination,LONG64 Value)
+	{
+		__asm__ __volatile__("lock ; andq %0,%1"
+		                     : : "r"(Value),"m"(*Destination) : "memory");
+		return *Destination;
+	}
+	__CRT_INLINE LONG64 InterlockedOr64(LONG64 volatile *Destination,LONG64 Value)
+	{
+		__asm__ __volatile__("lock ; orq %0,%1"
+		                     : : "r"(Value),"m"(*Destination) : "memory");
+		return *Destination;
+	}
+	__CRT_INLINE LONG64 InterlockedXor64(LONG64 volatile *Destination,LONG64 Value)
+	{
+		__asm__ __volatile__("lock ; xorq %0,%1"
+		                     : : "r"(Value),"m"(*Destination) : "memory");
+		return *Destination;
+	}
+	__CRT_INLINE LONG InterlockedIncrement(LONG volatile *Addend)
+	{
+		unsigned char c;
+		unsigned char s;
+		__asm__ __volatile__(
+		    "lock ; addl $1,%0; sete %1 ; sets %2"
+		    :"=m" (*Addend), "=qm" (c), "=qm" (s)
+		    :"m" (*Addend) : "memory");
+		return (c != 0 ? 0 : (s != 0 ? -1 : 1));
+	}
+	__CRT_INLINE LONG InterlockedDecrement(LONG volatile *Addend)
+	{
+		unsigned char c;
+		unsigned char s;
+		__asm__ __volatile__(
+		    "lock ; subl $1,%0; sete %1 ; sets %2"
+		    :"=m" (*Addend), "=qm" (c), "=qm" (s)
+		    :"m" (*Addend) : "memory");
+		return (c != 0 ? 0 : (s != 0 ? -1 : 1));
+	}
+	__CRT_INLINE LONG InterlockedExchange(LONG volatile *Target,LONG Value)
+	{
+		__asm__ __volatile("lock ; xchgl %0,%1"
+		                   : "=r"(Value)
+		                   : "m"(*Target),"0"(Value)
+		                   : "memory");
+		return Value;
+	}
+	LONG InterlockedExchangeAdd(LONG volatile *Addend,LONG Value);
 
 #ifndef _X86AMD64_
-    __CRT_INLINE LONG InterlockedAdd(LONG volatile *Addend,LONG Value) { return InterlockedExchangeAdd(Addend,Value) + Value; }
+	__CRT_INLINE LONG InterlockedAdd(LONG volatile *Addend,LONG Value)
+	{
+		return InterlockedExchangeAdd(Addend,Value) + Value;
+	}
 #endif
-    __CRT_INLINE LONG InterlockedCompareExchange(LONG volatile *Destination,LONG ExChange,LONG Comperand) {
-      LONG prev;
-      __asm__ __volatile__("lock ; cmpxchgl %1,%2" : "=a" (prev) : "q" (ExChange),"m" (*Destination), "0" (Comperand) : "memory");
-      return prev;
-    }
-    __CRT_INLINE LONG64 InterlockedIncrement64(LONG64 volatile *Addend) {
-      unsigned char c;
-      unsigned char s;
-      __asm__ __volatile__(
-	"lock ; addq $1,%0; sete %1 ; sets %2"
-	:"=m" (*Addend), "=qm" (c), "=qm" (s)
-	:"m" (*Addend) : "memory");
-      return (c != 0 ? 0 : (s != 0 ? -1 : 1));
-    }
-    __CRT_INLINE LONG64 InterlockedDecrement64(LONG64 volatile *Addend) {
-      unsigned char c;
-      unsigned char s;
-      __asm__ __volatile__(
-	"lock ; subq $1,%0; sete %1 ; sets %2"
-	:"=m" (*Addend), "=qm" (c), "=qm" (s)
-	:"m" (*Addend) : "memory");
-      return (c != 0 ? 0 : (s != 0 ? -1 : 1));
-    }
-    __CRT_INLINE LONG64 InterlockedExchange64(LONG64 volatile *Target,LONG64 Value) {
-      __asm__ __volatile("lock ; xchgq %0,%1"
-	: "=r"(Value)
-	: "m"(*Target),"0"(Value)
-	: "memory");
-      return Value;
-    }
-    LONG64 InterlockedExchangeAdd64(LONG64 volatile *Addend,LONG64 Value);
+	__CRT_INLINE LONG InterlockedCompareExchange(LONG volatile *Destination,LONG ExChange,LONG Comperand)
+	{
+		LONG prev;
+		__asm__ __volatile__("lock ; cmpxchgl %1,%2" : "=a" (prev) : "q" (ExChange),"m" (*Destination), "0" (Comperand) : "memory");
+		return prev;
+	}
+	__CRT_INLINE LONG64 InterlockedIncrement64(LONG64 volatile *Addend)
+	{
+		unsigned char c;
+		unsigned char s;
+		__asm__ __volatile__(
+		    "lock ; addq $1,%0; sete %1 ; sets %2"
+		    :"=m" (*Addend), "=qm" (c), "=qm" (s)
+		    :"m" (*Addend) : "memory");
+		return (c != 0 ? 0 : (s != 0 ? -1 : 1));
+	}
+	__CRT_INLINE LONG64 InterlockedDecrement64(LONG64 volatile *Addend)
+	{
+		unsigned char c;
+		unsigned char s;
+		__asm__ __volatile__(
+		    "lock ; subq $1,%0; sete %1 ; sets %2"
+		    :"=m" (*Addend), "=qm" (c), "=qm" (s)
+		    :"m" (*Addend) : "memory");
+		return (c != 0 ? 0 : (s != 0 ? -1 : 1));
+	}
+	__CRT_INLINE LONG64 InterlockedExchange64(LONG64 volatile *Target,LONG64 Value)
+	{
+		__asm__ __volatile("lock ; xchgq %0,%1"
+		                   : "=r"(Value)
+		                   : "m"(*Target),"0"(Value)
+		                   : "memory");
+		return Value;
+	}
+	LONG64 InterlockedExchangeAdd64(LONG64 volatile *Addend,LONG64 Value);
 
 #ifndef _X86AMD64_
-    __CRT_INLINE LONG64 InterlockedAdd64(LONG64 volatile *Addend,LONG64 Value) { return InterlockedExchangeAdd64(Addend,Value) + Value; }
+	__CRT_INLINE LONG64 InterlockedAdd64(LONG64 volatile *Addend,LONG64 Value)
+	{
+		return InterlockedExchangeAdd64(Addend,Value) + Value;
+	}
 #endif
 
-    __CRT_INLINE LONG64 InterlockedCompareExchange64(LONG64 volatile *Destination,LONG64 ExChange,LONG64 Comperand) {
-      LONG64 prev;
-      __asm__ __volatile__("lock ; cmpxchgq %1,%2" : "=a" (prev) : "q" (ExChange),"m" (*Destination), "0" (Comperand) : "memory");
-      return prev;
-    }
-    __CRT_INLINE PVOID InterlockedCompareExchangePointer(PVOID volatile *Destination,PVOID ExChange,PVOID Comperand) {
-      PVOID prev;
-      __asm__ __volatile__("lock ; cmpxchgq %1,%2" : "=a" (prev) : "q" (ExChange),"m" (*Destination), "0" (Comperand) : "memory");
-      return prev;
-    }
-    __CRT_INLINE PVOID InterlockedExchangePointer(PVOID volatile *Target,PVOID Value) {
-      __asm__ __volatile("lock ; xchgq %0,%1"
-	: "=r"(Value)
-	: "m"(*Target),"0"(Value)
-	: "memory");
-      return Value;
-    }
+	__CRT_INLINE LONG64 InterlockedCompareExchange64(LONG64 volatile *Destination,LONG64 ExChange,LONG64 Comperand)
+	{
+		LONG64 prev;
+		__asm__ __volatile__("lock ; cmpxchgq %1,%2" : "=a" (prev) : "q" (ExChange),"m" (*Destination), "0" (Comperand) : "memory");
+		return prev;
+	}
+	__CRT_INLINE PVOID InterlockedCompareExchangePointer(PVOID volatile *Destination,PVOID ExChange,PVOID Comperand)
+	{
+		PVOID prev;
+		__asm__ __volatile__("lock ; cmpxchgq %1,%2" : "=a" (prev) : "q" (ExChange),"m" (*Destination), "0" (Comperand) : "memory");
+		return prev;
+	}
+	__CRT_INLINE PVOID InterlockedExchangePointer(PVOID volatile *Target,PVOID Value)
+	{
+		__asm__ __volatile("lock ; xchgq %0,%1"
+		                   : "=r"(Value)
+		                   : "m"(*Target),"0"(Value)
+		                   : "memory");
+		return Value;
+	}
 
 #define CacheLineFlush(Address) _mm_clflush(Address)
 
-    VOID _ReadWriteBarrier(VOID);
+	VOID _ReadWriteBarrier(VOID);
 
 #define FastFence __faststorefence
 #define LoadFence _mm_lfence
 #define MemoryFence _mm_mfence
 #define StoreFence _mm_sfence
 
-    VOID __faststorefence(VOID);
-    VOID _m_prefetchw(volatile CONST VOID *Source);
+	VOID __faststorefence(VOID);
+	VOID _m_prefetchw(volatile CONST VOID *Source);
 
 //!__TINYC__: #include <intrin.h>
 
@@ -1177,110 +1232,120 @@ typedef DWORD LCID;
 #define ReadMxCsr _mm_getcsr
 #define WriteMxCsr _mm_setcsr
 
-    VOID __int2c(VOID);
+	VOID __int2c(VOID);
 
 #define DbgRaiseAssertionFailure() __int2c()
 #define GetCallersEflags() __getcallerseflags()
 
-    unsigned __int32 __getcallerseflags(VOID);
+	unsigned __int32 __getcallerseflags(VOID);
 
 #define GetSegmentLimit __segmentlimit
 
-    DWORD __segmentlimit(DWORD Selector);
+	DWORD __segmentlimit(DWORD Selector);
 
 #define ReadTimeStampCounter() __rdtsc()
 
-    DWORD64 __rdtsc(VOID);
-    VOID __movsb(PBYTE Destination,BYTE const *Source,SIZE_T Count);
-    VOID __movsw(PWORD Destination,WORD const *Source,SIZE_T Count);
-    VOID __movsd(PDWORD Destination,DWORD const *Source,SIZE_T Count);
-    VOID __movsq(PDWORD64 Destination,DWORD64 const *Source,SIZE_T Count);
-    VOID __stosb(PBYTE Destination,BYTE Value,SIZE_T Count);
-    VOID __stosw(PWORD Destination,WORD Value,SIZE_T Count);
-    VOID __stosd(PDWORD Destination,DWORD Value,SIZE_T Count);
-    VOID __stosq(PDWORD64 Destination,DWORD64 Value,SIZE_T Count);
+	DWORD64 __rdtsc(VOID);
+	VOID __movsb(PBYTE Destination,BYTE const *Source,SIZE_T Count);
+	VOID __movsw(PWORD Destination,WORD const *Source,SIZE_T Count);
+	VOID __movsd(PDWORD Destination,DWORD const *Source,SIZE_T Count);
+	VOID __movsq(PDWORD64 Destination,DWORD64 const *Source,SIZE_T Count);
+	VOID __stosb(PBYTE Destination,BYTE Value,SIZE_T Count);
+	VOID __stosw(PWORD Destination,WORD Value,SIZE_T Count);
+	VOID __stosd(PDWORD Destination,DWORD Value,SIZE_T Count);
+	VOID __stosq(PDWORD64 Destination,DWORD64 Value,SIZE_T Count);
 
 #define MultiplyHigh __mulh
 #define UnsignedMultiplyHigh __umulh
 
-    LONGLONG MultiplyHigh(LONGLONG Multiplier,LONGLONG Multiplicand);
-    ULONGLONG UnsignedMultiplyHigh(ULONGLONG Multiplier,ULONGLONG Multiplicand);
+	LONGLONG MultiplyHigh(LONGLONG Multiplier,LONGLONG Multiplicand);
+	ULONGLONG UnsignedMultiplyHigh(ULONGLONG Multiplier,ULONGLONG Multiplicand);
 
 #define ShiftLeft128 __shiftleft128
 #define ShiftRight128 __shiftright128
 
-    DWORD64 ShiftLeft128(DWORD64 LowPart,DWORD64 HighPart,BYTE Shift);
-    DWORD64 ShiftRight128(DWORD64 LowPart,DWORD64 HighPart,BYTE Shift);
+	DWORD64 ShiftLeft128(DWORD64 LowPart,DWORD64 HighPart,BYTE Shift);
+	DWORD64 ShiftRight128(DWORD64 LowPart,DWORD64 HighPart,BYTE Shift);
 
 #define Multiply128 _mul128
 
-    LONG64 Multiply128(LONG64 Multiplier,LONG64 Multiplicand,LONG64 *HighProduct);
+	LONG64 Multiply128(LONG64 Multiplier,LONG64 Multiplicand,LONG64 *HighProduct);
 
 #define UnsignedMultiply128 _umul128
 
-    DWORD64 UnsignedMultiply128(DWORD64 Multiplier,DWORD64 Multiplicand,DWORD64 *HighProduct);
+	DWORD64 UnsignedMultiply128(DWORD64 Multiplier,DWORD64 Multiplicand,DWORD64 *HighProduct);
 
-    __CRT_INLINE LONG64 MultiplyExtract128(LONG64 Multiplier,LONG64 Multiplicand,BYTE Shift) {
-      LONG64 extractedProduct;
-      LONG64 highProduct;
-      LONG64 lowProduct;
-      lowProduct = Multiply128(Multiplier,Multiplicand,&highProduct);
-      extractedProduct = (LONG64)ShiftRight128((LONG64)lowProduct,(LONG64)highProduct,Shift);
-      return extractedProduct;
-    }
+	__CRT_INLINE LONG64 MultiplyExtract128(LONG64 Multiplier,LONG64 Multiplicand,BYTE Shift)
+	{
+		LONG64 extractedProduct;
+		LONG64 highProduct;
+		LONG64 lowProduct;
+		lowProduct = Multiply128(Multiplier,Multiplicand,&highProduct);
+		extractedProduct = (LONG64)ShiftRight128((LONG64)lowProduct,(LONG64)highProduct,Shift);
+		return extractedProduct;
+	}
 
-    __CRT_INLINE DWORD64 UnsignedMultiplyExtract128(DWORD64 Multiplier,DWORD64 Multiplicand,BYTE Shift) {
-      DWORD64 extractedProduct;
-      DWORD64 highProduct;
-      DWORD64 lowProduct;
-      lowProduct = UnsignedMultiply128(Multiplier,Multiplicand,&highProduct);
-      extractedProduct = ShiftRight128(lowProduct,highProduct,Shift);
-      return extractedProduct;
-    }
+	__CRT_INLINE DWORD64 UnsignedMultiplyExtract128(DWORD64 Multiplier,DWORD64 Multiplicand,BYTE Shift)
+	{
+		DWORD64 extractedProduct;
+		DWORD64 highProduct;
+		DWORD64 lowProduct;
+		lowProduct = UnsignedMultiply128(Multiplier,Multiplicand,&highProduct);
+		extractedProduct = ShiftRight128(lowProduct,highProduct,Shift);
+		return extractedProduct;
+	}
 
-    __CRT_INLINE BYTE __readgsbyte(DWORD Offset) {
-      BYTE ret;
-      __asm__ volatile ("movb	%%gs:%1,%0"
-	: "=r" (ret) ,"=m" ((*(volatile long *) (DWORD64) Offset)));
-      return ret;
-    }
-    __CRT_INLINE WORD __readgsword(DWORD Offset) {
-      WORD ret;
-      __asm__ volatile ("movw	%%gs:%1,%0"
-	: "=r" (ret) ,"=m" ((*(volatile long *) (DWORD64) Offset)));
-      return ret;
-    }
-    __CRT_INLINE DWORD __readgsdword(DWORD Offset) {
-      DWORD ret;
-      __asm__ volatile ("movl	%%gs:%1,%0"
-	: "=r" (ret) ,"=m" ((*(volatile long *) (DWORD64) Offset)));
-      return ret;
-    }
-    __CRT_INLINE DWORD64 __readgsqword(DWORD Offset) {
-      void *ret;
-      __asm__ volatile ("movq	%%gs:%1,%0"
-	: "=r" (ret) ,"=m" ((*(volatile long *) (DWORD64) Offset)));
-      return (DWORD64) ret;
-    }
-    __CRT_INLINE VOID __writegsbyte(DWORD Offset,BYTE Data) {
-      __asm__ volatile ("movb	%0,%%gs:%1"
-	: "=r" (Data) ,"=m" ((*(volatile long *) (DWORD64) Offset)));
-    }
-    __CRT_INLINE VOID __writegsword(DWORD Offset,WORD Data) {
-      __asm__ volatile ("movw	%0,%%gs:%1"
-	: "=r" (Data) ,"=m" ((*(volatile long *) (DWORD64) Offset)));
-    }
-    __CRT_INLINE VOID __writegsdword(DWORD Offset,DWORD Data) {
-      __asm__ volatile ("movl	%0,%%gs:%1"
-	: "=r" (Data) ,"=m" ((*(volatile long *) (DWORD64) Offset)));
-    }
-    __CRT_INLINE VOID __writegsqword(DWORD Offset,DWORD64 Data) {
-      __asm__ volatile ("movq	%0,%%gs:%1"
-	: "=r" (Data) ,"=m" ((*(volatile long *) (DWORD64) Offset)));
-    }
+	__CRT_INLINE BYTE __readgsbyte(DWORD Offset)
+	{
+		BYTE ret;
+		__asm__ volatile ("movb	%%gs:%1,%0"
+		                  : "=r" (ret),"=m" ((*(volatile long *) (DWORD64) Offset)));
+		return ret;
+	}
+	__CRT_INLINE WORD __readgsword(DWORD Offset)
+	{
+		WORD ret;
+		__asm__ volatile ("movw	%%gs:%1,%0"
+		                  : "=r" (ret),"=m" ((*(volatile long *) (DWORD64) Offset)));
+		return ret;
+	}
+	__CRT_INLINE DWORD __readgsdword(DWORD Offset)
+	{
+		DWORD ret;
+		__asm__ volatile ("movl	%%gs:%1,%0"
+		                  : "=r" (ret),"=m" ((*(volatile long *) (DWORD64) Offset)));
+		return ret;
+	}
+	__CRT_INLINE DWORD64 __readgsqword(DWORD Offset)
+	{
+		void *ret;
+		__asm__ volatile ("movq	%%gs:%1,%0"
+		                  : "=r" (ret),"=m" ((*(volatile long *) (DWORD64) Offset)));
+		return (DWORD64) ret;
+	}
+	__CRT_INLINE VOID __writegsbyte(DWORD Offset,BYTE Data)
+	{
+		__asm__ volatile ("movb	%0,%%gs:%1"
+		                  : "=r" (Data),"=m" ((*(volatile long *) (DWORD64) Offset)));
+	}
+	__CRT_INLINE VOID __writegsword(DWORD Offset,WORD Data)
+	{
+		__asm__ volatile ("movw	%0,%%gs:%1"
+		                  : "=r" (Data),"=m" ((*(volatile long *) (DWORD64) Offset)));
+	}
+	__CRT_INLINE VOID __writegsdword(DWORD Offset,DWORD Data)
+	{
+		__asm__ volatile ("movl	%0,%%gs:%1"
+		                  : "=r" (Data),"=m" ((*(volatile long *) (DWORD64) Offset)));
+	}
+	__CRT_INLINE VOID __writegsqword(DWORD Offset,DWORD64 Data)
+	{
+		__asm__ volatile ("movq	%0,%%gs:%1"
+		                  : "=r" (Data),"=m" ((*(volatile long *) (DWORD64) Offset)));
+	}
 
 #ifdef __cplusplus
-  }
+}
 #endif
 #endif
 
@@ -1310,33 +1375,36 @@ typedef DWORD LCID;
 #define INITIAL_MXCSR 0x1f80
 #define INITIAL_FPCSR 0x027f
 
-  typedef struct DECLSPEC_ALIGN(16) _M128A {
+typedef struct DECLSPEC_ALIGN(16) _M128A
+{
     ULONGLONG Low;
     LONGLONG High;
-  } M128A,*PM128A;
+} M128A,*PM128A;
 
-  typedef struct _XMM_SAVE_AREA32 {
-    WORD ControlWord;
-    WORD StatusWord;
-    BYTE TagWord;
-    BYTE Reserved1;
-    WORD ErrorOpcode;
-    DWORD ErrorOffset;
-    WORD ErrorSelector;
-    WORD Reserved2;
-    DWORD DataOffset;
-    WORD DataSelector;
-    WORD Reserved3;
-    DWORD MxCsr;
-    DWORD MxCsr_Mask;
-    M128A FloatRegisters[8];
-    M128A XmmRegisters[16];
-    BYTE Reserved4[96];
-  } XMM_SAVE_AREA32,*PXMM_SAVE_AREA32;
+typedef struct _XMM_SAVE_AREA32
+{
+	WORD ControlWord;
+	WORD StatusWord;
+	BYTE TagWord;
+	BYTE Reserved1;
+	WORD ErrorOpcode;
+	DWORD ErrorOffset;
+	WORD ErrorSelector;
+	WORD Reserved2;
+	DWORD DataOffset;
+	WORD DataSelector;
+	WORD Reserved3;
+	DWORD MxCsr;
+	DWORD MxCsr_Mask;
+	M128A FloatRegisters[8];
+	M128A XmmRegisters[16];
+	BYTE Reserved4[96];
+} XMM_SAVE_AREA32,*PXMM_SAVE_AREA32;
 
 #define LEGACY_SAVE_AREA_LENGTH sizeof(XMM_SAVE_AREA32)
 
-  typedef struct DECLSPEC_ALIGN(16) _CONTEXT {
+typedef struct DECLSPEC_ALIGN(16) _CONTEXT
+{
     DWORD64 P1Home;
     DWORD64 P2Home;
     DWORD64 P3Home;
@@ -1375,29 +1443,31 @@ typedef DWORD LCID;
     DWORD64 R14;
     DWORD64 R15;
     DWORD64 Rip;
-    union {
-      XMM_SAVE_AREA32 FltSave;
-      XMM_SAVE_AREA32 FloatSave;
-      struct {
-	M128A Header[2];
-	M128A Legacy[8];
-	M128A Xmm0;
-	M128A Xmm1;
-	M128A Xmm2;
-	M128A Xmm3;
-	M128A Xmm4;
-	M128A Xmm5;
-	M128A Xmm6;
-	M128A Xmm7;
-	M128A Xmm8;
-	M128A Xmm9;
-	M128A Xmm10;
-	M128A Xmm11;
-	M128A Xmm12;
-	M128A Xmm13;
-	M128A Xmm14;
-	M128A Xmm15;
-      };
+    union
+    {
+        XMM_SAVE_AREA32 FltSave;
+        XMM_SAVE_AREA32 FloatSave;
+        struct
+        {
+            M128A Header[2];
+            M128A Legacy[8];
+            M128A Xmm0;
+            M128A Xmm1;
+            M128A Xmm2;
+            M128A Xmm3;
+            M128A Xmm4;
+            M128A Xmm5;
+            M128A Xmm6;
+            M128A Xmm7;
+            M128A Xmm8;
+            M128A Xmm9;
+            M128A Xmm10;
+            M128A Xmm11;
+            M128A Xmm12;
+            M128A Xmm13;
+            M128A Xmm14;
+            M128A Xmm15;
+        };
     };
     M128A VectorRegister[26];
     DWORD64 VectorControl;
@@ -1406,77 +1476,82 @@ typedef DWORD LCID;
     DWORD64 LastBranchFromRip;
     DWORD64 LastExceptionToRip;
     DWORD64 LastExceptionFromRip;
-  } CONTEXT,*PCONTEXT;
+} CONTEXT,*PCONTEXT;
 
 #define RUNTIME_FUNCTION_INDIRECT 0x1
 
-  typedef struct _RUNTIME_FUNCTION {
-    DWORD BeginAddress;
-    DWORD EndAddress;
-    DWORD UnwindData;
-  } RUNTIME_FUNCTION,*PRUNTIME_FUNCTION;
+typedef struct _RUNTIME_FUNCTION
+{
+	DWORD BeginAddress;
+	DWORD EndAddress;
+	DWORD UnwindData;
+} RUNTIME_FUNCTION,*PRUNTIME_FUNCTION;
 
-  typedef PRUNTIME_FUNCTION (*PGET_RUNTIME_FUNCTION_CALLBACK)(DWORD64 ControlPc,PVOID Context);
-  typedef DWORD (*POUT_OF_PROCESS_FUNCTION_TABLE_CALLBACK)(HANDLE Process,PVOID TableAddress,PDWORD Entries,PRUNTIME_FUNCTION *Functions);
+typedef PRUNTIME_FUNCTION (*PGET_RUNTIME_FUNCTION_CALLBACK)(DWORD64 ControlPc,PVOID Context);
+typedef DWORD (*POUT_OF_PROCESS_FUNCTION_TABLE_CALLBACK)(HANDLE Process,PVOID TableAddress,PDWORD Entries,PRUNTIME_FUNCTION *Functions);
 
 #define OUT_OF_PROCESS_FUNCTION_TABLE_CALLBACK_EXPORT_NAME "OutOfProcessFunctionTableCallback"
 
-  NTSYSAPI VOID __cdecl RtlRestoreContext (PCONTEXT ContextRecord,struct _EXCEPTION_RECORD *ExceptionRecord);
-  NTSYSAPI BOOLEAN __cdecl RtlAddFunctionTable(PRUNTIME_FUNCTION FunctionTable,DWORD EntryCount,DWORD64 BaseAddress);
-  NTSYSAPI BOOLEAN __cdecl RtlInstallFunctionTableCallback(DWORD64 TableIdentifier,DWORD64 BaseAddress,DWORD Length,PGET_RUNTIME_FUNCTION_CALLBACK Callback,PVOID Context,PCWSTR OutOfProcessCallbackDll);
-  NTSYSAPI BOOLEAN __cdecl RtlDeleteFunctionTable(PRUNTIME_FUNCTION FunctionTable);
+NTSYSAPI VOID __cdecl RtlRestoreContext (PCONTEXT ContextRecord,struct _EXCEPTION_RECORD *ExceptionRecord);
+NTSYSAPI BOOLEAN __cdecl RtlAddFunctionTable(PRUNTIME_FUNCTION FunctionTable,DWORD EntryCount,DWORD64 BaseAddress);
+NTSYSAPI BOOLEAN __cdecl RtlInstallFunctionTableCallback(DWORD64 TableIdentifier,DWORD64 BaseAddress,DWORD Length,PGET_RUNTIME_FUNCTION_CALLBACK Callback,PVOID Context,PCWSTR OutOfProcessCallbackDll);
+NTSYSAPI BOOLEAN __cdecl RtlDeleteFunctionTable(PRUNTIME_FUNCTION FunctionTable);
 #endif
 
 #ifdef I_X86_
 #if(defined(_X86_) && !defined(__x86_64)) && !defined(RC_INVOKED)
 #ifdef __cplusplus
-  extern "C" {
+extern "C" {
 #endif
 
-    __CRT_INLINE BOOLEAN InterlockedBitTestAndSet(LONG *Base,LONG Bit) {
-      int old = 0;
-      __asm__ __volatile__("lock ; btsl %2,%1\n\tsbbl %0,%0 "
-	:"=r" (old),"=m" ((*(volatile long *) Base))
-	:"Ir" (Bit));
-      return (BOOLEAN) (old!=0);
-    }
+	__CRT_INLINE BOOLEAN InterlockedBitTestAndSet(LONG *Base,LONG Bit)
+	{
+		int old = 0;
+		__asm__ __volatile__("lock ; btsl %2,%1\n\tsbbl %0,%0 "
+		                     :"=r" (old),"=m" ((*(volatile long *) Base))
+		                     :"Ir" (Bit));
+		return (BOOLEAN) (old!=0);
+	}
 
-    __CRT_INLINE BOOLEAN InterlockedBitTestAndReset(LONG *Base,LONG Bit) {
-      int old = 0;
-      __asm__ __volatile__("lock ; btrl %2,%1\n\tsbbl %0,%0 "
-	:"=r" (old),"=m" ((*(volatile long *) Base))
-	:"Ir" (Bit));
-      return (BOOLEAN) (old!=0);
-    }
+	__CRT_INLINE BOOLEAN InterlockedBitTestAndReset(LONG *Base,LONG Bit)
+	{
+		int old = 0;
+		__asm__ __volatile__("lock ; btrl %2,%1\n\tsbbl %0,%0 "
+		                     :"=r" (old),"=m" ((*(volatile long *) Base))
+		                     :"Ir" (Bit));
+		return (BOOLEAN) (old!=0);
+	}
 
-    __CRT_INLINE BOOLEAN InterlockedBitTestAndComplement(LONG *Base,LONG Bit) {
-      int old = 0;
-      __asm__ __volatile__("lock ; btcl %2,%1\n\tsbbl %0,%0 "
-	:"=r" (old),"=m" ((*(volatile long *) Base))
-	:"Ir" (Bit));
-      return (BOOLEAN) (old!=0);
-    }
+	__CRT_INLINE BOOLEAN InterlockedBitTestAndComplement(LONG *Base,LONG Bit)
+	{
+		int old = 0;
+		__asm__ __volatile__("lock ; btcl %2,%1\n\tsbbl %0,%0 "
+		                     :"=r" (old),"=m" ((*(volatile long *) Base))
+		                     :"Ir" (Bit));
+		return (BOOLEAN) (old!=0);
+	}
 
 #ifdef _PREFIX_
-    BYTE __readfsbyte(DWORD Offset);
-    WORD __readfsword(DWORD Offset);
-    DWORD __readfsdword(DWORD Offset);
-    VOID __writefsbyte(DWORD Offset,BYTE Data);
-    VOID __writefsword(DWORD Offset,WORD Data);
-    VOID __writefsdword(DWORD Offset,DWORD Data);
+	BYTE __readfsbyte(DWORD Offset);
+	WORD __readfsword(DWORD Offset);
+	DWORD __readfsdword(DWORD Offset);
+	VOID __writefsbyte(DWORD Offset,BYTE Data);
+	VOID __writefsword(DWORD Offset,WORD Data);
+	VOID __writefsdword(DWORD Offset,DWORD Data);
 #endif
 
 #ifdef __cplusplus
-  }
+}
 #endif
 #endif
 
 #if(defined(_X86_) && !defined(__x86_64))
-  __CRT_INLINE VOID MemoryBarrier(VOID) {
-    LONG Barrier;
-    __asm__ __volatile__("xchgl %%eax,%0 "
-      :"=r" (Barrier));
-  }
+__CRT_INLINE VOID MemoryBarrier(VOID)
+{
+	LONG Barrier;
+	__asm__ __volatile__("xchgl %%eax,%0 "
+	                     :"=r" (Barrier));
+}
 #define YieldProcessor() __asm__ __volatile__("rep nop ");
 
 #define PreFetchCacheLine(l,a)
@@ -1485,26 +1560,27 @@ typedef DWORD LCID;
 #define PF_TEMPORAL_LEVEL_1
 #define PF_NON_TEMPORAL_LEVEL_ALL
 
-  __CRT_INLINE VOID DbgRaiseAssertionFailure(void) {
-    __asm__ __volatile__("int $0x2c ");
-  }
-  PVOID GetCurrentFiber(void);
-  __CRT_INLINE PVOID GetCurrentFiber(void)
-  {
-    void *ret;
-    __asm__ volatile ("movl	%%fs:0x10,%0"
-	: "=r" (ret));
-    return ret;
-  }
-  PVOID GetFiberData(void);
-  __CRT_INLINE PVOID GetFiberData(void)
-  {
-    void *ret;
-    __asm__ volatile ("movl	%%fs:0x10,%0\n"
-	"movl	(%0),%0"
-	: "=r" (ret));
-    return ret;
-  }
+__CRT_INLINE VOID DbgRaiseAssertionFailure(void)
+{
+	__asm__ __volatile__("int $0x2c ");
+}
+PVOID GetCurrentFiber(void);
+__CRT_INLINE PVOID GetCurrentFiber(void)
+{
+	void *ret;
+	__asm__ volatile ("movl	%%fs:0x10,%0"
+	                  : "=r" (ret));
+	return ret;
+}
+PVOID GetFiberData(void);
+__CRT_INLINE PVOID GetFiberData(void)
+{
+	void *ret;
+	__asm__ volatile ("movl	%%fs:0x10,%0\n"
+	                  "movl	(%0),%0"
+	                  : "=r" (ret));
+	return ret;
+}
 #endif
 
 #define EXCEPTION_READ_FAULT 0
@@ -1532,98 +1608,104 @@ typedef DWORD LCID;
 
 #define MAXIMUM_SUPPORTED_EXTENSION 512
 
-    typedef struct _FLOATING_SAVE_AREA {
-      DWORD ControlWord;
-      DWORD StatusWord;
-      DWORD TagWord;
-      DWORD ErrorOffset;
-      DWORD ErrorSelector;
-      DWORD DataOffset;
-      DWORD DataSelector;
-      BYTE RegisterArea[SIZE_OF_80387_REGISTERS];
-      DWORD Cr0NpxState;
-    } FLOATING_SAVE_AREA;
+typedef struct _FLOATING_SAVE_AREA
+{
+	DWORD ControlWord;
+	DWORD StatusWord;
+	DWORD TagWord;
+	DWORD ErrorOffset;
+	DWORD ErrorSelector;
+	DWORD DataOffset;
+	DWORD DataSelector;
+	BYTE RegisterArea[SIZE_OF_80387_REGISTERS];
+	DWORD Cr0NpxState;
+} FLOATING_SAVE_AREA;
 
-    typedef FLOATING_SAVE_AREA *PFLOATING_SAVE_AREA;
+typedef FLOATING_SAVE_AREA *PFLOATING_SAVE_AREA;
 
-    typedef struct _CONTEXT {
-      DWORD ContextFlags;
-      DWORD Dr0;
-      DWORD Dr1;
-      DWORD Dr2;
-      DWORD Dr3;
-      DWORD Dr6;
-      DWORD Dr7;
-      FLOATING_SAVE_AREA FloatSave;
-      DWORD SegGs;
-      DWORD SegFs;
-      DWORD SegEs;
-      DWORD SegDs;
+typedef struct _CONTEXT
+{
+	DWORD ContextFlags;
+	DWORD Dr0;
+	DWORD Dr1;
+	DWORD Dr2;
+	DWORD Dr3;
+	DWORD Dr6;
+	DWORD Dr7;
+	FLOATING_SAVE_AREA FloatSave;
+	DWORD SegGs;
+	DWORD SegFs;
+	DWORD SegEs;
+	DWORD SegDs;
 
-      DWORD Edi;
-      DWORD Esi;
-      DWORD Ebx;
-      DWORD Edx;
-      DWORD Ecx;
-      DWORD Eax;
-      DWORD Ebp;
-      DWORD Eip;
-      DWORD SegCs;
-      DWORD EFlags;
-      DWORD Esp;
-      DWORD SegSs;
-      BYTE ExtendedRegisters[MAXIMUM_SUPPORTED_EXTENSION];
-    } CONTEXT;
+	DWORD Edi;
+	DWORD Esi;
+	DWORD Ebx;
+	DWORD Edx;
+	DWORD Ecx;
+	DWORD Eax;
+	DWORD Ebp;
+	DWORD Eip;
+	DWORD SegCs;
+	DWORD EFlags;
+	DWORD Esp;
+	DWORD SegSs;
+	BYTE ExtendedRegisters[MAXIMUM_SUPPORTED_EXTENSION];
+} CONTEXT;
 
-    typedef CONTEXT *PCONTEXT;
+typedef CONTEXT *PCONTEXT;
 #endif
 
 #ifndef _LDT_ENTRY_DEFINED
 #define _LDT_ENTRY_DEFINED
 
-    typedef struct _LDT_ENTRY {
-      WORD LimitLow;
-      WORD BaseLow;
-      union {
-	struct {
-	  BYTE BaseMid;
-	  BYTE Flags1;
-	  BYTE Flags2;
-	  BYTE BaseHi;
-	} Bytes;
-	struct {
-	  DWORD BaseMid : 8;
-	  DWORD Type : 5;
-	  DWORD Dpl : 2;
-	  DWORD Pres : 1;
-	  DWORD LimitHi : 4;
-	  DWORD Sys : 1;
-	  DWORD Reserved_0 : 1;
-	  DWORD Default_Big : 1;
-	  DWORD Granularity : 1;
-	  DWORD BaseHi : 8;
-	} Bits;
-      } HighWord;
-    } LDT_ENTRY,*PLDT_ENTRY;
+typedef struct _LDT_ENTRY
+{
+	WORD LimitLow;
+	WORD BaseLow;
+	union
+	{
+		struct
+		{
+			BYTE BaseMid;
+			BYTE Flags1;
+			BYTE Flags2;
+			BYTE BaseHi;
+		} Bytes;
+		struct
+		{
+			DWORD BaseMid : 8;
+			DWORD Type : 5;
+			DWORD Dpl : 2;
+			DWORD Pres : 1;
+			DWORD LimitHi : 4;
+			DWORD Sys : 1;
+			DWORD Reserved_0 : 1;
+			DWORD Default_Big : 1;
+			DWORD Granularity : 1;
+			DWORD BaseHi : 8;
+		} Bits;
+	} HighWord;
+} LDT_ENTRY,*PLDT_ENTRY;
 #endif
 
 #if defined(__ia64__) && !defined(RC_INVOKED)
 
 #ifdef __cplusplus
-    extern "C" {
+extern "C" {
 #endif
 
-      BOOLEAN BitScanForward64(DWORD *Index,DWORD64 Mask);
-      BOOLEAN BitScanReverse64(DWORD *Index,DWORD64 Mask);
+	BOOLEAN BitScanForward64(DWORD *Index,DWORD64 Mask);
+	BOOLEAN BitScanReverse64(DWORD *Index,DWORD64 Mask);
 
 #ifdef __cplusplus
-    }
+}
 #endif
 #endif
 
 #if !defined(GENUTIL) && !defined(_GENIA64_) && defined(_IA64_)
 
-    void *_cdecl _rdteb(void);
+void *_cdecl _rdteb(void);
 #ifdef __ia64__
 
 #define NtCurrentTeb() ((struct _TEB *)_rdteb())
@@ -1631,16 +1713,16 @@ typedef DWORD LCID;
 #define GetFiberData() (*(PVOID *)(GetCurrentFiber()))
 
 #ifdef __cplusplus
-    extern "C" {
+extern "C" {
 #endif
 
-      void __break(int);
-      void __yield(void);
-      void __mf(void);
-      void __lfetch(int Level,VOID CONST *Address);
-      void __lfetchfault(int Level,VOID CONST *Address);
-      void __lfetch_excl(int Level,VOID CONST *Address);
-      void __lfetchfault_excl(int Level,VOID CONST *Address);
+	void __break(int);
+	void __yield(void);
+	void __mf(void);
+	void __lfetch(int Level,VOID CONST *Address);
+	void __lfetchfault(int Level,VOID CONST *Address);
+	void __lfetch_excl(int Level,VOID CONST *Address);
+	void __lfetchfault_excl(int Level,VOID CONST *Address);
 
 #define MD_LFHINT_NONE 0x00
 #define MD_LFHINT_NT1 0x01
@@ -1648,7 +1730,7 @@ typedef DWORD LCID;
 #define MD_LFHINT_NTA 0x03
 
 #ifdef __cplusplus
-    }
+}
 #endif
 
 #define YieldProcessor __yield
@@ -1662,9 +1744,9 @@ typedef DWORD LCID;
 
 #define UnsignedMultiplyHigh __UMULH
 
-    ULONGLONG UnsignedMultiplyHigh(ULONGLONG Multiplier,ULONGLONG Multiplicand);
+ULONGLONG UnsignedMultiplyHigh(ULONGLONG Multiplier,ULONGLONG Multiplicand);
 #else
-    struct _TEB *NtCurrentTeb(void);
+struct _TEB *NtCurrentTeb(void);
 #endif
 #endif
 
@@ -1695,343 +1777,353 @@ typedef DWORD LCID;
 #define CONTEXT_EXCEPTION_REPORTING 0x80000000
 #endif
 
-    typedef struct _CONTEXT {
-      DWORD ContextFlags;
-      DWORD Fill1[3];
-      ULONGLONG DbI0;
-      ULONGLONG DbI1;
-      ULONGLONG DbI2;
-      ULONGLONG DbI3;
-      ULONGLONG DbI4;
-      ULONGLONG DbI5;
-      ULONGLONG DbI6;
-      ULONGLONG DbI7;
-      ULONGLONG DbD0;
-      ULONGLONG DbD1;
-      ULONGLONG DbD2;
-      ULONGLONG DbD3;
-      ULONGLONG DbD4;
-      ULONGLONG DbD5;
-      ULONGLONG DbD6;
-      ULONGLONG DbD7;
-      FLOAT128 FltS0;
-      FLOAT128 FltS1;
-      FLOAT128 FltS2;
-      FLOAT128 FltS3;
-      FLOAT128 FltT0;
-      FLOAT128 FltT1;
-      FLOAT128 FltT2;
-      FLOAT128 FltT3;
-      FLOAT128 FltT4;
-      FLOAT128 FltT5;
-      FLOAT128 FltT6;
-      FLOAT128 FltT7;
-      FLOAT128 FltT8;
-      FLOAT128 FltT9;
-      FLOAT128 FltS4;
-      FLOAT128 FltS5;
-      FLOAT128 FltS6;
-      FLOAT128 FltS7;
-      FLOAT128 FltS8;
-      FLOAT128 FltS9;
-      FLOAT128 FltS10;
-      FLOAT128 FltS11;
-      FLOAT128 FltS12;
-      FLOAT128 FltS13;
-      FLOAT128 FltS14;
-      FLOAT128 FltS15;
-      FLOAT128 FltS16;
-      FLOAT128 FltS17;
-      FLOAT128 FltS18;
-      FLOAT128 FltS19;
-      FLOAT128 FltF32;
-      FLOAT128 FltF33;
-      FLOAT128 FltF34;
-      FLOAT128 FltF35;
-      FLOAT128 FltF36;
-      FLOAT128 FltF37;
-      FLOAT128 FltF38;
-      FLOAT128 FltF39;
-      FLOAT128 FltF40;
-      FLOAT128 FltF41;
-      FLOAT128 FltF42;
-      FLOAT128 FltF43;
-      FLOAT128 FltF44;
-      FLOAT128 FltF45;
-      FLOAT128 FltF46;
-      FLOAT128 FltF47;
-      FLOAT128 FltF48;
-      FLOAT128 FltF49;
-      FLOAT128 FltF50;
-      FLOAT128 FltF51;
-      FLOAT128 FltF52;
-      FLOAT128 FltF53;
-      FLOAT128 FltF54;
-      FLOAT128 FltF55;
-      FLOAT128 FltF56;
-      FLOAT128 FltF57;
-      FLOAT128 FltF58;
-      FLOAT128 FltF59;
-      FLOAT128 FltF60;
-      FLOAT128 FltF61;
-      FLOAT128 FltF62;
-      FLOAT128 FltF63;
-      FLOAT128 FltF64;
-      FLOAT128 FltF65;
-      FLOAT128 FltF66;
-      FLOAT128 FltF67;
-      FLOAT128 FltF68;
-      FLOAT128 FltF69;
-      FLOAT128 FltF70;
-      FLOAT128 FltF71;
-      FLOAT128 FltF72;
-      FLOAT128 FltF73;
-      FLOAT128 FltF74;
-      FLOAT128 FltF75;
-      FLOAT128 FltF76;
-      FLOAT128 FltF77;
-      FLOAT128 FltF78;
-      FLOAT128 FltF79;
-      FLOAT128 FltF80;
-      FLOAT128 FltF81;
-      FLOAT128 FltF82;
-      FLOAT128 FltF83;
-      FLOAT128 FltF84;
-      FLOAT128 FltF85;
-      FLOAT128 FltF86;
-      FLOAT128 FltF87;
-      FLOAT128 FltF88;
-      FLOAT128 FltF89;
-      FLOAT128 FltF90;
-      FLOAT128 FltF91;
-      FLOAT128 FltF92;
-      FLOAT128 FltF93;
-      FLOAT128 FltF94;
-      FLOAT128 FltF95;
-      FLOAT128 FltF96;
-      FLOAT128 FltF97;
-      FLOAT128 FltF98;
-      FLOAT128 FltF99;
-      FLOAT128 FltF100;
-      FLOAT128 FltF101;
-      FLOAT128 FltF102;
-      FLOAT128 FltF103;
-      FLOAT128 FltF104;
-      FLOAT128 FltF105;
-      FLOAT128 FltF106;
-      FLOAT128 FltF107;
-      FLOAT128 FltF108;
-      FLOAT128 FltF109;
-      FLOAT128 FltF110;
-      FLOAT128 FltF111;
-      FLOAT128 FltF112;
-      FLOAT128 FltF113;
-      FLOAT128 FltF114;
-      FLOAT128 FltF115;
-      FLOAT128 FltF116;
-      FLOAT128 FltF117;
-      FLOAT128 FltF118;
-      FLOAT128 FltF119;
-      FLOAT128 FltF120;
-      FLOAT128 FltF121;
-      FLOAT128 FltF122;
-      FLOAT128 FltF123;
-      FLOAT128 FltF124;
-      FLOAT128 FltF125;
-      FLOAT128 FltF126;
-      FLOAT128 FltF127;
-      ULONGLONG StFPSR;
-      ULONGLONG IntGp;
-      ULONGLONG IntT0;
-      ULONGLONG IntT1;
-      ULONGLONG IntS0;
-      ULONGLONG IntS1;
-      ULONGLONG IntS2;
-      ULONGLONG IntS3;
-      ULONGLONG IntV0;
-      ULONGLONG IntT2;
-      ULONGLONG IntT3;
-      ULONGLONG IntT4;
-      ULONGLONG IntSp;
-      ULONGLONG IntTeb;
-      ULONGLONG IntT5;
-      ULONGLONG IntT6;
-      ULONGLONG IntT7;
-      ULONGLONG IntT8;
-      ULONGLONG IntT9;
-      ULONGLONG IntT10;
-      ULONGLONG IntT11;
-      ULONGLONG IntT12;
-      ULONGLONG IntT13;
-      ULONGLONG IntT14;
-      ULONGLONG IntT15;
-      ULONGLONG IntT16;
-      ULONGLONG IntT17;
-      ULONGLONG IntT18;
-      ULONGLONG IntT19;
-      ULONGLONG IntT20;
-      ULONGLONG IntT21;
-      ULONGLONG IntT22;
-      ULONGLONG IntNats;
-      ULONGLONG Preds;
-      ULONGLONG BrRp;
-      ULONGLONG BrS0;
-      ULONGLONG BrS1;
-      ULONGLONG BrS2;
-      ULONGLONG BrS3;
-      ULONGLONG BrS4;
-      ULONGLONG BrT0;
-      ULONGLONG BrT1;
-      ULONGLONG ApUNAT;
-      ULONGLONG ApLC;
-      ULONGLONG ApEC;
-      ULONGLONG ApCCV;
-      ULONGLONG ApDCR;
-      ULONGLONG RsPFS;
-      ULONGLONG RsBSP;
-      ULONGLONG RsBSPSTORE;
-      ULONGLONG RsRSC;
-      ULONGLONG RsRNAT;
-      ULONGLONG StIPSR;
-      ULONGLONG StIIP;
-      ULONGLONG StIFS;
-      ULONGLONG StFCR;
-      ULONGLONG Eflag;
-      ULONGLONG SegCSD;
-      ULONGLONG SegSSD;
-      ULONGLONG Cflag;
-      ULONGLONG StFSR;
-      ULONGLONG StFIR;
-      ULONGLONG StFDR;
-      ULONGLONG UNUSEDPACK;
-    } CONTEXT,*PCONTEXT;
+typedef struct _CONTEXT
+{
+	DWORD ContextFlags;
+	DWORD Fill1[3];
+	ULONGLONG DbI0;
+	ULONGLONG DbI1;
+	ULONGLONG DbI2;
+	ULONGLONG DbI3;
+	ULONGLONG DbI4;
+	ULONGLONG DbI5;
+	ULONGLONG DbI6;
+	ULONGLONG DbI7;
+	ULONGLONG DbD0;
+	ULONGLONG DbD1;
+	ULONGLONG DbD2;
+	ULONGLONG DbD3;
+	ULONGLONG DbD4;
+	ULONGLONG DbD5;
+	ULONGLONG DbD6;
+	ULONGLONG DbD7;
+	FLOAT128 FltS0;
+	FLOAT128 FltS1;
+	FLOAT128 FltS2;
+	FLOAT128 FltS3;
+	FLOAT128 FltT0;
+	FLOAT128 FltT1;
+	FLOAT128 FltT2;
+	FLOAT128 FltT3;
+	FLOAT128 FltT4;
+	FLOAT128 FltT5;
+	FLOAT128 FltT6;
+	FLOAT128 FltT7;
+	FLOAT128 FltT8;
+	FLOAT128 FltT9;
+	FLOAT128 FltS4;
+	FLOAT128 FltS5;
+	FLOAT128 FltS6;
+	FLOAT128 FltS7;
+	FLOAT128 FltS8;
+	FLOAT128 FltS9;
+	FLOAT128 FltS10;
+	FLOAT128 FltS11;
+	FLOAT128 FltS12;
+	FLOAT128 FltS13;
+	FLOAT128 FltS14;
+	FLOAT128 FltS15;
+	FLOAT128 FltS16;
+	FLOAT128 FltS17;
+	FLOAT128 FltS18;
+	FLOAT128 FltS19;
+	FLOAT128 FltF32;
+	FLOAT128 FltF33;
+	FLOAT128 FltF34;
+	FLOAT128 FltF35;
+	FLOAT128 FltF36;
+	FLOAT128 FltF37;
+	FLOAT128 FltF38;
+	FLOAT128 FltF39;
+	FLOAT128 FltF40;
+	FLOAT128 FltF41;
+	FLOAT128 FltF42;
+	FLOAT128 FltF43;
+	FLOAT128 FltF44;
+	FLOAT128 FltF45;
+	FLOAT128 FltF46;
+	FLOAT128 FltF47;
+	FLOAT128 FltF48;
+	FLOAT128 FltF49;
+	FLOAT128 FltF50;
+	FLOAT128 FltF51;
+	FLOAT128 FltF52;
+	FLOAT128 FltF53;
+	FLOAT128 FltF54;
+	FLOAT128 FltF55;
+	FLOAT128 FltF56;
+	FLOAT128 FltF57;
+	FLOAT128 FltF58;
+	FLOAT128 FltF59;
+	FLOAT128 FltF60;
+	FLOAT128 FltF61;
+	FLOAT128 FltF62;
+	FLOAT128 FltF63;
+	FLOAT128 FltF64;
+	FLOAT128 FltF65;
+	FLOAT128 FltF66;
+	FLOAT128 FltF67;
+	FLOAT128 FltF68;
+	FLOAT128 FltF69;
+	FLOAT128 FltF70;
+	FLOAT128 FltF71;
+	FLOAT128 FltF72;
+	FLOAT128 FltF73;
+	FLOAT128 FltF74;
+	FLOAT128 FltF75;
+	FLOAT128 FltF76;
+	FLOAT128 FltF77;
+	FLOAT128 FltF78;
+	FLOAT128 FltF79;
+	FLOAT128 FltF80;
+	FLOAT128 FltF81;
+	FLOAT128 FltF82;
+	FLOAT128 FltF83;
+	FLOAT128 FltF84;
+	FLOAT128 FltF85;
+	FLOAT128 FltF86;
+	FLOAT128 FltF87;
+	FLOAT128 FltF88;
+	FLOAT128 FltF89;
+	FLOAT128 FltF90;
+	FLOAT128 FltF91;
+	FLOAT128 FltF92;
+	FLOAT128 FltF93;
+	FLOAT128 FltF94;
+	FLOAT128 FltF95;
+	FLOAT128 FltF96;
+	FLOAT128 FltF97;
+	FLOAT128 FltF98;
+	FLOAT128 FltF99;
+	FLOAT128 FltF100;
+	FLOAT128 FltF101;
+	FLOAT128 FltF102;
+	FLOAT128 FltF103;
+	FLOAT128 FltF104;
+	FLOAT128 FltF105;
+	FLOAT128 FltF106;
+	FLOAT128 FltF107;
+	FLOAT128 FltF108;
+	FLOAT128 FltF109;
+	FLOAT128 FltF110;
+	FLOAT128 FltF111;
+	FLOAT128 FltF112;
+	FLOAT128 FltF113;
+	FLOAT128 FltF114;
+	FLOAT128 FltF115;
+	FLOAT128 FltF116;
+	FLOAT128 FltF117;
+	FLOAT128 FltF118;
+	FLOAT128 FltF119;
+	FLOAT128 FltF120;
+	FLOAT128 FltF121;
+	FLOAT128 FltF122;
+	FLOAT128 FltF123;
+	FLOAT128 FltF124;
+	FLOAT128 FltF125;
+	FLOAT128 FltF126;
+	FLOAT128 FltF127;
+	ULONGLONG StFPSR;
+	ULONGLONG IntGp;
+	ULONGLONG IntT0;
+	ULONGLONG IntT1;
+	ULONGLONG IntS0;
+	ULONGLONG IntS1;
+	ULONGLONG IntS2;
+	ULONGLONG IntS3;
+	ULONGLONG IntV0;
+	ULONGLONG IntT2;
+	ULONGLONG IntT3;
+	ULONGLONG IntT4;
+	ULONGLONG IntSp;
+	ULONGLONG IntTeb;
+	ULONGLONG IntT5;
+	ULONGLONG IntT6;
+	ULONGLONG IntT7;
+	ULONGLONG IntT8;
+	ULONGLONG IntT9;
+	ULONGLONG IntT10;
+	ULONGLONG IntT11;
+	ULONGLONG IntT12;
+	ULONGLONG IntT13;
+	ULONGLONG IntT14;
+	ULONGLONG IntT15;
+	ULONGLONG IntT16;
+	ULONGLONG IntT17;
+	ULONGLONG IntT18;
+	ULONGLONG IntT19;
+	ULONGLONG IntT20;
+	ULONGLONG IntT21;
+	ULONGLONG IntT22;
+	ULONGLONG IntNats;
+	ULONGLONG Preds;
+	ULONGLONG BrRp;
+	ULONGLONG BrS0;
+	ULONGLONG BrS1;
+	ULONGLONG BrS2;
+	ULONGLONG BrS3;
+	ULONGLONG BrS4;
+	ULONGLONG BrT0;
+	ULONGLONG BrT1;
+	ULONGLONG ApUNAT;
+	ULONGLONG ApLC;
+	ULONGLONG ApEC;
+	ULONGLONG ApCCV;
+	ULONGLONG ApDCR;
+	ULONGLONG RsPFS;
+	ULONGLONG RsBSP;
+	ULONGLONG RsBSPSTORE;
+	ULONGLONG RsRSC;
+	ULONGLONG RsRNAT;
+	ULONGLONG StIPSR;
+	ULONGLONG StIIP;
+	ULONGLONG StIFS;
+	ULONGLONG StFCR;
+	ULONGLONG Eflag;
+	ULONGLONG SegCSD;
+	ULONGLONG SegSSD;
+	ULONGLONG Cflag;
+	ULONGLONG StFSR;
+	ULONGLONG StFIR;
+	ULONGLONG StFDR;
+	ULONGLONG UNUSEDPACK;
+} CONTEXT,*PCONTEXT;
 
-    typedef struct _PLABEL_DESCRIPTOR {
-      ULONGLONG EntryPoint;
-      ULONGLONG GlobalPointer;
-    } PLABEL_DESCRIPTOR,*PPLABEL_DESCRIPTOR;
+typedef struct _PLABEL_DESCRIPTOR
+{
+	ULONGLONG EntryPoint;
+	ULONGLONG GlobalPointer;
+} PLABEL_DESCRIPTOR,*PPLABEL_DESCRIPTOR;
 
-    typedef struct _RUNTIME_FUNCTION {
-      DWORD BeginAddress;
-      DWORD EndAddress;
-      DWORD UnwindInfoAddress;
-    } RUNTIME_FUNCTION,*PRUNTIME_FUNCTION;
+typedef struct _RUNTIME_FUNCTION
+{
+	DWORD BeginAddress;
+	DWORD EndAddress;
+	DWORD UnwindInfoAddress;
+} RUNTIME_FUNCTION,*PRUNTIME_FUNCTION;
 
-    typedef PRUNTIME_FUNCTION (*PGET_RUNTIME_FUNCTION_CALLBACK)(DWORD64 ControlPc,PVOID Context);
-    typedef DWORD (*POUT_OF_PROCESS_FUNCTION_TABLE_CALLBACK)(HANDLE Process,PVOID TableAddress,PDWORD Entries,PRUNTIME_FUNCTION *Functions);
+typedef PRUNTIME_FUNCTION (*PGET_RUNTIME_FUNCTION_CALLBACK)(DWORD64 ControlPc,PVOID Context);
+typedef DWORD (*POUT_OF_PROCESS_FUNCTION_TABLE_CALLBACK)(HANDLE Process,PVOID TableAddress,PDWORD Entries,PRUNTIME_FUNCTION *Functions);
 
 #define OUT_OF_PROCESS_FUNCTION_TABLE_CALLBACK_EXPORT_NAME "OutOfProcessFunctionTableCallback"
 
-    BOOLEAN RtlAddFunctionTable(PRUNTIME_FUNCTION FunctionTable,DWORD EntryCount,ULONGLONG BaseAddress,ULONGLONG TargetGp);
-    BOOLEAN RtlInstallFunctionTableCallback(DWORD64 TableIdentifier,DWORD64 BaseAddress,DWORD Length,DWORD64 TargetGp,PGET_RUNTIME_FUNCTION_CALLBACK Callback,PVOID Context,PCWSTR OutOfProcessCallbackDll);
-    BOOLEAN RtlDeleteFunctionTable(PRUNTIME_FUNCTION FunctionTable);
-    VOID RtlRestoreContext (PCONTEXT ContextRecord,struct _EXCEPTION_RECORD *ExceptionRecord);
-    VOID __jump_unwind(ULONGLONG TargetMsFrame,ULONGLONG TargetBsFrame,ULONGLONG TargetPc);
+BOOLEAN RtlAddFunctionTable(PRUNTIME_FUNCTION FunctionTable,DWORD EntryCount,ULONGLONG BaseAddress,ULONGLONG TargetGp);
+BOOLEAN RtlInstallFunctionTableCallback(DWORD64 TableIdentifier,DWORD64 BaseAddress,DWORD Length,DWORD64 TargetGp,PGET_RUNTIME_FUNCTION_CALLBACK Callback,PVOID Context,PCWSTR OutOfProcessCallbackDll);
+BOOLEAN RtlDeleteFunctionTable(PRUNTIME_FUNCTION FunctionTable);
+VOID RtlRestoreContext (PCONTEXT ContextRecord,struct _EXCEPTION_RECORD *ExceptionRecord);
+VOID __jump_unwind(ULONGLONG TargetMsFrame,ULONGLONG TargetBsFrame,ULONGLONG TargetPc);
 #endif
 
 #define EXCEPTION_NONCONTINUABLE 0x1
 #define EXCEPTION_MAXIMUM_PARAMETERS 15
 
-    typedef struct _EXCEPTION_RECORD {
-      DWORD ExceptionCode;
-      DWORD ExceptionFlags;
-      struct _EXCEPTION_RECORD *ExceptionRecord;
-      PVOID ExceptionAddress;
-      DWORD NumberParameters;
-      ULONG_PTR ExceptionInformation[EXCEPTION_MAXIMUM_PARAMETERS];
-    } EXCEPTION_RECORD;
+typedef struct _EXCEPTION_RECORD
+{
+	DWORD ExceptionCode;
+	DWORD ExceptionFlags;
+	struct _EXCEPTION_RECORD *ExceptionRecord;
+	PVOID ExceptionAddress;
+	DWORD NumberParameters;
+	ULONG_PTR ExceptionInformation[EXCEPTION_MAXIMUM_PARAMETERS];
+} EXCEPTION_RECORD;
 
-    typedef EXCEPTION_RECORD *PEXCEPTION_RECORD;
+typedef EXCEPTION_RECORD *PEXCEPTION_RECORD;
 
-    typedef struct _EXCEPTION_RECORD32 {
-      DWORD ExceptionCode;
-      DWORD ExceptionFlags;
-      DWORD ExceptionRecord;
-      DWORD ExceptionAddress;
-      DWORD NumberParameters;
-      DWORD ExceptionInformation[EXCEPTION_MAXIMUM_PARAMETERS];
-    } EXCEPTION_RECORD32,*PEXCEPTION_RECORD32;
+typedef struct _EXCEPTION_RECORD32
+{
+	DWORD ExceptionCode;
+	DWORD ExceptionFlags;
+	DWORD ExceptionRecord;
+	DWORD ExceptionAddress;
+	DWORD NumberParameters;
+	DWORD ExceptionInformation[EXCEPTION_MAXIMUM_PARAMETERS];
+} EXCEPTION_RECORD32,*PEXCEPTION_RECORD32;
 
-    typedef struct _EXCEPTION_RECORD64 {
-      DWORD ExceptionCode;
-      DWORD ExceptionFlags;
-      DWORD64 ExceptionRecord;
-      DWORD64 ExceptionAddress;
-      DWORD NumberParameters;
-      DWORD __unusedAlignment;
-      DWORD64 ExceptionInformation[EXCEPTION_MAXIMUM_PARAMETERS];
-    } EXCEPTION_RECORD64,*PEXCEPTION_RECORD64;
+typedef struct _EXCEPTION_RECORD64
+{
+	DWORD ExceptionCode;
+	DWORD ExceptionFlags;
+	DWORD64 ExceptionRecord;
+	DWORD64 ExceptionAddress;
+	DWORD NumberParameters;
+	DWORD __unusedAlignment;
+	DWORD64 ExceptionInformation[EXCEPTION_MAXIMUM_PARAMETERS];
+} EXCEPTION_RECORD64,*PEXCEPTION_RECORD64;
 
-    typedef struct _EXCEPTION_POINTERS {
-      PEXCEPTION_RECORD ExceptionRecord;
-      PCONTEXT ContextRecord;
-    } EXCEPTION_POINTERS,*PEXCEPTION_POINTERS;
+typedef struct _EXCEPTION_POINTERS
+{
+	PEXCEPTION_RECORD ExceptionRecord;
+	PCONTEXT ContextRecord;
+} EXCEPTION_POINTERS,*PEXCEPTION_POINTERS;
 
 #ifdef __x86_64
 
-    typedef EXCEPTION_DISPOSITION NTAPI EXCEPTION_ROUTINE (struct _EXCEPTION_RECORD *ExceptionRecord, PVOID EstablisherFrame, struct _CONTEXT *ContextRecord, PVOID DispatcherContext);
+typedef EXCEPTION_DISPOSITION NTAPI EXCEPTION_ROUTINE (struct _EXCEPTION_RECORD *ExceptionRecord, PVOID EstablisherFrame, struct _CONTEXT *ContextRecord, PVOID DispatcherContext);
 #ifndef __PEXCEPTION_ROUTINE_DEFINED
 #define __PEXCEPTION_ROUTINE_DEFINED
-    typedef EXCEPTION_ROUTINE *PEXCEPTION_ROUTINE;
+typedef EXCEPTION_ROUTINE *PEXCEPTION_ROUTINE;
 #endif
 
-    /* http://msdn.microsoft.com/en-us/library/ms680597(VS.85).aspx */
+/* http://msdn.microsoft.com/en-us/library/ms680597(VS.85).aspx */
 
 #define UNWIND_HISTORY_TABLE_SIZE 12
 
-  typedef struct _UNWIND_HISTORY_TABLE_ENTRY {
-    ULONG64 ImageBase;
-    PRUNTIME_FUNCTION FunctionEntry;
-  } UNWIND_HISTORY_TABLE_ENTRY, *PUNWIND_HISTORY_TABLE_ENTRY;
+typedef struct _UNWIND_HISTORY_TABLE_ENTRY
+{
+	ULONG64 ImageBase;
+	PRUNTIME_FUNCTION FunctionEntry;
+} UNWIND_HISTORY_TABLE_ENTRY, *PUNWIND_HISTORY_TABLE_ENTRY;
 
 #define UNWIND_HISTORY_TABLE_NONE    0
 #define UNWIND_HISTORY_TABLE_GLOBAL  1
 #define UNWIND_HISTORY_TABLE_LOCAL   2
 
-  typedef struct _UNWIND_HISTORY_TABLE {
-    ULONG Count;
-    UCHAR Search;
-    ULONG64 LowAddress;
-    ULONG64 HighAddress;
-    UNWIND_HISTORY_TABLE_ENTRY Entry[UNWIND_HISTORY_TABLE_SIZE];
-  } UNWIND_HISTORY_TABLE, *PUNWIND_HISTORY_TABLE;
+typedef struct _UNWIND_HISTORY_TABLE
+{
+	ULONG Count;
+	UCHAR Search;
+	ULONG64 LowAddress;
+	ULONG64 HighAddress;
+	UNWIND_HISTORY_TABLE_ENTRY Entry[UNWIND_HISTORY_TABLE_SIZE];
+} UNWIND_HISTORY_TABLE, *PUNWIND_HISTORY_TABLE;
 
-  /* http://msdn.microsoft.com/en-us/library/b6sf5kbd(VS.80).aspx */
+/* http://msdn.microsoft.com/en-us/library/b6sf5kbd(VS.80).aspx */
 
-  struct _DISPATCHER_CONTEXT;
-  typedef struct _DISPATCHER_CONTEXT DISPATCHER_CONTEXT;
-  typedef struct _DISPATCHER_CONTEXT *PDISPATCHER_CONTEXT;
+struct _DISPATCHER_CONTEXT;
+typedef struct _DISPATCHER_CONTEXT DISPATCHER_CONTEXT;
+typedef struct _DISPATCHER_CONTEXT *PDISPATCHER_CONTEXT;
 
-  struct _DISPATCHER_CONTEXT {
-    ULONG64 ControlPc;
-    ULONG64 ImageBase;
-    PRUNTIME_FUNCTION FunctionEntry;
-    ULONG64 EstablisherFrame;
-    ULONG64 TargetIp;
-    PCONTEXT ContextRecord;
-    PEXCEPTION_ROUTINE LanguageHandler;
-    PVOID HandlerData;
-    /* http://www.nynaeve.net/?p=99 */
-    PUNWIND_HISTORY_TABLE HistoryTable;
-    ULONG ScopeIndex;
-    ULONG Fill0;
-  };
+struct _DISPATCHER_CONTEXT
+{
+	ULONG64 ControlPc;
+	ULONG64 ImageBase;
+	PRUNTIME_FUNCTION FunctionEntry;
+	ULONG64 EstablisherFrame;
+	ULONG64 TargetIp;
+	PCONTEXT ContextRecord;
+	PEXCEPTION_ROUTINE LanguageHandler;
+	PVOID HandlerData;
+	/* http://www.nynaeve.net/?p=99 */
+	PUNWIND_HISTORY_TABLE HistoryTable;
+	ULONG ScopeIndex;
+	ULONG Fill0;
+};
 
-  /* http://msdn.microsoft.com/en-us/library/ms680617(VS.85).aspx */
+/* http://msdn.microsoft.com/en-us/library/ms680617(VS.85).aspx */
 
-  typedef struct _KNONVOLATILE_CONTEXT_POINTERS
-  {
-    PM128A FloatingContext[16];
-    PULONG64 IntegerContext[16];
-  } KNONVOLATILE_CONTEXT_POINTERS, *PKNONVOLATILE_CONTEXT_POINTERS;
+typedef struct _KNONVOLATILE_CONTEXT_POINTERS
+{
+	PM128A FloatingContext[16];
+	PULONG64 IntegerContext[16];
+} KNONVOLATILE_CONTEXT_POINTERS, *PKNONVOLATILE_CONTEXT_POINTERS;
 #endif /* defined(__x86_64) */
 
-    typedef PVOID PACCESS_TOKEN;
-    typedef PVOID PSECURITY_DESCRIPTOR;
-    typedef PVOID PSID;
+typedef PVOID PACCESS_TOKEN;
+typedef PVOID PSECURITY_DESCRIPTOR;
+typedef PVOID PSID;
 
-    typedef DWORD ACCESS_MASK;
-    typedef ACCESS_MASK *PACCESS_MASK;
+typedef DWORD ACCESS_MASK;
+typedef ACCESS_MASK *PACCESS_MASK;
 
 #define DELETE (0x00010000L)
 #define READ_CONTROL (0x00020000L)
@@ -2056,40 +2148,44 @@ typedef DWORD LCID;
 #define GENERIC_EXECUTE (0x20000000L)
 #define GENERIC_ALL (0x10000000L)
 
-    typedef struct _GENERIC_MAPPING {
-      ACCESS_MASK GenericRead;
-      ACCESS_MASK GenericWrite;
-      ACCESS_MASK GenericExecute;
-      ACCESS_MASK GenericAll;
-    } GENERIC_MAPPING;
-    typedef GENERIC_MAPPING *PGENERIC_MAPPING;
+typedef struct _GENERIC_MAPPING
+{
+	ACCESS_MASK GenericRead;
+	ACCESS_MASK GenericWrite;
+	ACCESS_MASK GenericExecute;
+	ACCESS_MASK GenericAll;
+} GENERIC_MAPPING;
+typedef GENERIC_MAPPING *PGENERIC_MAPPING;
 
 #include <pshpack4.h>
 
-    typedef struct _LUID_AND_ATTRIBUTES {
-      LUID Luid;
-      DWORD Attributes;
-    } LUID_AND_ATTRIBUTES,*PLUID_AND_ATTRIBUTES;
-    typedef LUID_AND_ATTRIBUTES LUID_AND_ATTRIBUTES_ARRAY[ANYSIZE_ARRAY];
-    typedef LUID_AND_ATTRIBUTES_ARRAY *PLUID_AND_ATTRIBUTES_ARRAY;
+typedef struct _LUID_AND_ATTRIBUTES
+{
+	LUID Luid;
+	DWORD Attributes;
+} LUID_AND_ATTRIBUTES,*PLUID_AND_ATTRIBUTES;
+typedef LUID_AND_ATTRIBUTES LUID_AND_ATTRIBUTES_ARRAY[ANYSIZE_ARRAY];
+typedef LUID_AND_ATTRIBUTES_ARRAY *PLUID_AND_ATTRIBUTES_ARRAY;
 
 #include <poppack.h>
 
 #ifndef SID_IDENTIFIER_AUTHORITY_DEFINED
 #define SID_IDENTIFIER_AUTHORITY_DEFINED
-    typedef struct _SID_IDENTIFIER_AUTHORITY {
-      BYTE Value[6];
-    } SID_IDENTIFIER_AUTHORITY,*PSID_IDENTIFIER_AUTHORITY;
+typedef struct _SID_IDENTIFIER_AUTHORITY
+{
+	BYTE Value[6];
+} SID_IDENTIFIER_AUTHORITY,*PSID_IDENTIFIER_AUTHORITY;
 #endif
 
 #ifndef SID_DEFINED
 #define SID_DEFINED
-    typedef struct _SID {
-      BYTE Revision;
-      BYTE SubAuthorityCount;
-      SID_IDENTIFIER_AUTHORITY IdentifierAuthority;
-      DWORD SubAuthority[ANYSIZE_ARRAY];
-    } SID,*PISID;
+typedef struct _SID
+{
+	BYTE Revision;
+	BYTE SubAuthorityCount;
+	SID_IDENTIFIER_AUTHORITY IdentifierAuthority;
+	DWORD SubAuthority[ANYSIZE_ARRAY];
+} SID,*PISID;
 #endif
 
 #define SID_REVISION (1)
@@ -2098,17 +2194,19 @@ typedef DWORD LCID;
 
 #define SECURITY_MAX_SID_SIZE (sizeof(SID) - sizeof(DWORD) + (SID_MAX_SUB_AUTHORITIES *sizeof(DWORD)))
 
-    typedef enum _SID_NAME_USE {
-      SidTypeUser = 1,SidTypeGroup,SidTypeDomain,SidTypeAlias,SidTypeWellKnownGroup,SidTypeDeletedAccount,SidTypeInvalid,SidTypeUnknown,SidTypeComputer
-    } SID_NAME_USE,*PSID_NAME_USE;
+typedef enum _SID_NAME_USE
+{
+	SidTypeUser = 1,SidTypeGroup,SidTypeDomain,SidTypeAlias,SidTypeWellKnownGroup,SidTypeDeletedAccount,SidTypeInvalid,SidTypeUnknown,SidTypeComputer
+} SID_NAME_USE,*PSID_NAME_USE;
 
-    typedef struct _SID_AND_ATTRIBUTES {
-      PSID Sid;
-      DWORD Attributes;
-    } SID_AND_ATTRIBUTES,*PSID_AND_ATTRIBUTES;
+typedef struct _SID_AND_ATTRIBUTES
+{
+	PSID Sid;
+	DWORD Attributes;
+} SID_AND_ATTRIBUTES,*PSID_AND_ATTRIBUTES;
 
-    typedef SID_AND_ATTRIBUTES SID_AND_ATTRIBUTES_ARRAY[ANYSIZE_ARRAY];
-    typedef SID_AND_ATTRIBUTES_ARRAY *PSID_AND_ATTRIBUTES_ARRAY;
+typedef SID_AND_ATTRIBUTES SID_AND_ATTRIBUTES_ARRAY[ANYSIZE_ARRAY];
+typedef SID_AND_ATTRIBUTES_ARRAY *PSID_AND_ATTRIBUTES_ARRAY;
 
 #define SECURITY_NULL_SID_AUTHORITY {0,0,0,0,0,0}
 #define SECURITY_WORLD_SID_AUTHORITY {0,0,0,0,0,1}
@@ -2236,9 +2334,10 @@ typedef DWORD LCID;
 
 #define MANDATORY_LEVEL_TO_MANDATORY_RID(IL) (IL * 0x1000)
 
-    typedef enum {
-      WinNullSid = 0,WinWorldSid = 1,WinLocalSid = 2,WinCreatorOwnerSid = 3,WinCreatorGroupSid = 4,WinCreatorOwnerServerSid = 5,WinCreatorGroupServerSid = 6,WinNtAuthoritySid = 7,WinDialupSid = 8,WinNetworkSid = 9,WinBatchSid = 10,WinInteractiveSid = 11,WinServiceSid = 12,WinAnonymousSid = 13,WinProxySid = 14,WinEnterpriseControllersSid = 15,WinSelfSid = 16,WinAuthenticatedUserSid = 17,WinRestrictedCodeSid = 18,WinTerminalServerSid = 19,WinRemoteLogonIdSid = 20,WinLogonIdsSid = 21,WinLocalSystemSid = 22,WinLocalServiceSid = 23,WinNetworkServiceSid = 24,WinBuiltinDomainSid = 25,WinBuiltinAdministratorsSid = 26,WinBuiltinUsersSid = 27,WinBuiltinGuestsSid = 28,WinBuiltinPowerUsersSid = 29,WinBuiltinAccountOperatorsSid = 30,WinBuiltinSystemOperatorsSid = 31,WinBuiltinPrintOperatorsSid = 32,WinBuiltinBackupOperatorsSid = 33,WinBuiltinReplicatorSid = 34,WinBuiltinPreWindows2000CompatibleAccessSid = 35,WinBuiltinRemoteDesktopUsersSid = 36,WinBuiltinNetworkConfigurationOperatorsSid = 37,WinAccountAdministratorSid = 38,WinAccountGuestSid = 39,WinAccountKrbtgtSid = 40,WinAccountDomainAdminsSid = 41,WinAccountDomainUsersSid = 42,WinAccountDomainGuestsSid = 43,WinAccountComputersSid = 44,WinAccountControllersSid = 45,WinAccountCertAdminsSid = 46,WinAccountSchemaAdminsSid = 47,WinAccountEnterpriseAdminsSid = 48,WinAccountPolicyAdminsSid = 49,WinAccountRasAndIasServersSid = 50,WinNTLMAuthenticationSid = 51,WinDigestAuthenticationSid = 52,WinSChannelAuthenticationSid = 53,WinThisOrganizationSid = 54,WinOtherOrganizationSid = 55,WinBuiltinIncomingForestTrustBuildersSid = 56,WinBuiltinPerfMonitoringUsersSid = 57,WinBuiltinPerfLoggingUsersSid = 58,WinBuiltinAuthorizationAccessSid = 59,WinBuiltinTerminalServerLicenseServersSid = 60,WinBuiltinDCOMUsersSid = 61
-    } WELL_KNOWN_SID_TYPE;
+typedef enum
+{
+	WinNullSid = 0,WinWorldSid = 1,WinLocalSid = 2,WinCreatorOwnerSid = 3,WinCreatorGroupSid = 4,WinCreatorOwnerServerSid = 5,WinCreatorGroupServerSid = 6,WinNtAuthoritySid = 7,WinDialupSid = 8,WinNetworkSid = 9,WinBatchSid = 10,WinInteractiveSid = 11,WinServiceSid = 12,WinAnonymousSid = 13,WinProxySid = 14,WinEnterpriseControllersSid = 15,WinSelfSid = 16,WinAuthenticatedUserSid = 17,WinRestrictedCodeSid = 18,WinTerminalServerSid = 19,WinRemoteLogonIdSid = 20,WinLogonIdsSid = 21,WinLocalSystemSid = 22,WinLocalServiceSid = 23,WinNetworkServiceSid = 24,WinBuiltinDomainSid = 25,WinBuiltinAdministratorsSid = 26,WinBuiltinUsersSid = 27,WinBuiltinGuestsSid = 28,WinBuiltinPowerUsersSid = 29,WinBuiltinAccountOperatorsSid = 30,WinBuiltinSystemOperatorsSid = 31,WinBuiltinPrintOperatorsSid = 32,WinBuiltinBackupOperatorsSid = 33,WinBuiltinReplicatorSid = 34,WinBuiltinPreWindows2000CompatibleAccessSid = 35,WinBuiltinRemoteDesktopUsersSid = 36,WinBuiltinNetworkConfigurationOperatorsSid = 37,WinAccountAdministratorSid = 38,WinAccountGuestSid = 39,WinAccountKrbtgtSid = 40,WinAccountDomainAdminsSid = 41,WinAccountDomainUsersSid = 42,WinAccountDomainGuestsSid = 43,WinAccountComputersSid = 44,WinAccountControllersSid = 45,WinAccountCertAdminsSid = 46,WinAccountSchemaAdminsSid = 47,WinAccountEnterpriseAdminsSid = 48,WinAccountPolicyAdminsSid = 49,WinAccountRasAndIasServersSid = 50,WinNTLMAuthenticationSid = 51,WinDigestAuthenticationSid = 52,WinSChannelAuthenticationSid = 53,WinThisOrganizationSid = 54,WinOtherOrganizationSid = 55,WinBuiltinIncomingForestTrustBuildersSid = 56,WinBuiltinPerfMonitoringUsersSid = 57,WinBuiltinPerfLoggingUsersSid = 58,WinBuiltinAuthorizationAccessSid = 59,WinBuiltinTerminalServerLicenseServersSid = 60,WinBuiltinDCOMUsersSid = 61
+} WELL_KNOWN_SID_TYPE;
 
 #define SYSTEM_LUID { 0x3E7,0x0 }
 #define ANONYMOUS_LOGON_LUID { 0x3e6,0x0 }
@@ -2266,21 +2365,23 @@ typedef DWORD LCID;
 #define ACL_REVISION4 (4)
 #define MAX_ACL_REVISION ACL_REVISION4
 
-    typedef struct _ACL {
-      BYTE AclRevision;
-      BYTE Sbz1;
-      WORD AclSize;
-      WORD AceCount;
-      WORD Sbz2;
-    } ACL;
-    typedef ACL *PACL;
+typedef struct _ACL
+{
+	BYTE AclRevision;
+	BYTE Sbz1;
+	WORD AclSize;
+	WORD AceCount;
+	WORD Sbz2;
+} ACL;
+typedef ACL *PACL;
 
-    typedef struct _ACE_HEADER {
-      BYTE AceType;
-      BYTE AceFlags;
-      WORD AceSize;
-    } ACE_HEADER;
-    typedef ACE_HEADER *PACE_HEADER;
+typedef struct _ACE_HEADER
+{
+	BYTE AceType;
+	BYTE AceFlags;
+	WORD AceSize;
+} ACE_HEADER;
+typedef ACE_HEADER *PACE_HEADER;
 
 #define ACCESS_MIN_MS_ACE_TYPE (0x0)
 #define ACCESS_ALLOWED_ACE_TYPE (0x0)
@@ -2324,164 +2425,183 @@ typedef DWORD LCID;
 #define SUCCESSFUL_ACCESS_ACE_FLAG (0x40)
 #define FAILED_ACCESS_ACE_FLAG (0x80)
 
-    typedef struct _ACCESS_ALLOWED_ACE {
-      ACE_HEADER Header;
-      ACCESS_MASK Mask;
-      DWORD SidStart;
-    } ACCESS_ALLOWED_ACE;
+typedef struct _ACCESS_ALLOWED_ACE
+{
+	ACE_HEADER Header;
+	ACCESS_MASK Mask;
+	DWORD SidStart;
+} ACCESS_ALLOWED_ACE;
 
-    typedef ACCESS_ALLOWED_ACE *PACCESS_ALLOWED_ACE;
+typedef ACCESS_ALLOWED_ACE *PACCESS_ALLOWED_ACE;
 
-    typedef struct _ACCESS_DENIED_ACE {
-      ACE_HEADER Header;
-      ACCESS_MASK Mask;
-      DWORD SidStart;
-    } ACCESS_DENIED_ACE;
-    typedef ACCESS_DENIED_ACE *PACCESS_DENIED_ACE;
+typedef struct _ACCESS_DENIED_ACE
+{
+	ACE_HEADER Header;
+	ACCESS_MASK Mask;
+	DWORD SidStart;
+} ACCESS_DENIED_ACE;
+typedef ACCESS_DENIED_ACE *PACCESS_DENIED_ACE;
 
-    typedef struct _SYSTEM_AUDIT_ACE {
-      ACE_HEADER Header;
-      ACCESS_MASK Mask;
-      DWORD SidStart;
-    } SYSTEM_AUDIT_ACE;
-    typedef SYSTEM_AUDIT_ACE *PSYSTEM_AUDIT_ACE;
+typedef struct _SYSTEM_AUDIT_ACE
+{
+	ACE_HEADER Header;
+	ACCESS_MASK Mask;
+	DWORD SidStart;
+} SYSTEM_AUDIT_ACE;
+typedef SYSTEM_AUDIT_ACE *PSYSTEM_AUDIT_ACE;
 
-    typedef struct _SYSTEM_ALARM_ACE {
-      ACE_HEADER Header;
-      ACCESS_MASK Mask;
-      DWORD SidStart;
-    } SYSTEM_ALARM_ACE;
-    typedef SYSTEM_ALARM_ACE *PSYSTEM_ALARM_ACE;
+typedef struct _SYSTEM_ALARM_ACE
+{
+	ACE_HEADER Header;
+	ACCESS_MASK Mask;
+	DWORD SidStart;
+} SYSTEM_ALARM_ACE;
+typedef SYSTEM_ALARM_ACE *PSYSTEM_ALARM_ACE;
 
-    typedef struct _ACCESS_ALLOWED_OBJECT_ACE {
-      ACE_HEADER Header;
-      ACCESS_MASK Mask;
-      DWORD Flags;
-      GUID ObjectType;
-      GUID InheritedObjectType;
-      DWORD SidStart;
-    } ACCESS_ALLOWED_OBJECT_ACE,*PACCESS_ALLOWED_OBJECT_ACE;
+typedef struct _ACCESS_ALLOWED_OBJECT_ACE
+{
+	ACE_HEADER Header;
+	ACCESS_MASK Mask;
+	DWORD Flags;
+	GUID ObjectType;
+	GUID InheritedObjectType;
+	DWORD SidStart;
+} ACCESS_ALLOWED_OBJECT_ACE,*PACCESS_ALLOWED_OBJECT_ACE;
 
-    typedef struct _ACCESS_DENIED_OBJECT_ACE {
-      ACE_HEADER Header;
-      ACCESS_MASK Mask;
-      DWORD Flags;
-      GUID ObjectType;
-      GUID InheritedObjectType;
-      DWORD SidStart;
-    } ACCESS_DENIED_OBJECT_ACE,*PACCESS_DENIED_OBJECT_ACE;
+typedef struct _ACCESS_DENIED_OBJECT_ACE
+{
+	ACE_HEADER Header;
+	ACCESS_MASK Mask;
+	DWORD Flags;
+	GUID ObjectType;
+	GUID InheritedObjectType;
+	DWORD SidStart;
+} ACCESS_DENIED_OBJECT_ACE,*PACCESS_DENIED_OBJECT_ACE;
 
-    typedef struct _SYSTEM_AUDIT_OBJECT_ACE {
-      ACE_HEADER Header;
-      ACCESS_MASK Mask;
-      DWORD Flags;
-      GUID ObjectType;
-      GUID InheritedObjectType;
-      DWORD SidStart;
-    } SYSTEM_AUDIT_OBJECT_ACE,*PSYSTEM_AUDIT_OBJECT_ACE;
+typedef struct _SYSTEM_AUDIT_OBJECT_ACE
+{
+	ACE_HEADER Header;
+	ACCESS_MASK Mask;
+	DWORD Flags;
+	GUID ObjectType;
+	GUID InheritedObjectType;
+	DWORD SidStart;
+} SYSTEM_AUDIT_OBJECT_ACE,*PSYSTEM_AUDIT_OBJECT_ACE;
 
-    typedef struct _SYSTEM_ALARM_OBJECT_ACE {
-      ACE_HEADER Header;
-      ACCESS_MASK Mask;
-      DWORD Flags;
-      GUID ObjectType;
-      GUID InheritedObjectType;
-      DWORD SidStart;
-    } SYSTEM_ALARM_OBJECT_ACE,*PSYSTEM_ALARM_OBJECT_ACE;
+typedef struct _SYSTEM_ALARM_OBJECT_ACE
+{
+	ACE_HEADER Header;
+	ACCESS_MASK Mask;
+	DWORD Flags;
+	GUID ObjectType;
+	GUID InheritedObjectType;
+	DWORD SidStart;
+} SYSTEM_ALARM_OBJECT_ACE,*PSYSTEM_ALARM_OBJECT_ACE;
 
-    typedef struct _ACCESS_ALLOWED_CALLBACK_ACE {
-      ACE_HEADER Header;
-      ACCESS_MASK Mask;
-      DWORD SidStart;
+typedef struct _ACCESS_ALLOWED_CALLBACK_ACE
+{
+	ACE_HEADER Header;
+	ACCESS_MASK Mask;
+	DWORD SidStart;
 
-    } ACCESS_ALLOWED_CALLBACK_ACE,*PACCESS_ALLOWED_CALLBACK_ACE;
+} ACCESS_ALLOWED_CALLBACK_ACE,*PACCESS_ALLOWED_CALLBACK_ACE;
 
-    typedef struct _ACCESS_DENIED_CALLBACK_ACE {
-      ACE_HEADER Header;
-      ACCESS_MASK Mask;
-      DWORD SidStart;
+typedef struct _ACCESS_DENIED_CALLBACK_ACE
+{
+	ACE_HEADER Header;
+	ACCESS_MASK Mask;
+	DWORD SidStart;
 
-    } ACCESS_DENIED_CALLBACK_ACE,*PACCESS_DENIED_CALLBACK_ACE;
+} ACCESS_DENIED_CALLBACK_ACE,*PACCESS_DENIED_CALLBACK_ACE;
 
-    typedef struct _SYSTEM_AUDIT_CALLBACK_ACE {
-      ACE_HEADER Header;
-      ACCESS_MASK Mask;
-      DWORD SidStart;
+typedef struct _SYSTEM_AUDIT_CALLBACK_ACE
+{
+	ACE_HEADER Header;
+	ACCESS_MASK Mask;
+	DWORD SidStart;
 
-    } SYSTEM_AUDIT_CALLBACK_ACE,*PSYSTEM_AUDIT_CALLBACK_ACE;
+} SYSTEM_AUDIT_CALLBACK_ACE,*PSYSTEM_AUDIT_CALLBACK_ACE;
 
-    typedef struct _SYSTEM_ALARM_CALLBACK_ACE {
-      ACE_HEADER Header;
-      ACCESS_MASK Mask;
-      DWORD SidStart;
+typedef struct _SYSTEM_ALARM_CALLBACK_ACE
+{
+	ACE_HEADER Header;
+	ACCESS_MASK Mask;
+	DWORD SidStart;
 
-    } SYSTEM_ALARM_CALLBACK_ACE,*PSYSTEM_ALARM_CALLBACK_ACE;
+} SYSTEM_ALARM_CALLBACK_ACE,*PSYSTEM_ALARM_CALLBACK_ACE;
 
-    typedef struct _ACCESS_ALLOWED_CALLBACK_OBJECT_ACE {
-      ACE_HEADER Header;
-      ACCESS_MASK Mask;
-      DWORD Flags;
-      GUID ObjectType;
-      GUID InheritedObjectType;
-      DWORD SidStart;
+typedef struct _ACCESS_ALLOWED_CALLBACK_OBJECT_ACE
+{
+	ACE_HEADER Header;
+	ACCESS_MASK Mask;
+	DWORD Flags;
+	GUID ObjectType;
+	GUID InheritedObjectType;
+	DWORD SidStart;
 
-    } ACCESS_ALLOWED_CALLBACK_OBJECT_ACE,*PACCESS_ALLOWED_CALLBACK_OBJECT_ACE;
+} ACCESS_ALLOWED_CALLBACK_OBJECT_ACE,*PACCESS_ALLOWED_CALLBACK_OBJECT_ACE;
 
-    typedef struct _ACCESS_DENIED_CALLBACK_OBJECT_ACE {
-      ACE_HEADER Header;
-      ACCESS_MASK Mask;
-      DWORD Flags;
-      GUID ObjectType;
-      GUID InheritedObjectType;
-      DWORD SidStart;
+typedef struct _ACCESS_DENIED_CALLBACK_OBJECT_ACE
+{
+	ACE_HEADER Header;
+	ACCESS_MASK Mask;
+	DWORD Flags;
+	GUID ObjectType;
+	GUID InheritedObjectType;
+	DWORD SidStart;
 
-    } ACCESS_DENIED_CALLBACK_OBJECT_ACE,*PACCESS_DENIED_CALLBACK_OBJECT_ACE;
+} ACCESS_DENIED_CALLBACK_OBJECT_ACE,*PACCESS_DENIED_CALLBACK_OBJECT_ACE;
 
-    typedef struct _SYSTEM_AUDIT_CALLBACK_OBJECT_ACE {
-      ACE_HEADER Header;
-      ACCESS_MASK Mask;
-      DWORD Flags;
-      GUID ObjectType;
-      GUID InheritedObjectType;
-      DWORD SidStart;
+typedef struct _SYSTEM_AUDIT_CALLBACK_OBJECT_ACE
+{
+	ACE_HEADER Header;
+	ACCESS_MASK Mask;
+	DWORD Flags;
+	GUID ObjectType;
+	GUID InheritedObjectType;
+	DWORD SidStart;
 
-    } SYSTEM_AUDIT_CALLBACK_OBJECT_ACE,*PSYSTEM_AUDIT_CALLBACK_OBJECT_ACE;
+} SYSTEM_AUDIT_CALLBACK_OBJECT_ACE,*PSYSTEM_AUDIT_CALLBACK_OBJECT_ACE;
 
-    typedef struct _SYSTEM_ALARM_CALLBACK_OBJECT_ACE {
-      ACE_HEADER Header;
-      ACCESS_MASK Mask;
-      DWORD Flags;
-      GUID ObjectType;
-      GUID InheritedObjectType;
-      DWORD SidStart;
+typedef struct _SYSTEM_ALARM_CALLBACK_OBJECT_ACE
+{
+	ACE_HEADER Header;
+	ACCESS_MASK Mask;
+	DWORD Flags;
+	GUID ObjectType;
+	GUID InheritedObjectType;
+	DWORD SidStart;
 
-    } SYSTEM_ALARM_CALLBACK_OBJECT_ACE,*PSYSTEM_ALARM_CALLBACK_OBJECT_ACE;
+} SYSTEM_ALARM_CALLBACK_OBJECT_ACE,*PSYSTEM_ALARM_CALLBACK_OBJECT_ACE;
 
 #define ACE_OBJECT_TYPE_PRESENT 0x1
 #define ACE_INHERITED_OBJECT_TYPE_PRESENT 0x2
 
-    typedef enum _ACL_INFORMATION_CLASS {
-      AclRevisionInformation = 1,AclSizeInformation
-    } ACL_INFORMATION_CLASS;
+typedef enum _ACL_INFORMATION_CLASS
+{
+	AclRevisionInformation = 1,AclSizeInformation
+} ACL_INFORMATION_CLASS;
 
-    typedef struct _ACL_REVISION_INFORMATION {
-      DWORD AclRevision;
-    } ACL_REVISION_INFORMATION;
-    typedef ACL_REVISION_INFORMATION *PACL_REVISION_INFORMATION;
+typedef struct _ACL_REVISION_INFORMATION
+{
+	DWORD AclRevision;
+} ACL_REVISION_INFORMATION;
+typedef ACL_REVISION_INFORMATION *PACL_REVISION_INFORMATION;
 
-    typedef struct _ACL_SIZE_INFORMATION {
-      DWORD AceCount;
-      DWORD AclBytesInUse;
-      DWORD AclBytesFree;
-    } ACL_SIZE_INFORMATION;
-    typedef ACL_SIZE_INFORMATION *PACL_SIZE_INFORMATION;
+typedef struct _ACL_SIZE_INFORMATION
+{
+	DWORD AceCount;
+	DWORD AclBytesInUse;
+	DWORD AclBytesFree;
+} ACL_SIZE_INFORMATION;
+typedef ACL_SIZE_INFORMATION *PACL_SIZE_INFORMATION;
 
 #define SECURITY_DESCRIPTOR_REVISION (1)
 #define SECURITY_DESCRIPTOR_REVISION1 (1)
 
 #define SECURITY_DESCRIPTOR_MIN_LENGTH (sizeof(SECURITY_DESCRIPTOR))
 
-    typedef WORD SECURITY_DESCRIPTOR_CONTROL,*PSECURITY_DESCRIPTOR_CONTROL;
+typedef WORD SECURITY_DESCRIPTOR_CONTROL,*PSECURITY_DESCRIPTOR_CONTROL;
 
 #define SE_OWNER_DEFAULTED (0x0001)
 #define SE_GROUP_DEFAULTED (0x0002)
@@ -2498,32 +2618,35 @@ typedef DWORD LCID;
 #define SE_RM_CONTROL_VALID (0x4000)
 #define SE_SELF_RELATIVE (0x8000)
 
-    typedef struct _SECURITY_DESCRIPTOR_RELATIVE {
-      BYTE Revision;
-      BYTE Sbz1;
-      SECURITY_DESCRIPTOR_CONTROL Control;
-      DWORD Owner;
-      DWORD Group;
-      DWORD Sacl;
-      DWORD Dacl;
-    } SECURITY_DESCRIPTOR_RELATIVE,*PISECURITY_DESCRIPTOR_RELATIVE;
+typedef struct _SECURITY_DESCRIPTOR_RELATIVE
+{
+	BYTE Revision;
+	BYTE Sbz1;
+	SECURITY_DESCRIPTOR_CONTROL Control;
+	DWORD Owner;
+	DWORD Group;
+	DWORD Sacl;
+	DWORD Dacl;
+} SECURITY_DESCRIPTOR_RELATIVE,*PISECURITY_DESCRIPTOR_RELATIVE;
 
-    typedef struct _SECURITY_DESCRIPTOR {
-      BYTE Revision;
-      BYTE Sbz1;
-      SECURITY_DESCRIPTOR_CONTROL Control;
-      PSID Owner;
-      PSID Group;
-      PACL Sacl;
-      PACL Dacl;
+typedef struct _SECURITY_DESCRIPTOR
+{
+	BYTE Revision;
+	BYTE Sbz1;
+	SECURITY_DESCRIPTOR_CONTROL Control;
+	PSID Owner;
+	PSID Group;
+	PACL Sacl;
+	PACL Dacl;
 
-    } SECURITY_DESCRIPTOR,*PISECURITY_DESCRIPTOR;
+} SECURITY_DESCRIPTOR,*PISECURITY_DESCRIPTOR;
 
-    typedef struct _OBJECT_TYPE_LIST {
-      WORD Level;
-      WORD Sbz;
-      GUID *ObjectType;
-    } OBJECT_TYPE_LIST,*POBJECT_TYPE_LIST;
+typedef struct _OBJECT_TYPE_LIST
+{
+	WORD Level;
+	WORD Sbz;
+	GUID *ObjectType;
+} OBJECT_TYPE_LIST,*POBJECT_TYPE_LIST;
 
 #define ACCESS_OBJECT_GUID 0
 #define ACCESS_PROPERTY_SET_GUID 1
@@ -2531,9 +2654,10 @@ typedef DWORD LCID;
 
 #define ACCESS_MAX_LEVEL 4
 
-    typedef enum _AUDIT_EVENT_TYPE {
-      AuditEventObjectAccess,AuditEventDirectoryServiceAccess
-    } AUDIT_EVENT_TYPE,*PAUDIT_EVENT_TYPE;
+typedef enum _AUDIT_EVENT_TYPE
+{
+	AuditEventObjectAccess,AuditEventDirectoryServiceAccess
+} AUDIT_EVENT_TYPE,*PAUDIT_EVENT_TYPE;
 
 #define AUDIT_ALLOW_NO_PRIVILEGE 0x1
 
@@ -2549,11 +2673,12 @@ typedef DWORD LCID;
 
 #define PRIVILEGE_SET_ALL_NECESSARY (1)
 
-    typedef struct _PRIVILEGE_SET {
-      DWORD PrivilegeCount;
-      DWORD Control;
-      LUID_AND_ATTRIBUTES Privilege[ANYSIZE_ARRAY];
-    } PRIVILEGE_SET,*PPRIVILEGE_SET;
+typedef struct _PRIVILEGE_SET
+{
+	DWORD PrivilegeCount;
+	DWORD Control;
+	LUID_AND_ATTRIBUTES Privilege[ANYSIZE_ARRAY];
+} PRIVILEGE_SET,*PPRIVILEGE_SET;
 
 #define SE_CREATE_TOKEN_NAME TEXT("SeCreateTokenPrivilege")
 #define SE_ASSIGNPRIMARYTOKEN_NAME TEXT("SeAssignPrimaryTokenPrivilege")
@@ -2586,9 +2711,10 @@ typedef DWORD LCID;
 #define SE_IMPERSONATE_NAME TEXT("SeImpersonatePrivilege")
 #define SE_CREATE_GLOBAL_NAME TEXT("SeCreateGlobalPrivilege")
 
-    typedef enum _SECURITY_IMPERSONATION_LEVEL {
-      SecurityAnonymous,SecurityIdentification,SecurityImpersonation,SecurityDelegation
-    } SECURITY_IMPERSONATION_LEVEL,*PSECURITY_IMPERSONATION_LEVEL;
+typedef enum _SECURITY_IMPERSONATION_LEVEL
+{
+	SecurityAnonymous,SecurityIdentification,SecurityImpersonation,SecurityDelegation
+} SECURITY_IMPERSONATION_LEVEL,*PSECURITY_IMPERSONATION_LEVEL;
 
 #define SECURITY_MAX_IMPERSONATION_LEVEL SecurityDelegation
 #define SECURITY_MIN_IMPERSONATION_LEVEL SecurityAnonymous
@@ -2613,55 +2739,64 @@ typedef DWORD LCID;
 
 #define TOKEN_EXECUTE (STANDARD_RIGHTS_EXECUTE)
 
-    typedef enum _TOKEN_TYPE {
-      TokenPrimary = 1,TokenImpersonation
-    } TOKEN_TYPE;
-    typedef TOKEN_TYPE *PTOKEN_TYPE;
+typedef enum _TOKEN_TYPE
+{
+	TokenPrimary = 1,TokenImpersonation
+} TOKEN_TYPE;
+typedef TOKEN_TYPE *PTOKEN_TYPE;
 
-    typedef enum _TOKEN_INFORMATION_CLASS {
-      TokenUser = 1,TokenGroups,TokenPrivileges,TokenOwner,TokenPrimaryGroup,TokenDefaultDacl,TokenSource,TokenType,TokenImpersonationLevel,
-      TokenStatistics,TokenRestrictedSids,TokenSessionId,TokenGroupsAndPrivileges,TokenSessionReference,TokenSandBoxInert,TokenAuditPolicy,
-      TokenOrigin,MaxTokenInfoClass
-    } TOKEN_INFORMATION_CLASS,*PTOKEN_INFORMATION_CLASS;
+typedef enum _TOKEN_INFORMATION_CLASS
+{
+	TokenUser = 1,TokenGroups,TokenPrivileges,TokenOwner,TokenPrimaryGroup,TokenDefaultDacl,TokenSource,TokenType,TokenImpersonationLevel,
+	TokenStatistics,TokenRestrictedSids,TokenSessionId,TokenGroupsAndPrivileges,TokenSessionReference,TokenSandBoxInert,TokenAuditPolicy,
+	TokenOrigin,MaxTokenInfoClass
+} TOKEN_INFORMATION_CLASS,*PTOKEN_INFORMATION_CLASS;
 
-    typedef struct _TOKEN_USER {
-      SID_AND_ATTRIBUTES User;
-    } TOKEN_USER,*PTOKEN_USER;
+typedef struct _TOKEN_USER
+{
+	SID_AND_ATTRIBUTES User;
+} TOKEN_USER,*PTOKEN_USER;
 
-    typedef struct _TOKEN_GROUPS {
-      DWORD GroupCount;
-      SID_AND_ATTRIBUTES Groups[ANYSIZE_ARRAY];
-    } TOKEN_GROUPS,*PTOKEN_GROUPS;
+typedef struct _TOKEN_GROUPS
+{
+	DWORD GroupCount;
+	SID_AND_ATTRIBUTES Groups[ANYSIZE_ARRAY];
+} TOKEN_GROUPS,*PTOKEN_GROUPS;
 
-    typedef struct _TOKEN_PRIVILEGES {
-      DWORD PrivilegeCount;
-      LUID_AND_ATTRIBUTES Privileges[ANYSIZE_ARRAY];
-    } TOKEN_PRIVILEGES,*PTOKEN_PRIVILEGES;
+typedef struct _TOKEN_PRIVILEGES
+{
+	DWORD PrivilegeCount;
+	LUID_AND_ATTRIBUTES Privileges[ANYSIZE_ARRAY];
+} TOKEN_PRIVILEGES,*PTOKEN_PRIVILEGES;
 
-    typedef struct _TOKEN_OWNER {
-      PSID Owner;
-    } TOKEN_OWNER,*PTOKEN_OWNER;
+typedef struct _TOKEN_OWNER
+{
+	PSID Owner;
+} TOKEN_OWNER,*PTOKEN_OWNER;
 
-    typedef struct _TOKEN_PRIMARY_GROUP {
-      PSID PrimaryGroup;
-    } TOKEN_PRIMARY_GROUP,*PTOKEN_PRIMARY_GROUP;
+typedef struct _TOKEN_PRIMARY_GROUP
+{
+	PSID PrimaryGroup;
+} TOKEN_PRIMARY_GROUP,*PTOKEN_PRIMARY_GROUP;
 
-    typedef struct _TOKEN_DEFAULT_DACL {
-      PACL DefaultDacl;
-    } TOKEN_DEFAULT_DACL,*PTOKEN_DEFAULT_DACL;
+typedef struct _TOKEN_DEFAULT_DACL
+{
+	PACL DefaultDacl;
+} TOKEN_DEFAULT_DACL,*PTOKEN_DEFAULT_DACL;
 
-    typedef struct _TOKEN_GROUPS_AND_PRIVILEGES {
-      DWORD SidCount;
-      DWORD SidLength;
-      PSID_AND_ATTRIBUTES Sids;
-      DWORD RestrictedSidCount;
-      DWORD RestrictedSidLength;
-      PSID_AND_ATTRIBUTES RestrictedSids;
-      DWORD PrivilegeCount;
-      DWORD PrivilegeLength;
-      PLUID_AND_ATTRIBUTES Privileges;
-      LUID AuthenticationId;
-    } TOKEN_GROUPS_AND_PRIVILEGES,*PTOKEN_GROUPS_AND_PRIVILEGES;
+typedef struct _TOKEN_GROUPS_AND_PRIVILEGES
+{
+	DWORD SidCount;
+	DWORD SidLength;
+	PSID_AND_ATTRIBUTES Sids;
+	DWORD RestrictedSidCount;
+	DWORD RestrictedSidLength;
+	PSID_AND_ATTRIBUTES RestrictedSids;
+	DWORD PrivilegeCount;
+	DWORD PrivilegeLength;
+	PLUID_AND_ATTRIBUTES Privileges;
+	LUID AuthenticationId;
+} TOKEN_GROUPS_AND_PRIVILEGES,*PTOKEN_GROUPS_AND_PRIVILEGES;
 
 #define TOKEN_AUDIT_SUCCESS_INCLUDE 0x1
 #define TOKEN_AUDIT_SUCCESS_EXCLUDE 0x2
@@ -2671,73 +2806,81 @@ typedef DWORD LCID;
 #define VALID_AUDIT_POLICY_BITS (TOKEN_AUDIT_SUCCESS_INCLUDE | TOKEN_AUDIT_SUCCESS_EXCLUDE | TOKEN_AUDIT_FAILURE_INCLUDE | TOKEN_AUDIT_FAILURE_EXCLUDE)
 #define VALID_TOKEN_AUDIT_POLICY_ELEMENT(P) ((((P).PolicyMask & ~VALID_AUDIT_POLICY_BITS)==0) && ((P).Category <= AuditEventMaxType))
 
-    typedef struct _TOKEN_AUDIT_POLICY_ELEMENT {
-      DWORD Category;
-      DWORD PolicyMask;
-    } TOKEN_AUDIT_POLICY_ELEMENT,*PTOKEN_AUDIT_POLICY_ELEMENT;
+typedef struct _TOKEN_AUDIT_POLICY_ELEMENT
+{
+	DWORD Category;
+	DWORD PolicyMask;
+} TOKEN_AUDIT_POLICY_ELEMENT,*PTOKEN_AUDIT_POLICY_ELEMENT;
 
-    typedef struct _TOKEN_AUDIT_POLICY {
-      DWORD PolicyCount;
-      TOKEN_AUDIT_POLICY_ELEMENT Policy[ANYSIZE_ARRAY];
-    } TOKEN_AUDIT_POLICY,*PTOKEN_AUDIT_POLICY;
+typedef struct _TOKEN_AUDIT_POLICY
+{
+	DWORD PolicyCount;
+	TOKEN_AUDIT_POLICY_ELEMENT Policy[ANYSIZE_ARRAY];
+} TOKEN_AUDIT_POLICY,*PTOKEN_AUDIT_POLICY;
 
 #define PER_USER_AUDITING_POLICY_SIZE(p) (sizeof(TOKEN_AUDIT_POLICY) + (((p)->PolicyCount > ANYSIZE_ARRAY) ? (sizeof(TOKEN_AUDIT_POLICY_ELEMENT) *((p)->PolicyCount - ANYSIZE_ARRAY)) : 0))
 #define PER_USER_AUDITING_POLICY_SIZE_BY_COUNT(C) (sizeof(TOKEN_AUDIT_POLICY) + (((C) > ANYSIZE_ARRAY) ? (sizeof(TOKEN_AUDIT_POLICY_ELEMENT) *((C) - ANYSIZE_ARRAY)) : 0))
 
 #define TOKEN_SOURCE_LENGTH 8
 
-    typedef struct _TOKEN_SOURCE {
-      CHAR SourceName[TOKEN_SOURCE_LENGTH];
-      LUID SourceIdentifier;
-    } TOKEN_SOURCE,*PTOKEN_SOURCE;
+typedef struct _TOKEN_SOURCE
+{
+	CHAR SourceName[TOKEN_SOURCE_LENGTH];
+	LUID SourceIdentifier;
+} TOKEN_SOURCE,*PTOKEN_SOURCE;
 
-    typedef struct _TOKEN_STATISTICS {
-      LUID TokenId;
-      LUID AuthenticationId;
-      LARGE_INTEGER ExpirationTime;
-      TOKEN_TYPE TokenType;
-      SECURITY_IMPERSONATION_LEVEL ImpersonationLevel;
-      DWORD DynamicCharged;
-      DWORD DynamicAvailable;
-      DWORD GroupCount;
-      DWORD PrivilegeCount;
-      LUID ModifiedId;
-    } TOKEN_STATISTICS,*PTOKEN_STATISTICS;
+typedef struct _TOKEN_STATISTICS
+{
+	LUID TokenId;
+	LUID AuthenticationId;
+	LARGE_INTEGER ExpirationTime;
+	TOKEN_TYPE TokenType;
+	SECURITY_IMPERSONATION_LEVEL ImpersonationLevel;
+	DWORD DynamicCharged;
+	DWORD DynamicAvailable;
+	DWORD GroupCount;
+	DWORD PrivilegeCount;
+	LUID ModifiedId;
+} TOKEN_STATISTICS,*PTOKEN_STATISTICS;
 
-    typedef struct _TOKEN_CONTROL {
-      LUID TokenId;
-      LUID AuthenticationId;
-      LUID ModifiedId;
-      TOKEN_SOURCE TokenSource;
-    } TOKEN_CONTROL,*PTOKEN_CONTROL;
+typedef struct _TOKEN_CONTROL
+{
+	LUID TokenId;
+	LUID AuthenticationId;
+	LUID ModifiedId;
+	TOKEN_SOURCE TokenSource;
+} TOKEN_CONTROL,*PTOKEN_CONTROL;
 
-    typedef struct _TOKEN_ORIGIN {
-      LUID OriginatingLogonSession;
-    } TOKEN_ORIGIN,*PTOKEN_ORIGIN;
+typedef struct _TOKEN_ORIGIN
+{
+	LUID OriginatingLogonSession;
+} TOKEN_ORIGIN,*PTOKEN_ORIGIN;
 
 #define SECURITY_DYNAMIC_TRACKING (TRUE)
 #define SECURITY_STATIC_TRACKING (FALSE)
 
-    typedef BOOLEAN SECURITY_CONTEXT_TRACKING_MODE,*PSECURITY_CONTEXT_TRACKING_MODE;
+typedef BOOLEAN SECURITY_CONTEXT_TRACKING_MODE,*PSECURITY_CONTEXT_TRACKING_MODE;
 
-    typedef struct _SECURITY_QUALITY_OF_SERVICE {
-      DWORD Length;
-      SECURITY_IMPERSONATION_LEVEL ImpersonationLevel;
-      SECURITY_CONTEXT_TRACKING_MODE ContextTrackingMode;
-      BOOLEAN EffectiveOnly;
-    } SECURITY_QUALITY_OF_SERVICE,*PSECURITY_QUALITY_OF_SERVICE;
+typedef struct _SECURITY_QUALITY_OF_SERVICE
+{
+	DWORD Length;
+	SECURITY_IMPERSONATION_LEVEL ImpersonationLevel;
+	SECURITY_CONTEXT_TRACKING_MODE ContextTrackingMode;
+	BOOLEAN EffectiveOnly;
+} SECURITY_QUALITY_OF_SERVICE,*PSECURITY_QUALITY_OF_SERVICE;
 
-    typedef struct _SE_IMPERSONATION_STATE {
-      PACCESS_TOKEN Token;
-      BOOLEAN CopyOnOpen;
-      BOOLEAN EffectiveOnly;
-      SECURITY_IMPERSONATION_LEVEL Level;
-    } SE_IMPERSONATION_STATE,*PSE_IMPERSONATION_STATE;
+typedef struct _SE_IMPERSONATION_STATE
+{
+	PACCESS_TOKEN Token;
+	BOOLEAN CopyOnOpen;
+	BOOLEAN EffectiveOnly;
+	SECURITY_IMPERSONATION_LEVEL Level;
+} SE_IMPERSONATION_STATE,*PSE_IMPERSONATION_STATE;
 
 #define DISABLE_MAX_PRIVILEGE 0x1
 #define SANDBOX_INERT 0x2
 
-    typedef DWORD SECURITY_INFORMATION,*PSECURITY_INFORMATION;
+typedef DWORD SECURITY_INFORMATION,*PSECURITY_INFORMATION;
 
 #define OWNER_SECURITY_INFORMATION (0x00000001L)
 #define GROUP_SECURITY_INFORMATION (0x00000002L)
@@ -2788,57 +2931,64 @@ typedef DWORD LCID;
 #define JOB_OBJECT_SET_SECURITY_ATTRIBUTES (0x0010)
 #define JOB_OBJECT_ALL_ACCESS (STANDARD_RIGHTS_REQUIRED | SYNCHRONIZE | 0x1F)
 
-    typedef struct _JOB_SET_ARRAY {
-      HANDLE JobHandle;
-      DWORD MemberLevel;
-      DWORD Flags;
-    } JOB_SET_ARRAY,*PJOB_SET_ARRAY;
+typedef struct _JOB_SET_ARRAY
+{
+	HANDLE JobHandle;
+	DWORD MemberLevel;
+	DWORD Flags;
+} JOB_SET_ARRAY,*PJOB_SET_ARRAY;
 
 #define FLS_MAXIMUM_AVAILABLE 128
 #define TLS_MINIMUM_AVAILABLE 64
 
 #ifndef _NT_TIB_DEFINED
 #define _NT_TIB_DEFINED
-    typedef struct _NT_TIB {
-      struct _EXCEPTION_REGISTRATION_RECORD *ExceptionList;
-      PVOID StackBase;
-      PVOID StackLimit;
-      PVOID SubSystemTib;
-      union {
-	PVOID FiberData;
-	DWORD Version;
-      };
-      PVOID ArbitraryUserPointer;
-      struct _NT_TIB *Self;
-    } NT_TIB;
-    typedef NT_TIB *PNT_TIB;
+typedef struct _NT_TIB
+{
+	struct _EXCEPTION_REGISTRATION_RECORD *ExceptionList;
+	PVOID StackBase;
+	PVOID StackLimit;
+	PVOID SubSystemTib;
+	union
+	{
+		PVOID FiberData;
+		DWORD Version;
+	};
+	PVOID ArbitraryUserPointer;
+	struct _NT_TIB *Self;
+} NT_TIB;
+typedef NT_TIB *PNT_TIB;
 #endif
 
-    typedef struct _NT_TIB32 {
-      DWORD ExceptionList;
-      DWORD StackBase;
-      DWORD StackLimit;
-      DWORD SubSystemTib;
-      union {
-	DWORD FiberData;
-	DWORD Version;
-      };
-      DWORD ArbitraryUserPointer;
-      DWORD Self;
-    } NT_TIB32,*PNT_TIB32;
+typedef struct _NT_TIB32
+{
+	DWORD ExceptionList;
+	DWORD StackBase;
+	DWORD StackLimit;
+	DWORD SubSystemTib;
+	union
+	{
+		DWORD FiberData;
+		DWORD Version;
+	};
+	DWORD ArbitraryUserPointer;
+	DWORD Self;
+} NT_TIB32,*PNT_TIB32;
 
-    typedef struct _NT_TIB64 {
-      DWORD64 ExceptionList;
-      DWORD64 StackBase;
-      DWORD64 StackLimit;
-      DWORD64 SubSystemTib;
-      union {
-	DWORD64 FiberData;
-	DWORD Version;
-      };
-      DWORD64 ArbitraryUserPointer;
-      DWORD64 Self;
-    } NT_TIB64,*PNT_TIB64;
+typedef struct _NT_TIB64
+{
+	DWORD64 ExceptionList;
+	DWORD64 StackBase;
+	DWORD64 StackLimit;
+	DWORD64 SubSystemTib;
+	union
+	{
+		DWORD64 FiberData;
+		DWORD Version;
+	};
+	DWORD64 ArbitraryUserPointer;
+	DWORD64 Self;
+} NT_TIB64,*PNT_TIB64;
 
 #if !defined(I_X86_) && !defined(_IA64_) && !defined(_AMD64_)
 #define WX86
@@ -2849,112 +2999,125 @@ typedef DWORD LCID;
 #define THREAD_BASE_PRIORITY_MIN (-2)
 #define THREAD_BASE_PRIORITY_IDLE (-15)
 
-    typedef struct _QUOTA_LIMITS {
-      SIZE_T PagedPoolLimit;
-      SIZE_T NonPagedPoolLimit;
-      SIZE_T MinimumWorkingSetSize;
-      SIZE_T MaximumWorkingSetSize;
-      SIZE_T PagefileLimit;
-      LARGE_INTEGER TimeLimit;
-    } QUOTA_LIMITS,*PQUOTA_LIMITS;
+typedef struct _QUOTA_LIMITS
+{
+	SIZE_T PagedPoolLimit;
+	SIZE_T NonPagedPoolLimit;
+	SIZE_T MinimumWorkingSetSize;
+	SIZE_T MaximumWorkingSetSize;
+	SIZE_T PagefileLimit;
+	LARGE_INTEGER TimeLimit;
+} QUOTA_LIMITS,*PQUOTA_LIMITS;
 
 #define QUOTA_LIMITS_HARDWS_MIN_ENABLE 0x00000001
 #define QUOTA_LIMITS_HARDWS_MIN_DISABLE 0x00000002
 #define QUOTA_LIMITS_HARDWS_MAX_ENABLE 0x00000004
 #define QUOTA_LIMITS_HARDWS_MAX_DISABLE 0x00000008
 
-    typedef struct _QUOTA_LIMITS_EX {
-      SIZE_T PagedPoolLimit;
-      SIZE_T NonPagedPoolLimit;
-      SIZE_T MinimumWorkingSetSize;
-      SIZE_T MaximumWorkingSetSize;
-      SIZE_T PagefileLimit;
-      LARGE_INTEGER TimeLimit;
-      SIZE_T Reserved1;
-      SIZE_T Reserved2;
-      SIZE_T Reserved3;
-      SIZE_T Reserved4;
-      DWORD Flags;
-      DWORD Reserved5;
-    } QUOTA_LIMITS_EX,*PQUOTA_LIMITS_EX;
+typedef struct _QUOTA_LIMITS_EX
+{
+	SIZE_T PagedPoolLimit;
+	SIZE_T NonPagedPoolLimit;
+	SIZE_T MinimumWorkingSetSize;
+	SIZE_T MaximumWorkingSetSize;
+	SIZE_T PagefileLimit;
+	LARGE_INTEGER TimeLimit;
+	SIZE_T Reserved1;
+	SIZE_T Reserved2;
+	SIZE_T Reserved3;
+	SIZE_T Reserved4;
+	DWORD Flags;
+	DWORD Reserved5;
+} QUOTA_LIMITS_EX,*PQUOTA_LIMITS_EX;
 
-    typedef struct _IO_COUNTERS {
-      ULONGLONG ReadOperationCount;
-      ULONGLONG WriteOperationCount;
-      ULONGLONG OtherOperationCount;
-      ULONGLONG ReadTransferCount;
-      ULONGLONG WriteTransferCount;
-      ULONGLONG OtherTransferCount;
-    } IO_COUNTERS;
-    typedef IO_COUNTERS *PIO_COUNTERS;
+typedef struct _IO_COUNTERS
+{
+	ULONGLONG ReadOperationCount;
+	ULONGLONG WriteOperationCount;
+	ULONGLONG OtherOperationCount;
+	ULONGLONG ReadTransferCount;
+	ULONGLONG WriteTransferCount;
+	ULONGLONG OtherTransferCount;
+} IO_COUNTERS;
+typedef IO_COUNTERS *PIO_COUNTERS;
 
-    typedef struct _JOBOBJECT_BASIC_ACCOUNTING_INFORMATION {
-      LARGE_INTEGER TotalUserTime;
-      LARGE_INTEGER TotalKernelTime;
-      LARGE_INTEGER ThisPeriodTotalUserTime;
-      LARGE_INTEGER ThisPeriodTotalKernelTime;
-      DWORD TotalPageFaultCount;
-      DWORD TotalProcesses;
-      DWORD ActiveProcesses;
-      DWORD TotalTerminatedProcesses;
-    } JOBOBJECT_BASIC_ACCOUNTING_INFORMATION,*PJOBOBJECT_BASIC_ACCOUNTING_INFORMATION;
+typedef struct _JOBOBJECT_BASIC_ACCOUNTING_INFORMATION
+{
+	LARGE_INTEGER TotalUserTime;
+	LARGE_INTEGER TotalKernelTime;
+	LARGE_INTEGER ThisPeriodTotalUserTime;
+	LARGE_INTEGER ThisPeriodTotalKernelTime;
+	DWORD TotalPageFaultCount;
+	DWORD TotalProcesses;
+	DWORD ActiveProcesses;
+	DWORD TotalTerminatedProcesses;
+} JOBOBJECT_BASIC_ACCOUNTING_INFORMATION,*PJOBOBJECT_BASIC_ACCOUNTING_INFORMATION;
 
-    typedef struct _JOBOBJECT_BASIC_LIMIT_INFORMATION {
-      LARGE_INTEGER PerProcessUserTimeLimit;
-      LARGE_INTEGER PerJobUserTimeLimit;
-      DWORD LimitFlags;
-      SIZE_T MinimumWorkingSetSize;
-      SIZE_T MaximumWorkingSetSize;
-      DWORD ActiveProcessLimit;
-      ULONG_PTR Affinity;
-      DWORD PriorityClass;
-      DWORD SchedulingClass;
-    } JOBOBJECT_BASIC_LIMIT_INFORMATION,*PJOBOBJECT_BASIC_LIMIT_INFORMATION;
+typedef struct _JOBOBJECT_BASIC_LIMIT_INFORMATION
+{
+	LARGE_INTEGER PerProcessUserTimeLimit;
+	LARGE_INTEGER PerJobUserTimeLimit;
+	DWORD LimitFlags;
+	SIZE_T MinimumWorkingSetSize;
+	SIZE_T MaximumWorkingSetSize;
+	DWORD ActiveProcessLimit;
+	ULONG_PTR Affinity;
+	DWORD PriorityClass;
+	DWORD SchedulingClass;
+} JOBOBJECT_BASIC_LIMIT_INFORMATION,*PJOBOBJECT_BASIC_LIMIT_INFORMATION;
 
-    typedef struct _JOBOBJECT_EXTENDED_LIMIT_INFORMATION {
-      JOBOBJECT_BASIC_LIMIT_INFORMATION BasicLimitInformation;
-      IO_COUNTERS IoInfo;
-      SIZE_T ProcessMemoryLimit;
-      SIZE_T JobMemoryLimit;
-      SIZE_T PeakProcessMemoryUsed;
-      SIZE_T PeakJobMemoryUsed;
-    } JOBOBJECT_EXTENDED_LIMIT_INFORMATION,*PJOBOBJECT_EXTENDED_LIMIT_INFORMATION;
+typedef struct _JOBOBJECT_EXTENDED_LIMIT_INFORMATION
+{
+	JOBOBJECT_BASIC_LIMIT_INFORMATION BasicLimitInformation;
+	IO_COUNTERS IoInfo;
+	SIZE_T ProcessMemoryLimit;
+	SIZE_T JobMemoryLimit;
+	SIZE_T PeakProcessMemoryUsed;
+	SIZE_T PeakJobMemoryUsed;
+} JOBOBJECT_EXTENDED_LIMIT_INFORMATION,*PJOBOBJECT_EXTENDED_LIMIT_INFORMATION;
 
-    typedef struct _JOBOBJECT_BASIC_PROCESS_ID_LIST {
-      DWORD NumberOfAssignedProcesses;
-      DWORD NumberOfProcessIdsInList;
-      ULONG_PTR ProcessIdList[1];
-    } JOBOBJECT_BASIC_PROCESS_ID_LIST,*PJOBOBJECT_BASIC_PROCESS_ID_LIST;
+typedef struct _JOBOBJECT_BASIC_PROCESS_ID_LIST
+{
+	DWORD NumberOfAssignedProcesses;
+	DWORD NumberOfProcessIdsInList;
+	ULONG_PTR ProcessIdList[1];
+} JOBOBJECT_BASIC_PROCESS_ID_LIST,*PJOBOBJECT_BASIC_PROCESS_ID_LIST;
 
-    typedef struct _JOBOBJECT_BASIC_UI_RESTRICTIONS {
-      DWORD UIRestrictionsClass;
-    } JOBOBJECT_BASIC_UI_RESTRICTIONS,*PJOBOBJECT_BASIC_UI_RESTRICTIONS;
+typedef struct _JOBOBJECT_BASIC_UI_RESTRICTIONS
+{
+	DWORD UIRestrictionsClass;
+} JOBOBJECT_BASIC_UI_RESTRICTIONS,*PJOBOBJECT_BASIC_UI_RESTRICTIONS;
 
-    typedef struct _JOBOBJECT_SECURITY_LIMIT_INFORMATION {
-      DWORD SecurityLimitFlags;
-      HANDLE JobToken;
-      PTOKEN_GROUPS SidsToDisable;
-      PTOKEN_PRIVILEGES PrivilegesToDelete;
-      PTOKEN_GROUPS RestrictedSids;
-    } JOBOBJECT_SECURITY_LIMIT_INFORMATION,*PJOBOBJECT_SECURITY_LIMIT_INFORMATION;
+typedef struct _JOBOBJECT_SECURITY_LIMIT_INFORMATION
+{
+	DWORD SecurityLimitFlags;
+	HANDLE JobToken;
+	PTOKEN_GROUPS SidsToDisable;
+	PTOKEN_PRIVILEGES PrivilegesToDelete;
+	PTOKEN_GROUPS RestrictedSids;
+} JOBOBJECT_SECURITY_LIMIT_INFORMATION,*PJOBOBJECT_SECURITY_LIMIT_INFORMATION;
 
-    typedef struct _JOBOBJECT_END_OF_JOB_TIME_INFORMATION {
-      DWORD EndOfJobTimeAction;
-    } JOBOBJECT_END_OF_JOB_TIME_INFORMATION,*PJOBOBJECT_END_OF_JOB_TIME_INFORMATION;
+typedef struct _JOBOBJECT_END_OF_JOB_TIME_INFORMATION
+{
+	DWORD EndOfJobTimeAction;
+} JOBOBJECT_END_OF_JOB_TIME_INFORMATION,*PJOBOBJECT_END_OF_JOB_TIME_INFORMATION;
 
-    typedef struct _JOBOBJECT_ASSOCIATE_COMPLETION_PORT {
-      PVOID CompletionKey;
-      HANDLE CompletionPort;
-    } JOBOBJECT_ASSOCIATE_COMPLETION_PORT,*PJOBOBJECT_ASSOCIATE_COMPLETION_PORT;
+typedef struct _JOBOBJECT_ASSOCIATE_COMPLETION_PORT
+{
+	PVOID CompletionKey;
+	HANDLE CompletionPort;
+} JOBOBJECT_ASSOCIATE_COMPLETION_PORT,*PJOBOBJECT_ASSOCIATE_COMPLETION_PORT;
 
-    typedef struct _JOBOBJECT_BASIC_AND_IO_ACCOUNTING_INFORMATION {
-      JOBOBJECT_BASIC_ACCOUNTING_INFORMATION BasicInfo;
-      IO_COUNTERS IoInfo;
-    } JOBOBJECT_BASIC_AND_IO_ACCOUNTING_INFORMATION,*PJOBOBJECT_BASIC_AND_IO_ACCOUNTING_INFORMATION;
+typedef struct _JOBOBJECT_BASIC_AND_IO_ACCOUNTING_INFORMATION
+{
+	JOBOBJECT_BASIC_ACCOUNTING_INFORMATION BasicInfo;
+	IO_COUNTERS IoInfo;
+} JOBOBJECT_BASIC_AND_IO_ACCOUNTING_INFORMATION,*PJOBOBJECT_BASIC_AND_IO_ACCOUNTING_INFORMATION;
 
-    typedef struct _JOBOBJECT_JOBSET_INFORMATION {
-      DWORD MemberLevel;
-    } JOBOBJECT_JOBSET_INFORMATION,*PJOBOBJECT_JOBSET_INFORMATION;
+typedef struct _JOBOBJECT_JOBSET_INFORMATION
+{
+	DWORD MemberLevel;
+} JOBOBJECT_JOBSET_INFORMATION,*PJOBOBJECT_JOBSET_INFORMATION;
 
 #define JOB_OBJECT_TERMINATE_AT_END_OF_JOB 0
 #define JOB_OBJECT_POST_AT_END_OF_JOB 1
@@ -3019,11 +3182,12 @@ typedef DWORD LCID;
 
 #define JOB_OBJECT_SECURITY_VALID_FLAGS 0x0000000f
 
-    typedef enum _JOBOBJECTINFOCLASS {
-      JobObjectBasicAccountingInformation = 1,JobObjectBasicLimitInformation,JobObjectBasicProcessIdList,JobObjectBasicUIRestrictions,
-      JobObjectSecurityLimitInformation,JobObjectEndOfJobTimeInformation,JobObjectAssociateCompletionPortInformation,
-      JobObjectBasicAndIoAccountingInformation,JobObjectExtendedLimitInformation,JobObjectJobSetInformation,MaxJobObjectInfoClass
-    } JOBOBJECTINFOCLASS;
+typedef enum _JOBOBJECTINFOCLASS
+{
+	JobObjectBasicAccountingInformation = 1,JobObjectBasicLimitInformation,JobObjectBasicProcessIdList,JobObjectBasicUIRestrictions,
+	JobObjectSecurityLimitInformation,JobObjectEndOfJobTimeInformation,JobObjectAssociateCompletionPortInformation,
+	JobObjectBasicAndIoAccountingInformation,JobObjectExtendedLimitInformation,JobObjectJobSetInformation,MaxJobObjectInfoClass
+} JOBOBJECTINFOCLASS;
 
 #define EVENT_MODIFY_STATE 0x0002
 #define EVENT_ALL_ACCESS (STANDARD_RIGHTS_REQUIRED|SYNCHRONIZE|0x3)
@@ -3043,40 +3207,47 @@ typedef DWORD LCID;
 #define TIME_ZONE_ID_STANDARD 1
 #define TIME_ZONE_ID_DAYLIGHT 2
 
-    typedef enum _LOGICAL_PROCESSOR_RELATIONSHIP {
-      RelationProcessorCore,RelationNumaNode,RelationCache
-    } LOGICAL_PROCESSOR_RELATIONSHIP;
+typedef enum _LOGICAL_PROCESSOR_RELATIONSHIP
+{
+	RelationProcessorCore,RelationNumaNode,RelationCache
+} LOGICAL_PROCESSOR_RELATIONSHIP;
 
 #define LTP_PC_SMT 0x1
 
-    typedef enum _PROCESSOR_CACHE_TYPE {
-      CacheUnified,CacheInstruction,CacheData,CacheTrace
-    } PROCESSOR_CACHE_TYPE;
+typedef enum _PROCESSOR_CACHE_TYPE
+{
+	CacheUnified,CacheInstruction,CacheData,CacheTrace
+} PROCESSOR_CACHE_TYPE;
 
 #define CACHE_FULLY_ASSOCIATIVE 0xFF
 
-    typedef struct _CACHE_DESCRIPTOR {
-      BYTE Level;
-      BYTE Associativity;
-      WORD LineSize;
-      DWORD Size;
-      PROCESSOR_CACHE_TYPE Type;
-    } CACHE_DESCRIPTOR,*PCACHE_DESCRIPTOR;
+typedef struct _CACHE_DESCRIPTOR
+{
+	BYTE Level;
+	BYTE Associativity;
+	WORD LineSize;
+	DWORD Size;
+	PROCESSOR_CACHE_TYPE Type;
+} CACHE_DESCRIPTOR,*PCACHE_DESCRIPTOR;
 
-    typedef struct _SYSTEM_LOGICAL_PROCESSOR_INFORMATION {
-      ULONG_PTR ProcessorMask;
-      LOGICAL_PROCESSOR_RELATIONSHIP Relationship;
-      union {
-	struct {
-	  BYTE Flags;
-	} ProcessorCore;
-	struct {
-	  DWORD NodeNumber;
-	} NumaNode;
-	CACHE_DESCRIPTOR Cache;
-	ULONGLONG Reserved[2];
-      };
-    } SYSTEM_LOGICAL_PROCESSOR_INFORMATION,*PSYSTEM_LOGICAL_PROCESSOR_INFORMATION;
+typedef struct _SYSTEM_LOGICAL_PROCESSOR_INFORMATION
+{
+	ULONG_PTR ProcessorMask;
+	LOGICAL_PROCESSOR_RELATIONSHIP Relationship;
+	union
+	{
+		struct
+		{
+			BYTE Flags;
+		} ProcessorCore;
+		struct
+		{
+			DWORD NodeNumber;
+		} NumaNode;
+		CACHE_DESCRIPTOR Cache;
+		ULONGLONG Reserved[2];
+	};
+} SYSTEM_LOGICAL_PROCESSOR_INFORMATION,*PSYSTEM_LOGICAL_PROCESSOR_INFORMATION;
 
 #define PROCESSOR_INTEL_386 386
 #define PROCESSOR_INTEL_486 486
@@ -3130,37 +3301,40 @@ typedef DWORD LCID;
 #define PF_SSE_DAZ_MODE_AVAILABLE 11
 #define PF_NX_ENABLED 12
 
-    typedef struct _MEMORY_BASIC_INFORMATION {
-      PVOID BaseAddress;
-      PVOID AllocationBase;
-      DWORD AllocationProtect;
-      SIZE_T RegionSize;
-      DWORD State;
-      DWORD Protect;
-      DWORD Type;
-    } MEMORY_BASIC_INFORMATION,*PMEMORY_BASIC_INFORMATION;
+typedef struct _MEMORY_BASIC_INFORMATION
+{
+	PVOID BaseAddress;
+	PVOID AllocationBase;
+	DWORD AllocationProtect;
+	SIZE_T RegionSize;
+	DWORD State;
+	DWORD Protect;
+	DWORD Type;
+} MEMORY_BASIC_INFORMATION,*PMEMORY_BASIC_INFORMATION;
 
-    typedef struct _MEMORY_BASIC_INFORMATION32 {
-      DWORD BaseAddress;
-      DWORD AllocationBase;
-      DWORD AllocationProtect;
-      DWORD RegionSize;
-      DWORD State;
-      DWORD Protect;
-      DWORD Type;
-    } MEMORY_BASIC_INFORMATION32,*PMEMORY_BASIC_INFORMATION32;
+typedef struct _MEMORY_BASIC_INFORMATION32
+{
+	DWORD BaseAddress;
+	DWORD AllocationBase;
+	DWORD AllocationProtect;
+	DWORD RegionSize;
+	DWORD State;
+	DWORD Protect;
+	DWORD Type;
+} MEMORY_BASIC_INFORMATION32,*PMEMORY_BASIC_INFORMATION32;
 
-    typedef struct DECLSPEC_ALIGN(16) _MEMORY_BASIC_INFORMATION64 {
-      ULONGLONG BaseAddress;
-      ULONGLONG AllocationBase;
-      DWORD AllocationProtect;
-      DWORD __alignment1;
-      ULONGLONG RegionSize;
-      DWORD State;
-      DWORD Protect;
-      DWORD Type;
-      DWORD __alignment2;
-    } MEMORY_BASIC_INFORMATION64,*PMEMORY_BASIC_INFORMATION64;
+typedef struct DECLSPEC_ALIGN(16) _MEMORY_BASIC_INFORMATION64
+{
+    ULONGLONG BaseAddress;
+    ULONGLONG AllocationBase;
+    DWORD AllocationProtect;
+    DWORD __alignment1;
+    ULONGLONG RegionSize;
+    DWORD State;
+    DWORD Protect;
+    DWORD Type;
+    DWORD __alignment2;
+} MEMORY_BASIC_INFORMATION64,*PMEMORY_BASIC_INFORMATION64;
 
 #define SECTION_QUERY 0x0001
 #define SECTION_MAP_WRITE 0x0002
@@ -3278,27 +3452,31 @@ typedef DWORD LCID;
 #define FILE_NAMED_STREAMS 0x00040000
 #define FILE_READ_ONLY_VOLUME 0x00080000
 
-    typedef struct _FILE_NOTIFY_INFORMATION {
-      DWORD NextEntryOffset;
-      DWORD Action;
-      DWORD FileNameLength;
-      WCHAR FileName[1];
-    } FILE_NOTIFY_INFORMATION,*PFILE_NOTIFY_INFORMATION;
+typedef struct _FILE_NOTIFY_INFORMATION
+{
+	DWORD NextEntryOffset;
+	DWORD Action;
+	DWORD FileNameLength;
+	WCHAR FileName[1];
+} FILE_NOTIFY_INFORMATION,*PFILE_NOTIFY_INFORMATION;
 
-    typedef union _FILE_SEGMENT_ELEMENT {
-      PVOID64 Buffer;
-      ULONGLONG Alignment;
-    }FILE_SEGMENT_ELEMENT,*PFILE_SEGMENT_ELEMENT;
+typedef union _FILE_SEGMENT_ELEMENT
+{
+	PVOID64 Buffer;
+	ULONGLONG Alignment;
+} FILE_SEGMENT_ELEMENT,*PFILE_SEGMENT_ELEMENT;
 
-    typedef struct _REPARSE_GUID_DATA_BUFFER {
-      DWORD ReparseTag;
-      WORD ReparseDataLength;
-      WORD Reserved;
-      GUID ReparseGuid;
-      struct {
-	BYTE DataBuffer[1];
-      } GenericReparseBuffer;
-    } REPARSE_GUID_DATA_BUFFER,*PREPARSE_GUID_DATA_BUFFER;
+typedef struct _REPARSE_GUID_DATA_BUFFER
+{
+	DWORD ReparseTag;
+	WORD ReparseDataLength;
+	WORD Reserved;
+	GUID ReparseGuid;
+	struct
+	{
+		BYTE DataBuffer[1];
+	} GenericReparseBuffer;
+} REPARSE_GUID_DATA_BUFFER,*PREPARSE_GUID_DATA_BUFFER;
 
 #define REPARSE_GUID_DATA_BUFFER_HEADER_SIZE FIELD_OFFSET(REPARSE_GUID_DATA_BUFFER,GenericReparseBuffer)
 
@@ -3322,30 +3500,34 @@ typedef DWORD LCID;
 #define DUPLICATE_CLOSE_SOURCE 0x00000001
 #define DUPLICATE_SAME_ACCESS 0x00000002
 
-    typedef enum _SYSTEM_POWER_STATE {
-      PowerSystemUnspecified = 0,PowerSystemWorking = 1,PowerSystemSleeping1 = 2,PowerSystemSleeping2 = 3,PowerSystemSleeping3 = 4,PowerSystemHibernate = 5,PowerSystemShutdown = 6,PowerSystemMaximum = 7
-    } SYSTEM_POWER_STATE,*PSYSTEM_POWER_STATE;
+typedef enum _SYSTEM_POWER_STATE
+{
+	PowerSystemUnspecified = 0,PowerSystemWorking = 1,PowerSystemSleeping1 = 2,PowerSystemSleeping2 = 3,PowerSystemSleeping3 = 4,PowerSystemHibernate = 5,PowerSystemShutdown = 6,PowerSystemMaximum = 7
+} SYSTEM_POWER_STATE,*PSYSTEM_POWER_STATE;
 
 #define POWER_SYSTEM_MAXIMUM 7
 
-    typedef enum {
-      PowerActionNone = 0,PowerActionReserved,PowerActionSleep,PowerActionHibernate,PowerActionShutdown,PowerActionShutdownReset,PowerActionShutdownOff,PowerActionWarmEject
-    } POWER_ACTION,*PPOWER_ACTION;
+typedef enum
+{
+	PowerActionNone = 0,PowerActionReserved,PowerActionSleep,PowerActionHibernate,PowerActionShutdown,PowerActionShutdownReset,PowerActionShutdownOff,PowerActionWarmEject
+} POWER_ACTION,*PPOWER_ACTION;
 
-    typedef enum _DEVICE_POWER_STATE {
-      PowerDeviceUnspecified = 0,PowerDeviceD0,PowerDeviceD1,PowerDeviceD2,PowerDeviceD3,PowerDeviceMaximum
-    } DEVICE_POWER_STATE,*PDEVICE_POWER_STATE;
+typedef enum _DEVICE_POWER_STATE
+{
+	PowerDeviceUnspecified = 0,PowerDeviceD0,PowerDeviceD1,PowerDeviceD2,PowerDeviceD3,PowerDeviceMaximum
+} DEVICE_POWER_STATE,*PDEVICE_POWER_STATE;
 
 #define ES_SYSTEM_REQUIRED ((DWORD)0x00000001)
 #define ES_DISPLAY_REQUIRED ((DWORD)0x00000002)
 #define ES_USER_PRESENT ((DWORD)0x00000004)
 #define ES_CONTINUOUS ((DWORD)0x80000000)
 
-    typedef DWORD EXECUTION_STATE;
+typedef DWORD EXECUTION_STATE;
 
-    typedef enum {
-      LT_DONT_CARE,LT_LOWEST_LATENCY
-    } LATENCY_TIME;
+typedef enum
+{
+	LT_DONT_CARE,LT_LOWEST_LATENCY
+} LATENCY_TIME;
 
 #define PDCAP_D0_SUPPORTED 0x00000001
 #define PDCAP_D1_SUPPORTED 0x00000002
@@ -3357,31 +3539,35 @@ typedef DWORD LCID;
 #define PDCAP_WAKE_FROM_D3_SUPPORTED 0x00000080
 #define PDCAP_WARM_EJECT_SUPPORTED 0x00000100
 
-    typedef struct CM_Power_Data_s {
-      DWORD PD_Size;
-      DEVICE_POWER_STATE PD_MostRecentPowerState;
-      DWORD PD_Capabilities;
-      DWORD PD_D1Latency;
-      DWORD PD_D2Latency;
-      DWORD PD_D3Latency;
-      DEVICE_POWER_STATE PD_PowerStateMapping[POWER_SYSTEM_MAXIMUM];
-      SYSTEM_POWER_STATE PD_DeepestSystemWake;
-    } CM_POWER_DATA,*PCM_POWER_DATA;
+typedef struct CM_Power_Data_s
+{
+	DWORD PD_Size;
+	DEVICE_POWER_STATE PD_MostRecentPowerState;
+	DWORD PD_Capabilities;
+	DWORD PD_D1Latency;
+	DWORD PD_D2Latency;
+	DWORD PD_D3Latency;
+	DEVICE_POWER_STATE PD_PowerStateMapping[POWER_SYSTEM_MAXIMUM];
+	SYSTEM_POWER_STATE PD_DeepestSystemWake;
+} CM_POWER_DATA,*PCM_POWER_DATA;
 
-    typedef enum {
-      SystemPowerPolicyAc,SystemPowerPolicyDc,VerifySystemPolicyAc,VerifySystemPolicyDc,SystemPowerCapabilities,SystemBatteryState,SystemPowerStateHandler,ProcessorStateHandler,SystemPowerPolicyCurrent,AdministratorPowerPolicy,SystemReserveHiberFile,ProcessorInformation,SystemPowerInformation,ProcessorStateHandler2,LastWakeTime,LastSleepTime,SystemExecutionState,SystemPowerStateNotifyHandler,ProcessorPowerPolicyAc,ProcessorPowerPolicyDc,VerifyProcessorPowerPolicyAc,VerifyProcessorPowerPolicyDc,ProcessorPowerPolicyCurrent,SystemPowerStateLogging,SystemPowerLoggingEntry
-    } POWER_INFORMATION_LEVEL;
+typedef enum
+{
+	SystemPowerPolicyAc,SystemPowerPolicyDc,VerifySystemPolicyAc,VerifySystemPolicyDc,SystemPowerCapabilities,SystemBatteryState,SystemPowerStateHandler,ProcessorStateHandler,SystemPowerPolicyCurrent,AdministratorPowerPolicy,SystemReserveHiberFile,ProcessorInformation,SystemPowerInformation,ProcessorStateHandler2,LastWakeTime,LastSleepTime,SystemExecutionState,SystemPowerStateNotifyHandler,ProcessorPowerPolicyAc,ProcessorPowerPolicyDc,VerifyProcessorPowerPolicyAc,VerifyProcessorPowerPolicyDc,ProcessorPowerPolicyCurrent,SystemPowerStateLogging,SystemPowerLoggingEntry
+} POWER_INFORMATION_LEVEL;
 
-    typedef struct {
-      DWORD Granularity;
-      DWORD Capacity;
-    } BATTERY_REPORTING_SCALE,*PBATTERY_REPORTING_SCALE;
+typedef struct
+{
+	DWORD Granularity;
+	DWORD Capacity;
+} BATTERY_REPORTING_SCALE,*PBATTERY_REPORTING_SCALE;
 
-    typedef struct {
-      POWER_ACTION Action;
-      DWORD Flags;
-      DWORD EventCode;
-    } POWER_ACTION_POLICY,*PPOWER_ACTION_POLICY;
+typedef struct
+{
+	POWER_ACTION Action;
+	DWORD Flags;
+	DWORD EventCode;
+} POWER_ACTION_POLICY,*PPOWER_ACTION_POLICY;
 
 #define POWER_ACTION_QUERY_ALLOWED 0x00000001
 #define POWER_ACTION_UI_ALLOWED 0x00000002
@@ -3398,13 +3584,14 @@ typedef DWORD LCID;
 #define POWER_USER_NOTIFY_SHUTDOWN 0x00000010
 #define POWER_FORCE_TRIGGER_RESET 0x80000000
 
-    typedef struct {
-      BOOLEAN Enable;
-      BYTE Spare[3];
-      DWORD BatteryLevel;
-      POWER_ACTION_POLICY PowerPolicy;
-      SYSTEM_POWER_STATE MinSystemState;
-    } SYSTEM_POWER_LEVEL,*PSYSTEM_POWER_LEVEL;
+typedef struct
+{
+	BOOLEAN Enable;
+	BYTE Spare[3];
+	DWORD BatteryLevel;
+	POWER_ACTION_POLICY PowerPolicy;
+	SYSTEM_POWER_STATE MinSystemState;
+} SYSTEM_POWER_LEVEL,*PSYSTEM_POWER_LEVEL;
 
 #define NUM_DISCHARGE_POLICIES 4
 #define DISCHARGE_POLICY_CRITICAL 0
@@ -3416,112 +3603,118 @@ typedef DWORD LCID;
 #define PO_THROTTLE_ADAPTIVE 3
 #define PO_THROTTLE_MAXIMUM 4
 
-    typedef struct _SYSTEM_POWER_POLICY {
-      DWORD Revision;
-      POWER_ACTION_POLICY PowerButton;
-      POWER_ACTION_POLICY SleepButton;
-      POWER_ACTION_POLICY LidClose;
-      SYSTEM_POWER_STATE LidOpenWake;
-      DWORD Reserved;
-      POWER_ACTION_POLICY Idle;
-      DWORD IdleTimeout;
-      BYTE IdleSensitivity;
-      BYTE DynamicThrottle;
-      BYTE Spare2[2];
-      SYSTEM_POWER_STATE MinSleep;
-      SYSTEM_POWER_STATE MaxSleep;
-      SYSTEM_POWER_STATE ReducedLatencySleep;
-      DWORD WinLogonFlags;
-      DWORD Spare3;
-      DWORD DozeS4Timeout;
-      DWORD BroadcastCapacityResolution;
-      SYSTEM_POWER_LEVEL DischargePolicy[NUM_DISCHARGE_POLICIES];
-      DWORD VideoTimeout;
-      BOOLEAN VideoDimDisplay;
-      DWORD VideoReserved[3];
-      DWORD SpindownTimeout;
-      BOOLEAN OptimizeForPower;
-      BYTE FanThrottleTolerance;
-      BYTE ForcedThrottle;
-      BYTE MinThrottle;
-      POWER_ACTION_POLICY OverThrottled;
-    } SYSTEM_POWER_POLICY,*PSYSTEM_POWER_POLICY;
+typedef struct _SYSTEM_POWER_POLICY
+{
+	DWORD Revision;
+	POWER_ACTION_POLICY PowerButton;
+	POWER_ACTION_POLICY SleepButton;
+	POWER_ACTION_POLICY LidClose;
+	SYSTEM_POWER_STATE LidOpenWake;
+	DWORD Reserved;
+	POWER_ACTION_POLICY Idle;
+	DWORD IdleTimeout;
+	BYTE IdleSensitivity;
+	BYTE DynamicThrottle;
+	BYTE Spare2[2];
+	SYSTEM_POWER_STATE MinSleep;
+	SYSTEM_POWER_STATE MaxSleep;
+	SYSTEM_POWER_STATE ReducedLatencySleep;
+	DWORD WinLogonFlags;
+	DWORD Spare3;
+	DWORD DozeS4Timeout;
+	DWORD BroadcastCapacityResolution;
+	SYSTEM_POWER_LEVEL DischargePolicy[NUM_DISCHARGE_POLICIES];
+	DWORD VideoTimeout;
+	BOOLEAN VideoDimDisplay;
+	DWORD VideoReserved[3];
+	DWORD SpindownTimeout;
+	BOOLEAN OptimizeForPower;
+	BYTE FanThrottleTolerance;
+	BYTE ForcedThrottle;
+	BYTE MinThrottle;
+	POWER_ACTION_POLICY OverThrottled;
+} SYSTEM_POWER_POLICY,*PSYSTEM_POWER_POLICY;
 
-    typedef struct _PROCESSOR_POWER_POLICY_INFO {
-      DWORD TimeCheck;
-      DWORD DemoteLimit;
-      DWORD PromoteLimit;
-      BYTE DemotePercent;
-      BYTE PromotePercent;
-      BYTE Spare[2];
-      DWORD AllowDemotion:1;
-      DWORD AllowPromotion:1;
-      DWORD Reserved:30;
-    } PROCESSOR_POWER_POLICY_INFO,*PPROCESSOR_POWER_POLICY_INFO;
+typedef struct _PROCESSOR_POWER_POLICY_INFO
+{
+	DWORD TimeCheck;
+	DWORD DemoteLimit;
+	DWORD PromoteLimit;
+	BYTE DemotePercent;
+	BYTE PromotePercent;
+	BYTE Spare[2];
+	DWORD AllowDemotion:1;
+	DWORD AllowPromotion:1;
+	DWORD Reserved:30;
+} PROCESSOR_POWER_POLICY_INFO,*PPROCESSOR_POWER_POLICY_INFO;
 
-    typedef struct _PROCESSOR_POWER_POLICY {
-      DWORD Revision;
-      BYTE DynamicThrottle;
-      BYTE Spare[3];
-      DWORD DisableCStates:1;
-      DWORD Reserved:31;
-      DWORD PolicyCount;
-      PROCESSOR_POWER_POLICY_INFO Policy[3];
-    } PROCESSOR_POWER_POLICY,*PPROCESSOR_POWER_POLICY;
+typedef struct _PROCESSOR_POWER_POLICY
+{
+	DWORD Revision;
+	BYTE DynamicThrottle;
+	BYTE Spare[3];
+	DWORD DisableCStates:1;
+	DWORD Reserved:31;
+	DWORD PolicyCount;
+	PROCESSOR_POWER_POLICY_INFO Policy[3];
+} PROCESSOR_POWER_POLICY,*PPROCESSOR_POWER_POLICY;
 
-    typedef struct _ADMINISTRATOR_POWER_POLICY {
-      SYSTEM_POWER_STATE MinSleep;
-      SYSTEM_POWER_STATE MaxSleep;
-      DWORD MinVideoTimeout;
-      DWORD MaxVideoTimeout;
-      DWORD MinSpindownTimeout;
-      DWORD MaxSpindownTimeout;
-    } ADMINISTRATOR_POWER_POLICY,*PADMINISTRATOR_POWER_POLICY;
+typedef struct _ADMINISTRATOR_POWER_POLICY
+{
+	SYSTEM_POWER_STATE MinSleep;
+	SYSTEM_POWER_STATE MaxSleep;
+	DWORD MinVideoTimeout;
+	DWORD MaxVideoTimeout;
+	DWORD MinSpindownTimeout;
+	DWORD MaxSpindownTimeout;
+} ADMINISTRATOR_POWER_POLICY,*PADMINISTRATOR_POWER_POLICY;
 
-    typedef struct {
-      BOOLEAN PowerButtonPresent;
-      BOOLEAN SleepButtonPresent;
-      BOOLEAN LidPresent;
-      BOOLEAN SystemS1;
-      BOOLEAN SystemS2;
-      BOOLEAN SystemS3;
-      BOOLEAN SystemS4;
-      BOOLEAN SystemS5;
-      BOOLEAN HiberFilePresent;
-      BOOLEAN FullWake;
-      BOOLEAN VideoDimPresent;
-      BOOLEAN ApmPresent;
-      BOOLEAN UpsPresent;
-      BOOLEAN ThermalControl;
-      BOOLEAN ProcessorThrottle;
-      BYTE ProcessorMinThrottle;
-      BYTE ProcessorMaxThrottle;
-      BYTE spare2[4];
-      BOOLEAN DiskSpinDown;
-      BYTE spare3[8];
-      BOOLEAN SystemBatteriesPresent;
-      BOOLEAN BatteriesAreShortTerm;
-      BATTERY_REPORTING_SCALE BatteryScale[3];
-      SYSTEM_POWER_STATE AcOnLineWake;
-      SYSTEM_POWER_STATE SoftLidWake;
-      SYSTEM_POWER_STATE RtcWake;
-      SYSTEM_POWER_STATE MinDeviceWakeState;
-      SYSTEM_POWER_STATE DefaultLowLatencyWake;
-    } SYSTEM_POWER_CAPABILITIES,*PSYSTEM_POWER_CAPABILITIES;
+typedef struct
+{
+	BOOLEAN PowerButtonPresent;
+	BOOLEAN SleepButtonPresent;
+	BOOLEAN LidPresent;
+	BOOLEAN SystemS1;
+	BOOLEAN SystemS2;
+	BOOLEAN SystemS3;
+	BOOLEAN SystemS4;
+	BOOLEAN SystemS5;
+	BOOLEAN HiberFilePresent;
+	BOOLEAN FullWake;
+	BOOLEAN VideoDimPresent;
+	BOOLEAN ApmPresent;
+	BOOLEAN UpsPresent;
+	BOOLEAN ThermalControl;
+	BOOLEAN ProcessorThrottle;
+	BYTE ProcessorMinThrottle;
+	BYTE ProcessorMaxThrottle;
+	BYTE spare2[4];
+	BOOLEAN DiskSpinDown;
+	BYTE spare3[8];
+	BOOLEAN SystemBatteriesPresent;
+	BOOLEAN BatteriesAreShortTerm;
+	BATTERY_REPORTING_SCALE BatteryScale[3];
+	SYSTEM_POWER_STATE AcOnLineWake;
+	SYSTEM_POWER_STATE SoftLidWake;
+	SYSTEM_POWER_STATE RtcWake;
+	SYSTEM_POWER_STATE MinDeviceWakeState;
+	SYSTEM_POWER_STATE DefaultLowLatencyWake;
+} SYSTEM_POWER_CAPABILITIES,*PSYSTEM_POWER_CAPABILITIES;
 
-    typedef struct {
-      BOOLEAN AcOnLine;
-      BOOLEAN BatteryPresent;
-      BOOLEAN Charging;
-      BOOLEAN Discharging;
-      BOOLEAN Spare1[4];
-      DWORD MaxCapacity;
-      DWORD RemainingCapacity;
-      DWORD Rate;
-      DWORD EstimatedTime;
-      DWORD DefaultAlert1;
-      DWORD DefaultAlert2;
-    } SYSTEM_BATTERY_STATE,*PSYSTEM_BATTERY_STATE;
+typedef struct
+{
+	BOOLEAN AcOnLine;
+	BOOLEAN BatteryPresent;
+	BOOLEAN Charging;
+	BOOLEAN Discharging;
+	BOOLEAN Spare1[4];
+	DWORD MaxCapacity;
+	DWORD RemainingCapacity;
+	DWORD Rate;
+	DWORD EstimatedTime;
+	DWORD DefaultAlert1;
+	DWORD DefaultAlert2;
+} SYSTEM_BATTERY_STATE,*PSYSTEM_BATTERY_STATE;
 
 #include "pshpack4.h"
 
@@ -3533,126 +3726,130 @@ typedef DWORD LCID;
 
 #include "pshpack2.h"
 
-    typedef struct _IMAGE_DOS_HEADER {
-      WORD e_magic;
-      WORD e_cblp;
-      WORD e_cp;
-      WORD e_crlc;
-      WORD e_cparhdr;
-      WORD e_minalloc;
-      WORD e_maxalloc;
-      WORD e_ss;
-      WORD e_sp;
-      WORD e_csum;
-      WORD e_ip;
-      WORD e_cs;
-      WORD e_lfarlc;
-      WORD e_ovno;
-      WORD e_res[4];
-      WORD e_oemid;
-      WORD e_oeminfo;
-      WORD e_res2[10];
-      LONG e_lfanew;
-    } IMAGE_DOS_HEADER,*PIMAGE_DOS_HEADER;
+typedef struct _IMAGE_DOS_HEADER
+{
+	WORD e_magic;
+	WORD e_cblp;
+	WORD e_cp;
+	WORD e_crlc;
+	WORD e_cparhdr;
+	WORD e_minalloc;
+	WORD e_maxalloc;
+	WORD e_ss;
+	WORD e_sp;
+	WORD e_csum;
+	WORD e_ip;
+	WORD e_cs;
+	WORD e_lfarlc;
+	WORD e_ovno;
+	WORD e_res[4];
+	WORD e_oemid;
+	WORD e_oeminfo;
+	WORD e_res2[10];
+	LONG e_lfanew;
+} IMAGE_DOS_HEADER,*PIMAGE_DOS_HEADER;
 
-    typedef struct _IMAGE_OS2_HEADER {
-      WORD ne_magic;
-      CHAR ne_ver;
-      CHAR ne_rev;
-      WORD ne_enttab;
-      WORD ne_cbenttab;
-      LONG ne_crc;
-      WORD ne_flags;
-      WORD ne_autodata;
-      WORD ne_heap;
-      WORD ne_stack;
-      LONG ne_csip;
-      LONG ne_sssp;
-      WORD ne_cseg;
-      WORD ne_cmod;
-      WORD ne_cbnrestab;
-      WORD ne_segtab;
-      WORD ne_rsrctab;
-      WORD ne_restab;
-      WORD ne_modtab;
-      WORD ne_imptab;
-      LONG ne_nrestab;
-      WORD ne_cmovent;
-      WORD ne_align;
-      WORD ne_cres;
-      BYTE ne_exetyp;
-      BYTE ne_flagsothers;
-      WORD ne_pretthunks;
-      WORD ne_psegrefbytes;
-      WORD ne_swaparea;
-      WORD ne_expver;
-    } IMAGE_OS2_HEADER,*PIMAGE_OS2_HEADER;
+typedef struct _IMAGE_OS2_HEADER
+{
+	WORD ne_magic;
+	CHAR ne_ver;
+	CHAR ne_rev;
+	WORD ne_enttab;
+	WORD ne_cbenttab;
+	LONG ne_crc;
+	WORD ne_flags;
+	WORD ne_autodata;
+	WORD ne_heap;
+	WORD ne_stack;
+	LONG ne_csip;
+	LONG ne_sssp;
+	WORD ne_cseg;
+	WORD ne_cmod;
+	WORD ne_cbnrestab;
+	WORD ne_segtab;
+	WORD ne_rsrctab;
+	WORD ne_restab;
+	WORD ne_modtab;
+	WORD ne_imptab;
+	LONG ne_nrestab;
+	WORD ne_cmovent;
+	WORD ne_align;
+	WORD ne_cres;
+	BYTE ne_exetyp;
+	BYTE ne_flagsothers;
+	WORD ne_pretthunks;
+	WORD ne_psegrefbytes;
+	WORD ne_swaparea;
+	WORD ne_expver;
+} IMAGE_OS2_HEADER,*PIMAGE_OS2_HEADER;
 
-    typedef struct _IMAGE_VXD_HEADER {
-      WORD e32_magic;
-      BYTE e32_border;
-      BYTE e32_worder;
-      DWORD e32_level;
-      WORD e32_cpu;
-      WORD e32_os;
-      DWORD e32_ver;
-      DWORD e32_mflags;
-      DWORD e32_mpages;
-      DWORD e32_startobj;
-      DWORD e32_eip;
-      DWORD e32_stackobj;
-      DWORD e32_esp;
-      DWORD e32_pagesize;
-      DWORD e32_lastpagesize;
-      DWORD e32_fixupsize;
-      DWORD e32_fixupsum;
-      DWORD e32_ldrsize;
-      DWORD e32_ldrsum;
-      DWORD e32_objtab;
-      DWORD e32_objcnt;
-      DWORD e32_objmap;
-      DWORD e32_itermap;
-      DWORD e32_rsrctab;
-      DWORD e32_rsrccnt;
-      DWORD e32_restab;
-      DWORD e32_enttab;
-      DWORD e32_dirtab;
-      DWORD e32_dircnt;
-      DWORD e32_fpagetab;
-      DWORD e32_frectab;
-      DWORD e32_impmod;
-      DWORD e32_impmodcnt;
-      DWORD e32_impproc;
-      DWORD e32_pagesum;
-      DWORD e32_datapage;
-      DWORD e32_preload;
-      DWORD e32_nrestab;
-      DWORD e32_cbnrestab;
-      DWORD e32_nressum;
-      DWORD e32_autodata;
-      DWORD e32_debuginfo;
-      DWORD e32_debuglen;
-      DWORD e32_instpreload;
-      DWORD e32_instdemand;
-      DWORD e32_heapsize;
-      BYTE e32_res3[12];
-      DWORD e32_winresoff;
-      DWORD e32_winreslen;
-      WORD e32_devid;
-      WORD e32_ddkver;
-    } IMAGE_VXD_HEADER,*PIMAGE_VXD_HEADER;
+typedef struct _IMAGE_VXD_HEADER
+{
+	WORD e32_magic;
+	BYTE e32_border;
+	BYTE e32_worder;
+	DWORD e32_level;
+	WORD e32_cpu;
+	WORD e32_os;
+	DWORD e32_ver;
+	DWORD e32_mflags;
+	DWORD e32_mpages;
+	DWORD e32_startobj;
+	DWORD e32_eip;
+	DWORD e32_stackobj;
+	DWORD e32_esp;
+	DWORD e32_pagesize;
+	DWORD e32_lastpagesize;
+	DWORD e32_fixupsize;
+	DWORD e32_fixupsum;
+	DWORD e32_ldrsize;
+	DWORD e32_ldrsum;
+	DWORD e32_objtab;
+	DWORD e32_objcnt;
+	DWORD e32_objmap;
+	DWORD e32_itermap;
+	DWORD e32_rsrctab;
+	DWORD e32_rsrccnt;
+	DWORD e32_restab;
+	DWORD e32_enttab;
+	DWORD e32_dirtab;
+	DWORD e32_dircnt;
+	DWORD e32_fpagetab;
+	DWORD e32_frectab;
+	DWORD e32_impmod;
+	DWORD e32_impmodcnt;
+	DWORD e32_impproc;
+	DWORD e32_pagesum;
+	DWORD e32_datapage;
+	DWORD e32_preload;
+	DWORD e32_nrestab;
+	DWORD e32_cbnrestab;
+	DWORD e32_nressum;
+	DWORD e32_autodata;
+	DWORD e32_debuginfo;
+	DWORD e32_debuglen;
+	DWORD e32_instpreload;
+	DWORD e32_instdemand;
+	DWORD e32_heapsize;
+	BYTE e32_res3[12];
+	DWORD e32_winresoff;
+	DWORD e32_winreslen;
+	WORD e32_devid;
+	WORD e32_ddkver;
+} IMAGE_VXD_HEADER,*PIMAGE_VXD_HEADER;
 
 #include "poppack.h"
 
-    typedef struct _IMAGE_FILE_HEADER {
-      WORD Machine;
-      WORD NumberOfSections;
-      DWORD TimeDateStamp;
-      DWORD PointerToSymbolTable;
-      DWORD NumberOfSymbols;
-      WORD SizeOfOptionalHeader;
-      WORD Characteristics;
-    } IMAGE_FILE_HEADER,*PIMAGE_FILE_HEADER;
+typedef struct _IMAGE_FILE_HEADER
+{
+	WORD Machine;
+	WORD NumberOfSections;
+	DWORD TimeDateStamp;
+	DWORD PointerToSymbolTable;
+	DWORD NumberOfSymbols;
+	WORD SizeOfOptionalHeader;
+	WORD Characteristics;
+} IMAGE_FILE_HEADER,*PIMAGE_FILE_HEADER;
 
 #define IMAGE_SIZEOF_FILE_HEADER 20
 
@@ -3702,96 +3899,100 @@ typedef DWORD LCID;
 #define IMAGE_FILE_MACHINE_M32R 0x9041
 #define IMAGE_FILE_MACHINE_CEE 0xC0EE
 
-    typedef struct _IMAGE_DATA_DIRECTORY {
-      DWORD VirtualAddress;
-      DWORD Size;
-    } IMAGE_DATA_DIRECTORY,*PIMAGE_DATA_DIRECTORY;
+typedef struct _IMAGE_DATA_DIRECTORY
+{
+	DWORD VirtualAddress;
+	DWORD Size;
+} IMAGE_DATA_DIRECTORY,*PIMAGE_DATA_DIRECTORY;
 
 #define IMAGE_NUMBEROF_DIRECTORY_ENTRIES 16
 
-    typedef struct _IMAGE_OPTIONAL_HEADER {
+typedef struct _IMAGE_OPTIONAL_HEADER
+{
 
-      WORD Magic;
-      BYTE MajorLinkerVersion;
-      BYTE MinorLinkerVersion;
-      DWORD SizeOfCode;
-      DWORD SizeOfInitializedData;
-      DWORD SizeOfUninitializedData;
-      DWORD AddressOfEntryPoint;
-      DWORD BaseOfCode;
-      DWORD BaseOfData;
-      DWORD ImageBase;
-      DWORD SectionAlignment;
-      DWORD FileAlignment;
-      WORD MajorOperatingSystemVersion;
-      WORD MinorOperatingSystemVersion;
-      WORD MajorImageVersion;
-      WORD MinorImageVersion;
-      WORD MajorSubsystemVersion;
-      WORD MinorSubsystemVersion;
-      DWORD Win32VersionValue;
-      DWORD SizeOfImage;
-      DWORD SizeOfHeaders;
-      DWORD CheckSum;
-      WORD Subsystem;
-      WORD DllCharacteristics;
-      DWORD SizeOfStackReserve;
-      DWORD SizeOfStackCommit;
-      DWORD SizeOfHeapReserve;
-      DWORD SizeOfHeapCommit;
-      DWORD LoaderFlags;
-      DWORD NumberOfRvaAndSizes;
-      IMAGE_DATA_DIRECTORY DataDirectory[IMAGE_NUMBEROF_DIRECTORY_ENTRIES];
-    } IMAGE_OPTIONAL_HEADER32,*PIMAGE_OPTIONAL_HEADER32;
+	WORD Magic;
+	BYTE MajorLinkerVersion;
+	BYTE MinorLinkerVersion;
+	DWORD SizeOfCode;
+	DWORD SizeOfInitializedData;
+	DWORD SizeOfUninitializedData;
+	DWORD AddressOfEntryPoint;
+	DWORD BaseOfCode;
+	DWORD BaseOfData;
+	DWORD ImageBase;
+	DWORD SectionAlignment;
+	DWORD FileAlignment;
+	WORD MajorOperatingSystemVersion;
+	WORD MinorOperatingSystemVersion;
+	WORD MajorImageVersion;
+	WORD MinorImageVersion;
+	WORD MajorSubsystemVersion;
+	WORD MinorSubsystemVersion;
+	DWORD Win32VersionValue;
+	DWORD SizeOfImage;
+	DWORD SizeOfHeaders;
+	DWORD CheckSum;
+	WORD Subsystem;
+	WORD DllCharacteristics;
+	DWORD SizeOfStackReserve;
+	DWORD SizeOfStackCommit;
+	DWORD SizeOfHeapReserve;
+	DWORD SizeOfHeapCommit;
+	DWORD LoaderFlags;
+	DWORD NumberOfRvaAndSizes;
+	IMAGE_DATA_DIRECTORY DataDirectory[IMAGE_NUMBEROF_DIRECTORY_ENTRIES];
+} IMAGE_OPTIONAL_HEADER32,*PIMAGE_OPTIONAL_HEADER32;
 
-    typedef struct _IMAGE_ROM_OPTIONAL_HEADER {
-      WORD Magic;
-      BYTE MajorLinkerVersion;
-      BYTE MinorLinkerVersion;
-      DWORD SizeOfCode;
-      DWORD SizeOfInitializedData;
-      DWORD SizeOfUninitializedData;
-      DWORD AddressOfEntryPoint;
-      DWORD BaseOfCode;
-      DWORD BaseOfData;
-      DWORD BaseOfBss;
-      DWORD GprMask;
-      DWORD CprMask[4];
-      DWORD GpValue;
-    } IMAGE_ROM_OPTIONAL_HEADER,*PIMAGE_ROM_OPTIONAL_HEADER;
+typedef struct _IMAGE_ROM_OPTIONAL_HEADER
+{
+	WORD Magic;
+	BYTE MajorLinkerVersion;
+	BYTE MinorLinkerVersion;
+	DWORD SizeOfCode;
+	DWORD SizeOfInitializedData;
+	DWORD SizeOfUninitializedData;
+	DWORD AddressOfEntryPoint;
+	DWORD BaseOfCode;
+	DWORD BaseOfData;
+	DWORD BaseOfBss;
+	DWORD GprMask;
+	DWORD CprMask[4];
+	DWORD GpValue;
+} IMAGE_ROM_OPTIONAL_HEADER,*PIMAGE_ROM_OPTIONAL_HEADER;
 
-    typedef struct _IMAGE_OPTIONAL_HEADER64 {
-      WORD Magic;
-      BYTE MajorLinkerVersion;
-      BYTE MinorLinkerVersion;
-      DWORD SizeOfCode;
-      DWORD SizeOfInitializedData;
-      DWORD SizeOfUninitializedData;
-      DWORD AddressOfEntryPoint;
-      DWORD BaseOfCode;
-      ULONGLONG ImageBase;
-      DWORD SectionAlignment;
-      DWORD FileAlignment;
-      WORD MajorOperatingSystemVersion;
-      WORD MinorOperatingSystemVersion;
-      WORD MajorImageVersion;
-      WORD MinorImageVersion;
-      WORD MajorSubsystemVersion;
-      WORD MinorSubsystemVersion;
-      DWORD Win32VersionValue;
-      DWORD SizeOfImage;
-      DWORD SizeOfHeaders;
-      DWORD CheckSum;
-      WORD Subsystem;
-      WORD DllCharacteristics;
-      ULONGLONG SizeOfStackReserve;
-      ULONGLONG SizeOfStackCommit;
-      ULONGLONG SizeOfHeapReserve;
-      ULONGLONG SizeOfHeapCommit;
-      DWORD LoaderFlags;
-      DWORD NumberOfRvaAndSizes;
-      IMAGE_DATA_DIRECTORY DataDirectory[IMAGE_NUMBEROF_DIRECTORY_ENTRIES];
-    } IMAGE_OPTIONAL_HEADER64,*PIMAGE_OPTIONAL_HEADER64;
+typedef struct _IMAGE_OPTIONAL_HEADER64
+{
+	WORD Magic;
+	BYTE MajorLinkerVersion;
+	BYTE MinorLinkerVersion;
+	DWORD SizeOfCode;
+	DWORD SizeOfInitializedData;
+	DWORD SizeOfUninitializedData;
+	DWORD AddressOfEntryPoint;
+	DWORD BaseOfCode;
+	ULONGLONG ImageBase;
+	DWORD SectionAlignment;
+	DWORD FileAlignment;
+	WORD MajorOperatingSystemVersion;
+	WORD MinorOperatingSystemVersion;
+	WORD MajorImageVersion;
+	WORD MinorImageVersion;
+	WORD MajorSubsystemVersion;
+	WORD MinorSubsystemVersion;
+	DWORD Win32VersionValue;
+	DWORD SizeOfImage;
+	DWORD SizeOfHeaders;
+	DWORD CheckSum;
+	WORD Subsystem;
+	WORD DllCharacteristics;
+	ULONGLONG SizeOfStackReserve;
+	ULONGLONG SizeOfStackCommit;
+	ULONGLONG SizeOfHeapReserve;
+	ULONGLONG SizeOfHeapCommit;
+	DWORD LoaderFlags;
+	DWORD NumberOfRvaAndSizes;
+	IMAGE_DATA_DIRECTORY DataDirectory[IMAGE_NUMBEROF_DIRECTORY_ENTRIES];
+} IMAGE_OPTIONAL_HEADER64,*PIMAGE_OPTIONAL_HEADER64;
 
 #define IMAGE_SIZEOF_ROM_OPTIONAL_HEADER 56
 #define IMAGE_SIZEOF_STD_OPTIONAL_HEADER 28
@@ -3803,40 +4004,43 @@ typedef DWORD LCID;
 #define IMAGE_ROM_OPTIONAL_HDR_MAGIC 0x107
 
 #ifdef _WIN64
-    typedef IMAGE_OPTIONAL_HEADER64 IMAGE_OPTIONAL_HEADER;
-    typedef PIMAGE_OPTIONAL_HEADER64 PIMAGE_OPTIONAL_HEADER;
+typedef IMAGE_OPTIONAL_HEADER64 IMAGE_OPTIONAL_HEADER;
+typedef PIMAGE_OPTIONAL_HEADER64 PIMAGE_OPTIONAL_HEADER;
 #define IMAGE_SIZEOF_NT_OPTIONAL_HEADER IMAGE_SIZEOF_NT_OPTIONAL64_HEADER
 #define IMAGE_NT_OPTIONAL_HDR_MAGIC IMAGE_NT_OPTIONAL_HDR64_MAGIC
 #else
-    typedef IMAGE_OPTIONAL_HEADER32 IMAGE_OPTIONAL_HEADER;
-    typedef PIMAGE_OPTIONAL_HEADER32 PIMAGE_OPTIONAL_HEADER;
+typedef IMAGE_OPTIONAL_HEADER32 IMAGE_OPTIONAL_HEADER;
+typedef PIMAGE_OPTIONAL_HEADER32 PIMAGE_OPTIONAL_HEADER;
 #define IMAGE_SIZEOF_NT_OPTIONAL_HEADER IMAGE_SIZEOF_NT_OPTIONAL32_HEADER
 #define IMAGE_NT_OPTIONAL_HDR_MAGIC IMAGE_NT_OPTIONAL_HDR32_MAGIC
 #endif
 
-    typedef struct _IMAGE_NT_HEADERS64 {
-      DWORD Signature;
-      IMAGE_FILE_HEADER FileHeader;
-      IMAGE_OPTIONAL_HEADER64 OptionalHeader;
-    } IMAGE_NT_HEADERS64,*PIMAGE_NT_HEADERS64;
+typedef struct _IMAGE_NT_HEADERS64
+{
+	DWORD Signature;
+	IMAGE_FILE_HEADER FileHeader;
+	IMAGE_OPTIONAL_HEADER64 OptionalHeader;
+} IMAGE_NT_HEADERS64,*PIMAGE_NT_HEADERS64;
 
-    typedef struct _IMAGE_NT_HEADERS {
-      DWORD Signature;
-      IMAGE_FILE_HEADER FileHeader;
-      IMAGE_OPTIONAL_HEADER32 OptionalHeader;
-    } IMAGE_NT_HEADERS32,*PIMAGE_NT_HEADERS32;
+typedef struct _IMAGE_NT_HEADERS
+{
+	DWORD Signature;
+	IMAGE_FILE_HEADER FileHeader;
+	IMAGE_OPTIONAL_HEADER32 OptionalHeader;
+} IMAGE_NT_HEADERS32,*PIMAGE_NT_HEADERS32;
 
-    typedef struct _IMAGE_ROM_HEADERS {
-      IMAGE_FILE_HEADER FileHeader;
-      IMAGE_ROM_OPTIONAL_HEADER OptionalHeader;
-    } IMAGE_ROM_HEADERS,*PIMAGE_ROM_HEADERS;
+typedef struct _IMAGE_ROM_HEADERS
+{
+	IMAGE_FILE_HEADER FileHeader;
+	IMAGE_ROM_OPTIONAL_HEADER OptionalHeader;
+} IMAGE_ROM_HEADERS,*PIMAGE_ROM_HEADERS;
 
 #ifdef _WIN64
-    typedef IMAGE_NT_HEADERS64 IMAGE_NT_HEADERS;
-    typedef PIMAGE_NT_HEADERS64 PIMAGE_NT_HEADERS;
+typedef IMAGE_NT_HEADERS64 IMAGE_NT_HEADERS;
+typedef PIMAGE_NT_HEADERS64 PIMAGE_NT_HEADERS;
 #else
-    typedef IMAGE_NT_HEADERS32 IMAGE_NT_HEADERS;
-    typedef PIMAGE_NT_HEADERS32 PIMAGE_NT_HEADERS;
+typedef IMAGE_NT_HEADERS32 IMAGE_NT_HEADERS;
+typedef PIMAGE_NT_HEADERS32 PIMAGE_NT_HEADERS;
 #endif
 
 #define IMAGE_FIRST_SECTION(ntheader) ((PIMAGE_SECTION_HEADER) ((ULONG_PTR)ntheader + FIELD_OFFSET(IMAGE_NT_HEADERS,OptionalHeader) + ((PIMAGE_NT_HEADERS)(ntheader))->FileHeader.SizeOfOptionalHeader))
@@ -3878,33 +4082,36 @@ typedef DWORD LCID;
 #define IMAGE_DIRECTORY_ENTRY_DELAY_IMPORT 13
 #define IMAGE_DIRECTORY_ENTRY_COM_DESCRIPTOR 14
 
-    typedef struct ANON_OBJECT_HEADER {
-      WORD Sig1;
-      WORD Sig2;
-      WORD Version;
-      WORD Machine;
-      DWORD TimeDateStamp;
-      CLSID ClassID;
-      DWORD SizeOfData;
-    } ANON_OBJECT_HEADER;
+typedef struct ANON_OBJECT_HEADER
+{
+	WORD Sig1;
+	WORD Sig2;
+	WORD Version;
+	WORD Machine;
+	DWORD TimeDateStamp;
+	CLSID ClassID;
+	DWORD SizeOfData;
+} ANON_OBJECT_HEADER;
 
 #define IMAGE_SIZEOF_SHORT_NAME 8
 
-    typedef struct _IMAGE_SECTION_HEADER {
-      BYTE Name[IMAGE_SIZEOF_SHORT_NAME];
-      union {
-	DWORD PhysicalAddress;
-	DWORD VirtualSize;
-      } Misc;
-      DWORD VirtualAddress;
-      DWORD SizeOfRawData;
-      DWORD PointerToRawData;
-      DWORD PointerToRelocations;
-      DWORD PointerToLinenumbers;
-      WORD NumberOfRelocations;
-      WORD NumberOfLinenumbers;
-      DWORD Characteristics;
-    } IMAGE_SECTION_HEADER,*PIMAGE_SECTION_HEADER;
+typedef struct _IMAGE_SECTION_HEADER
+{
+	BYTE Name[IMAGE_SIZEOF_SHORT_NAME];
+	union
+	{
+		DWORD PhysicalAddress;
+		DWORD VirtualSize;
+	} Misc;
+	DWORD VirtualAddress;
+	DWORD SizeOfRawData;
+	DWORD PointerToRawData;
+	DWORD PointerToRelocations;
+	DWORD PointerToLinenumbers;
+	WORD NumberOfRelocations;
+	WORD NumberOfLinenumbers;
+	DWORD Characteristics;
+} IMAGE_SECTION_HEADER,*PIMAGE_SECTION_HEADER;
 
 #define IMAGE_SIZEOF_SECTION_HEADER 40
 
@@ -3955,22 +4162,25 @@ typedef DWORD LCID;
 
 #include "pshpack2.h"
 
-    typedef struct _IMAGE_SYMBOL {
-      union {
-	BYTE ShortName[8];
-	struct {
-	  DWORD Short;
-	  DWORD Long;
-	} Name;
-	DWORD LongName[2];
-      } N;
-      DWORD Value;
-      SHORT SectionNumber;
-      WORD Type;
-      BYTE StorageClass;
-      BYTE NumberOfAuxSymbols;
-    } IMAGE_SYMBOL;
-    typedef IMAGE_SYMBOL UNALIGNED *PIMAGE_SYMBOL;
+typedef struct _IMAGE_SYMBOL
+{
+	union
+	{
+		BYTE ShortName[8];
+		struct
+		{
+			DWORD Short;
+			DWORD Long;
+		} Name;
+		DWORD LongName[2];
+	} N;
+	DWORD Value;
+	SHORT SectionNumber;
+	WORD Type;
+	BYTE StorageClass;
+	BYTE NumberOfAuxSymbols;
+} IMAGE_SYMBOL;
+typedef IMAGE_SYMBOL UNALIGNED *PIMAGE_SYMBOL;
 
 #define IMAGE_SIZEOF_SYMBOL 18
 
@@ -4063,57 +4273,68 @@ typedef DWORD LCID;
 #define DECREF(x) ((((x)>>N_TSHIFT)&~N_BTMASK)|((x)&N_BTMASK))
 #endif
 
-    typedef union _IMAGE_AUX_SYMBOL {
-      struct {
-	DWORD TagIndex;
-	union {
-	  struct {
-	    WORD Linenumber;
-	    WORD Size;
-	  } LnSz;
-	  DWORD TotalSize;
-	} Misc;
-	union {
-	  struct {
-	    DWORD PointerToLinenumber;
-	    DWORD PointerToNextFunction;
-	  } Function;
-	  struct {
-	    WORD Dimension[4];
-	  } Array;
-	} FcnAry;
-	WORD TvIndex;
-      } Sym;
-      struct {
-	BYTE Name[IMAGE_SIZEOF_SYMBOL];
-      } File;
-      struct {
-	DWORD Length;
-	WORD NumberOfRelocations;
-	WORD NumberOfLinenumbers;
-	DWORD CheckSum;
-	SHORT Number;
-	BYTE Selection;
-      } Section;
-    } IMAGE_AUX_SYMBOL;
-    typedef IMAGE_AUX_SYMBOL UNALIGNED *PIMAGE_AUX_SYMBOL;
+typedef union _IMAGE_AUX_SYMBOL
+{
+	struct
+	{
+		DWORD TagIndex;
+		union
+		{
+			struct
+			{
+				WORD Linenumber;
+				WORD Size;
+			} LnSz;
+			DWORD TotalSize;
+		} Misc;
+		union
+		{
+			struct
+			{
+				DWORD PointerToLinenumber;
+				DWORD PointerToNextFunction;
+			} Function;
+			struct
+			{
+				WORD Dimension[4];
+			} Array;
+		} FcnAry;
+		WORD TvIndex;
+	} Sym;
+	struct
+	{
+		BYTE Name[IMAGE_SIZEOF_SYMBOL];
+	} File;
+	struct
+	{
+		DWORD Length;
+		WORD NumberOfRelocations;
+		WORD NumberOfLinenumbers;
+		DWORD CheckSum;
+		SHORT Number;
+		BYTE Selection;
+	} Section;
+} IMAGE_AUX_SYMBOL;
+typedef IMAGE_AUX_SYMBOL UNALIGNED *PIMAGE_AUX_SYMBOL;
 
 #define IMAGE_SIZEOF_AUX_SYMBOL 18
 
-    typedef enum IMAGE_AUX_SYMBOL_TYPE {
-      IMAGE_AUX_SYMBOL_TYPE_TOKEN_DEF = 1
-    } IMAGE_AUX_SYMBOL_TYPE;
+typedef enum IMAGE_AUX_SYMBOL_TYPE
+{
+	IMAGE_AUX_SYMBOL_TYPE_TOKEN_DEF = 1
+} IMAGE_AUX_SYMBOL_TYPE;
 
 #include <pshpack2.h>
 
-    typedef struct IMAGE_AUX_SYMBOL_TOKEN_DEF {
-      BYTE bAuxType;
-      BYTE bReserved;
-      DWORD SymbolTableIndex;
-      BYTE rgbReserved[12];
-    } IMAGE_AUX_SYMBOL_TOKEN_DEF;
+typedef struct IMAGE_AUX_SYMBOL_TOKEN_DEF
+{
+	BYTE bAuxType;
+	BYTE bReserved;
+	DWORD SymbolTableIndex;
+	BYTE rgbReserved[12];
+} IMAGE_AUX_SYMBOL_TOKEN_DEF;
 
-    typedef IMAGE_AUX_SYMBOL_TOKEN_DEF UNALIGNED *PIMAGE_AUX_SYMBOL_TOKEN_DEF;
+typedef IMAGE_AUX_SYMBOL_TOKEN_DEF UNALIGNED *PIMAGE_AUX_SYMBOL_TOKEN_DEF;
 
 #include <poppack.h>
 
@@ -4129,15 +4350,17 @@ typedef DWORD LCID;
 #define IMAGE_WEAK_EXTERN_SEARCH_LIBRARY 2
 #define IMAGE_WEAK_EXTERN_SEARCH_ALIAS 3
 
-    typedef struct _IMAGE_RELOCATION {
-      union {
-	DWORD VirtualAddress;
-	DWORD RelocCount;
-      };
-      DWORD SymbolTableIndex;
-      WORD Type;
-    } IMAGE_RELOCATION;
-    typedef IMAGE_RELOCATION UNALIGNED *PIMAGE_RELOCATION;
+typedef struct _IMAGE_RELOCATION
+{
+	union
+	{
+		DWORD VirtualAddress;
+		DWORD RelocCount;
+	};
+	DWORD SymbolTableIndex;
+	WORD Type;
+} IMAGE_RELOCATION;
+typedef IMAGE_RELOCATION UNALIGNED *PIMAGE_RELOCATION;
 
 #define IMAGE_SIZEOF_RELOCATION 10
 
@@ -4451,25 +4674,28 @@ typedef DWORD LCID;
 #define X3_EMPTY_INST_WORD_POS_X 14
 #define X3_EMPTY_INST_VAL_POS_X 0
 
-    typedef struct _IMAGE_LINENUMBER {
-      union {
-	DWORD SymbolTableIndex;
-	DWORD VirtualAddress;
-      } Type;
-      WORD Linenumber;
-    } IMAGE_LINENUMBER;
-    typedef IMAGE_LINENUMBER UNALIGNED *PIMAGE_LINENUMBER;
+typedef struct _IMAGE_LINENUMBER
+{
+	union
+	{
+		DWORD SymbolTableIndex;
+		DWORD VirtualAddress;
+	} Type;
+	WORD Linenumber;
+} IMAGE_LINENUMBER;
+typedef IMAGE_LINENUMBER UNALIGNED *PIMAGE_LINENUMBER;
 
 #define IMAGE_SIZEOF_LINENUMBER 6
 
 #include "poppack.h"
 
-    typedef struct _IMAGE_BASE_RELOCATION {
-      DWORD VirtualAddress;
-      DWORD SizeOfBlock;
+typedef struct _IMAGE_BASE_RELOCATION
+{
+	DWORD VirtualAddress;
+	DWORD SizeOfBlock;
 
-    } IMAGE_BASE_RELOCATION;
-    typedef IMAGE_BASE_RELOCATION UNALIGNED *PIMAGE_BASE_RELOCATION;
+} IMAGE_BASE_RELOCATION;
+typedef IMAGE_BASE_RELOCATION UNALIGNED *PIMAGE_BASE_RELOCATION;
 
 #define IMAGE_SIZEOF_BASE_RELOCATION 8
 
@@ -4490,60 +4716,67 @@ typedef DWORD LCID;
 #define IMAGE_ARCHIVE_LINKER_MEMBER "/               "
 #define IMAGE_ARCHIVE_LONGNAMES_MEMBER "//              "
 
-    typedef struct _IMAGE_ARCHIVE_MEMBER_HEADER {
-      BYTE Name[16];
-      BYTE Date[12];
-      BYTE UserID[6];
-      BYTE GroupID[6];
-      BYTE Mode[8];
-      BYTE Size[10];
-      BYTE EndHeader[2];
-    } IMAGE_ARCHIVE_MEMBER_HEADER,*PIMAGE_ARCHIVE_MEMBER_HEADER;
+typedef struct _IMAGE_ARCHIVE_MEMBER_HEADER
+{
+	BYTE Name[16];
+	BYTE Date[12];
+	BYTE UserID[6];
+	BYTE GroupID[6];
+	BYTE Mode[8];
+	BYTE Size[10];
+	BYTE EndHeader[2];
+} IMAGE_ARCHIVE_MEMBER_HEADER,*PIMAGE_ARCHIVE_MEMBER_HEADER;
 
 #define IMAGE_SIZEOF_ARCHIVE_MEMBER_HDR 60
 
-    typedef struct _IMAGE_EXPORT_DIRECTORY {
-      DWORD Characteristics;
-      DWORD TimeDateStamp;
-      WORD MajorVersion;
-      WORD MinorVersion;
-      DWORD Name;
-      DWORD Base;
-      DWORD NumberOfFunctions;
-      DWORD NumberOfNames;
-      DWORD AddressOfFunctions;
-      DWORD AddressOfNames;
-      DWORD AddressOfNameOrdinals;
-    } IMAGE_EXPORT_DIRECTORY,*PIMAGE_EXPORT_DIRECTORY;
+typedef struct _IMAGE_EXPORT_DIRECTORY
+{
+	DWORD Characteristics;
+	DWORD TimeDateStamp;
+	WORD MajorVersion;
+	WORD MinorVersion;
+	DWORD Name;
+	DWORD Base;
+	DWORD NumberOfFunctions;
+	DWORD NumberOfNames;
+	DWORD AddressOfFunctions;
+	DWORD AddressOfNames;
+	DWORD AddressOfNameOrdinals;
+} IMAGE_EXPORT_DIRECTORY,*PIMAGE_EXPORT_DIRECTORY;
 
-    typedef struct _IMAGE_IMPORT_BY_NAME {
-      WORD Hint;
-      BYTE Name[1];
-    } IMAGE_IMPORT_BY_NAME,*PIMAGE_IMPORT_BY_NAME;
+typedef struct _IMAGE_IMPORT_BY_NAME
+{
+	WORD Hint;
+	BYTE Name[1];
+} IMAGE_IMPORT_BY_NAME,*PIMAGE_IMPORT_BY_NAME;
 
 #include "pshpack8.h"
 
-    typedef struct _IMAGE_THUNK_DATA64 {
-      union {
-	ULONGLONG ForwarderString;
-	ULONGLONG Function;
-	ULONGLONG Ordinal;
-	ULONGLONG AddressOfData;
-      } u1;
-    } IMAGE_THUNK_DATA64;
-    typedef IMAGE_THUNK_DATA64 *PIMAGE_THUNK_DATA64;
+typedef struct _IMAGE_THUNK_DATA64
+{
+	union
+	{
+		ULONGLONG ForwarderString;
+		ULONGLONG Function;
+		ULONGLONG Ordinal;
+		ULONGLONG AddressOfData;
+	} u1;
+} IMAGE_THUNK_DATA64;
+typedef IMAGE_THUNK_DATA64 *PIMAGE_THUNK_DATA64;
 
 #include "poppack.h"
 
-    typedef struct _IMAGE_THUNK_DATA32 {
-      union {
-	DWORD ForwarderString;
-	DWORD Function;
-	DWORD Ordinal;
-	DWORD AddressOfData;
-      } u1;
-    } IMAGE_THUNK_DATA32;
-    typedef IMAGE_THUNK_DATA32 *PIMAGE_THUNK_DATA32;
+typedef struct _IMAGE_THUNK_DATA32
+{
+	union
+	{
+		DWORD ForwarderString;
+		DWORD Function;
+		DWORD Ordinal;
+		DWORD AddressOfData;
+	} u1;
+} IMAGE_THUNK_DATA32;
+typedef IMAGE_THUNK_DATA32 *PIMAGE_THUNK_DATA32;
 
 #define IMAGE_ORDINAL_FLAG64 0x8000000000000000ull
 #define IMAGE_ORDINAL_FLAG32 0x80000000
@@ -4552,219 +4785,241 @@ typedef DWORD LCID;
 #define IMAGE_SNAP_BY_ORDINAL64(Ordinal) ((Ordinal & IMAGE_ORDINAL_FLAG64)!=0)
 #define IMAGE_SNAP_BY_ORDINAL32(Ordinal) ((Ordinal & IMAGE_ORDINAL_FLAG32)!=0)
 
-    typedef VOID
-      (NTAPI *PIMAGE_TLS_CALLBACK)(PVOID DllHandle,DWORD Reason,PVOID Reserved);
+typedef VOID
+(NTAPI *PIMAGE_TLS_CALLBACK)(PVOID DllHandle,DWORD Reason,PVOID Reserved);
 
-    typedef struct _IMAGE_TLS_DIRECTORY64 {
-      ULONGLONG StartAddressOfRawData;
-      ULONGLONG EndAddressOfRawData;
-      ULONGLONG AddressOfIndex;
-      ULONGLONG AddressOfCallBacks;
-      DWORD SizeOfZeroFill;
-      DWORD Characteristics;
-    } IMAGE_TLS_DIRECTORY64;
-    typedef IMAGE_TLS_DIRECTORY64 *PIMAGE_TLS_DIRECTORY64;
+typedef struct _IMAGE_TLS_DIRECTORY64
+{
+	ULONGLONG StartAddressOfRawData;
+	ULONGLONG EndAddressOfRawData;
+	ULONGLONG AddressOfIndex;
+	ULONGLONG AddressOfCallBacks;
+	DWORD SizeOfZeroFill;
+	DWORD Characteristics;
+} IMAGE_TLS_DIRECTORY64;
+typedef IMAGE_TLS_DIRECTORY64 *PIMAGE_TLS_DIRECTORY64;
 
-    typedef struct _IMAGE_TLS_DIRECTORY32 {
-      DWORD StartAddressOfRawData;
-      DWORD EndAddressOfRawData;
-      DWORD AddressOfIndex;
-      DWORD AddressOfCallBacks;
-      DWORD SizeOfZeroFill;
-      DWORD Characteristics;
-    } IMAGE_TLS_DIRECTORY32;
-    typedef IMAGE_TLS_DIRECTORY32 *PIMAGE_TLS_DIRECTORY32;
+typedef struct _IMAGE_TLS_DIRECTORY32
+{
+	DWORD StartAddressOfRawData;
+	DWORD EndAddressOfRawData;
+	DWORD AddressOfIndex;
+	DWORD AddressOfCallBacks;
+	DWORD SizeOfZeroFill;
+	DWORD Characteristics;
+} IMAGE_TLS_DIRECTORY32;
+typedef IMAGE_TLS_DIRECTORY32 *PIMAGE_TLS_DIRECTORY32;
 
 #ifdef _WIN64
 #define IMAGE_ORDINAL_FLAG IMAGE_ORDINAL_FLAG64
 #define IMAGE_ORDINAL(Ordinal) IMAGE_ORDINAL64(Ordinal)
-    typedef IMAGE_THUNK_DATA64 IMAGE_THUNK_DATA;
-    typedef PIMAGE_THUNK_DATA64 PIMAGE_THUNK_DATA;
+typedef IMAGE_THUNK_DATA64 IMAGE_THUNK_DATA;
+typedef PIMAGE_THUNK_DATA64 PIMAGE_THUNK_DATA;
 #define IMAGE_SNAP_BY_ORDINAL(Ordinal) IMAGE_SNAP_BY_ORDINAL64(Ordinal)
-    typedef IMAGE_TLS_DIRECTORY64 IMAGE_TLS_DIRECTORY;
-    typedef PIMAGE_TLS_DIRECTORY64 PIMAGE_TLS_DIRECTORY;
+typedef IMAGE_TLS_DIRECTORY64 IMAGE_TLS_DIRECTORY;
+typedef PIMAGE_TLS_DIRECTORY64 PIMAGE_TLS_DIRECTORY;
 #else
 #define IMAGE_ORDINAL_FLAG IMAGE_ORDINAL_FLAG32
 #define IMAGE_ORDINAL(Ordinal) IMAGE_ORDINAL32(Ordinal)
-    typedef IMAGE_THUNK_DATA32 IMAGE_THUNK_DATA;
-    typedef PIMAGE_THUNK_DATA32 PIMAGE_THUNK_DATA;
+typedef IMAGE_THUNK_DATA32 IMAGE_THUNK_DATA;
+typedef PIMAGE_THUNK_DATA32 PIMAGE_THUNK_DATA;
 #define IMAGE_SNAP_BY_ORDINAL(Ordinal) IMAGE_SNAP_BY_ORDINAL32(Ordinal)
-    typedef IMAGE_TLS_DIRECTORY32 IMAGE_TLS_DIRECTORY;
-    typedef PIMAGE_TLS_DIRECTORY32 PIMAGE_TLS_DIRECTORY;
+typedef IMAGE_TLS_DIRECTORY32 IMAGE_TLS_DIRECTORY;
+typedef PIMAGE_TLS_DIRECTORY32 PIMAGE_TLS_DIRECTORY;
 #endif
 
-    typedef struct _IMAGE_IMPORT_DESCRIPTOR {
-      union {
+typedef struct _IMAGE_IMPORT_DESCRIPTOR
+{
+	union
+	{
+		DWORD Characteristics;
+		DWORD OriginalFirstThunk;
+	};
+	DWORD TimeDateStamp;
+
+	DWORD ForwarderChain;
+	DWORD Name;
+	DWORD FirstThunk;
+} IMAGE_IMPORT_DESCRIPTOR;
+typedef IMAGE_IMPORT_DESCRIPTOR UNALIGNED *PIMAGE_IMPORT_DESCRIPTOR;
+
+typedef struct _IMAGE_BOUND_IMPORT_DESCRIPTOR
+{
+	DWORD TimeDateStamp;
+	WORD OffsetModuleName;
+	WORD NumberOfModuleForwarderRefs;
+} IMAGE_BOUND_IMPORT_DESCRIPTOR,*PIMAGE_BOUND_IMPORT_DESCRIPTOR;
+
+typedef struct _IMAGE_BOUND_FORWARDER_REF
+{
+	DWORD TimeDateStamp;
+	WORD OffsetModuleName;
+	WORD Reserved;
+} IMAGE_BOUND_FORWARDER_REF,*PIMAGE_BOUND_FORWARDER_REF;
+
+typedef struct _IMAGE_RESOURCE_DIRECTORY
+{
 	DWORD Characteristics;
-	DWORD OriginalFirstThunk;
-      };
-      DWORD TimeDateStamp;
-
-      DWORD ForwarderChain;
-      DWORD Name;
-      DWORD FirstThunk;
-    } IMAGE_IMPORT_DESCRIPTOR;
-    typedef IMAGE_IMPORT_DESCRIPTOR UNALIGNED *PIMAGE_IMPORT_DESCRIPTOR;
-
-    typedef struct _IMAGE_BOUND_IMPORT_DESCRIPTOR {
-      DWORD TimeDateStamp;
-      WORD OffsetModuleName;
-      WORD NumberOfModuleForwarderRefs;
-    } IMAGE_BOUND_IMPORT_DESCRIPTOR,*PIMAGE_BOUND_IMPORT_DESCRIPTOR;
-
-    typedef struct _IMAGE_BOUND_FORWARDER_REF {
-      DWORD TimeDateStamp;
-      WORD OffsetModuleName;
-      WORD Reserved;
-    } IMAGE_BOUND_FORWARDER_REF,*PIMAGE_BOUND_FORWARDER_REF;
-
-    typedef struct _IMAGE_RESOURCE_DIRECTORY {
-      DWORD Characteristics;
-      DWORD TimeDateStamp;
-      WORD MajorVersion;
-      WORD MinorVersion;
-      WORD NumberOfNamedEntries;
-      WORD NumberOfIdEntries;
-    } IMAGE_RESOURCE_DIRECTORY,*PIMAGE_RESOURCE_DIRECTORY;
+	DWORD TimeDateStamp;
+	WORD MajorVersion;
+	WORD MinorVersion;
+	WORD NumberOfNamedEntries;
+	WORD NumberOfIdEntries;
+} IMAGE_RESOURCE_DIRECTORY,*PIMAGE_RESOURCE_DIRECTORY;
 
 #define IMAGE_RESOURCE_NAME_IS_STRING 0x80000000
 #define IMAGE_RESOURCE_DATA_IS_DIRECTORY 0x80000000
 
-    typedef struct _IMAGE_RESOURCE_DIRECTORY_ENTRY {
-      union {
-	struct {
-	  DWORD NameOffset:31;
-	  DWORD NameIsString:1;
+typedef struct _IMAGE_RESOURCE_DIRECTORY_ENTRY
+{
+	union
+	{
+		struct
+		{
+			DWORD NameOffset:31;
+			DWORD NameIsString:1;
+		};
+		DWORD Name;
+		WORD Id;
 	};
-	DWORD Name;
-	WORD Id;
-      };
-      union {
+	union
+	{
+		DWORD OffsetToData;
+		struct
+		{
+			DWORD OffsetToDirectory:31;
+			DWORD DataIsDirectory:1;
+		};
+	};
+} IMAGE_RESOURCE_DIRECTORY_ENTRY,*PIMAGE_RESOURCE_DIRECTORY_ENTRY;
+
+typedef struct _IMAGE_RESOURCE_DIRECTORY_STRING
+{
+	WORD Length;
+	CHAR NameString[1];
+} IMAGE_RESOURCE_DIRECTORY_STRING,*PIMAGE_RESOURCE_DIRECTORY_STRING;
+
+typedef struct _IMAGE_RESOURCE_DIR_STRING_U
+{
+	WORD Length;
+	WCHAR NameString[1];
+} IMAGE_RESOURCE_DIR_STRING_U,*PIMAGE_RESOURCE_DIR_STRING_U;
+
+typedef struct _IMAGE_RESOURCE_DATA_ENTRY
+{
 	DWORD OffsetToData;
-	struct {
-	  DWORD OffsetToDirectory:31;
-	  DWORD DataIsDirectory:1;
-	};
-      };
-    } IMAGE_RESOURCE_DIRECTORY_ENTRY,*PIMAGE_RESOURCE_DIRECTORY_ENTRY;
+	DWORD Size;
+	DWORD CodePage;
+	DWORD Reserved;
+} IMAGE_RESOURCE_DATA_ENTRY,*PIMAGE_RESOURCE_DATA_ENTRY;
 
-    typedef struct _IMAGE_RESOURCE_DIRECTORY_STRING {
-      WORD Length;
-      CHAR NameString[1];
-    } IMAGE_RESOURCE_DIRECTORY_STRING,*PIMAGE_RESOURCE_DIRECTORY_STRING;
+typedef struct
+{
+	DWORD Size;
+	DWORD TimeDateStamp;
+	WORD MajorVersion;
+	WORD MinorVersion;
+	DWORD GlobalFlagsClear;
+	DWORD GlobalFlagsSet;
+	DWORD CriticalSectionDefaultTimeout;
+	DWORD DeCommitFreeBlockThreshold;
+	DWORD DeCommitTotalFreeThreshold;
+	DWORD LockPrefixTable;
+	DWORD MaximumAllocationSize;
+	DWORD VirtualMemoryThreshold;
+	DWORD ProcessHeapFlags;
+	DWORD ProcessAffinityMask;
+	WORD CSDVersion;
+	WORD Reserved1;
+	DWORD EditList;
+	DWORD SecurityCookie;
+	DWORD SEHandlerTable;
+	DWORD SEHandlerCount;
+} IMAGE_LOAD_CONFIG_DIRECTORY32,*PIMAGE_LOAD_CONFIG_DIRECTORY32;
 
-    typedef struct _IMAGE_RESOURCE_DIR_STRING_U {
-      WORD Length;
-      WCHAR NameString[1];
-    } IMAGE_RESOURCE_DIR_STRING_U,*PIMAGE_RESOURCE_DIR_STRING_U;
-
-    typedef struct _IMAGE_RESOURCE_DATA_ENTRY {
-      DWORD OffsetToData;
-      DWORD Size;
-      DWORD CodePage;
-      DWORD Reserved;
-    } IMAGE_RESOURCE_DATA_ENTRY,*PIMAGE_RESOURCE_DATA_ENTRY;
-
-    typedef struct {
-      DWORD Size;
-      DWORD TimeDateStamp;
-      WORD MajorVersion;
-      WORD MinorVersion;
-      DWORD GlobalFlagsClear;
-      DWORD GlobalFlagsSet;
-      DWORD CriticalSectionDefaultTimeout;
-      DWORD DeCommitFreeBlockThreshold;
-      DWORD DeCommitTotalFreeThreshold;
-      DWORD LockPrefixTable;
-      DWORD MaximumAllocationSize;
-      DWORD VirtualMemoryThreshold;
-      DWORD ProcessHeapFlags;
-      DWORD ProcessAffinityMask;
-      WORD CSDVersion;
-      WORD Reserved1;
-      DWORD EditList;
-      DWORD SecurityCookie;
-      DWORD SEHandlerTable;
-      DWORD SEHandlerCount;
-    } IMAGE_LOAD_CONFIG_DIRECTORY32,*PIMAGE_LOAD_CONFIG_DIRECTORY32;
-
-    typedef struct {
-      DWORD Size;
-      DWORD TimeDateStamp;
-      WORD MajorVersion;
-      WORD MinorVersion;
-      DWORD GlobalFlagsClear;
-      DWORD GlobalFlagsSet;
-      DWORD CriticalSectionDefaultTimeout;
-      ULONGLONG DeCommitFreeBlockThreshold;
-      ULONGLONG DeCommitTotalFreeThreshold;
-      ULONGLONG LockPrefixTable;
-      ULONGLONG MaximumAllocationSize;
-      ULONGLONG VirtualMemoryThreshold;
-      ULONGLONG ProcessAffinityMask;
-      DWORD ProcessHeapFlags;
-      WORD CSDVersion;
-      WORD Reserved1;
-      ULONGLONG EditList;
-      ULONGLONG SecurityCookie;
-      ULONGLONG SEHandlerTable;
-      ULONGLONG SEHandlerCount;
-    } IMAGE_LOAD_CONFIG_DIRECTORY64,*PIMAGE_LOAD_CONFIG_DIRECTORY64;
+typedef struct
+{
+	DWORD Size;
+	DWORD TimeDateStamp;
+	WORD MajorVersion;
+	WORD MinorVersion;
+	DWORD GlobalFlagsClear;
+	DWORD GlobalFlagsSet;
+	DWORD CriticalSectionDefaultTimeout;
+	ULONGLONG DeCommitFreeBlockThreshold;
+	ULONGLONG DeCommitTotalFreeThreshold;
+	ULONGLONG LockPrefixTable;
+	ULONGLONG MaximumAllocationSize;
+	ULONGLONG VirtualMemoryThreshold;
+	ULONGLONG ProcessAffinityMask;
+	DWORD ProcessHeapFlags;
+	WORD CSDVersion;
+	WORD Reserved1;
+	ULONGLONG EditList;
+	ULONGLONG SecurityCookie;
+	ULONGLONG SEHandlerTable;
+	ULONGLONG SEHandlerCount;
+} IMAGE_LOAD_CONFIG_DIRECTORY64,*PIMAGE_LOAD_CONFIG_DIRECTORY64;
 
 #ifdef _WIN64
-    typedef IMAGE_LOAD_CONFIG_DIRECTORY64 IMAGE_LOAD_CONFIG_DIRECTORY;
-    typedef PIMAGE_LOAD_CONFIG_DIRECTORY64 PIMAGE_LOAD_CONFIG_DIRECTORY;
+typedef IMAGE_LOAD_CONFIG_DIRECTORY64 IMAGE_LOAD_CONFIG_DIRECTORY;
+typedef PIMAGE_LOAD_CONFIG_DIRECTORY64 PIMAGE_LOAD_CONFIG_DIRECTORY;
 #else
-    typedef IMAGE_LOAD_CONFIG_DIRECTORY32 IMAGE_LOAD_CONFIG_DIRECTORY;
-    typedef PIMAGE_LOAD_CONFIG_DIRECTORY32 PIMAGE_LOAD_CONFIG_DIRECTORY;
+typedef IMAGE_LOAD_CONFIG_DIRECTORY32 IMAGE_LOAD_CONFIG_DIRECTORY;
+typedef PIMAGE_LOAD_CONFIG_DIRECTORY32 PIMAGE_LOAD_CONFIG_DIRECTORY;
 #endif
 
-    typedef struct _IMAGE_CE_RUNTIME_FUNCTION_ENTRY {
-      DWORD FuncStart;
-      DWORD PrologLen : 8;
-      DWORD FuncLen : 22;
-      DWORD ThirtyTwoBit : 1;
-      DWORD ExceptionFlag : 1;
-    } IMAGE_CE_RUNTIME_FUNCTION_ENTRY,*PIMAGE_CE_RUNTIME_FUNCTION_ENTRY;
+typedef struct _IMAGE_CE_RUNTIME_FUNCTION_ENTRY
+{
+	DWORD FuncStart;
+	DWORD PrologLen : 8;
+	DWORD FuncLen : 22;
+	DWORD ThirtyTwoBit : 1;
+	DWORD ExceptionFlag : 1;
+} IMAGE_CE_RUNTIME_FUNCTION_ENTRY,*PIMAGE_CE_RUNTIME_FUNCTION_ENTRY;
 
-    typedef struct _IMAGE_ALPHA64_RUNTIME_FUNCTION_ENTRY {
-      ULONGLONG BeginAddress;
-      ULONGLONG EndAddress;
-      ULONGLONG ExceptionHandler;
-      ULONGLONG HandlerData;
-      ULONGLONG PrologEndAddress;
-    } IMAGE_ALPHA64_RUNTIME_FUNCTION_ENTRY,*PIMAGE_ALPHA64_RUNTIME_FUNCTION_ENTRY;
+typedef struct _IMAGE_ALPHA64_RUNTIME_FUNCTION_ENTRY
+{
+	ULONGLONG BeginAddress;
+	ULONGLONG EndAddress;
+	ULONGLONG ExceptionHandler;
+	ULONGLONG HandlerData;
+	ULONGLONG PrologEndAddress;
+} IMAGE_ALPHA64_RUNTIME_FUNCTION_ENTRY,*PIMAGE_ALPHA64_RUNTIME_FUNCTION_ENTRY;
 
-    typedef struct _IMAGE_ALPHA_RUNTIME_FUNCTION_ENTRY {
-      DWORD BeginAddress;
-      DWORD EndAddress;
-      DWORD ExceptionHandler;
-      DWORD HandlerData;
-      DWORD PrologEndAddress;
-    } IMAGE_ALPHA_RUNTIME_FUNCTION_ENTRY,*PIMAGE_ALPHA_RUNTIME_FUNCTION_ENTRY;
+typedef struct _IMAGE_ALPHA_RUNTIME_FUNCTION_ENTRY
+{
+	DWORD BeginAddress;
+	DWORD EndAddress;
+	DWORD ExceptionHandler;
+	DWORD HandlerData;
+	DWORD PrologEndAddress;
+} IMAGE_ALPHA_RUNTIME_FUNCTION_ENTRY,*PIMAGE_ALPHA_RUNTIME_FUNCTION_ENTRY;
 
-    typedef struct _IMAGE_RUNTIME_FUNCTION_ENTRY {
-      DWORD BeginAddress;
-      DWORD EndAddress;
-      DWORD UnwindInfoAddress;
-    } _IMAGE_RUNTIME_FUNCTION_ENTRY,*_PIMAGE_RUNTIME_FUNCTION_ENTRY;
+typedef struct _IMAGE_RUNTIME_FUNCTION_ENTRY
+{
+	DWORD BeginAddress;
+	DWORD EndAddress;
+	DWORD UnwindInfoAddress;
+} _IMAGE_RUNTIME_FUNCTION_ENTRY,*_PIMAGE_RUNTIME_FUNCTION_ENTRY;
 
-    typedef _IMAGE_RUNTIME_FUNCTION_ENTRY IMAGE_IA64_RUNTIME_FUNCTION_ENTRY;
-    typedef _PIMAGE_RUNTIME_FUNCTION_ENTRY PIMAGE_IA64_RUNTIME_FUNCTION_ENTRY;
+typedef _IMAGE_RUNTIME_FUNCTION_ENTRY IMAGE_IA64_RUNTIME_FUNCTION_ENTRY;
+typedef _PIMAGE_RUNTIME_FUNCTION_ENTRY PIMAGE_IA64_RUNTIME_FUNCTION_ENTRY;
 
-    typedef _IMAGE_RUNTIME_FUNCTION_ENTRY IMAGE_RUNTIME_FUNCTION_ENTRY;
-    typedef _PIMAGE_RUNTIME_FUNCTION_ENTRY PIMAGE_RUNTIME_FUNCTION_ENTRY;
+typedef _IMAGE_RUNTIME_FUNCTION_ENTRY IMAGE_RUNTIME_FUNCTION_ENTRY;
+typedef _PIMAGE_RUNTIME_FUNCTION_ENTRY PIMAGE_RUNTIME_FUNCTION_ENTRY;
 
-    typedef struct _IMAGE_DEBUG_DIRECTORY {
-      DWORD Characteristics;
-      DWORD TimeDateStamp;
-      WORD MajorVersion;
-      WORD MinorVersion;
-      DWORD Type;
-      DWORD SizeOfData;
-      DWORD AddressOfRawData;
-      DWORD PointerToRawData;
-    } IMAGE_DEBUG_DIRECTORY,*PIMAGE_DEBUG_DIRECTORY;
+typedef struct _IMAGE_DEBUG_DIRECTORY
+{
+	DWORD Characteristics;
+	DWORD TimeDateStamp;
+	WORD MajorVersion;
+	WORD MinorVersion;
+	DWORD Type;
+	DWORD SizeOfData;
+	DWORD AddressOfRawData;
+	DWORD PointerToRawData;
+} IMAGE_DEBUG_DIRECTORY,*PIMAGE_DEBUG_DIRECTORY;
 
 #define IMAGE_DEBUG_TYPE_UNKNOWN 0
 #define IMAGE_DEBUG_TYPE_COFF 1
@@ -4779,89 +5034,97 @@ typedef DWORD LCID;
 #define IMAGE_DEBUG_TYPE_RESERVED10 10
 #define IMAGE_DEBUG_TYPE_CLSID 11
 
-    typedef struct _IMAGE_COFF_SYMBOLS_HEADER {
-      DWORD NumberOfSymbols;
-      DWORD LvaToFirstSymbol;
-      DWORD NumberOfLinenumbers;
-      DWORD LvaToFirstLinenumber;
-      DWORD RvaToFirstByteOfCode;
-      DWORD RvaToLastByteOfCode;
-      DWORD RvaToFirstByteOfData;
-      DWORD RvaToLastByteOfData;
-    } IMAGE_COFF_SYMBOLS_HEADER,*PIMAGE_COFF_SYMBOLS_HEADER;
+typedef struct _IMAGE_COFF_SYMBOLS_HEADER
+{
+	DWORD NumberOfSymbols;
+	DWORD LvaToFirstSymbol;
+	DWORD NumberOfLinenumbers;
+	DWORD LvaToFirstLinenumber;
+	DWORD RvaToFirstByteOfCode;
+	DWORD RvaToLastByteOfCode;
+	DWORD RvaToFirstByteOfData;
+	DWORD RvaToLastByteOfData;
+} IMAGE_COFF_SYMBOLS_HEADER,*PIMAGE_COFF_SYMBOLS_HEADER;
 
 #define FRAME_FPO 0
 #define FRAME_TRAP 1
 #define FRAME_TSS 2
 #define FRAME_NONFPO 3
 
-    typedef struct _FPO_DATA {
-      DWORD ulOffStart;
-      DWORD cbProcSize;
-      DWORD cdwLocals;
-      WORD cdwParams;
-      WORD cbProlog : 8;
-      WORD cbRegs : 3;
-      WORD fHasSEH : 1;
-      WORD fUseBP : 1;
-      WORD reserved : 1;
-      WORD cbFrame : 2;
-    } FPO_DATA,*PFPO_DATA;
+typedef struct _FPO_DATA
+{
+	DWORD ulOffStart;
+	DWORD cbProcSize;
+	DWORD cdwLocals;
+	WORD cdwParams;
+	WORD cbProlog : 8;
+	WORD cbRegs : 3;
+	WORD fHasSEH : 1;
+	WORD fUseBP : 1;
+	WORD reserved : 1;
+	WORD cbFrame : 2;
+} FPO_DATA,*PFPO_DATA;
 #define SIZEOF_RFPO_DATA 16
 
 #define IMAGE_DEBUG_MISC_EXENAME 1
 
-    typedef struct _IMAGE_DEBUG_MISC {
-      DWORD DataType;
-      DWORD Length;
-      BOOLEAN Unicode;
-      BYTE Reserved[3];
-      BYTE Data[1];
-    } IMAGE_DEBUG_MISC,*PIMAGE_DEBUG_MISC;
+typedef struct _IMAGE_DEBUG_MISC
+{
+	DWORD DataType;
+	DWORD Length;
+	BOOLEAN Unicode;
+	BYTE Reserved[3];
+	BYTE Data[1];
+} IMAGE_DEBUG_MISC,*PIMAGE_DEBUG_MISC;
 
-    typedef struct _IMAGE_FUNCTION_ENTRY {
-      DWORD StartingAddress;
-      DWORD EndingAddress;
-      DWORD EndOfPrologue;
-    } IMAGE_FUNCTION_ENTRY,*PIMAGE_FUNCTION_ENTRY;
+typedef struct _IMAGE_FUNCTION_ENTRY
+{
+	DWORD StartingAddress;
+	DWORD EndingAddress;
+	DWORD EndOfPrologue;
+} IMAGE_FUNCTION_ENTRY,*PIMAGE_FUNCTION_ENTRY;
 
-    typedef struct _IMAGE_FUNCTION_ENTRY64 {
-      ULONGLONG StartingAddress;
-      ULONGLONG EndingAddress;
-      union {
-	ULONGLONG EndOfPrologue;
-	ULONGLONG UnwindInfoAddress;
-      };
-    } IMAGE_FUNCTION_ENTRY64,*PIMAGE_FUNCTION_ENTRY64;
+typedef struct _IMAGE_FUNCTION_ENTRY64
+{
+	ULONGLONG StartingAddress;
+	ULONGLONG EndingAddress;
+	union
+	{
+		ULONGLONG EndOfPrologue;
+		ULONGLONG UnwindInfoAddress;
+	};
+} IMAGE_FUNCTION_ENTRY64,*PIMAGE_FUNCTION_ENTRY64;
 
-    typedef struct _IMAGE_SEPARATE_DEBUG_HEADER {
-      WORD Signature;
-      WORD Flags;
-      WORD Machine;
-      WORD Characteristics;
-      DWORD TimeDateStamp;
-      DWORD CheckSum;
-      DWORD ImageBase;
-      DWORD SizeOfImage;
-      DWORD NumberOfSections;
-      DWORD ExportedNamesSize;
-      DWORD DebugDirectorySize;
-      DWORD SectionAlignment;
-      DWORD Reserved[2];
-    } IMAGE_SEPARATE_DEBUG_HEADER,*PIMAGE_SEPARATE_DEBUG_HEADER;
+typedef struct _IMAGE_SEPARATE_DEBUG_HEADER
+{
+	WORD Signature;
+	WORD Flags;
+	WORD Machine;
+	WORD Characteristics;
+	DWORD TimeDateStamp;
+	DWORD CheckSum;
+	DWORD ImageBase;
+	DWORD SizeOfImage;
+	DWORD NumberOfSections;
+	DWORD ExportedNamesSize;
+	DWORD DebugDirectorySize;
+	DWORD SectionAlignment;
+	DWORD Reserved[2];
+} IMAGE_SEPARATE_DEBUG_HEADER,*PIMAGE_SEPARATE_DEBUG_HEADER;
 
-    typedef struct _NON_PAGED_DEBUG_INFO {
-      WORD Signature;
-      WORD Flags;
-      DWORD Size;
-      WORD Machine;
-      WORD Characteristics;
-      DWORD TimeDateStamp;
-      DWORD CheckSum;
-      DWORD SizeOfImage;
-      ULONGLONG ImageBase;
+typedef struct _NON_PAGED_DEBUG_INFO
+{
+	WORD Signature;
+	WORD Flags;
+	DWORD Size;
+	WORD Machine;
+	WORD Characteristics;
+	DWORD TimeDateStamp;
+	DWORD CheckSum;
+	DWORD SizeOfImage;
+	ULONGLONG ImageBase;
 
-    } NON_PAGED_DEBUG_INFO,*PNON_PAGED_DEBUG_INFO;
+} NON_PAGED_DEBUG_INFO,*PNON_PAGED_DEBUG_INFO;
 
 #define IMAGE_SEPARATE_DEBUG_SIGNATURE 0x4944
 #define NON_PAGED_DEBUG_SIGNATURE 0x494E
@@ -4869,77 +5132,85 @@ typedef DWORD LCID;
 #define IMAGE_SEPARATE_DEBUG_FLAGS_MASK 0x8000
 #define IMAGE_SEPARATE_DEBUG_MISMATCH 0x8000
 
-    typedef struct _ImageArchitectureHeader {
-      unsigned int AmaskValue: 1;
-      int Adummy1 :7;
-      unsigned int AmaskShift: 8;
-      int Adummy2 :16;
-      DWORD FirstEntryRVA;
-    } IMAGE_ARCHITECTURE_HEADER,*PIMAGE_ARCHITECTURE_HEADER;
+typedef struct _ImageArchitectureHeader
+{
+	unsigned int AmaskValue: 1;
+	int Adummy1 :7;
+	unsigned int AmaskShift: 8;
+	int Adummy2 :16;
+	DWORD FirstEntryRVA;
+} IMAGE_ARCHITECTURE_HEADER,*PIMAGE_ARCHITECTURE_HEADER;
 
-    typedef struct _ImageArchitectureEntry {
-      DWORD FixupInstRVA;
-      DWORD NewInst;
-    } IMAGE_ARCHITECTURE_ENTRY,*PIMAGE_ARCHITECTURE_ENTRY;
+typedef struct _ImageArchitectureEntry
+{
+	DWORD FixupInstRVA;
+	DWORD NewInst;
+} IMAGE_ARCHITECTURE_ENTRY,*PIMAGE_ARCHITECTURE_ENTRY;
 
 #include "poppack.h"
 
 #define IMPORT_OBJECT_HDR_SIG2 0xffff
 
-    typedef struct IMPORT_OBJECT_HEADER {
-      WORD Sig1;
-      WORD Sig2;
-      WORD Version;
-      WORD Machine;
-      DWORD TimeDateStamp;
-      DWORD SizeOfData;
-      union {
-	WORD Ordinal;
-	WORD Hint;
-      };
-      WORD Type : 2;
-      WORD NameType : 3;
-      WORD Reserved : 11;
-    } IMPORT_OBJECT_HEADER;
+typedef struct IMPORT_OBJECT_HEADER
+{
+	WORD Sig1;
+	WORD Sig2;
+	WORD Version;
+	WORD Machine;
+	DWORD TimeDateStamp;
+	DWORD SizeOfData;
+	union
+	{
+		WORD Ordinal;
+		WORD Hint;
+	};
+	WORD Type : 2;
+	WORD NameType : 3;
+	WORD Reserved : 11;
+} IMPORT_OBJECT_HEADER;
 
-    typedef enum IMPORT_OBJECT_TYPE {
-      IMPORT_OBJECT_CODE = 0,IMPORT_OBJECT_DATA = 1,IMPORT_OBJECT_CONST = 2
-    } IMPORT_OBJECT_TYPE;
+typedef enum IMPORT_OBJECT_TYPE
+{
+	IMPORT_OBJECT_CODE = 0,IMPORT_OBJECT_DATA = 1,IMPORT_OBJECT_CONST = 2
+} IMPORT_OBJECT_TYPE;
 
-    typedef enum IMPORT_OBJECT_NAME_TYPE {
-      IMPORT_OBJECT_ORDINAL = 0,IMPORT_OBJECT_NAME = 1,IMPORT_OBJECT_NAME_NO_PREFIX = 2,IMPORT_OBJECT_NAME_UNDECORATE = 3
-    } IMPORT_OBJECT_NAME_TYPE;
+typedef enum IMPORT_OBJECT_NAME_TYPE
+{
+	IMPORT_OBJECT_ORDINAL = 0,IMPORT_OBJECT_NAME = 1,IMPORT_OBJECT_NAME_NO_PREFIX = 2,IMPORT_OBJECT_NAME_UNDECORATE = 3
+} IMPORT_OBJECT_NAME_TYPE;
 
 #ifndef __IMAGE_COR20_HEADER_DEFINED__
 #define __IMAGE_COR20_HEADER_DEFINED__
-    typedef enum ReplacesCorHdrNumericDefines {
-      COMIMAGE_FLAGS_ILONLY =0x00000001,COMIMAGE_FLAGS_32BITREQUIRED =0x00000002,COMIMAGE_FLAGS_IL_LIBRARY =0x00000004,
-      COMIMAGE_FLAGS_STRONGNAMESIGNED =0x00000008,COMIMAGE_FLAGS_TRACKDEBUGDATA =0x00010000,COR_VERSION_MAJOR_V2 =2,
-      COR_VERSION_MAJOR =COR_VERSION_MAJOR_V2,COR_VERSION_MINOR =0,COR_DELETED_NAME_LENGTH =8,COR_VTABLEGAP_NAME_LENGTH =8,
-      NATIVE_TYPE_MAX_CB =1,COR_ILMETHOD_SECT_SMALL_MAX_DATASIZE=0xFF,IMAGE_COR_MIH_METHODRVA =0x01,IMAGE_COR_MIH_EHRVA =0x02,
-      IMAGE_COR_MIH_BASICBLOCK =0x08,COR_VTABLE_32BIT =0x01,COR_VTABLE_64BIT =0x02,COR_VTABLE_FROM_UNMANAGED =0x04,
-      COR_VTABLE_CALL_MOST_DERIVED =0x10,IMAGE_COR_EATJ_THUNK_SIZE =32,MAX_CLASS_NAME =1024,MAX_PACKAGE_NAME =1024
-    } ReplacesCorHdrNumericDefines;
+typedef enum ReplacesCorHdrNumericDefines
+{
+	COMIMAGE_FLAGS_ILONLY =0x00000001,COMIMAGE_FLAGS_32BITREQUIRED =0x00000002,COMIMAGE_FLAGS_IL_LIBRARY =0x00000004,
+	COMIMAGE_FLAGS_STRONGNAMESIGNED =0x00000008,COMIMAGE_FLAGS_TRACKDEBUGDATA =0x00010000,COR_VERSION_MAJOR_V2 =2,
+	COR_VERSION_MAJOR =COR_VERSION_MAJOR_V2,COR_VERSION_MINOR =0,COR_DELETED_NAME_LENGTH =8,COR_VTABLEGAP_NAME_LENGTH =8,
+	NATIVE_TYPE_MAX_CB =1,COR_ILMETHOD_SECT_SMALL_MAX_DATASIZE=0xFF,IMAGE_COR_MIH_METHODRVA =0x01,IMAGE_COR_MIH_EHRVA =0x02,
+	IMAGE_COR_MIH_BASICBLOCK =0x08,COR_VTABLE_32BIT =0x01,COR_VTABLE_64BIT =0x02,COR_VTABLE_FROM_UNMANAGED =0x04,
+	COR_VTABLE_CALL_MOST_DERIVED =0x10,IMAGE_COR_EATJ_THUNK_SIZE =32,MAX_CLASS_NAME =1024,MAX_PACKAGE_NAME =1024
+} ReplacesCorHdrNumericDefines;
 
-    typedef struct IMAGE_COR20_HEADER {
-      DWORD cb;
-      WORD MajorRuntimeVersion;
-      WORD MinorRuntimeVersion;
-      IMAGE_DATA_DIRECTORY MetaData;
-      DWORD Flags;
-      DWORD EntryPointToken;
-      IMAGE_DATA_DIRECTORY Resources;
-      IMAGE_DATA_DIRECTORY StrongNameSignature;
-      IMAGE_DATA_DIRECTORY CodeManagerTable;
-      IMAGE_DATA_DIRECTORY VTableFixups;
-      IMAGE_DATA_DIRECTORY ExportAddressTableJumps;
-      IMAGE_DATA_DIRECTORY ManagedNativeHeader;
-    } IMAGE_COR20_HEADER,*PIMAGE_COR20_HEADER;
+typedef struct IMAGE_COR20_HEADER
+{
+	DWORD cb;
+	WORD MajorRuntimeVersion;
+	WORD MinorRuntimeVersion;
+	IMAGE_DATA_DIRECTORY MetaData;
+	DWORD Flags;
+	DWORD EntryPointToken;
+	IMAGE_DATA_DIRECTORY Resources;
+	IMAGE_DATA_DIRECTORY StrongNameSignature;
+	IMAGE_DATA_DIRECTORY CodeManagerTable;
+	IMAGE_DATA_DIRECTORY VTableFixups;
+	IMAGE_DATA_DIRECTORY ExportAddressTableJumps;
+	IMAGE_DATA_DIRECTORY ManagedNativeHeader;
+} IMAGE_COR20_HEADER,*PIMAGE_COR20_HEADER;
 #endif
 
 #if defined (__x86_64)
-    NTSYSAPI PRUNTIME_FUNCTION NTAPI RtlLookupFunctionEntry (DWORD64 ControlPc, PDWORD64 ImageBase, PUNWIND_HISTORY_TABLE HistoryTable);
-    NTSYSAPI VOID NTAPI RtlUnwindEx (PVOID TargetFrame, PVOID TargetIp, PEXCEPTION_RECORD ExceptionRecord, PVOID ReturnValue, PCONTEXT ContextRecord, PUNWIND_HISTORY_TABLE HistoryTable);
+NTSYSAPI PRUNTIME_FUNCTION NTAPI RtlLookupFunctionEntry (DWORD64 ControlPc, PDWORD64 ImageBase, PUNWIND_HISTORY_TABLE HistoryTable);
+NTSYSAPI VOID NTAPI RtlUnwindEx (PVOID TargetFrame, PVOID TargetIp, PEXCEPTION_RECORD ExceptionRecord, PVOID ReturnValue, PCONTEXT ContextRecord, PUNWIND_HISTORY_TABLE HistoryTable);
 #endif
 
 #include <string.h>
@@ -4948,10 +5219,11 @@ typedef DWORD LCID;
 #define _SLIST_HEADER_
 
 #ifdef _WIN64
-    typedef struct _SLIST_ENTRY *PSLIST_ENTRY;
-    typedef struct DECLSPEC_ALIGN(16) _SLIST_ENTRY {
-      PSLIST_ENTRY Next;
-    } SLIST_ENTRY;
+typedef struct _SLIST_ENTRY *PSLIST_ENTRY;
+typedef struct DECLSPEC_ALIGN(16) _SLIST_ENTRY
+{
+    PSLIST_ENTRY Next;
+} SLIST_ENTRY;
 #else
 
 #define SLIST_ENTRY SINGLE_LIST_ENTRY
@@ -4961,31 +5233,34 @@ typedef DWORD LCID;
 
 #if defined(_WIN64)
 
-    typedef struct DECLSPEC_ALIGN(16) _SLIST_HEADER {
-      ULONGLONG Alignment;
-      ULONGLONG Region;
-    } SLIST_HEADER;
+typedef struct DECLSPEC_ALIGN(16) _SLIST_HEADER
+{
+    ULONGLONG Alignment;
+    ULONGLONG Region;
+} SLIST_HEADER;
 
-    typedef struct _SLIST_HEADER *PSLIST_HEADER;
+typedef struct _SLIST_HEADER *PSLIST_HEADER;
 #else
 
-    typedef union _SLIST_HEADER {
-      ULONGLONG Alignment;
-      struct {
-	SLIST_ENTRY Next;
-	WORD Depth;
-	WORD Sequence;
-      };
-    } SLIST_HEADER,*PSLIST_HEADER;
+typedef union _SLIST_HEADER
+{
+	ULONGLONG Alignment;
+	struct
+	{
+		SLIST_ENTRY Next;
+		WORD Depth;
+		WORD Sequence;
+	};
+} SLIST_HEADER,*PSLIST_HEADER;
 #endif
 #endif
 
-    NTSYSAPI VOID NTAPI RtlInitializeSListHead(PSLIST_HEADER ListHead);
-    NTSYSAPI PSLIST_ENTRY NTAPI RtlFirstEntrySList(const SLIST_HEADER *ListHead);
-    NTSYSAPI PSLIST_ENTRY NTAPI RtlInterlockedPopEntrySList(PSLIST_HEADER ListHead);
-    NTSYSAPI PSLIST_ENTRY NTAPI RtlInterlockedPushEntrySList(PSLIST_HEADER ListHead,PSLIST_ENTRY ListEntry);
-    NTSYSAPI PSLIST_ENTRY NTAPI RtlInterlockedFlushSList(PSLIST_HEADER ListHead);
-    NTSYSAPI WORD NTAPI RtlQueryDepthSList(PSLIST_HEADER ListHead);
+NTSYSAPI VOID NTAPI RtlInitializeSListHead(PSLIST_HEADER ListHead);
+NTSYSAPI PSLIST_ENTRY NTAPI RtlFirstEntrySList(const SLIST_HEADER *ListHead);
+NTSYSAPI PSLIST_ENTRY NTAPI RtlInterlockedPopEntrySList(PSLIST_HEADER ListHead);
+NTSYSAPI PSLIST_ENTRY NTAPI RtlInterlockedPushEntrySList(PSLIST_HEADER ListHead,PSLIST_ENTRY ListEntry);
+NTSYSAPI PSLIST_ENTRY NTAPI RtlInterlockedFlushSList(PSLIST_HEADER ListHead);
+NTSYSAPI WORD NTAPI RtlQueryDepthSList(PSLIST_HEADER ListHead);
 
 #define HEAP_NO_SERIALIZE 0x00000001
 #define HEAP_GROWABLE 0x00000002
@@ -5003,7 +5278,7 @@ typedef DWORD LCID;
 #define HEAP_TAG_SHIFT 18
 #define HEAP_MAKE_TAG_FLAGS(b,o) ((DWORD)((b) + ((o) << 18)))
 
-    NTSYSAPI VOID NTAPI RtlCaptureContext(PCONTEXT ContextRecord);
+NTSYSAPI VOID NTAPI RtlCaptureContext(PCONTEXT ContextRecord);
 
 #define IS_TEXT_UNICODE_ASCII16 0x0001
 #define IS_TEXT_UNICODE_REVERSE_ASCII16 0x0010
@@ -5036,16 +5311,18 @@ typedef DWORD LCID;
 
 #if _DBG_MEMCPY_INLINE_ && !defined(_MEMCPY_INLINE_) && !defined(_CRTBLD)
 #define _MEMCPY_INLINE_
-    __CRT_INLINE PVOID __cdecl memcpy_inline(void *dst,const void *src,size_t size) {
-      if(((char *)dst > (char *)src) && ((char *)dst < ((char *)src + size))) {
-	__debugbreak();
-      }
-      return memcpy(dst,src,size);
-    }
+__CRT_INLINE PVOID __cdecl memcpy_inline(void *dst,const void *src,size_t size)
+{
+	if(((char *)dst > (char *)src) && ((char *)dst < ((char *)src + size)))
+	{
+		__debugbreak();
+	}
+	return memcpy(dst,src,size);
+}
 #define memcpy memcpy_inline
 #endif
 
-    NTSYSAPI SIZE_T NTAPI RtlCompareMemory(const VOID *Source1,const VOID *Source2,SIZE_T Length);
+NTSYSAPI SIZE_T NTAPI RtlCompareMemory(const VOID *Source1,const VOID *Source2,SIZE_T Length);
 
 #define RtlEqualMemory(Destination,Source,Length) (!memcmp((Destination),(Source),(Length)))
 #define RtlMoveMemory(Destination,Source,Length) memmove((Destination),(Source),(Length))
@@ -5053,102 +5330,111 @@ typedef DWORD LCID;
 #define RtlFillMemory(Destination,Length,Fill) memset((Destination),(Fill),(Length))
 #define RtlZeroMemory(Destination,Length) memset((Destination),0,(Length))
 
-    __CRT_INLINE PVOID RtlSecureZeroMemory(PVOID ptr,SIZE_T cnt) {
-      volatile char *vptr =(volatile char *)ptr;
+__CRT_INLINE PVOID RtlSecureZeroMemory(PVOID ptr,SIZE_T cnt)
+{
+	volatile char *vptr =(volatile char *)ptr;
 #ifdef __x86_64
-      __stosb((PBYTE)((DWORD64)vptr),0,cnt);
+	__stosb((PBYTE)((DWORD64)vptr),0,cnt);
 #else
-      while(cnt) {
-	*vptr = 0;
-	vptr++;
-	cnt--;
-      }
+	while(cnt)
+	{
+		*vptr = 0;
+		vptr++;
+		cnt--;
+	}
 #endif
-      return ptr;
-    }
+	return ptr;
+}
 
-    typedef struct _MESSAGE_RESOURCE_ENTRY {
-      WORD Length;
-      WORD Flags;
-      BYTE Text[1];
-    } MESSAGE_RESOURCE_ENTRY,*PMESSAGE_RESOURCE_ENTRY;
+typedef struct _MESSAGE_RESOURCE_ENTRY
+{
+	WORD Length;
+	WORD Flags;
+	BYTE Text[1];
+} MESSAGE_RESOURCE_ENTRY,*PMESSAGE_RESOURCE_ENTRY;
 
 #define MESSAGE_RESOURCE_UNICODE 0x0001
 
-    typedef struct _MESSAGE_RESOURCE_BLOCK {
-      DWORD LowId;
-      DWORD HighId;
-      DWORD OffsetToEntries;
-    } MESSAGE_RESOURCE_BLOCK,*PMESSAGE_RESOURCE_BLOCK;
+typedef struct _MESSAGE_RESOURCE_BLOCK
+{
+	DWORD LowId;
+	DWORD HighId;
+	DWORD OffsetToEntries;
+} MESSAGE_RESOURCE_BLOCK,*PMESSAGE_RESOURCE_BLOCK;
 
-    typedef struct _MESSAGE_RESOURCE_DATA {
-      DWORD NumberOfBlocks;
-      MESSAGE_RESOURCE_BLOCK Blocks[1];
-    } MESSAGE_RESOURCE_DATA,*PMESSAGE_RESOURCE_DATA;
+typedef struct _MESSAGE_RESOURCE_DATA
+{
+	DWORD NumberOfBlocks;
+	MESSAGE_RESOURCE_BLOCK Blocks[1];
+} MESSAGE_RESOURCE_DATA,*PMESSAGE_RESOURCE_DATA;
 
-    typedef struct _OSVERSIONINFOA {
-      DWORD dwOSVersionInfoSize;
-      DWORD dwMajorVersion;
-      DWORD dwMinorVersion;
-      DWORD dwBuildNumber;
-      DWORD dwPlatformId;
-      CHAR szCSDVersion[128];
-    } OSVERSIONINFOA,*POSVERSIONINFOA,*LPOSVERSIONINFOA;
+typedef struct _OSVERSIONINFOA
+{
+	DWORD dwOSVersionInfoSize;
+	DWORD dwMajorVersion;
+	DWORD dwMinorVersion;
+	DWORD dwBuildNumber;
+	DWORD dwPlatformId;
+	CHAR szCSDVersion[128];
+} OSVERSIONINFOA,*POSVERSIONINFOA,*LPOSVERSIONINFOA;
 
-    typedef struct _OSVERSIONINFOW {
-      DWORD dwOSVersionInfoSize;
-      DWORD dwMajorVersion;
-      DWORD dwMinorVersion;
-      DWORD dwBuildNumber;
-      DWORD dwPlatformId;
-      WCHAR szCSDVersion[128];
-    } OSVERSIONINFOW,*POSVERSIONINFOW,*LPOSVERSIONINFOW,RTL_OSVERSIONINFOW,*PRTL_OSVERSIONINFOW;
+typedef struct _OSVERSIONINFOW
+{
+	DWORD dwOSVersionInfoSize;
+	DWORD dwMajorVersion;
+	DWORD dwMinorVersion;
+	DWORD dwBuildNumber;
+	DWORD dwPlatformId;
+	WCHAR szCSDVersion[128];
+} OSVERSIONINFOW,*POSVERSIONINFOW,*LPOSVERSIONINFOW,RTL_OSVERSIONINFOW,*PRTL_OSVERSIONINFOW;
 
 #ifdef UNICODE
-    typedef OSVERSIONINFOW OSVERSIONINFO;
-    typedef POSVERSIONINFOW POSVERSIONINFO;
-    typedef LPOSVERSIONINFOW LPOSVERSIONINFO;
+typedef OSVERSIONINFOW OSVERSIONINFO;
+typedef POSVERSIONINFOW POSVERSIONINFO;
+typedef LPOSVERSIONINFOW LPOSVERSIONINFO;
 #else
-    typedef OSVERSIONINFOA OSVERSIONINFO;
-    typedef POSVERSIONINFOA POSVERSIONINFO;
-    typedef LPOSVERSIONINFOA LPOSVERSIONINFO;
+typedef OSVERSIONINFOA OSVERSIONINFO;
+typedef POSVERSIONINFOA POSVERSIONINFO;
+typedef LPOSVERSIONINFOA LPOSVERSIONINFO;
 #endif
 
-    typedef struct _OSVERSIONINFOEXA {
-      DWORD dwOSVersionInfoSize;
-      DWORD dwMajorVersion;
-      DWORD dwMinorVersion;
-      DWORD dwBuildNumber;
-      DWORD dwPlatformId;
-      CHAR szCSDVersion[128];
-      WORD wServicePackMajor;
-      WORD wServicePackMinor;
-      WORD wSuiteMask;
-      BYTE wProductType;
-      BYTE wReserved;
-    } OSVERSIONINFOEXA,*POSVERSIONINFOEXA,*LPOSVERSIONINFOEXA;
+typedef struct _OSVERSIONINFOEXA
+{
+	DWORD dwOSVersionInfoSize;
+	DWORD dwMajorVersion;
+	DWORD dwMinorVersion;
+	DWORD dwBuildNumber;
+	DWORD dwPlatformId;
+	CHAR szCSDVersion[128];
+	WORD wServicePackMajor;
+	WORD wServicePackMinor;
+	WORD wSuiteMask;
+	BYTE wProductType;
+	BYTE wReserved;
+} OSVERSIONINFOEXA,*POSVERSIONINFOEXA,*LPOSVERSIONINFOEXA;
 
-    typedef struct _OSVERSIONINFOEXW {
-      DWORD dwOSVersionInfoSize;
-      DWORD dwMajorVersion;
-      DWORD dwMinorVersion;
-      DWORD dwBuildNumber;
-      DWORD dwPlatformId;
-      WCHAR szCSDVersion[128];
-      WORD wServicePackMajor;
-      WORD wServicePackMinor;
-      WORD wSuiteMask;
-      BYTE wProductType;
-      BYTE wReserved;
-    } OSVERSIONINFOEXW,*POSVERSIONINFOEXW,*LPOSVERSIONINFOEXW,RTL_OSVERSIONINFOEXW,*PRTL_OSVERSIONINFOEXW;
+typedef struct _OSVERSIONINFOEXW
+{
+	DWORD dwOSVersionInfoSize;
+	DWORD dwMajorVersion;
+	DWORD dwMinorVersion;
+	DWORD dwBuildNumber;
+	DWORD dwPlatformId;
+	WCHAR szCSDVersion[128];
+	WORD wServicePackMajor;
+	WORD wServicePackMinor;
+	WORD wSuiteMask;
+	BYTE wProductType;
+	BYTE wReserved;
+} OSVERSIONINFOEXW,*POSVERSIONINFOEXW,*LPOSVERSIONINFOEXW,RTL_OSVERSIONINFOEXW,*PRTL_OSVERSIONINFOEXW;
 #ifdef UNICODE
-    typedef OSVERSIONINFOEXW OSVERSIONINFOEX;
-    typedef POSVERSIONINFOEXW POSVERSIONINFOEX;
-    typedef LPOSVERSIONINFOEXW LPOSVERSIONINFOEX;
+typedef OSVERSIONINFOEXW OSVERSIONINFOEX;
+typedef POSVERSIONINFOEXW POSVERSIONINFOEX;
+typedef LPOSVERSIONINFOEXW LPOSVERSIONINFOEX;
 #else
-    typedef OSVERSIONINFOEXA OSVERSIONINFOEX;
-    typedef POSVERSIONINFOEXA POSVERSIONINFOEX;
-    typedef LPOSVERSIONINFOEXA LPOSVERSIONINFOEX;
+typedef OSVERSIONINFOEXA OSVERSIONINFOEX;
+typedef POSVERSIONINFOEXA POSVERSIONINFOEX;
+typedef LPOSVERSIONINFOEXA LPOSVERSIONINFOEX;
 #endif
 
 #define VER_EQUAL 1
@@ -5181,60 +5467,65 @@ typedef DWORD LCID;
 
 #define VER_SET_CONDITION(_m_,_t_,_c_) ((_m_)=VerSetConditionMask((_m_),(_t_),(_c_)))
 
-    NTSYSAPI ULONGLONG NTAPI VerSetConditionMask(ULONGLONG ConditionMask,DWORD TypeMask,BYTE Condition);
+NTSYSAPI ULONGLONG NTAPI VerSetConditionMask(ULONGLONG ConditionMask,DWORD TypeMask,BYTE Condition);
 
-    typedef struct _RTL_CRITICAL_SECTION_DEBUG {
-      WORD Type;
-      WORD CreatorBackTraceIndex;
-      struct _RTL_CRITICAL_SECTION *CriticalSection;
-      LIST_ENTRY ProcessLocksList;
-      DWORD EntryCount;
-      DWORD ContentionCount;
-      DWORD Spare[2];
-    } RTL_CRITICAL_SECTION_DEBUG,*PRTL_CRITICAL_SECTION_DEBUG,RTL_RESOURCE_DEBUG,*PRTL_RESOURCE_DEBUG;
+typedef struct _RTL_CRITICAL_SECTION_DEBUG
+{
+	WORD Type;
+	WORD CreatorBackTraceIndex;
+	struct _RTL_CRITICAL_SECTION *CriticalSection;
+	LIST_ENTRY ProcessLocksList;
+	DWORD EntryCount;
+	DWORD ContentionCount;
+	DWORD Spare[2];
+} RTL_CRITICAL_SECTION_DEBUG,*PRTL_CRITICAL_SECTION_DEBUG,RTL_RESOURCE_DEBUG,*PRTL_RESOURCE_DEBUG;
 
 #define RTL_CRITSECT_TYPE 0
 #define RTL_RESOURCE_TYPE 1
 
-    typedef struct _RTL_CRITICAL_SECTION {
-      PRTL_CRITICAL_SECTION_DEBUG DebugInfo;
-      LONG LockCount;
-      LONG RecursionCount;
-      HANDLE OwningThread;
-      HANDLE LockSemaphore;
-      ULONG_PTR SpinCount;
-    } RTL_CRITICAL_SECTION,*PRTL_CRITICAL_SECTION;
+typedef struct _RTL_CRITICAL_SECTION
+{
+	PRTL_CRITICAL_SECTION_DEBUG DebugInfo;
+	LONG LockCount;
+	LONG RecursionCount;
+	HANDLE OwningThread;
+	HANDLE LockSemaphore;
+	ULONG_PTR SpinCount;
+} RTL_CRITICAL_SECTION,*PRTL_CRITICAL_SECTION;
 
-    typedef VOID (NTAPI *RTL_VERIFIER_DLL_LOAD_CALLBACK) (PWSTR DllName,PVOID DllBase,SIZE_T DllSize,PVOID Reserved);
-    typedef VOID (NTAPI *RTL_VERIFIER_DLL_UNLOAD_CALLBACK) (PWSTR DllName,PVOID DllBase,SIZE_T DllSize,PVOID Reserved);
-    typedef VOID (NTAPI *RTL_VERIFIER_NTDLLHEAPFREE_CALLBACK)(PVOID AllocationBase,SIZE_T AllocationSize);
+typedef VOID (NTAPI *RTL_VERIFIER_DLL_LOAD_CALLBACK) (PWSTR DllName,PVOID DllBase,SIZE_T DllSize,PVOID Reserved);
+typedef VOID (NTAPI *RTL_VERIFIER_DLL_UNLOAD_CALLBACK) (PWSTR DllName,PVOID DllBase,SIZE_T DllSize,PVOID Reserved);
+typedef VOID (NTAPI *RTL_VERIFIER_NTDLLHEAPFREE_CALLBACK)(PVOID AllocationBase,SIZE_T AllocationSize);
 
-    typedef struct _RTL_VERIFIER_THUNK_DESCRIPTOR {
-      PCHAR ThunkName;
-      PVOID ThunkOldAddress;
-      PVOID ThunkNewAddress;
-    } RTL_VERIFIER_THUNK_DESCRIPTOR,*PRTL_VERIFIER_THUNK_DESCRIPTOR;
+typedef struct _RTL_VERIFIER_THUNK_DESCRIPTOR
+{
+	PCHAR ThunkName;
+	PVOID ThunkOldAddress;
+	PVOID ThunkNewAddress;
+} RTL_VERIFIER_THUNK_DESCRIPTOR,*PRTL_VERIFIER_THUNK_DESCRIPTOR;
 
-    typedef struct _RTL_VERIFIER_DLL_DESCRIPTOR {
-      PWCHAR DllName;
-      DWORD DllFlags;
-      PVOID DllAddress;
-      PRTL_VERIFIER_THUNK_DESCRIPTOR DllThunks;
-    } RTL_VERIFIER_DLL_DESCRIPTOR,*PRTL_VERIFIER_DLL_DESCRIPTOR;
+typedef struct _RTL_VERIFIER_DLL_DESCRIPTOR
+{
+	PWCHAR DllName;
+	DWORD DllFlags;
+	PVOID DllAddress;
+	PRTL_VERIFIER_THUNK_DESCRIPTOR DllThunks;
+} RTL_VERIFIER_DLL_DESCRIPTOR,*PRTL_VERIFIER_DLL_DESCRIPTOR;
 
-    typedef struct _RTL_VERIFIER_PROVIDER_DESCRIPTOR {
-      DWORD Length;
-      PRTL_VERIFIER_DLL_DESCRIPTOR ProviderDlls;
-      RTL_VERIFIER_DLL_LOAD_CALLBACK ProviderDllLoadCallback;
-      RTL_VERIFIER_DLL_UNLOAD_CALLBACK ProviderDllUnloadCallback;
-      PWSTR VerifierImage;
-      DWORD VerifierFlags;
-      DWORD VerifierDebug;
-      PVOID RtlpGetStackTraceAddress;
-      PVOID RtlpDebugPageHeapCreate;
-      PVOID RtlpDebugPageHeapDestroy;
-      RTL_VERIFIER_NTDLLHEAPFREE_CALLBACK ProviderNtdllHeapFreeCallback;
-    } RTL_VERIFIER_PROVIDER_DESCRIPTOR,*PRTL_VERIFIER_PROVIDER_DESCRIPTOR;
+typedef struct _RTL_VERIFIER_PROVIDER_DESCRIPTOR
+{
+	DWORD Length;
+	PRTL_VERIFIER_DLL_DESCRIPTOR ProviderDlls;
+	RTL_VERIFIER_DLL_LOAD_CALLBACK ProviderDllLoadCallback;
+	RTL_VERIFIER_DLL_UNLOAD_CALLBACK ProviderDllUnloadCallback;
+	PWSTR VerifierImage;
+	DWORD VerifierFlags;
+	DWORD VerifierDebug;
+	PVOID RtlpGetStackTraceAddress;
+	PVOID RtlpDebugPageHeapCreate;
+	PVOID RtlpDebugPageHeapDestroy;
+	RTL_VERIFIER_NTDLLHEAPFREE_CALLBACK ProviderNtdllHeapFreeCallback;
+} RTL_VERIFIER_PROVIDER_DESCRIPTOR,*PRTL_VERIFIER_PROVIDER_DESCRIPTOR;
 
 #define RTL_VRF_FLG_FULL_PAGE_HEAP 0x00000001
 #define RTL_VRF_FLG_RESERVED_DONOTUSE 0x00000002
@@ -5341,9 +5632,9 @@ typedef DWORD LCID;
 
 #define VERIFIER_STOP(Code,Msg,P1,S1,P2,S2,P3,S3,P4,S4) { RtlApplicationVerifierStop ((Code),(Msg),(ULONG_PTR)(P1),(S1),(ULONG_PTR)(P2),(S2),(ULONG_PTR)(P3),(S3),(ULONG_PTR)(P4),(S4)); }
 
-    VOID NTAPI RtlApplicationVerifierStop(ULONG_PTR Code,PSTR Message,ULONG_PTR Param1,PSTR Description1,ULONG_PTR Param2,PSTR Description2,ULONG_PTR Param3,PSTR Description3,ULONG_PTR Param4,PSTR Description4);
+VOID NTAPI RtlApplicationVerifierStop(ULONG_PTR Code,PSTR Message,ULONG_PTR Param1,PSTR Description1,ULONG_PTR Param2,PSTR Description2,ULONG_PTR Param3,PSTR Description3,ULONG_PTR Param4,PSTR Description4);
 
-    typedef LONG (NTAPI *PVECTORED_EXCEPTION_HANDLER)(struct _EXCEPTION_POINTERS *ExceptionInfo);
+typedef LONG (NTAPI *PVECTORED_EXCEPTION_HANDLER)(struct _EXCEPTION_POINTERS *ExceptionInfo);
 #define SEF_DACL_AUTO_INHERIT 0x01
 #define SEF_SACL_AUTO_INHERIT 0x02
 #define SEF_DEFAULT_DESCRIPTOR_FOR_OBJECT 0x04
@@ -5352,14 +5643,15 @@ typedef DWORD LCID;
 #define SEF_DEFAULT_OWNER_FROM_PARENT 0x20
 #define SEF_DEFAULT_GROUP_FROM_PARENT 0x40
 
-    typedef enum _HEAP_INFORMATION_CLASS {
-      HeapCompatibilityInformation
-    } HEAP_INFORMATION_CLASS;
+typedef enum _HEAP_INFORMATION_CLASS
+{
+	HeapCompatibilityInformation
+} HEAP_INFORMATION_CLASS;
 
-    NTSYSAPI DWORD NTAPI RtlSetHeapInformation(PVOID HeapHandle,HEAP_INFORMATION_CLASS HeapInformationClass,PVOID HeapInformation,SIZE_T HeapInformationLength);
-    NTSYSAPI DWORD NTAPI RtlQueryHeapInformation(PVOID HeapHandle,HEAP_INFORMATION_CLASS HeapInformationClass,PVOID HeapInformation,SIZE_T HeapInformationLength,PSIZE_T ReturnLength);
-    DWORD NTAPI RtlMultipleAllocateHeap(PVOID HeapHandle,DWORD Flags,SIZE_T Size,DWORD Count,PVOID *Array);
-    DWORD NTAPI RtlMultipleFreeHeap(PVOID HeapHandle,DWORD Flags,DWORD Count,PVOID *Array);
+NTSYSAPI DWORD NTAPI RtlSetHeapInformation(PVOID HeapHandle,HEAP_INFORMATION_CLASS HeapInformationClass,PVOID HeapInformation,SIZE_T HeapInformationLength);
+NTSYSAPI DWORD NTAPI RtlQueryHeapInformation(PVOID HeapHandle,HEAP_INFORMATION_CLASS HeapInformationClass,PVOID HeapInformation,SIZE_T HeapInformationLength,PSIZE_T ReturnLength);
+DWORD NTAPI RtlMultipleAllocateHeap(PVOID HeapHandle,DWORD Flags,SIZE_T Size,DWORD Count,PVOID *Array);
+DWORD NTAPI RtlMultipleFreeHeap(PVOID HeapHandle,DWORD Flags,DWORD Count,PVOID *Array);
 
 #define WT_EXECUTEDEFAULT 0x00000000
 #define WT_EXECUTEINIOTHREAD 0x00000001
@@ -5372,88 +5664,93 @@ typedef DWORD LCID;
 #define WT_EXECUTEINPERSISTENTTHREAD 0x00000080
 #define WT_TRANSFER_IMPERSONATION 0x00000100
 #define WT_SET_MAX_THREADPOOL_THREADS(Flags,Limit) ((Flags) |= (Limit)<<16)
-    typedef VOID (NTAPI *WAITORTIMERCALLBACKFUNC)(PVOID,BOOLEAN);
-    typedef VOID (NTAPI *WORKERCALLBACKFUNC)(PVOID);
-    typedef VOID (NTAPI *APC_CALLBACK_FUNCTION)(DWORD ,PVOID,PVOID);
-    typedef
-      VOID
-      (NTAPI *PFLS_CALLBACK_FUNCTION)(PVOID lpFlsData);
+typedef VOID (NTAPI *WAITORTIMERCALLBACKFUNC)(PVOID,BOOLEAN);
+typedef VOID (NTAPI *WORKERCALLBACKFUNC)(PVOID);
+typedef VOID (NTAPI *APC_CALLBACK_FUNCTION)(DWORD,PVOID,PVOID);
+typedef
+VOID
+(NTAPI *PFLS_CALLBACK_FUNCTION)(PVOID lpFlsData);
 #define WT_EXECUTEINLONGTHREAD 0x00000010
 #define WT_EXECUTEDELETEWAIT 0x00000008
 
-    typedef enum _ACTIVATION_CONTEXT_INFO_CLASS {
-      ActivationContextBasicInformation = 1,ActivationContextDetailedInformation = 2,AssemblyDetailedInformationInActivationContext = 3,FileInformationInAssemblyOfAssemblyInActivationContext = 4,MaxActivationContextInfoClass,AssemblyDetailedInformationInActivationContxt = 3,FileInformationInAssemblyOfAssemblyInActivationContxt = 4
-    } ACTIVATION_CONTEXT_INFO_CLASS;
+typedef enum _ACTIVATION_CONTEXT_INFO_CLASS
+{
+	ActivationContextBasicInformation = 1,ActivationContextDetailedInformation = 2,AssemblyDetailedInformationInActivationContext = 3,FileInformationInAssemblyOfAssemblyInActivationContext = 4,MaxActivationContextInfoClass,AssemblyDetailedInformationInActivationContxt = 3,FileInformationInAssemblyOfAssemblyInActivationContxt = 4
+} ACTIVATION_CONTEXT_INFO_CLASS;
 
 #define ACTIVATIONCONTEXTINFOCLASS ACTIVATION_CONTEXT_INFO_CLASS
 
-    typedef struct _ACTIVATION_CONTEXT_QUERY_INDEX {
-      DWORD ulAssemblyIndex;
-      DWORD ulFileIndexInAssembly;
-    } ACTIVATION_CONTEXT_QUERY_INDEX,*PACTIVATION_CONTEXT_QUERY_INDEX;
+typedef struct _ACTIVATION_CONTEXT_QUERY_INDEX
+{
+	DWORD ulAssemblyIndex;
+	DWORD ulFileIndexInAssembly;
+} ACTIVATION_CONTEXT_QUERY_INDEX,*PACTIVATION_CONTEXT_QUERY_INDEX;
 
-    typedef const struct _ACTIVATION_CONTEXT_QUERY_INDEX *PCACTIVATION_CONTEXT_QUERY_INDEX;
+typedef const struct _ACTIVATION_CONTEXT_QUERY_INDEX *PCACTIVATION_CONTEXT_QUERY_INDEX;
 
 #define ACTIVATION_CONTEXT_PATH_TYPE_NONE (1)
 #define ACTIVATION_CONTEXT_PATH_TYPE_WIN32_FILE (2)
 #define ACTIVATION_CONTEXT_PATH_TYPE_URL (3)
 #define ACTIVATION_CONTEXT_PATH_TYPE_ASSEMBLYREF (4)
 
-    typedef struct _ASSEMBLY_FILE_DETAILED_INFORMATION {
-      DWORD ulFlags;
-      DWORD ulFilenameLength;
-      DWORD ulPathLength;
+typedef struct _ASSEMBLY_FILE_DETAILED_INFORMATION
+{
+	DWORD ulFlags;
+	DWORD ulFilenameLength;
+	DWORD ulPathLength;
 
-      PCWSTR lpFileName;
-      PCWSTR lpFilePath;
-    } ASSEMBLY_FILE_DETAILED_INFORMATION,*PASSEMBLY_FILE_DETAILED_INFORMATION;
-    typedef const ASSEMBLY_FILE_DETAILED_INFORMATION *PCASSEMBLY_FILE_DETAILED_INFORMATION;
+	PCWSTR lpFileName;
+	PCWSTR lpFilePath;
+} ASSEMBLY_FILE_DETAILED_INFORMATION,*PASSEMBLY_FILE_DETAILED_INFORMATION;
+typedef const ASSEMBLY_FILE_DETAILED_INFORMATION *PCASSEMBLY_FILE_DETAILED_INFORMATION;
 
 #define _ASSEMBLY_DLL_REDIRECTION_DETAILED_INFORMATION _ASSEMBLY_FILE_DETAILED_INFORMATION
 #define ASSEMBLY_DLL_REDIRECTION_DETAILED_INFORMATION ASSEMBLY_FILE_DETAILED_INFORMATION
 #define PASSEMBLY_DLL_REDIRECTION_DETAILED_INFORMATION PASSEMBLY_FILE_DETAILED_INFORMATION
 #define PCASSEMBLY_DLL_REDIRECTION_DETAILED_INFORMATION PCASSEMBLY_FILE_DETAILED_INFORMATION
 
-    typedef struct _ACTIVATION_CONTEXT_ASSEMBLY_DETAILED_INFORMATION {
-      DWORD ulFlags;
-      DWORD ulEncodedAssemblyIdentityLength;
-      DWORD ulManifestPathType;
-      DWORD ulManifestPathLength;
-      LARGE_INTEGER liManifestLastWriteTime;
-      DWORD ulPolicyPathType;
-      DWORD ulPolicyPathLength;
-      LARGE_INTEGER liPolicyLastWriteTime;
-      DWORD ulMetadataSatelliteRosterIndex;
-      DWORD ulManifestVersionMajor;
-      DWORD ulManifestVersionMinor;
-      DWORD ulPolicyVersionMajor;
-      DWORD ulPolicyVersionMinor;
-      DWORD ulAssemblyDirectoryNameLength;
-      PCWSTR lpAssemblyEncodedAssemblyIdentity;
-      PCWSTR lpAssemblyManifestPath;
-      PCWSTR lpAssemblyPolicyPath;
-      PCWSTR lpAssemblyDirectoryName;
-      DWORD ulFileCount;
-    } ACTIVATION_CONTEXT_ASSEMBLY_DETAILED_INFORMATION,*PACTIVATION_CONTEXT_ASSEMBLY_DETAILED_INFORMATION;
+typedef struct _ACTIVATION_CONTEXT_ASSEMBLY_DETAILED_INFORMATION
+{
+	DWORD ulFlags;
+	DWORD ulEncodedAssemblyIdentityLength;
+	DWORD ulManifestPathType;
+	DWORD ulManifestPathLength;
+	LARGE_INTEGER liManifestLastWriteTime;
+	DWORD ulPolicyPathType;
+	DWORD ulPolicyPathLength;
+	LARGE_INTEGER liPolicyLastWriteTime;
+	DWORD ulMetadataSatelliteRosterIndex;
+	DWORD ulManifestVersionMajor;
+	DWORD ulManifestVersionMinor;
+	DWORD ulPolicyVersionMajor;
+	DWORD ulPolicyVersionMinor;
+	DWORD ulAssemblyDirectoryNameLength;
+	PCWSTR lpAssemblyEncodedAssemblyIdentity;
+	PCWSTR lpAssemblyManifestPath;
+	PCWSTR lpAssemblyPolicyPath;
+	PCWSTR lpAssemblyDirectoryName;
+	DWORD ulFileCount;
+} ACTIVATION_CONTEXT_ASSEMBLY_DETAILED_INFORMATION,*PACTIVATION_CONTEXT_ASSEMBLY_DETAILED_INFORMATION;
 
-    typedef const struct _ACTIVATION_CONTEXT_ASSEMBLY_DETAILED_INFORMATION *PCACTIVATION_CONTEXT_ASSEMBLY_DETAILED_INFORMATION;
+typedef const struct _ACTIVATION_CONTEXT_ASSEMBLY_DETAILED_INFORMATION *PCACTIVATION_CONTEXT_ASSEMBLY_DETAILED_INFORMATION;
 
-    typedef struct _ACTIVATION_CONTEXT_DETAILED_INFORMATION {
-      DWORD dwFlags;
-      DWORD ulFormatVersion;
-      DWORD ulAssemblyCount;
-      DWORD ulRootManifestPathType;
-      DWORD ulRootManifestPathChars;
-      DWORD ulRootConfigurationPathType;
-      DWORD ulRootConfigurationPathChars;
-      DWORD ulAppDirPathType;
-      DWORD ulAppDirPathChars;
-      PCWSTR lpRootManifestPath;
-      PCWSTR lpRootConfigurationPath;
-      PCWSTR lpAppDirPath;
-    } ACTIVATION_CONTEXT_DETAILED_INFORMATION,*PACTIVATION_CONTEXT_DETAILED_INFORMATION;
+typedef struct _ACTIVATION_CONTEXT_DETAILED_INFORMATION
+{
+	DWORD dwFlags;
+	DWORD ulFormatVersion;
+	DWORD ulAssemblyCount;
+	DWORD ulRootManifestPathType;
+	DWORD ulRootManifestPathChars;
+	DWORD ulRootConfigurationPathType;
+	DWORD ulRootConfigurationPathChars;
+	DWORD ulAppDirPathType;
+	DWORD ulAppDirPathChars;
+	PCWSTR lpRootManifestPath;
+	PCWSTR lpRootConfigurationPath;
+	PCWSTR lpAppDirPath;
+} ACTIVATION_CONTEXT_DETAILED_INFORMATION,*PACTIVATION_CONTEXT_DETAILED_INFORMATION;
 
-    typedef const struct _ACTIVATION_CONTEXT_DETAILED_INFORMATION *PCACTIVATION_CONTEXT_DETAILED_INFORMATION;
+typedef const struct _ACTIVATION_CONTEXT_DETAILED_INFORMATION *PCACTIVATION_CONTEXT_DETAILED_INFORMATION;
 
 #define DLL_PROCESS_ATTACH 1
 #define DLL_THREAD_ATTACH 2
@@ -5479,39 +5776,42 @@ typedef DWORD LCID;
 #define EVENTLOG_PAIRED_EVENT_ACTIVE 0x0008
 #define EVENTLOG_PAIRED_EVENT_INACTIVE 0x0010
 
-    typedef struct _EVENTLOGRECORD {
-      DWORD Length;
-      DWORD Reserved;
-      DWORD RecordNumber;
-      DWORD TimeGenerated;
-      DWORD TimeWritten;
-      DWORD EventID;
-      WORD EventType;
-      WORD NumStrings;
-      WORD EventCategory;
-      WORD ReservedFlags;
-      DWORD ClosingRecordNumber;
-      DWORD StringOffset;
-      DWORD UserSidLength;
-      DWORD UserSidOffset;
-      DWORD DataLength;
-      DWORD DataOffset;
-    } EVENTLOGRECORD,*PEVENTLOGRECORD;
+typedef struct _EVENTLOGRECORD
+{
+	DWORD Length;
+	DWORD Reserved;
+	DWORD RecordNumber;
+	DWORD TimeGenerated;
+	DWORD TimeWritten;
+	DWORD EventID;
+	WORD EventType;
+	WORD NumStrings;
+	WORD EventCategory;
+	WORD ReservedFlags;
+	DWORD ClosingRecordNumber;
+	DWORD StringOffset;
+	DWORD UserSidLength;
+	DWORD UserSidOffset;
+	DWORD DataLength;
+	DWORD DataOffset;
+} EVENTLOGRECORD,*PEVENTLOGRECORD;
 
 #define MAXLOGICALLOGNAMESIZE 256
 
-    typedef struct _EVENTSFORLOGFILE{
-      DWORD ulSize;
-      WCHAR szLogicalLogFile[MAXLOGICALLOGNAMESIZE];
-      DWORD ulNumRecords;
-      EVENTLOGRECORD pEventLogRecords[];
-    } EVENTSFORLOGFILE,*PEVENTSFORLOGFILE;
+typedef struct _EVENTSFORLOGFILE
+{
+	DWORD ulSize;
+	WCHAR szLogicalLogFile[MAXLOGICALLOGNAMESIZE];
+	DWORD ulNumRecords;
+	EVENTLOGRECORD pEventLogRecords[];
+} EVENTSFORLOGFILE,*PEVENTSFORLOGFILE;
 
-    typedef struct _PACKEDEVENTINFO{
-      DWORD ulSize;
-      DWORD ulNumEventsForLogFile;
-      DWORD ulOffsets[];
-    } PACKEDEVENTINFO,*PPACKEDEVENTINFO;
+typedef struct _PACKEDEVENTINFO
+{
+	DWORD ulSize;
+	DWORD ulNumEventsForLogFile;
+	DWORD ulOffsets[];
+} PACKEDEVENTINFO,*PPACKEDEVENTINFO;
 
 #define KEY_QUERY_VALUE (0x0001)
 #define KEY_SET_VALUE (0x0002)
@@ -5595,27 +5895,31 @@ typedef DWORD LCID;
 #define SERVICE_ERROR_SEVERE 0x00000002
 #define SERVICE_ERROR_CRITICAL 0x00000003
 
-    typedef enum _CM_SERVICE_NODE_TYPE {
-      DriverType = SERVICE_KERNEL_DRIVER,FileSystemType = SERVICE_FILE_SYSTEM_DRIVER,Win32ServiceOwnProcess = SERVICE_WIN32_OWN_PROCESS,
-      Win32ServiceShareProcess = SERVICE_WIN32_SHARE_PROCESS,AdapterType = SERVICE_ADAPTER,RecognizerType = SERVICE_RECOGNIZER_DRIVER
-    } SERVICE_NODE_TYPE;
+typedef enum _CM_SERVICE_NODE_TYPE
+{
+	DriverType = SERVICE_KERNEL_DRIVER,FileSystemType = SERVICE_FILE_SYSTEM_DRIVER,Win32ServiceOwnProcess = SERVICE_WIN32_OWN_PROCESS,
+	Win32ServiceShareProcess = SERVICE_WIN32_SHARE_PROCESS,AdapterType = SERVICE_ADAPTER,RecognizerType = SERVICE_RECOGNIZER_DRIVER
+} SERVICE_NODE_TYPE;
 
-    typedef enum _CM_SERVICE_LOAD_TYPE {
-      BootLoad = SERVICE_BOOT_START,SystemLoad = SERVICE_SYSTEM_START,AutoLoad = SERVICE_AUTO_START,DemandLoad = SERVICE_DEMAND_START,
-      DisableLoad = SERVICE_DISABLED
-    } SERVICE_LOAD_TYPE;
+typedef enum _CM_SERVICE_LOAD_TYPE
+{
+	BootLoad = SERVICE_BOOT_START,SystemLoad = SERVICE_SYSTEM_START,AutoLoad = SERVICE_AUTO_START,DemandLoad = SERVICE_DEMAND_START,
+	DisableLoad = SERVICE_DISABLED
+} SERVICE_LOAD_TYPE;
 
-    typedef enum _CM_ERROR_CONTROL_TYPE {
-      IgnoreError = SERVICE_ERROR_IGNORE,NormalError = SERVICE_ERROR_NORMAL,SevereError = SERVICE_ERROR_SEVERE,CriticalError = SERVICE_ERROR_CRITICAL
-    } SERVICE_ERROR_TYPE;
+typedef enum _CM_ERROR_CONTROL_TYPE
+{
+	IgnoreError = SERVICE_ERROR_IGNORE,NormalError = SERVICE_ERROR_NORMAL,SevereError = SERVICE_ERROR_SEVERE,CriticalError = SERVICE_ERROR_CRITICAL
+} SERVICE_ERROR_TYPE;
 
 #define TAPE_ERASE_SHORT 0L
 #define TAPE_ERASE_LONG 1L
 
-    typedef struct _TAPE_ERASE {
-      DWORD Type;
-      BOOLEAN Immediate;
-    } TAPE_ERASE,*PTAPE_ERASE;
+typedef struct _TAPE_ERASE
+{
+	DWORD Type;
+	BOOLEAN Immediate;
+} TAPE_ERASE,*PTAPE_ERASE;
 
 #define TAPE_LOAD 0L
 #define TAPE_UNLOAD 1L
@@ -5624,31 +5928,34 @@ typedef DWORD LCID;
 #define TAPE_UNLOCK 4L
 #define TAPE_FORMAT 5L
 
-    typedef struct _TAPE_PREPARE {
-      DWORD Operation;
-      BOOLEAN Immediate;
-    } TAPE_PREPARE,*PTAPE_PREPARE;
+typedef struct _TAPE_PREPARE
+{
+	DWORD Operation;
+	BOOLEAN Immediate;
+} TAPE_PREPARE,*PTAPE_PREPARE;
 
 #define TAPE_SETMARKS 0L
 #define TAPE_FILEMARKS 1L
 #define TAPE_SHORT_FILEMARKS 2L
 #define TAPE_LONG_FILEMARKS 3L
 
-    typedef struct _TAPE_WRITE_MARKS {
-      DWORD Type;
-      DWORD Count;
-      BOOLEAN Immediate;
-    } TAPE_WRITE_MARKS,*PTAPE_WRITE_MARKS;
+typedef struct _TAPE_WRITE_MARKS
+{
+	DWORD Type;
+	DWORD Count;
+	BOOLEAN Immediate;
+} TAPE_WRITE_MARKS,*PTAPE_WRITE_MARKS;
 
 #define TAPE_ABSOLUTE_POSITION 0L
 #define TAPE_LOGICAL_POSITION 1L
 #define TAPE_PSEUDO_LOGICAL_POSITION 2L
 
-    typedef struct _TAPE_GET_POSITION {
-      DWORD Type;
-      DWORD Partition;
-      LARGE_INTEGER Offset;
-    } TAPE_GET_POSITION,*PTAPE_GET_POSITION;
+typedef struct _TAPE_GET_POSITION
+{
+	DWORD Type;
+	DWORD Partition;
+	LARGE_INTEGER Offset;
+} TAPE_GET_POSITION,*PTAPE_GET_POSITION;
 
 #define TAPE_REWIND 0L
 #define TAPE_ABSOLUTE_BLOCK 1L
@@ -5661,12 +5968,13 @@ typedef DWORD LCID;
 #define TAPE_SPACE_SETMARKS 8L
 #define TAPE_SPACE_SEQUENTIAL_SMKS 9L
 
-    typedef struct _TAPE_SET_POSITION {
-      DWORD Method;
-      DWORD Partition;
-      LARGE_INTEGER Offset;
-      BOOLEAN Immediate;
-    } TAPE_SET_POSITION,*PTAPE_SET_POSITION;
+typedef struct _TAPE_SET_POSITION
+{
+	DWORD Method;
+	DWORD Partition;
+	LARGE_INTEGER Offset;
+	BOOLEAN Immediate;
+} TAPE_SET_POSITION,*PTAPE_SET_POSITION;
 
 #define TAPE_DRIVE_FIXED 0x00000001
 #define TAPE_DRIVE_SELECT 0x00000002
@@ -5740,49 +6048,54 @@ typedef DWORD LCID;
 #define TAPE_DRIVE_FORMAT_IMMEDIATE 0xC0000000
 #define TAPE_DRIVE_HIGH_FEATURES 0x80000000
 
-    typedef struct _TAPE_GET_DRIVE_PARAMETERS {
-      BOOLEAN ECC;
-      BOOLEAN Compression;
-      BOOLEAN DataPadding;
-      BOOLEAN ReportSetmarks;
-      DWORD DefaultBlockSize;
-      DWORD MaximumBlockSize;
-      DWORD MinimumBlockSize;
-      DWORD MaximumPartitionCount;
-      DWORD FeaturesLow;
-      DWORD FeaturesHigh;
-      DWORD EOTWarningZoneSize;
-    } TAPE_GET_DRIVE_PARAMETERS,*PTAPE_GET_DRIVE_PARAMETERS;
+typedef struct _TAPE_GET_DRIVE_PARAMETERS
+{
+	BOOLEAN ECC;
+	BOOLEAN Compression;
+	BOOLEAN DataPadding;
+	BOOLEAN ReportSetmarks;
+	DWORD DefaultBlockSize;
+	DWORD MaximumBlockSize;
+	DWORD MinimumBlockSize;
+	DWORD MaximumPartitionCount;
+	DWORD FeaturesLow;
+	DWORD FeaturesHigh;
+	DWORD EOTWarningZoneSize;
+} TAPE_GET_DRIVE_PARAMETERS,*PTAPE_GET_DRIVE_PARAMETERS;
 
-    typedef struct _TAPE_SET_DRIVE_PARAMETERS {
-      BOOLEAN ECC;
-      BOOLEAN Compression;
-      BOOLEAN DataPadding;
-      BOOLEAN ReportSetmarks;
-      DWORD EOTWarningZoneSize;
-    } TAPE_SET_DRIVE_PARAMETERS,*PTAPE_SET_DRIVE_PARAMETERS;
+typedef struct _TAPE_SET_DRIVE_PARAMETERS
+{
+	BOOLEAN ECC;
+	BOOLEAN Compression;
+	BOOLEAN DataPadding;
+	BOOLEAN ReportSetmarks;
+	DWORD EOTWarningZoneSize;
+} TAPE_SET_DRIVE_PARAMETERS,*PTAPE_SET_DRIVE_PARAMETERS;
 
-    typedef struct _TAPE_GET_MEDIA_PARAMETERS {
-      LARGE_INTEGER Capacity;
-      LARGE_INTEGER Remaining;
-      DWORD BlockSize;
-      DWORD PartitionCount;
-      BOOLEAN WriteProtected;
-    } TAPE_GET_MEDIA_PARAMETERS,*PTAPE_GET_MEDIA_PARAMETERS;
+typedef struct _TAPE_GET_MEDIA_PARAMETERS
+{
+	LARGE_INTEGER Capacity;
+	LARGE_INTEGER Remaining;
+	DWORD BlockSize;
+	DWORD PartitionCount;
+	BOOLEAN WriteProtected;
+} TAPE_GET_MEDIA_PARAMETERS,*PTAPE_GET_MEDIA_PARAMETERS;
 
-    typedef struct _TAPE_SET_MEDIA_PARAMETERS {
-      DWORD BlockSize;
-    } TAPE_SET_MEDIA_PARAMETERS,*PTAPE_SET_MEDIA_PARAMETERS;
+typedef struct _TAPE_SET_MEDIA_PARAMETERS
+{
+	DWORD BlockSize;
+} TAPE_SET_MEDIA_PARAMETERS,*PTAPE_SET_MEDIA_PARAMETERS;
 
 #define TAPE_FIXED_PARTITIONS 0L
 #define TAPE_SELECT_PARTITIONS 1L
 #define TAPE_INITIATOR_PARTITIONS 2L
 
-    typedef struct _TAPE_CREATE_PARTITION {
-      DWORD Method;
-      DWORD Count;
-      DWORD Size;
-    } TAPE_CREATE_PARTITION,*PTAPE_CREATE_PARTITION;
+typedef struct _TAPE_CREATE_PARTITION
+{
+	DWORD Method;
+	DWORD Count;
+	DWORD Size;
+} TAPE_CREATE_PARTITION,*PTAPE_CREATE_PARTITION;
 
 #define TAPE_QUERY_DRIVE_PARAMETERS 0L
 #define TAPE_QUERY_MEDIA_CAPACITY 1L
@@ -5790,32 +6103,42 @@ typedef DWORD LCID;
 #define TAPE_QUERY_IO_ERROR_DATA 3L
 #define TAPE_QUERY_DEVICE_ERROR_DATA 4L
 
-    typedef struct _TAPE_WMI_OPERATIONS {
-      DWORD Method;
-      DWORD DataBufferSize;
-      PVOID DataBuffer;
-    } TAPE_WMI_OPERATIONS,*PTAPE_WMI_OPERATIONS;
+typedef struct _TAPE_WMI_OPERATIONS
+{
+	DWORD Method;
+	DWORD DataBufferSize;
+	PVOID DataBuffer;
+} TAPE_WMI_OPERATIONS,*PTAPE_WMI_OPERATIONS;
 
-    typedef enum _TAPE_DRIVE_PROBLEM_TYPE {
-      TapeDriveProblemNone,TapeDriveReadWriteWarning,TapeDriveReadWriteError,TapeDriveReadWarning,TapeDriveWriteWarning,TapeDriveReadError,TapeDriveWriteError,TapeDriveHardwareError,TapeDriveUnsupportedMedia,TapeDriveScsiConnectionError,TapeDriveTimetoClean,TapeDriveCleanDriveNow,TapeDriveMediaLifeExpired,TapeDriveSnappedTape
-    } TAPE_DRIVE_PROBLEM_TYPE;
+typedef enum _TAPE_DRIVE_PROBLEM_TYPE
+{
+	TapeDriveProblemNone,TapeDriveReadWriteWarning,TapeDriveReadWriteError,TapeDriveReadWarning,TapeDriveWriteWarning,TapeDriveReadError,TapeDriveWriteError,TapeDriveHardwareError,TapeDriveUnsupportedMedia,TapeDriveScsiConnectionError,TapeDriveTimetoClean,TapeDriveCleanDriveNow,TapeDriveMediaLifeExpired,TapeDriveSnappedTape
+} TAPE_DRIVE_PROBLEM_TYPE;
 
 #if defined(__x86_64)
-    __CRT_INLINE struct _TEB *NtCurrentTeb(VOID) { return (struct _TEB *)__readgsqword(FIELD_OFFSET(NT_TIB,Self)); }
-    __CRT_INLINE PVOID GetCurrentFiber(VOID) { return(PVOID)__readgsqword(FIELD_OFFSET(NT_TIB,FiberData)); }
-    __CRT_INLINE PVOID GetFiberData(VOID) {
-      return *(PVOID *)GetCurrentFiber();
-    }
+__CRT_INLINE struct _TEB *NtCurrentTeb(VOID)
+{
+	return (struct _TEB *)__readgsqword(FIELD_OFFSET(NT_TIB,Self));
+}
+__CRT_INLINE PVOID GetCurrentFiber(VOID)
+{
+	return(PVOID)__readgsqword(FIELD_OFFSET(NT_TIB,FiberData));
+}
+__CRT_INLINE PVOID GetFiberData(VOID)
+{
+	return *(PVOID *)GetCurrentFiber();
+}
 #endif
 
 #if(defined(_X86_) && !defined(__x86_64))
 #define PcTeb 0x18
-    __CRT_INLINE struct _TEB *NtCurrentTeb(void) {
-      struct _TEB *ret;
-      __asm__ volatile ("movl	%%fs:0x18,%0"
-	: "=r" (ret));
-      return ret;
-    }
+__CRT_INLINE struct _TEB *NtCurrentTeb(void)
+{
+	struct _TEB *ret;
+	__asm__ volatile ("movl	%%fs:0x18,%0"
+	                  : "=r" (ret));
+	return ret;
+}
 #endif
 
 #define ACTIVATION_CONTEXT_SECTION_ASSEMBLY_INFORMATION (1)
@@ -5830,6 +6153,6 @@ typedef DWORD LCID;
 #define ACTIVATION_CONTEXT_SECTION_APPLICATION_SETTINGS (10)
 
 #ifdef __cplusplus
-  }
+}
 #endif
 #endif

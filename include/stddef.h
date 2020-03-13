@@ -9,7 +9,11 @@ typedef __PTRDIFF_TYPE__ intptr_t;
 typedef __SIZE_TYPE__ uintptr_t;
 
 #if __STDC_VERSION__ >= 201112L
-typedef union { long long __ll; long double __ld; } max_align_t;
+typedef union
+{
+	long long __ll;
+	long double __ld;
+} max_align_t;
 #endif
 
 #ifndef __int8_t_defined

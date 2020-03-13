@@ -16,9 +16,10 @@ extern "C" {
 #ifndef __STRICT_ANSI__
 #ifndef _TIMEVAL_DEFINED /* also in winsock[2].h */
 #define _TIMEVAL_DEFINED
-struct timeval {
-  long tv_sec;
-  long tv_usec;
+struct timeval
+{
+	long tv_sec;
+	long tv_usec;
 };
 #define timerisset(tvp)	 ((tvp)->tv_sec || (tvp)->tv_usec)
 #define timercmp(tvp, uvp, cmp) \
@@ -35,11 +36,11 @@ struct timeval {
    of struct timezone. */
 struct timezone
 {
-  int tz_minuteswest; /* of Greenwich */
-  int tz_dsttime;     /* type of dst correction to apply */
+	int tz_minuteswest; /* of Greenwich */
+	int tz_dsttime;     /* type of dst correction to apply */
 };
 
-  extern int __cdecl mingw_gettimeofday (struct timeval *p, struct timezone *z);
+extern int __cdecl mingw_gettimeofday (struct timeval *p, struct timezone *z);
 
 #endif
 

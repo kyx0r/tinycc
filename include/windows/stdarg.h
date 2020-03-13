@@ -6,14 +6,16 @@
 
 //This should be in sync with the declaration on our lib/libtcc1.c
 /* GCC compatible definition of va_list. */
-typedef struct {
-    unsigned int gp_offset;
-    unsigned int fp_offset;
-    union {
-        unsigned int overflow_offset;
-        char *overflow_arg_area;
-    };
-    char *reg_save_area;
+typedef struct
+{
+	unsigned int gp_offset;
+	unsigned int fp_offset;
+	union
+	{
+		unsigned int overflow_offset;
+		char *overflow_arg_area;
+	};
+	char *reg_save_area;
 } __va_list_struct;
 
 typedef __va_list_struct va_list[1];
@@ -51,12 +53,13 @@ typedef char *va_list;
 #define va_end(ap) ((void)0)
 
 #elif defined(__aarch64__)
-typedef struct {
-    void *__stack;
-    void *__gr_top;
-    void *__vr_top;
-    int   __gr_offs;
-    int   __vr_offs;
+typedef struct
+{
+	void *__stack;
+	void *__gr_top;
+	void *__vr_top;
+	int   __gr_offs;
+	int   __vr_offs;
 } va_list;
 #define va_start(ap, last) __va_start(ap, last)
 #define va_arg(ap, type) __va_arg(ap, type)

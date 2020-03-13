@@ -87,31 +87,33 @@ typedef _mode_t	mode_t;
 #define _OFF_T_DEFINED
 #ifndef _OFF_T_
 #define _OFF_T_
-  typedef long _off_t;
+typedef long _off_t;
 #if !defined(NO_OLDNAMES) || defined(_POSIX)
-  typedef long off_t;
+typedef long off_t;
 #endif
 #endif
 #endif
 
 #ifndef _OFF64_T_DEFINED
 #define _OFF64_T_DEFINED
-  typedef long long _off64_t;
+typedef long long _off64_t;
 #if !defined(NO_OLDNAMES) || defined(_POSIX)
-  typedef long long off64_t;
+typedef long long off64_t;
 #endif
 #endif
 
 #ifndef _TIMESPEC_DEFINED
 #define _TIMESPEC_DEFINED
-struct timespec {
-  time_t  tv_sec;   /* Seconds */
-  long    tv_nsec;  /* Nanoseconds */
+struct timespec
+{
+	time_t  tv_sec;   /* Seconds */
+	long    tv_nsec;  /* Nanoseconds */
 };
 
-struct itimerspec {
-  struct timespec  it_interval;  /* Timer period */
-  struct timespec  it_value;     /* Timer expiration */
+struct itimerspec
+{
+	struct timespec  it_interval;  /* Timer period */
+	struct timespec  it_value;     /* Timer expiration */
 };
 #endif
 
