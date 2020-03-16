@@ -45776,7 +45776,7 @@ void linkAtntAssemblyLine(const AsmLine *ln, char *oline)
 		strcat(oline,ln->com);
 		if (sizesuf & Op_SizeByte)  strcat(oline,"b");
 		if (sizesuf & Op_SizeWord)  strcat(oline,"w");
-		if (sizesuf & Op_SizeDWord) strcat(oline,"l");
+		if (sizesuf & Op_SizeDWord && !(ln->com_flags & Com_JmpInstr)) strcat(oline,"l");
 		if (sizesuf & Op_SizeQWord) strcat(oline,"q");
 		int len = strlen(oline);
 		oline[len] = ' ';
@@ -45849,6 +45849,7 @@ static void tcc_assemble_inline(TCCState *s1, char *str, int len, int global)
 			tmpline[_len] = '\n';
 			_len++;
 			memcpy(&intelstr[tlen], tmpline, _len);
+			printf("%s", &intelstr[tlen]);
 			tlen += _len;
 		}
 		tcc_open_bf(s1, ":asm:", tlen);
