@@ -7913,7 +7913,7 @@ char *strcat(char *dest, const char *src)
 char* fstrcat(char *dest, char *src)
 {
      while (*dest) dest++;
-     while (*dest++ = *src++);
+     while ((*dest++ = *src++));
      return --dest;
 }
 
@@ -10706,7 +10706,7 @@ static X86_64_Mode classify_x86_64_inner(CType *ty)
 static X86_64_Mode classify_x86_64_arg(CType *ty, CType *ret, int *psize, int *palign, int *reg_count)
 {
 	X86_64_Mode mode;
-	int size, align, ret_t = 0;
+	int size, align = 1, ret_t = 0;
 
 	if (ty->t & (VT_BITFIELD|VT_ARRAY))
 	{
@@ -45762,49 +45762,72 @@ void linkAtntAssemblyLine(const AsmLine *ln, char *oline)
 	int idx;
 	int sizesuf = 0;
 	oline[0] = '\0';
+	char *p = oline;
 	if ((ln->label[0] != '\0') || (ln->com[0] != '\0'))
 	{
-		strcat(oline,ln->label);
-		//strcat(oline,"\t");
+		p = fstrcat(p, (char*)ln->label);
+
 		sizesuf=0;
 		for(idx=0; idx < ln->op_len; idx++)
 		{
 			sizesuf |= ln->op[idx].flags;
 		}
 		if((ln->com_flags & Com_IOInstr) && (sizesuf != Op_SizeWord))
+		{
 			sizesuf &= ~Op_SizeWord;
-		strcat(oline,ln->com);
-		if (sizesuf & Op_SizeByte)  strcat(oline,"b");
-		if (sizesuf & Op_SizeWord)  strcat(oline,"w");
-		if (sizesuf & Op_SizeDWord && !(ln->com_flags & Com_JmpInstr)) strcat(oline,"l");
-		if (sizesuf & Op_SizeQWord) strcat(oline,"q");
-		int len = strlen(oline);
-		oline[len] = ' ';
-		oline[len+1] = '\0';
+		}
+		p = fstrcat(p, (char*)ln->com);
+		if (sizesuf & Op_SizeByte)  
+		{
+			p = fstrcat(p,"b");
+		}
+		if (sizesuf & Op_SizeWord)  
+		{
+			p = fstrcat(p,"w");
+		}
+		if (sizesuf & Op_SizeDWord && !(ln->com_flags & Com_JmpInstr))  
+		{
+			p = fstrcat(p,"l");
+		}
+		if (sizesuf & Op_SizeQWord)  
+		{
+			p = fstrcat(p,"q");
+		}
+		p = fstrcat(p, " ");
 
 		// Add operands - order depends on whether it's data definition or not
 		if (ln->com_flags & Com_DataDef)
 		{
 			for(idx=0; idx < ln->op_len; )
 			{
-				strcat(oline,ln->op[idx++].txt);
-				if(idx < ln->op_len) strcat(oline,",");
+				p = fstrcat(p, (char*)ln->op[idx++].txt);
+				if(idx < ln->op_len) 
+				{
+					p = fstrcat(p,",");
+				}
 			}
 		}
 		else
 		{
 			for(idx=ln->op_len-1; idx >= 0; )
 			{
-				strcat(oline,ln->op[idx--].txt);
-				if (idx >= 0) strcat(oline,",");
+				p = fstrcat(p, (char*)ln->op[idx--].txt);
+				if (idx >= 0)
+				{
+					p = fstrcat(p, ",");
+				}
 			}
 		}
 		if (ln->rem[0] != '\0')
-			strcat(oline,"\t");
+		{
+			p = fstrcat(p,"\t");
+		}
 	}
 	// If line has a remark, add it to output
 	if (ln->rem[0] != '\0')
-		strcat(oline,ln->rem);
+	{
+		p = fstrcat(p, (char*)ln->rem);
+	}
 }
 
 
@@ -49527,7 +49550,7 @@ LIBTCCAPI int tcc_add_library_path(TCCState *s, const char *pathname)
 static int tcc_add_library_internal(TCCState *s, const char *fmt,
                                     const char *filename, int flags, char **paths, int nb_paths)
 {
-	char buf[1024];
+	char buf[1049];
 	int i;
 
 	for(i = 0; i < nb_paths; i++)
