@@ -45619,6 +45619,7 @@ int operandChange2Atnt(operand_t *op, short com_flags)
 	opg += strspn(opg," \t");
 	if (strchr(opg,'[') != NULL)
 	{
+		int flag_copy = op->flags;
 		MemoryAddress maddr;
 		chopIntelMemoryAddress(op, &maddr);
 		// merge back the elements into operand
@@ -45628,7 +45629,7 @@ int operandChange2Atnt(operand_t *op, short com_flags)
 
 		if(com_flags & Com_JmpInstr)
 		{
-			op->flags &= ~Op_SizeDWord;
+			op->flags = flag_copy;
 			int tmp_len = strlen(opg);
 			memmove(opg+1, opg, tmp_len+1);
 			*opg = '*';
@@ -45882,7 +45883,6 @@ static void tcc_assemble_inline(TCCState *s1, char *str, int len, int global)
 	const int *saved_macro_ptr = macro_ptr;
 	int dotid = set_idnum('.', IS_ID);
 
-//	printf("%s", str);
 	if(s1->intelasm)
 	{
 		char intelstr[len*2]; //this should be enough, intel syntax is slimmer than at&t
@@ -45900,17 +45900,26 @@ static void tcc_assemble_inline(TCCState *s1, char *str, int len, int global)
 			memcpy(tmpline, &str[tline_len], line_len);
 			tline_len += line_len;
 			if (line_len > 0)
+			{
 				tmpline[line_len-1] = '\0';
+			}
 
+			if(strchr(tmpline, '%') != NULL)
+			{
+				//intel syntax cannot have % anywhere, so if there is
+				//this is probably an extended asm from C. ignore it. 
+				goto skip;	
+			}
 			chopIntelAssemblyLine(tmpline, &ln);
 			changeAssemblyLineToAtnt(&ln);
 			linkAtntAssemblyLine(&ln, tmpline);
+skip:;
 
 			_len = strlen(tmpline);
 			tmpline[_len] = '\n';
 			_len++;
 			memcpy(&intelstr[tlen], tmpline, _len);
-			printf("ASM DEBUG: %s", &intelstr[tlen]);
+			//printf("ASM DEBUG: %s", &intelstr[tlen]);
 			tlen += _len;
 		}
 		tcc_open_bf(s1, ":asm:", tlen);
