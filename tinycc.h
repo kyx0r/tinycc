@@ -8006,6 +8006,20 @@ int atoi(const char* str)
     return sign * res; 
 } 
 
+void tcc_log(const char *format, ...)
+{
+    va_list args;
+    va_start(args, format);
+    vfprintf(stdout, format, args);
+    va_end(args);
+    fprintf(stdout, "\n");
+    fflush(stdout);
+}
+
+#ifndef l
+#define l(...) tcc_log(__VA_ARGS__) 
+#endif
+
 //END CLIB
 
 
@@ -37838,7 +37852,9 @@ static void fill_local_got_entries(TCCState *s1)
 			struct sym_attr *attr = get_sym_attr(s1, sym_index, 0);
 			unsigned offset = attr->got_offset;
 			if (offset != rel->r_offset - s1->got->sh_addr)
+			{
 				tcc_error_noabort("huh");
+			}
 			rel->r_info = ELFW(R_INFO)(0, R_RELATIVE);
 #if SHT_RELX == SHT_RELA
 			rel->r_addend = sym->st_value;
@@ -45024,6 +45040,7 @@ enum ComFlags
 	Com_Directive    = 0x02,
 	Com_IOInstr      = 0x04,
 	Com_JmpInstr     = 0x08,
+	Com_CallInstr    = 0x10,
 	Com_ManyOperands = 0x80,
 };
 
@@ -45037,12 +45054,6 @@ typedef struct
 	operand_t op[LINE_MAX_OPERANDS];
 	int op_len;
 } AsmLine;
-
-/** Information required for conversion which applies to the whole file. */
-typedef struct
-{
-	//TODO: Make a buffer here to store all labels in the input file.
-} AsmCodeProps;
 
 typedef void (*modfunc)(AsmLine *ln);
 
@@ -45329,6 +45340,14 @@ int isJumpInstruction(const ChBuf com)
 	return 0;
 }
 
+int isCallInstruction(const ChBuf com)
+{
+	if ((com[0] == 'c' && com[1] == 'a') || 
+	(com[0] == 'C' && com[1] == 'A'))
+		return 1;
+	return 0;
+}
+
 void strTrimLeft(ChBuf op)
 {
 	int len = strlen(op);
@@ -45530,22 +45549,25 @@ int linkAtntMemoryAddress(operand_t *op, const MemoryAddress *maddr)
 	opg=op->txt;
 	*opg=0;
 	op->flags |= maddr->flags;
-	strcat(opg,*maddr->disp=='+'?maddr->disp+1:maddr->disp);
+	opg = fstrcat(opg, *maddr->disp=='+' ? (char*)maddr->disp+1 : (char*)maddr->disp);
 	if(*(maddr->base+1)||*(maddr->index+1))
 	{
-		strcat(opg,"(");
-		if (*(maddr->base+1)) strcat(opg,maddr->base);
+		opg = fstrcat(opg,"(");
+		if (*(maddr->base+1)) 
+		{
+			opg = fstrcat(opg, (char*)maddr->base);
+		}
 		if (*(maddr->index+1))
 		{
-			strcat(opg,",");
-			strcat(opg,maddr->index);
+			opg = fstrcat(opg,",");
+			opg = fstrcat(opg, (char*)maddr->index);
 			if(*maddr->scale)
 			{
-				strcat(opg,",");
-				strcat(opg,maddr->scale);
+				opg = fstrcat(opg, ",");
+				opg = fstrcat(opg, (char*)maddr->scale);
 			}
 		}
-		strcat(opg,")");
+		opg = fstrcat(opg, ")");
 	}
 	return 1;
 }
@@ -45603,12 +45625,21 @@ int operandChange2Atnt(operand_t *op, short com_flags)
 		linkAtntMemoryAddress(op, &maddr);
 		// Check if no size was provided in this operand. This may happen
 		// when using memory offset constant defined with "equ" or "=".
-		if ((op->flags & Op_SizeMask) == 0)
+
+		if(com_flags & Com_JmpInstr)
 		{
-			//TODO: we should remember label and size of the memory location, and get the data from there
-			//if ((com_flags & Com_ManyOperands) == 0)
-			//    op->flags |= Op_SizeDWord; -- assuming constant size would be very bad.
+			op->flags &= ~Op_SizeDWord;
+			int tmp_len = strlen(opg);
+			memmove(opg+1, opg, tmp_len+1);
+			*opg = '*';
 		}
+
+		//if ((op->flags & Op_SizeMask) == 0)
+		//	{
+		//TODO: we should remember label and size of the memory location, and get the data from there
+		//if ((com_flags & Com_ManyOperands) == 0)
+		//    op->flags |= Op_SizeDWord; -- assuming constant size would be very bad.
+		//	}
 	}
 	else if ((strncasecmp(opg,"offset",6) == 0) && isspace(opg[6]))
 	{
@@ -45625,30 +45656,43 @@ int operandChange2Atnt(operand_t *op, short com_flags)
 	}
 	else if ((len = cpuRegisterSize(opg)) > 0)
 	{
-		if (len == 1)
+		if(com_flags & Com_JmpInstr)
 		{
-			op->flags |= Op_SizeByte;
+			//in case we have "call eax" , etc...
+			int tmp_len = strlen(opg);
+			memmove(opg+3, opg, tmp_len+3);
+			*opg = '*';
+			*(opg+1) = '(';
+			*(opg+2) = '%';
+			*(opg+tmp_len+3) = ')';
 		}
-		else if (len == 2)
+		else
 		{
-			op->flags |= Op_SizeWord;
+			if (len == 1)
+			{
+				op->flags |= Op_SizeByte;
+			}
+			else if (len == 2)
+			{
+				op->flags |= Op_SizeWord;
+			}
+			else if (len == 4)
+			{
+				op->flags |= Op_SizeDWord;
+			}
+			else if (len == 8)
+			{
+				op->flags |= Op_SizeQWord;
+			}
+			else if (len == 16)
+			{
+				op->flags |= Op_SizeOWord;
+			}
+			memmove(opg+1,opg,strlen(opg)+1);
+			*opg = '%';
 		}
-		else if (len == 4)
-		{
-			op->flags |= Op_SizeDWord;
-		}
-		else if (len == 8)
-		{
-			op->flags |= Op_SizeQWord;
-		}
-		else if (len == 16)
-		{
-			op->flags |= Op_SizeOWord;
-		}
-		memmove(opg+1,opg,strlen(opg)+1);
-		*opg = '%';
 	}
-	else if ((com_flags & Com_JmpInstr) != 0)
+	else if (com_flags & Com_JmpInstr)
 	{
 		if ((strncasecmp(opg,"short",5) == 0) && isspace(opg[5]))
 		{
@@ -45656,15 +45700,8 @@ int operandChange2Atnt(operand_t *op, short com_flags)
 			temp += strspn(temp," \t");
 			memmove(opg,temp,strlen(temp)+1);
 		}
-	}
-	else if ((com_flags & Com_DataDef) != 0)  // if we have data definition
-	{
-		// nothing to do
-	}
-	else if (isdigit(*opg))  // if we have immediate numeric value
-	{
 		memmove(opg+1,opg,strlen(opg)+1);
-		*opg = '$';
+		*opg = '*';
 	}
 	else
 	{
@@ -45718,11 +45755,23 @@ remark:
 
 /** Converts chopped assembly line from Intel syntax into AT&T one.
  */
-void changeAssemblyLineToAtnt(AsmLine *ln,AsmCodeProps *props)
+void changeAssemblyLineToAtnt(AsmLine *ln)
 {
 	int waslabel;
 	int label_len;
 	int idx;
+	// set flags determining what the instruction is
+	if (isDataDefinition(ln->com))
+		ln->com_flags |= Com_DataDef;
+	if (isIOInstruction(ln->com))
+		ln->com_flags |= Com_IOInstr;
+	if (isJumpInstruction(ln->com))
+		ln->com_flags |= Com_JmpInstr;
+	if (isCallInstruction(ln->com))
+		ln->com_flags |= Com_JmpInstr;
+	if (ln->op_len > 1)
+		ln->com_flags |= Com_ManyOperands;
+
 	waslabel = -1;
 	{
 		waslabel = checkWordsReplace(ln);
@@ -45740,15 +45789,6 @@ void changeAssemblyLineToAtnt(AsmLine *ln,AsmCodeProps *props)
 			ln->label[label_len] = '\0';
 		}
 	}
-	// set flags determining what the instruction is
-	if (isDataDefinition(ln->com))
-		ln->com_flags |= Com_DataDef;
-	if (isIOInstruction(ln->com))
-		ln->com_flags |= Com_IOInstr;
-	if (isJumpInstruction(ln->com))
-		ln->com_flags |= Com_JmpInstr;
-	if (ln->op_len > 1)
-		ln->com_flags |= Com_ManyOperands;
 	for(idx=0; idx < ln->op_len; idx++)
 	{
 		operandChange2Atnt(&ln->op[idx],ln->com_flags);
@@ -45785,7 +45825,7 @@ void linkAtntAssemblyLine(const AsmLine *ln, char *oline)
 		{
 			p = fstrcat(p,"w");
 		}
-		if (sizesuf & Op_SizeDWord && !(ln->com_flags & Com_JmpInstr))  
+		if (sizesuf & Op_SizeDWord)
 		{
 			p = fstrcat(p,"l");
 		}
@@ -45852,12 +45892,10 @@ static void tcc_assemble_inline(TCCState *s1, char *str, int len, int global)
 		int line_len = 0;
 		int tline_len = 0;
 		AsmLine ln;
-		memset(&ln, 0, sizeof(AsmLine));
-		AsmCodeProps props;
-		memset(&props, 0, sizeof(AsmCodeProps));
 
 		while(tline_len < len-1)
 		{
+			memset(&ln, 0, sizeof(AsmLine));
 			line_len = chstrlen(&str[tline_len], '\n');
 			memcpy(tmpline, &str[tline_len], line_len);
 			tline_len += line_len;
@@ -45865,14 +45903,14 @@ static void tcc_assemble_inline(TCCState *s1, char *str, int len, int global)
 				tmpline[line_len-1] = '\0';
 
 			chopIntelAssemblyLine(tmpline, &ln);
-			changeAssemblyLineToAtnt(&ln, &props);
+			changeAssemblyLineToAtnt(&ln);
 			linkAtntAssemblyLine(&ln, tmpline);
 
 			_len = strlen(tmpline);
 			tmpline[_len] = '\n';
 			_len++;
 			memcpy(&intelstr[tlen], tmpline, _len);
-			printf("%s", &intelstr[tlen]);
+			printf("ASM DEBUG: %s", &intelstr[tlen]);
 			tlen += _len;
 		}
 		tcc_open_bf(s1, ":asm:", tlen);
