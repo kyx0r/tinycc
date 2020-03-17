@@ -1,7 +1,8 @@
 # Tinycc
 Single header C99 compiler (TCC)
 
-Entire core of TCC compiler in one file. Including all architectures. 43000 LOC
+Entire core of TCC compiler in one file. Including all architectures. 52000 LOC
+Including my modifications and improvements. 
 
 # Why?
 
@@ -63,4 +64,5 @@ tcc test.c -luser32
 # Notes & TODO
 Have not tested on Arm, riscv64 but it should work unless i screwed up.
 
-- Add intel assembly support and vector instructions properly. 
+- Add intel assembly support (initial parser done)
+- Add vector instructions support. 
