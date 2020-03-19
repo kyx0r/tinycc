@@ -42166,8 +42166,6 @@ static const uint8_t segment_prefixes[] =
 	0x65  /* gs */
 };
 
-static const ASMInstr asm_instrs[] =
-{
 #define ALT(x) x
 	/* This removes a 0x0f in the second byte */
 #define O(o) ((uint64_t) ((((o) & 0xff00) == 0x0f00) ? ((((o) >> 8) & ~0xff) | ((o) & 0xff)) : (o)))
@@ -42178,6 +42176,9 @@ static const ASMInstr asm_instrs[] =
 #define DEF_ASM_OP1(name, opcode, group, instr_type, op0) { TOK_ASM_ ## name, O(opcode), T(opcode, instr_type, group), 1, { op0 }},
 #define DEF_ASM_OP2(name, opcode, group, instr_type, op0, op1) { TOK_ASM_ ## name, O(opcode), T(opcode, instr_type, group), 2, { op0, op1 }},
 #define DEF_ASM_OP3(name, opcode, group, instr_type, op0, op1, op2) { TOK_ASM_ ## name, O(opcode), T(opcode, instr_type, group), 3, { op0, op1, op2 }},
+
+static const ASMInstr asm_instrs[] =
+{
 #ifdef TCC_TARGET_X86_64
 
 //START x86_64-asm.h
@@ -42380,8 +42381,8 @@ static void parse_operand(TCCState *s1, Operand *op)
 			if (op->reg == 0)
 				op->type |= OP_ST0;
 			goto no_skip;
-#ifdef TCC_TARGET_X86_64
 		}
+#ifdef TCC_TARGET_X86_64
 		else if (tok >= TOK_ASM_spl && tok <= TOK_ASM_dil)
 		{
 			op->type = OP_REG8 | OP_REG8_LOW;
@@ -42390,8 +42391,8 @@ static void parse_operand(TCCState *s1, Operand *op)
 		else if ((op->reg = asm_parse_numeric_reg(tok, &op->type)) >= 0)
 		{
 			;
-#endif
 		}
+#endif
 		else
 		{
 reg_error:
@@ -42684,7 +42685,7 @@ static void asm_rex(int width64, Operand *ops, int nb_ops, int *op_type,
 
 static void maybe_print_stats (void)
 {
-	static int already = 1;
+	static int already = 0;
 	if (!already)
 		/* print stats about opcodes */
 	{
@@ -42738,8 +42739,7 @@ ST_FUNC void asm_opcode(TCCState *s1, int opcode)
 #ifdef TCC_TARGET_X86_64
 	int rex64;
 #endif
-
-	maybe_print_stats();
+	//maybe_print_stats();
 	/* force synthetic ';' after prefix instruction, so we can handle */
 	/* one-line things like "rep stosb" instead of only "rep\nstosb" */
 	if (opcode >= TOK_ASM_wait && opcode <= TOK_ASM_repnz)
@@ -42779,6 +42779,7 @@ ST_FUNC void asm_opcode(TCCState *s1, int opcode)
 	}
 
 	s = 0; /* avoid warning */
+
 
 again:
 	/* optimize matching by using a lookup table (no hashing is needed
@@ -42846,8 +42847,11 @@ again:
 		}
 		else
 		{
+		//	l("%d %X %d", opcode, pa->opcode, pa->sym);
 			if (pa->sym != opcode)
+			{
 				continue;
+			}
 		}
 		if (pa->nb_ops != nb_ops)
 			continue;
@@ -42895,6 +42899,8 @@ again:
 			if (op1 & OPT_EA)
 				v |= OP_EA;
 			op_type[i] = v;
+			//l("inter %d %X %d", opcode, pa->opcode, pa->sym);
+			//l("%X %X %X", ops[i].type, v, (ops[i].type & v));
 			if ((ops[i].type & v) == 0)
 				goto next;
 			alltypes |= ops[i].type;
@@ -42904,6 +42910,7 @@ again:
 next:
 		;
 	}
+//	l("FINAL %d %X %d", opcode, pa->opcode, pa->sym);
 	if (pa->sym == 0)
 	{
 		if (opcode >= TOK_ASM_first && opcode <= TOK_ASM_last)
@@ -45128,8 +45135,14 @@ const RegStruct regslist[] =
 	{"esp",4},
 	{"si",2},
 	{"sp",2},
-	{"tr6",4},// Test register
-	{"tr7",4} // Test register
+	{"xmm0",5},
+	{"xmm1",5},
+	{"xmm2",5},
+	{"xmm3",5},
+	{"xmm4",5},
+	{"xmm5",5},
+	{"xmm6",5},
+	{"xmm7",5}
 };
 #define REGSLIST_LEN (sizeof(regslist)/sizeof(regslist[0]))
 
@@ -45919,7 +45932,7 @@ skip:;
 			tmpline[_len] = '\n';
 			_len++;
 			memcpy(&intelstr[tlen], tmpline, _len);
-			//printf("ASM DEBUG: %s", &intelstr[tlen]);
+			printf("ASM DEBUG: %s", &intelstr[tlen]);
 			tlen += _len;
 		}
 		tcc_open_bf(s1, ":asm:", tlen);
@@ -51974,6 +51987,7 @@ DEF_ASM_OP2(pxor, 0x0fef, 0, OPC_MODRM, OPT_EA | OPT_MMXSSE, OPT_MMXSSE )
 DEF_ASM_OP2(movups, 0x0f10, 0, OPC_MODRM, OPT_EA | OPT_REG32, OPT_SSE )
 ALT(DEF_ASM_OP2(movups, 0x0f11, 0, OPC_MODRM, OPT_SSE, OPT_EA | OPT_REG32 ))
 DEF_ASM_OP2(movaps, 0x0f28, 0, OPC_MODRM, OPT_EA | OPT_REG32, OPT_SSE )
+ALT(DEF_ASM_OP2(movaps, 0x0f28, 0, OPC_MODRM, OPT_SSE, OPT_SSE ))
 ALT(DEF_ASM_OP2(movaps, 0x0f29, 0, OPC_MODRM, OPT_SSE, OPT_EA | OPT_REG32 ))
 DEF_ASM_OP2(movhps, 0x0f16, 0, OPC_MODRM, OPT_EA | OPT_REG32, OPT_SSE )
 ALT(DEF_ASM_OP2(movhps, 0x0f17, 0, OPC_MODRM, OPT_SSE, OPT_EA | OPT_REG32 ))
@@ -52473,6 +52487,7 @@ DEF_ASM_OP2(pxor, 0x0fef, 0, OPC_MODRM, OPT_EA | OPT_MMXSSE, OPT_MMXSSE )
 DEF_ASM_OP2(movups, 0x0f10, 0, OPC_MODRM, OPT_EA | OPT_REG32, OPT_SSE )
 ALT(DEF_ASM_OP2(movups, 0x0f11, 0, OPC_MODRM, OPT_SSE, OPT_EA | OPT_REG32 ))
 DEF_ASM_OP2(movaps, 0x0f28, 0, OPC_MODRM, OPT_EA | OPT_REG32, OPT_SSE )
+ALT(DEF_ASM_OP2(movaps, 0x0f28, 0, OPC_MODRM, OPT_SSE, OPT_SSE ))
 ALT(DEF_ASM_OP2(movaps, 0x0f29, 0, OPC_MODRM, OPT_SSE, OPT_EA | OPT_REG32 ))
 DEF_ASM_OP2(movhps, 0x0f16, 0, OPC_MODRM, OPT_EA | OPT_REG32, OPT_SSE )
 ALT(DEF_ASM_OP2(movhps, 0x0f17, 0, OPC_MODRM, OPT_SSE, OPT_EA | OPT_REG32 ))
