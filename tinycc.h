@@ -7832,7 +7832,7 @@ int isspace(int c)
 	return 0;
 }
 
-void strlwr(char *string)
+char *strlwr(char *string)
 {
 	while (*string)
 	{
@@ -7842,6 +7842,7 @@ void strlwr(char *string)
 		}
 		string++;
 	}
+	return string;
 }
 
 
