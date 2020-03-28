@@ -7848,23 +7848,21 @@ char *strlwr(char *string)
 
 char *strcpy(char *dest, const char *src)
 {
-	while (*src)
-	{
-		*dest++ = *src++;
-	}
-	*dest++ = 0;
-	return dest;
+	char *tmp = dest;
+	while(*dest++ = *src++);
+	return tmp;
 }
 
 char *strncpy(char *dest, const char *src, size_t count)
 {
+	char *tmp = dest;
 	while (*src && count--)
 	{
 		*dest++ = *src++;
 	}
 	if (count)
 		*dest++ = 0;
-	return dest;
+	return tmp;
 }
 
 size_t strlen(const char *str)
