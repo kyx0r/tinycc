@@ -5,7 +5,6 @@ int _main(int argc0, char **argv0);
 
 
 #ifdef TCC_TARGET_PE
-void __chkstk() {}
 #if defined __GNUC__ || defined __MINGW32__ || defined __MINGW64__
 
 int main(int argc0, char **argv0)

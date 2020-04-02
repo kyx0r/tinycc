@@ -997,6 +997,60 @@ long long __fixxfdi (long double a1)
 #endif /* !ARM */
 //END libtcc1.c
 
+#if __TINYC__
+
+#ifdef TCC_TARGET_I386
+__asm__
+(
+	".global alloca\n"
+	"alloca:\n"
+	"pop %edx\n"
+	"pop %eax\n"
+	"add $3, %eax\n"
+	"and $-4,%eax\n"
+	"je exit\n"
+	"p1:\n"
+	"cmp $0x1000,%eax\n"
+	"jbe inter\n"
+	"test   %eax,-0x1000(%esp)\n"
+	"sub    $0x1000,%esp\n"
+	"sub    $0x1000,%eax\n"
+	"jmp p1\n"
+	"inter:\n"
+	"sub %eax,%esp\n"
+	"mov %esp,%eax\n"
+	"exit:\n"
+	"push %edx\n"
+	"push %edx\n"
+	"ret\n"
+);
+
+__asm__
+(
+	".global __chkstk \n"
+	"__chkstk: \n"
+    "xchg    (%esp),%ebp\n"     /* store ebp, get ret.addr */
+    "push    %ebp\n"            /* push ret.addr */
+    "lea     4(%esp),%ebp\n"    /* setup frame ptr */
+    "push    %ecx\n"            /* save ecx */
+    "mov     %ebp,%ecx\n"
+	"P0:\n"
+    "sub     $4096,%ecx\n"
+    "test    %eax,(%ecx)\n"
+    "sub     $4096,%eax\n"
+    "cmp     $4096,%eax\n"
+    "jge     P0\n"
+    "sub     %eax,%ecx\n"
+    "test    %eax,(%ecx)\n"
+    "mov     %esp,%eax\n"
+    "mov     %ecx,%esp\n"
+    "mov     (%eax),%ecx\n"     /* restore ecx */
+    "jmp     *4(%eax)\n"
+);
+#endif
+
+#endif
+
 //START libtcc.h
 
 #ifndef LIBTCCAPI
@@ -7834,6 +7888,7 @@ int isspace(int c)
 
 char *strlwr(char *string)
 {
+	char *tmp = string;
 	while (*string)
 	{
 		if (*string >= 'A' && *string <= 'Z')
@@ -7842,7 +7897,7 @@ char *strlwr(char *string)
 		}
 		string++;
 	}
-	return string;
+	return tmp;
 }
 
 
@@ -45894,17 +45949,19 @@ static void tcc_assemble_inline(TCCState *s1, char *str, int len, int global)
 {
 	const int *saved_macro_ptr = macro_ptr;
 	int dotid = set_idnum('.', IS_ID);
+	
 
+	s1->intelasm = 1;
 	if(s1->intelasm)
 	{
-		char intelstr[len*2]; //this should be enough, intel syntax is slimmer than at&t
+ 		char intelstr[len*2]; //this should be enough, intel syntax is slimmer than at&t
 		char tmpline[256];
 		int tlen = 0;
 		int _len = 0;
 		int line_len = 0;
 		int tline_len = 0;
 		AsmLine ln;
-
+		
 		while(tline_len < len-1)
 		{
 			memset(&ln, 0, sizeof(AsmLine));
@@ -45942,7 +45999,7 @@ skip:;
 
 		set_idnum('.', dotid);
 		macro_ptr = saved_macro_ptr;
-		return;
+		return; 
 	}
 	tcc_open_bf(s1, ":asm:", len);
 	memcpy(file->buffer, str, len);
