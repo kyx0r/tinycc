@@ -46,25 +46,25 @@ typedef unsigned short fexcept_t;
    (if CPU supports it). */
 typedef struct
 {
-	unsigned short __control_word;
-	unsigned short __unused0;
-	unsigned short __status_word;
-	unsigned short __unused1;
-	unsigned short __tag_word;
-	unsigned short __unused2;
-	unsigned int	 __ip_offset;    /* instruction pointer offset */
-	unsigned short __ip_selector;
-	unsigned short __opcode;
-	unsigned int	 __data_offset;
-	unsigned short __data_selector;
-	unsigned short __unused3;
-	unsigned int   __mxcsr; /* contents of the MXCSR register  */
+  unsigned short __control_word;
+  unsigned short __unused0;
+  unsigned short __status_word;
+  unsigned short __unused1;
+  unsigned short __tag_word;
+  unsigned short __unused2;  
+  unsigned int	 __ip_offset;    /* instruction pointer offset */
+  unsigned short __ip_selector;  
+  unsigned short __opcode;
+  unsigned int	 __data_offset;
+  unsigned short __data_selector;  
+  unsigned short __unused3;
+  unsigned int   __mxcsr; /* contents of the MXCSR register  */
 } fenv_t;
 
 
 /*The C99 standard (7.6.9) allows us to define implementation-specific macros for
   different fp environments */
-
+  
 /* The default Intel x87 floating point environment (64-bit mantissa) */
 #define FE_PC64_ENV ((const fenv_t *)-1)
 

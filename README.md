@@ -1,9 +1,8 @@
 # Tinycc
-Single header C99 compiler (TCC)
+Uptodate Single header C99 compiler (TCC)
+mob: 16456168430c9e185dd94b8215aa77d02bbb8a2c
 
-Entire core of TCC compiler in one file. Including all architectures. 52000 LOC
-
-Including my modifications and improvements. 
+Entire core of TCC compiler in one file. Including all architectures. 100000 LOC
 
 # Why?
 
@@ -61,9 +60,35 @@ For reference refer to tinycc.c file.
 tcc test.c -luser32
 ```
 
-------------------------------------------------------------------------
-# Notes & TODO
-Have not tested on Arm, riscv64 but it should work unless i screwed up.
+What is excluded from tinycc.c:
 
-- Add intel assembly support (initial parser done)
-- Add vector instructions support. 
+Bounds checker found in official repo's ./lib folder
+Arm code found in official repo's ./lib folder
+
+NOTES:
+main() function is at the very end of tinycc.c it
+will need modifications from the master branch, for
+example setup the default include path "./include"
+so that it can read those files.
+
+There might be an aftifact in the source code
+due to almagination inaccuracy, this probably 
+looks like a typo thing in source code, just remove it
+if it exists.
+
+At the top of tinycc.c you will find va_args code,
+that code is needed only if tcc is bootstrapping
+itself (or at least this is how it used to be irc)
+then a bit below that you find the extended asm
+alloca and ctkchk implementations, again necessary
+for bootstrap probably. After that you find libtcc1.c
+source, lots of intrinsics needed for float conversions
+and etc... Everything after is tcc code straight up
+inlined.
+
+This code does compile with gcc under linux+musl no
+errors. As far as compiling on anything else I have 
+no comment to give.
+
+Tinycc version string with commit hash is included
+in the source code.

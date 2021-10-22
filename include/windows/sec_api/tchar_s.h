@@ -210,22 +210,22 @@ extern "C" {
 #define _tccpy_s_l _mbccpy_s_l
 #else
 
-_CRTIMP char *__cdecl _tcsncat_s(char *_Dst,size_t _DstSizeInChars,const char *_Src,size_t _MaxCount);
-_CRTIMP char *__cdecl _tcsncat_s_l(char *_Dst,size_t _DstSizeInChars,const char *_Src,size_t _MaxCount,_locale_t _Locale);
-_CRTIMP char *__cdecl _tcsncpy_s(char *_Dst,size_t _DstSizeInChars,const char *_Src,size_t _MaxCount);
-_CRTIMP char *__cdecl _tcsncpy_s_l(char *_Dst,size_t _DstSizeInChars,const char *_Src,size_t _MaxCount,_locale_t _Locale);
-_CRTIMP char *__cdecl _tcstok_s(char *_Str,const char *_Delim,char **_Context);
-_CRTIMP char *__cdecl _tcstok_s_l(char *_Str,const char *_Delim,char **_Context,_locale_t _Locale);
-_CRTIMP errno_t __cdecl _tcsset_s(char *_Str,size_t _SizeInChars,unsigned int _Val);
-_CRTIMP errno_t __cdecl _tcsset_s_l(char *_Str,size_t _SizeInChars,unsigned int,_locale_t _Locale);
-_CRTIMP char *__cdecl _tcsnccat_s(char *_Dst,size_t _DstSizeInChars,const char *_Src,size_t _MaxCount);
-_CRTIMP char *__cdecl _tcsnccat_s_l(char *_Dst,size_t _DstSizeInChars,const char *_Src,size_t _MaxCount,_locale_t _Locale);
-_CRTIMP char *__cdecl _tcsnccpy_s(char *_Dst,size_t _DstSizeInChars,const char *_Src,size_t _MaxCount);
-_CRTIMP char *__cdecl _tcsnccpy_s_l(char *_Dst,size_t _DstSizeInChars,const char *_Src,size_t _MaxCount,_locale_t _Locale);
-_CRTIMP char *__cdecl _tcslwr_s(char *_Str,size_t _SizeInChars);
-_CRTIMP char *__cdecl _tcslwr_s_l(char *_Str,size_t _SizeInChars,_locale_t _Locale);
-_CRTIMP char *__cdecl _tcsupr_s(char *_Str,size_t _SizeInChars);
-_CRTIMP char *__cdecl _tcsupr_s_l(char *_Str,size_t _SizeInChars,_locale_t _Locale);
+  _CRTIMP char *__cdecl _tcsncat_s(char *_Dst,size_t _DstSizeInChars,const char *_Src,size_t _MaxCount);
+  _CRTIMP char *__cdecl _tcsncat_s_l(char *_Dst,size_t _DstSizeInChars,const char *_Src,size_t _MaxCount,_locale_t _Locale);
+  _CRTIMP char *__cdecl _tcsncpy_s(char *_Dst,size_t _DstSizeInChars,const char *_Src,size_t _MaxCount);
+  _CRTIMP char *__cdecl _tcsncpy_s_l(char *_Dst,size_t _DstSizeInChars,const char *_Src,size_t _MaxCount,_locale_t _Locale);
+  _CRTIMP char *__cdecl _tcstok_s(char *_Str,const char *_Delim,char **_Context);
+  _CRTIMP char *__cdecl _tcstok_s_l(char *_Str,const char *_Delim,char **_Context,_locale_t _Locale);
+  _CRTIMP errno_t __cdecl _tcsset_s(char *_Str,size_t _SizeInChars,unsigned int _Val);
+  _CRTIMP errno_t __cdecl _tcsset_s_l(char *_Str,size_t _SizeInChars,unsigned int,_locale_t _Locale);
+  _CRTIMP char *__cdecl _tcsnccat_s(char *_Dst,size_t _DstSizeInChars,const char *_Src,size_t _MaxCount);
+  _CRTIMP char *__cdecl _tcsnccat_s_l(char *_Dst,size_t _DstSizeInChars,const char *_Src,size_t _MaxCount,_locale_t _Locale);
+  _CRTIMP char *__cdecl _tcsnccpy_s(char *_Dst,size_t _DstSizeInChars,const char *_Src,size_t _MaxCount);
+  _CRTIMP char *__cdecl _tcsnccpy_s_l(char *_Dst,size_t _DstSizeInChars,const char *_Src,size_t _MaxCount,_locale_t _Locale);
+  _CRTIMP char *__cdecl _tcslwr_s(char *_Str,size_t _SizeInChars);
+  _CRTIMP char *__cdecl _tcslwr_s_l(char *_Str,size_t _SizeInChars,_locale_t _Locale);
+  _CRTIMP char *__cdecl _tcsupr_s(char *_Str,size_t _SizeInChars);
+  _CRTIMP char *__cdecl _tcsupr_s_l(char *_Str,size_t _SizeInChars,_locale_t _Locale);
 
 #endif
 
