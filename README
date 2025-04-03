@@ -1,0 +1,35 @@
+TINYCC
+------
+Single header C99 compiler (TCC)
+
+Entire core of TCC compiler in one file. Separate file for each target arch/platform.
+Arch/Platform unrelated code stripped out.
+
+Supported architectures:
+tcc_win64_x86_64 - 47609L LOC
+
+RATIONALE
+---------
+
+It may be painful to deal with complex build systems and files may harm code navigation 
+and/or understanding. Many people prefer single header libraries, and this is just 
+that, entire compiler self contained and in one file. 
+
+Have you ever wanted to ship a compiler inside your application? Well, now you can 
+just do it.
+
+COMPILING
+---------
+
+Bootstrap with GCC with UCRT (mingw-w64-x86_64-gcc)
+gcc tcc_win64_x86_64.c -o gnu_tcc.exe
+
+Self re-compile
+./gnu_tcc.exe -I./win32/include -I./win32/include/winapi tcc_win64_x86_64.c -o tcc.exe
+./tcc.exe -I./win32/include -I./win32/include/winapi tcc_win64_x86_64.c -o _tcc.exe
+
+UPDATING
+---------
+Updating amalgamation to the latest git version is automated using custom scripts.
+
+win64_x86_64.sh
