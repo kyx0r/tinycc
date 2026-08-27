@@ -21,6 +21,10 @@ just do it.
 COMPILING
 ---------
 
+Setup UCRT:
+pacman -S mingw-w64-ucrt-x86_64-toolchain
+export PATH="/ucrt64/bin:$PATH"
+
 Bootstrap with GCC with UCRT (mingw-w64-x86_64-gcc)
 gcc tcc_win64_x86_64.c -o gnu_tcc.exe
 
