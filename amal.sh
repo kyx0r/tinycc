@@ -40,12 +40,24 @@ typedef struct BufferedFile \{
 %f> 
 typedef struct BufferedFile \{
 	uint8_t \*buf_ptr;4??0?
-4??+2m 1220reg p OK tcc_linux_x86_64.c:1860:a42sc %? %@2152sc!1q0?
+4??+2m 1220reg p OK tcc_linux_x86_64.c:1861:a42sc %? %@2152sc!1q0?
 grp 1%f> .*?
 typedef struct BufferedFile \{.*?
 (	uint8_t \*buf_ptr;)7??0?
-grp 07??m 1220reg p OK tcc_linux_x86_64.c:1860:a72sc %? %@2152sc!0?
-1;4;7??!219reg tcc_linux_x86_64.c:18602sc %? %@2132sc!0?
+grp 07??m 1220reg p OK tcc_linux_x86_64.c:1861:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> #define TYPE_PARAM 4
+/\* nested call to post_type \*/
+#define TYPE_NEST 8.*(#define CH_EOB '\''\\\\'\'')
+/\* end of file \*/
+#define CH_EOF \(-1\)8??0?
+grp 08??-28m 1220reg p OK tcc_linux_x86_64.c:1861:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> /\* type with variable \*/
+#define TYPE_DIRECT 2
+/\* type declares function parameter \*/.*(typedef struct TokenString \{)
+	int \*str;
+	int len;9??0?
+grp 09??-33m 1220reg p OK tcc_linux_x86_64.c:1861:a92sc %? %@2152sc!'\''00?
+1;4;7;8;9??!219reg tcc_linux_x86_64.c:18612sc %? %@2132sc!0?
 ?0?
 %f+ 		}
 		total_bytes \+= len;
@@ -57,8 +69,24 @@ typedef struct BufferedFile \{.*?
 %f+ 		}
 		total_bytes \+= len;
 		bf->buf_ptr = bf->buffer;4??0?
-4??+2m 2220reg p OK tcc_linux_x86_64.c:7255:a42sc %? %@2152sc!0?
-1;4??!219reg tcc_linux_x86_64.c:72552sc %? %@2132sc!0?
+4??+2m 2220reg p OK tcc_linux_x86_64.c:7255:a42sc %? %@2152sc!1q0?
+grp 1%f+ 		}.*?
+		total_bytes \+= len;.*?
+(		bf->buf_ptr = bf->buffer;)7??0?
+grp 07??m 2220reg p OK tcc_linux_x86_64.c:7255:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 				len = 0;
+		} else \{
+			len = 0;.*(	if \(bf->buf_ptr < bf->buf_end\) \{)
+		return bf->buf_ptr\[0];
+	} else \{8??0?
+grp 08??-4m 2220reg p OK tcc_linux_x86_64.c:7255:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> 	BufferedFile \*bf = file;
+	int len;
+	/\* only tries to read if really end of buffer \*/.*(		bf->buf_ptr = bf->buf_end;)
+		return CH_EOF;
+	}9??0?
+grp 09??-7m 2220reg p OK tcc_linux_x86_64.c:7255:a92sc %? %@2152sc!'\''00?
+1;4;7;8;9??!219reg tcc_linux_x86_64.c:72552sc %? %@2132sc!0?
 ?0?
 %f+ 
 #define PEEKC\(c,p\) \{ c = \*\+\+p; if \(c == '\''\\\\'\''\) c = handle_stray\(&p\); }
@@ -72,18 +100,18 @@ static int skip_spaces\(void\)
 
 4??0?
 4??+2m 3220reg p OK tcc_linux_x86_64.c:7329:a42sc %? %@2152sc!1q0?
-m 01;0grp 1%f> 	c = handle_stray_noerror\(!\(parse_flags & PARSE_FLAG_ACCEPT_STRAYS\)\);
-	\*p = file->buf_ptr;
-	return c;.*(    p\+\+;\\)
-    c = \*p;\\
-    if \(c == '\''\\\\'\''\) \{\\8??0?
-grp 08??-5m 3220reg p OK tcc_linux_x86_64.c:7329:a82sc %? %@2152sc!'\''08??1q0?
-m 01;0grp 1%f> static int handle_stray\(uint8_t \*\*p\)
-\{
-	int c;.*(        file->buf_ptr = p;\\)
-        c = handle_eob\(\);\\
-        p = file->buf_ptr;\\9??0?
-grp 09??-8m 3220reg p OK tcc_linux_x86_64.c:7329:a92sc %? %@2152sc!'\''00?
+m 01;0grp 1%f> 	return c;
+}
+/\* handle the complicated stray case \*/.*(	--file->buf_ptr;)
+	do \{
+		ch = ninp\(\);8??0?
+grp 08??-4m 3220reg p OK tcc_linux_x86_64.c:7329:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> 	file->buf_ptr = \*p - 1;
+	c = handle_stray_noerror\(!\(parse_flags & PARSE_FLAG_ACCEPT_STRAYS\)\);
+	\*p = file->buf_ptr;.*(	} while \(isidnum_table\[ch - CH_EOF] & IS_SPC\);)
+	return ch;
+}9??0?
+grp 09??-7m 3220reg p OK tcc_linux_x86_64.c:7329:a92sc %? %@2152sc!'\''00?
 1;4;8;9??!219reg tcc_linux_x86_64.c:73292sc %? %@2132sc!0?
 ?0?
 %f+ 	} while \(isidnum_table\[ch - CH_EOF] & IS_SPC\);
@@ -96,8 +124,24 @@ static int skip_spaces\(void\)
 %f+ 	} while \(isidnum_table\[ch - CH_EOF] & IS_SPC\);
 	return ch;
 }4??0?
-4??+2m 4220reg p OK tcc_linux_x86_64.c:7338:a42sc %? %@2152sc!0?
-1;4??!219reg tcc_linux_x86_64.c:73382sc %? %@2132sc!0?
+4??+2m 4220reg p OK tcc_linux_x86_64.c:7338:a42sc %? %@2152sc!1q0?
+grp 1%f+ 	} while \(isidnum_table\[ch - CH_EOF] & IS_SPC\);.*?
+	return ch;.*?
+(})7??0?
+grp 07??m 4220reg p OK tcc_linux_x86_64.c:7338:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 	--file->buf_ptr;
+	do \{
+		ch = ninp\(\);.*(redo_start:)
+	start_of_line = 1;
+	in_warn_or_error = 0;8??0?
+grp 08??-143m 4220reg p OK tcc_linux_x86_64.c:7338:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> static int skip_spaces\(void\)
+\{
+	int ch;.*(			file->line_num\+\+;)
+			p\+\+;
+			goto redo_start;9??0?
+grp 09??-157m 4220reg p OK tcc_linux_x86_64.c:7338:a92sc %? %@2152sc!'\''00?
+1;4;7;8;9??!219reg tcc_linux_x86_64.c:73382sc %? %@2132sc!0?
 ?0?
 %f+ /\* single line C\+\+ comments \*/
 
@@ -117,8 +161,30 @@ static uint8_t \*parse_line_comment\(uint8_t \*p\)
 4??+2m 5220reg p OK tcc_linux_x86_64.c:7341:a42sc %? %@2152sc!1q0?
 %f+ \{
 	int c;5??0?
-5??-1m 5220reg p OK tcc_linux_x86_64.c:7341:a52sc %? %@2152sc!0?
-1;2;3;4;5??!219reg tcc_linux_x86_64.c:73412sc %? %@2132sc!0?
+5??-1m 5220reg p OK tcc_linux_x86_64.c:7341:a52sc %? %@2152sc!1q0?
+%f+ /. s......li.. ..\+.c.m........
+
+.t..i....n......p...e.l..e........\(..n...t \*.\)
+\{
+.... ..6??0?
+6??+2m 5220reg p OK tcc_linux_x86_64.c:7341:a62sc %? %@2152sc!1q0?
+grp 1%f+ /\* single line C\+\+ comments \*/.*?
+.*?
+(static uint8_t \*parse_line_comment\(uint8_t \*p\))7??0?
+grp 07??m 5220reg p OK tcc_linux_x86_64.c:7341:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 	--file->buf_ptr;
+	do \{
+		ch = ninp\(\);.*(redo_start:)
+	start_of_line = 1;
+	in_warn_or_error = 0;8??0?
+grp 08??-140m 5220reg p OK tcc_linux_x86_64.c:7341:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> static int skip_spaces\(void\)
+\{
+	int ch;.*(			file->line_num\+\+;)
+			p\+\+;
+			goto redo_start;9??0?
+grp 09??-154m 5220reg p OK tcc_linux_x86_64.c:7341:a92sc %? %@2152sc!'\''00?
+1;2;3;4;5;6;7;8;9??!219reg tcc_linux_x86_64.c:73412sc %? %@2132sc!0?
 ?0?
 %f+ \{
 	int c;
@@ -126,8 +192,20 @@ static uint8_t \*parse_line_comment\(uint8_t \*p\)
 1??+1m 61q0?
 %f+ \{
 	int c;4??0?
-4??+1m 6220reg p OK tcc_linux_x86_64.c:7343:a42sc %? %@2152sc!0?
-1;4??!219reg tcc_linux_x86_64.c:73432sc %? %@2132sc!0?
+4??+1m 6220reg p OK tcc_linux_x86_64.c:7343:a42sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 	--file->buf_ptr;
+	do \{
+		ch = ninp\(\);.*(redo_start:)
+	start_of_line = 1;
+	in_warn_or_error = 0;8??0?
+grp 08??-138m 6220reg p OK tcc_linux_x86_64.c:7343:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> static int skip_spaces\(void\)
+\{
+	int ch;.*(			file->line_num\+\+;)
+			p\+\+;
+			goto redo_start;9??0?
+grp 09??-152m 6220reg p OK tcc_linux_x86_64.c:7343:a92sc %? %@2152sc!'\''00?
+1;4;8;9??!219reg tcc_linux_x86_64.c:73432sc %? %@2132sc!0?
 ?0?
 %f+ 	for \(;;\) \{
 		for \(;;\) \{
@@ -144,8 +222,28 @@ redo:2??0?
 ;0fr.,$f+ ^	for \(;;\) \{$4??0?
 4??+1m 7220reg p OK tcc_linux_x86_64.c:7345:a42sc %? %@2152sc!fr 981qfr 980?
 ;0fr.,$f+ ^redo:$5??0?
-5??-2m 7220reg p OK tcc_linux_x86_64.c:7345:a52sc %? %@2152sc!fr 98fr 980?
-1;2;3;4;5??!219reg tcc_linux_x86_64.c:73452sc %? %@2132sc!0?
+5??-2m 7220reg p OK tcc_linux_x86_64.c:7345:a52sc %? %@2152sc!fr 981qfr 980?
+%f+ .....\(... .
+...or.\(.....
+		.... .....
+....:6??0?
+6??+1m 7220reg p OK tcc_linux_x86_64.c:7345:a62sc %? %@2152sc!1q0?
+grp 1%f+ 	for \(;;\) \{.*?
+(		for \(;;\) \{)7??0?
+grp 07??m 7220reg p OK tcc_linux_x86_64.c:7345:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 	--file->buf_ptr;
+	do \{
+		ch = ninp\(\);.*(redo_start:)
+	start_of_line = 1;
+	in_warn_or_error = 0;8??0?
+grp 08??-136m 7220reg p OK tcc_linux_x86_64.c:7345:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> static int skip_spaces\(void\)
+\{
+	int ch;.*(			file->line_num\+\+;)
+			p\+\+;
+			goto redo_start;9??0?
+grp 09??-150m 7220reg p OK tcc_linux_x86_64.c:7345:a92sc %? %@2152sc!'\''00?
+1;2;3;4;5;6;7;8;9??!219reg tcc_linux_x86_64.c:73452sc %? %@2132sc!0?
 ?0?
 %f+ redo:
 			if \(c == '\''\\n'\'' \|\| c == '\''\\\\'\''\)
@@ -186,8 +284,36 @@ redo:2??0?
 ;0fr.,$f+ ^redo:$4??0?
 4??+1m 8220reg p OK tcc_linux_x86_64.c:7348:a42sc %? %@2152sc!fr 981qfr 980?
 ;0fr.,$f+ ^			break;$5??0?
-5??-10m 8220reg p OK tcc_linux_x86_64.c:7348:a52sc %? %@2152sc!fr 98fr 980?
-1;2;3;4;5??!219reg tcc_linux_x86_64.c:73482sc %? %@2132sc!0?
+5??-10m 8220reg p OK tcc_linux_x86_64.c:7348:a52sc %? %@2152sc!fr 981qfr 980?
+%f+ redo:
+	.	i.... .=..\\.. .\| .....'\''\\.'\''.
+.......ak.
+			... .\+\+p.
+.	.i......= ......... .=......
+	.....e...
+	..
+.........= '\''\\...
+.	...e.k;
+	.c.. ha.d...b....\);
+..i. \(......H_....
+....r.a.;6??0?
+6??+1m 8220reg p OK tcc_linux_x86_64.c:7348:a62sc %? %@2152sc!1q0?
+grp 1%f+ redo:.*?
+(			if \(c == '\''\\n'\'' \|\| c == '\''\\\\'\''\))7??0?
+grp 07??m 8220reg p OK tcc_linux_x86_64.c:7348:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 	--file->buf_ptr;
+	do \{
+		ch = ninp\(\);.*(redo_start:)
+	start_of_line = 1;
+	in_warn_or_error = 0;8??0?
+grp 08??-133m 8220reg p OK tcc_linux_x86_64.c:7348:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> static int skip_spaces\(void\)
+\{
+	int ch;.*(			file->line_num\+\+;)
+			p\+\+;
+			goto redo_start;9??0?
+grp 09??-147m 8220reg p OK tcc_linux_x86_64.c:7348:a92sc %? %@2152sc!'\''00?
+1;2;3;4;5;6;7;8;9??!219reg tcc_linux_x86_64.c:73482sc %? %@2132sc!0?
 ?0?
 %f+ 			break;
 		if \(c != '\''\\\\'\''\)
@@ -210,8 +336,30 @@ redo:2??0?
 %f+ 	}
 	return p;
 }5??0?
-5??-2m 9220reg p OK tcc_linux_x86_64.c:7359:a52sc %? %@2152sc!0?
-1;2;3;4;5??!219reg tcc_linux_x86_64.c:73592sc %? %@2132sc!0?
+5??-2m 9220reg p OK tcc_linux_x86_64.c:7359:a52sc %? %@2152sc!1q0?
+%f+ ..	......
+.	.f............
+.........e.o;
+	.
+......n p.
+}6??0?
+6??+1m 9220reg p OK tcc_linux_x86_64.c:7359:a62sc %? %@2152sc!1q0?
+grp 1%f+ 			break;.*?
+(		if \(c != '\''\\\\'\''\))7??0?
+grp 07??m 9220reg p OK tcc_linux_x86_64.c:7359:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 	--file->buf_ptr;
+	do \{
+		ch = ninp\(\);.*(redo_start:)
+	start_of_line = 1;
+	in_warn_or_error = 0;8??0?
+grp 08??-122m 9220reg p OK tcc_linux_x86_64.c:7359:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> static int skip_spaces\(void\)
+\{
+	int ch;.*(			file->line_num\+\+;)
+			p\+\+;
+			goto redo_start;9??0?
+grp 09??-136m 9220reg p OK tcc_linux_x86_64.c:7359:a92sc %? %@2152sc!'\''00?
+1;2;3;4;5;6;7;8;9??!219reg tcc_linux_x86_64.c:73592sc %? %@2132sc!0?
 ?0?
 %f+ 	}
 	return p;
@@ -223,8 +371,24 @@ redo:2??0?
 %f+ 	}
 	return p;
 }4??0?
-4??+2m 10220reg p OK tcc_linux_x86_64.c:7363:a42sc %? %@2152sc!0?
-1;4??!219reg tcc_linux_x86_64.c:73632sc %? %@2132sc!0?
+4??+2m 10220reg p OK tcc_linux_x86_64.c:7363:a42sc %? %@2152sc!1q0?
+grp 1%f+ 	}.*?
+	return p;.*?
+(})7??0?
+grp 07??m 10220reg p OK tcc_linux_x86_64.c:7363:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 	--file->buf_ptr;
+	do \{
+		ch = ninp\(\);.*(redo_start:)
+	start_of_line = 1;
+	in_warn_or_error = 0;8??0?
+grp 08??-118m 10220reg p OK tcc_linux_x86_64.c:7363:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> static int skip_spaces\(void\)
+\{
+	int ch;.*(			file->line_num\+\+;)
+			p\+\+;
+			goto redo_start;9??0?
+grp 09??-132m 10220reg p OK tcc_linux_x86_64.c:7363:a92sc %? %@2152sc!'\''00?
+1;4;7;8;9??!219reg tcc_linux_x86_64.c:73632sc %? %@2132sc!0?
 ?0?
 %f+ /\* C comments \*/
 
@@ -244,8 +408,30 @@ static uint8_t \*parse_comment\(uint8_t \*p\)
 4??+2m 11220reg p OK tcc_linux_x86_64.c:7366:a42sc %? %@2152sc!1q0?
 %f+ \{
 	int c;5??0?
-5??-1m 11220reg p OK tcc_linux_x86_64.c:7366:a52sc %? %@2152sc!0?
-1;2;3;4;5??!219reg tcc_linux_x86_64.c:73662sc %? %@2132sc!0?
+5??-1m 11220reg p OK tcc_linux_x86_64.c:7366:a52sc %? %@2152sc!1q0?
+%f+ .\*.. ........../
+
+....i..u.......\*............t\(.i..._..\*..
+\{
+.i.t...6??0?
+6??+2m 11220reg p OK tcc_linux_x86_64.c:7366:a62sc %? %@2152sc!1q0?
+grp 1%f+ /\* C comments \*/.*?
+.*?
+(static uint8_t \*parse_comment\(uint8_t \*p\))7??0?
+grp 07??m 11220reg p OK tcc_linux_x86_64.c:7366:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 	--file->buf_ptr;
+	do \{
+		ch = ninp\(\);.*(redo_start:)
+	start_of_line = 1;
+	in_warn_or_error = 0;8??0?
+grp 08??-115m 11220reg p OK tcc_linux_x86_64.c:7366:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> static int skip_spaces\(void\)
+\{
+	int ch;.*(			file->line_num\+\+;)
+			p\+\+;
+			goto redo_start;9??0?
+grp 09??-129m 11220reg p OK tcc_linux_x86_64.c:7366:a92sc %? %@2152sc!'\''00?
+1;2;3;4;5;6;7;8;9??!219reg tcc_linux_x86_64.c:73662sc %? %@2132sc!0?
 ?0?
 %f+ \{
 	int c;
@@ -256,8 +442,20 @@ static uint8_t \*parse_comment\(uint8_t \*p\)
 1??+1m 121q0?
 %f+ \{
 	int c;4??0?
-4??+1m 12220reg p OK tcc_linux_x86_64.c:7368:a42sc %? %@2152sc!0?
-1;4??!219reg tcc_linux_x86_64.c:73682sc %? %@2132sc!0?
+4??+1m 12220reg p OK tcc_linux_x86_64.c:7368:a42sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 	--file->buf_ptr;
+	do \{
+		ch = ninp\(\);.*(redo_start:)
+	start_of_line = 1;
+	in_warn_or_error = 0;8??0?
+grp 08??-113m 12220reg p OK tcc_linux_x86_64.c:7368:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> static int skip_spaces\(void\)
+\{
+	int ch;.*(			file->line_num\+\+;)
+			p\+\+;
+			goto redo_start;9??0?
+grp 09??-127m 12220reg p OK tcc_linux_x86_64.c:7368:a92sc %? %@2152sc!'\''00?
+1;4;8;9??!219reg tcc_linux_x86_64.c:73682sc %? %@2132sc!0?
 ?0?
 %f+ 		/\* fast skip loop \*/
 
@@ -281,8 +479,33 @@ redo:3??0?
 4??+3m 13220reg p OK tcc_linux_x86_64.c:7373:a42sc %? %@2152sc!1q0?
 %f+ 			if \(c == '\''\\n'\'' \|\| c == '\''\*'\'' \|\| c == '\''\\\\'\''\)
 				break;5??0?
-5??-2m 13220reg p OK tcc_linux_x86_64.c:7373:a52sc %? %@2152sc!0?
-1;2;3;4;5??!219reg tcc_linux_x86_64.c:73732sc %? %@2132sc!0?
+5??-2m 13220reg p OK tcc_linux_x86_64.c:7373:a52sc %? %@2152sc!1q0?
+%f+ ......... ............
+
+.	f...\(;.\).\{
+	.	... .....
+re..:
+	...f....=..'\''.n.... ..=.......... .=..\\.'\''.
+.	.	..ea.;6??0?
+6??+3m 13220reg p OK tcc_linux_x86_64.c:7373:a62sc %? %@2152sc!1q0?
+grp 1%f+ 		/\* fast skip loop \*/.*?
+.*?
+		for \(;;\) \{.*?
+(			c = \*\+\+p;)7??0?
+grp 07??m 13220reg p OK tcc_linux_x86_64.c:7373:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 	--file->buf_ptr;
+	do \{
+		ch = ninp\(\);.*(redo_start:)
+	start_of_line = 1;
+	in_warn_or_error = 0;8??0?
+grp 08??-108m 13220reg p OK tcc_linux_x86_64.c:7373:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> static int skip_spaces\(void\)
+\{
+	int ch;.*(			file->line_num\+\+;)
+			p\+\+;
+			goto redo_start;9??0?
+grp 09??-122m 13220reg p OK tcc_linux_x86_64.c:7373:a92sc %? %@2152sc!'\''00?
+1;2;3;4;5;6;7;8;9??!219reg tcc_linux_x86_64.c:73732sc %? %@2132sc!0?
 ?0?
 %f+ 			if \(c == '\''\\n'\'' \|\| c == '\''\*'\'' \|\| c == '\''\\\\'\''\)
 				break;
@@ -298,8 +521,30 @@ redo:3??0?
 3??m 14220reg p OK tcc_linux_x86_64.c:7377:a32sc %? %@2152sc!fr 981qfr 980?
 %f+ 			if \(c == '\''\\n'\'' \|\| c == '\''\*'\'' \|\| c == '\''\\\\'\''\)
 				break;4??0?
-4??+2m 14220reg p OK tcc_linux_x86_64.c:7377:a42sc %? %@2152sc!0?
-1;2;3;4??!219reg tcc_linux_x86_64.c:73772sc %? %@2132sc!0?
+4??+2m 14220reg p OK tcc_linux_x86_64.c:7377:a42sc %? %@2152sc!1q0?
+%f+ 	.........=........ c..=.... \|....==..\\...
+.		.......
+.	.....\*..p.
+............'\''\\.'\'' .... ...'\''\*'\''.\|.......'\''...\)
+...	......6??0?
+6??+2m 14220reg p OK tcc_linux_x86_64.c:7377:a62sc %? %@2152sc!1q0?
+grp 1%f+ 			if \(c == '\''\\n'\'' \|\| c == '\''\*'\'' \|\| c == '\''\\\\'\''\).*?
+				break;.*?
+(			c = \*\+\+p;)7??0?
+grp 07??m 14220reg p OK tcc_linux_x86_64.c:7377:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 	--file->buf_ptr;
+	do \{
+		ch = ninp\(\);.*(redo_start:)
+	start_of_line = 1;
+	in_warn_or_error = 0;8??0?
+grp 08??-104m 14220reg p OK tcc_linux_x86_64.c:7377:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> static int skip_spaces\(void\)
+\{
+	int ch;.*(			file->line_num\+\+;)
+			p\+\+;
+			goto redo_start;9??0?
+grp 09??-118m 14220reg p OK tcc_linux_x86_64.c:7377:a92sc %? %@2152sc!'\''00?
+1;2;3;4;6;7;8;9??!219reg tcc_linux_x86_64.c:73772sc %? %@2132sc!0?
 ?0?
 %f+ 			if \(c == '\''\\n'\'' \|\| c == '\''\*'\'' \|\| c == '\''\\\\'\''\)
 				break;
@@ -307,8 +552,20 @@ redo:3??0?
 1??+1m 151q0?
 %f+ 			if \(c == '\''\\n'\'' \|\| c == '\''\*'\'' \|\| c == '\''\\\\'\''\)
 				break;4??0?
-4??+1m 15220reg p OK tcc_linux_x86_64.c:7379:a42sc %? %@2152sc!0?
-1;4??!219reg tcc_linux_x86_64.c:73792sc %? %@2132sc!0?
+4??+1m 15220reg p OK tcc_linux_x86_64.c:7379:a42sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 	--file->buf_ptr;
+	do \{
+		ch = ninp\(\);.*(redo_start:)
+	start_of_line = 1;
+	in_warn_or_error = 0;8??0?
+grp 08??-102m 15220reg p OK tcc_linux_x86_64.c:7379:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> static int skip_spaces\(void\)
+\{
+	int ch;.*(			file->line_num\+\+;)
+			p\+\+;
+			goto redo_start;9??0?
+grp 09??-116m 15220reg p OK tcc_linux_x86_64.c:7379:a92sc %? %@2152sc!'\''00?
+1;4;8;9??!219reg tcc_linux_x86_64.c:73792sc %? %@2132sc!0?
 ?0?
 %f+ 		}
 		/\* now we can handle all the cases \*/
@@ -316,8 +573,20 @@ redo:3??0?
 		if \(c == '\''\\n'\''\) \{1??0?
 1??m 161q0?
 ;0fr.,$f+ ^		}$4??0?
-4??m 16220reg p OK tcc_linux_x86_64.c:7380:a42sc %? %@2152sc!fr 98fr 980?
-1;4??!219reg tcc_linux_x86_64.c:73802sc %? %@2132sc!0?
+4??m 16220reg p OK tcc_linux_x86_64.c:7380:a42sc %? %@2152sc!fr 981qfr 980?
+m 01;0grp 1%f> 	--file->buf_ptr;
+	do \{
+		ch = ninp\(\);.*(redo_start:)
+	start_of_line = 1;
+	in_warn_or_error = 0;8??0?
+grp 08??-101m 16220reg p OK tcc_linux_x86_64.c:7380:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> static int skip_spaces\(void\)
+\{
+	int ch;.*(			file->line_num\+\+;)
+			p\+\+;
+			goto redo_start;9??0?
+grp 09??-115m 16220reg p OK tcc_linux_x86_64.c:7380:a92sc %? %@2152sc!'\''00?
+1;4;8;9??!219reg tcc_linux_x86_64.c:73802sc %? %@2132sc!0?
 ?0?
 %f+ 
 		if \(c == '\''\\n'\''\) \{
@@ -327,8 +596,24 @@ redo:3??0?
 %f+ 
 		if \(c == '\''\\n'\''\) \{
 			file->line_num\+\+;4??0?
-4??+2m 17220reg p OK tcc_linux_x86_64.c:7384:a42sc %? %@2152sc!0?
-1;4??!219reg tcc_linux_x86_64.c:73842sc %? %@2132sc!0?
+4??+2m 17220reg p OK tcc_linux_x86_64.c:7384:a42sc %? %@2152sc!1q0?
+grp 1%f+ .*?
+		if \(c == '\''\\n'\''\) \{.*?
+(			file->line_num\+\+;)7??0?
+grp 07??m 17220reg p OK tcc_linux_x86_64.c:7384:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 	--file->buf_ptr;
+	do \{
+		ch = ninp\(\);.*(redo_start:)
+	start_of_line = 1;
+	in_warn_or_error = 0;8??0?
+grp 08??-97m 17220reg p OK tcc_linux_x86_64.c:7384:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> static int skip_spaces\(void\)
+\{
+	int ch;.*(			file->line_num\+\+;)
+			p\+\+;
+			goto redo_start;9??0?
+grp 09??-111m 17220reg p OK tcc_linux_x86_64.c:7384:a92sc %? %@2152sc!'\''00?
+1;4;7;8;9??!219reg tcc_linux_x86_64.c:73842sc %? %@2132sc!0?
 ?0?
 %f+ 		} else if \(c == '\''\*'\''\) \{
 			do \{
@@ -363,8 +648,34 @@ redo:3??0?
 ;0fr.,$f+ ^		} else if \(c == '\''\*'\''\) \{$4??0?
 4??+1m 18220reg p OK tcc_linux_x86_64.c:7386:a42sc %? %@2152sc!fr 981qfr 980?
 ;0fr.,$f+ ^		} else \{$5??0?
-5??-8m 18220reg p OK tcc_linux_x86_64.c:7386:a52sc %? %@2152sc!fr 98fr 980?
-1;2;3;4;5??!219reg tcc_linux_x86_64.c:73862sc %? %@2132sc!0?
+5??-8m 18220reg p OK tcc_linux_x86_64.c:7386:a52sc %? %@2152sc!fr 981qfr 980?
+%f+ .......e..f .c..=.'\''.....
+	...o..
+	............
+	..}.w..le..c..= .....
+	.....\(c... .\\...
+		..c.= ...d......&..;
+	..i.... ==.....
+.......a..
+.		g.......c._...;
+......se.\{6??0?
+6??+1m 18220reg p OK tcc_linux_x86_64.c:7386:a62sc %? %@2152sc!1q0?
+grp 1%f+ 		} else if \(c == '\''\*'\''\) \{.*?
+(			do \{)7??0?
+grp 07??m 18220reg p OK tcc_linux_x86_64.c:7386:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 	--file->buf_ptr;
+	do \{
+		ch = ninp\(\);.*(redo_start:)
+	start_of_line = 1;
+	in_warn_or_error = 0;8??0?
+grp 08??-95m 18220reg p OK tcc_linux_x86_64.c:7386:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> static int skip_spaces\(void\)
+\{
+	int ch;.*(			file->line_num\+\+;)
+			p\+\+;
+			goto redo_start;9??0?
+grp 09??-109m 18220reg p OK tcc_linux_x86_64.c:7386:a92sc %? %@2152sc!'\''00?
+1;2;3;4;5;6;7;8;9??!219reg tcc_linux_x86_64.c:73862sc %? %@2132sc!0?
 ?0?
 %f+ 		} else \{
 			c = handle_bs\(&p\);
@@ -384,8 +695,29 @@ check_eof:
 ;0fr.,$f+ ^		} else \{$4??0?
 4??+1m 19220reg p OK tcc_linux_x86_64.c:7395:a42sc %? %@2152sc!fr 981qfr 980?
 ;0fr.,$f+ ^				tcc_error\("unexpected end of file in comment"\);$5??0?
-5??-3m 19220reg p OK tcc_linux_x86_64.c:7395:a52sc %? %@2152sc!fr 98fr 980?
-1;2;3;4;5??!219reg tcc_linux_x86_64.c:73952sc %? %@2132sc!0?
+5??-3m 19220reg p OK tcc_linux_x86_64.c:7395:a52sc %? %@2152sc!fr 981qfr 980?
+%f+ ... .....\{
+.	.c.. ....l....\(....
+..e...eo..
+	..i........CH.EOF.
+.	....c.er.....u.e...cte.........f............n...;6??0?
+6??+1m 19220reg p OK tcc_linux_x86_64.c:7395:a62sc %? %@2152sc!1q0?
+grp 1%f+ 		} else \{.*?
+(			c = handle_bs\(&p\);)7??0?
+grp 07??m 19220reg p OK tcc_linux_x86_64.c:7395:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 	--file->buf_ptr;
+	do \{
+		ch = ninp\(\);.*(redo_start:)
+	start_of_line = 1;
+	in_warn_or_error = 0;8??0?
+grp 08??-86m 19220reg p OK tcc_linux_x86_64.c:7395:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> static int skip_spaces\(void\)
+\{
+	int ch;.*(			file->line_num\+\+;)
+			p\+\+;
+			goto redo_start;9??0?
+grp 09??-100m 19220reg p OK tcc_linux_x86_64.c:7395:a92sc %? %@2152sc!'\''00?
+1;2;3;4;5;6;7;8;9??!219reg tcc_linux_x86_64.c:73952sc %? %@2132sc!0?
 ?0?
 %f+ 				tcc_error\("unexpected end of file in comment"\);
 			if \(c != '\''\\\\'\''\)
@@ -405,8 +737,29 @@ check_eof:
 4??+1m 20220reg p OK tcc_linux_x86_64.c:7399:a42sc %? %@2152sc!fr 981qfr 980?
 %f+ 		}
 	}5??0?
-5??-2m 20220reg p OK tcc_linux_x86_64.c:7399:a52sc %? %@2152sc!0?
-1;2;3;4;5??!219reg tcc_linux_x86_64.c:73992sc %? %@2132sc!0?
+5??-2m 20220reg p OK tcc_linux_x86_64.c:7399:a52sc %? %@2152sc!1q0?
+%f+ .		........o...u.e..e..e. ..d............co.m..t...
+......\(...=......
+.	.....o..ed..
+	..
+	.6??0?
+6??+1m 20220reg p OK tcc_linux_x86_64.c:7399:a62sc %? %@2152sc!1q0?
+grp 1%f+ 				tcc_error\("unexpected end of file in comment"\);.*?
+(			if \(c != '\''\\\\'\''\))7??0?
+grp 07??m 20220reg p OK tcc_linux_x86_64.c:7399:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 	--file->buf_ptr;
+	do \{
+		ch = ninp\(\);.*(redo_start:)
+	start_of_line = 1;
+	in_warn_or_error = 0;8??0?
+grp 08??-82m 20220reg p OK tcc_linux_x86_64.c:7399:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> static int skip_spaces\(void\)
+\{
+	int ch;.*(			file->line_num\+\+;)
+			p\+\+;
+			goto redo_start;9??0?
+grp 09??-96m 20220reg p OK tcc_linux_x86_64.c:7399:a92sc %? %@2152sc!'\''00?
+1;2;3;4;5;6;7;8;9??!219reg tcc_linux_x86_64.c:73992sc %? %@2132sc!0?
 ?0?
 %f+ 		}
 	}
@@ -431,8 +784,32 @@ check_eof:
 /\* parse a string without interpreting escapes \*/
 
 5??0?
-5??-1m 21220reg p OK tcc_linux_x86_64.c:7403:a52sc %? %@2152sc!0?
-1;2;3;4;5??!219reg tcc_linux_x86_64.c:74032sc %? %@2132sc!0?
+5??-1m 21220reg p OK tcc_linux_x86_64.c:7403:a52sc %? %@2152sc!1q0?
+%f+ .	.
+	.
+.ret....p....;
+}
+.\*.pa..e.a......g..i...u. ..t......i........e. ./
+
+6??0?
+6??+2m 21220reg p OK tcc_linux_x86_64.c:7403:a62sc %? %@2152sc!1q0?
+grp 1%f+ 		}.*?
+	}.*?
+(	return p \+ 1;)7??0?
+grp 07??m 21220reg p OK tcc_linux_x86_64.c:7403:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 	--file->buf_ptr;
+	do \{
+		ch = ninp\(\);.*(redo_start:)
+	start_of_line = 1;
+	in_warn_or_error = 0;8??0?
+grp 08??-78m 21220reg p OK tcc_linux_x86_64.c:7403:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> static int skip_spaces\(void\)
+\{
+	int ch;.*(			file->line_num\+\+;)
+			p\+\+;
+			goto redo_start;9??0?
+grp 09??-92m 21220reg p OK tcc_linux_x86_64.c:7403:a92sc %? %@2152sc!'\''00?
+1;2;3;4;5;6;7;8;9??!219reg tcc_linux_x86_64.c:74032sc %? %@2132sc!0?
 ?0?
 %f+ }
 /\* parse a string without interpreting escapes \*/
@@ -454,8 +831,32 @@ static uint8_t \*parse_pp_string\(uint8_t \*p, int sep, CString \*str\)
 4??+3m 22220reg p OK tcc_linux_x86_64.c:7407:a42sc %? %@2152sc!1q0?
 %f+ \{
 	int c;5??0?
-5??-1m 22220reg p OK tcc_linux_x86_64.c:7407:a52sc %? %@2152sc!0?
-1;2;3;4;5??!219reg tcc_linux_x86_64.c:74072sc %? %@2132sc!0?
+5??-1m 22220reg p OK tcc_linux_x86_64.c:7407:a52sc %? %@2152sc!1q0?
+%f+ }
+.\* ......a......g.w....u. ........t.ng...........
+
+..a.ic..i..8_...pa........t....\(............... ..............s..\)
+\{
+.i.....6??0?
+6??+3m 22220reg p OK tcc_linux_x86_64.c:7407:a62sc %? %@2152sc!1q0?
+grp 1%f+ }.*?
+/\* parse a string without interpreting escapes \*/.*?
+.*?
+(static uint8_t \*parse_pp_string\(uint8_t \*p, int sep, CString \*str\))7??0?
+grp 07??m 22220reg p OK tcc_linux_x86_64.c:7407:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 	--file->buf_ptr;
+	do \{
+		ch = ninp\(\);.*(redo_start:)
+	start_of_line = 1;
+	in_warn_or_error = 0;8??0?
+grp 08??-74m 22220reg p OK tcc_linux_x86_64.c:7407:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> static int skip_spaces\(void\)
+\{
+	int ch;.*(			file->line_num\+\+;)
+			p\+\+;
+			goto redo_start;9??0?
+grp 09??-88m 22220reg p OK tcc_linux_x86_64.c:7407:a92sc %? %@2152sc!'\''00?
+1;2;3;4;5;6;7;8;9??!219reg tcc_linux_x86_64.c:74072sc %? %@2132sc!0?
 ?0?
 %f+ \{
 	int c;
@@ -463,8 +864,20 @@ static uint8_t \*parse_pp_string\(uint8_t \*p, int sep, CString \*str\)
 1??+1m 231q0?
 %f+ \{
 	int c;4??0?
-4??+1m 23220reg p OK tcc_linux_x86_64.c:7409:a42sc %? %@2152sc!0?
-1;4??!219reg tcc_linux_x86_64.c:74092sc %? %@2132sc!0?
+4??+1m 23220reg p OK tcc_linux_x86_64.c:7409:a42sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 	--file->buf_ptr;
+	do \{
+		ch = ninp\(\);.*(redo_start:)
+	start_of_line = 1;
+	in_warn_or_error = 0;8??0?
+grp 08??-72m 23220reg p OK tcc_linux_x86_64.c:7409:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> static int skip_spaces\(void\)
+\{
+	int ch;.*(			file->line_num\+\+;)
+			p\+\+;
+			goto redo_start;9??0?
+grp 09??-86m 23220reg p OK tcc_linux_x86_64.c:7409:a92sc %? %@2152sc!'\''00?
+1;4;8;9??!219reg tcc_linux_x86_64.c:74092sc %? %@2132sc!0?
 ?0?
 %f+ 	for \(;;\) \{
 		c = \*\+\+p;
@@ -487,8 +900,27 @@ redo:3??0?
 %f+ 		if \(c == sep\) \{
 			break;
 		} else if \(c == '\''\\\\'\''\) \{5??0?
-5??-2m 24220reg p OK tcc_linux_x86_64.c:7411:a52sc %? %@2152sc!0?
-1;2;3;4;5??!219reg tcc_linux_x86_64.c:74112sc %? %@2132sc!0?
+5??-2m 24220reg p OK tcc_linux_x86_64.c:7411:a52sc %? %@2152sc!1q0?
+%f+ 	.or..... .
+..c = .....
+re...
+...f.............
+.....e...
+.	......... .c ...'\''.... .6??0?
+6??+1m 24220reg p OK tcc_linux_x86_64.c:7411:a62sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 	--file->buf_ptr;
+	do \{
+		ch = ninp\(\);.*(redo_start:)
+	start_of_line = 1;
+	in_warn_or_error = 0;8??0?
+grp 08??-70m 24220reg p OK tcc_linux_x86_64.c:7411:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> static int skip_spaces\(void\)
+\{
+	int ch;.*(			file->line_num\+\+;)
+			p\+\+;
+			goto redo_start;9??0?
+grp 09??-84m 24220reg p OK tcc_linux_x86_64.c:7411:a92sc %? %@2152sc!'\''00?
+1;2;3;4;5;6;8;9??!219reg tcc_linux_x86_64.c:74112sc %? %@2132sc!0?
 ?0?
 %f+ 		if \(c == sep\) \{
 			break;
@@ -512,8 +944,33 @@ unterminated_string:
 %f+ 			if \(c == CH_EOF\) \{
 unterminated_string:
 				/\* XXX: indicate line number of start of string \*/5??0?
-5??-1m 25220reg p OK tcc_linux_x86_64.c:7416:a52sc %? %@2152sc!0?
-1;2;3;4;5??!219reg tcc_linux_x86_64.c:74162sc %? %@2132sc!0?
+5??-1m 25220reg p OK tcc_linux_x86_64.c:7416:a52sc %? %@2152sc!1q0?
+%f+ ...f........... \{
+...b...k.
+.....ls......c......\\'\''...
+	.	.....a.d.....\(....
+.	......... .H.......
+.n........e........:
+...	....X.: in...a.. l.n....m........ta.. ......i...\*.6??0?
+6??+3m 25220reg p OK tcc_linux_x86_64.c:7416:a62sc %? %@2152sc!1q0?
+grp 1%f+ 		if \(c == sep\) \{.*?
+			break;.*?
+		} else if \(c == '\''\\\\'\''\) \{.*?
+(			c = handle_bs\(&p\);)7??0?
+grp 07??m 25220reg p OK tcc_linux_x86_64.c:7416:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 	--file->buf_ptr;
+	do \{
+		ch = ninp\(\);.*(redo_start:)
+	start_of_line = 1;
+	in_warn_or_error = 0;8??0?
+grp 08??-65m 25220reg p OK tcc_linux_x86_64.c:7416:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> static int skip_spaces\(void\)
+\{
+	int ch;.*(			file->line_num\+\+;)
+			p\+\+;
+			goto redo_start;9??0?
+grp 09??-79m 25220reg p OK tcc_linux_x86_64.c:7416:a92sc %? %@2152sc!'\''00?
+1;2;3;4;5;6;7;8;9??!219reg tcc_linux_x86_64.c:74162sc %? %@2132sc!0?
 ?0?
 %f+ unterminated_string:
 				/\* XXX: indicate line number of start of string \*/
@@ -535,8 +992,32 @@ unterminated_string:
 4??+3m 26220reg p OK tcc_linux_x86_64.c:7421:a42sc %? %@2152sc!1q0?
 %f+ 				tcc_error\("missing terminating %c character", sep\);
 			} else if \(c == '\''\\\\'\''\) \{5??0?
-5??-1m 26220reg p OK tcc_linux_x86_64.c:7421:a52sc %? %@2152sc!0?
-1;2;3;4;5??!219reg tcc_linux_x86_64.c:74212sc %? %@2132sc!0?
+5??-1m 26220reg p OK tcc_linux_x86_64.c:7421:a52sc %? %@2152sc!1q0?
+%f+ ...e...........ri...
+.......X... ....c......n........ ...s.a.. ...s.ri.g...
+
+..	......l....&....O...L.._...;
+....tcc.er.........i.g...rm..a..n...c....r.........e.\).
+..	......... ...=.........6??0?
+6??+3m 26220reg p OK tcc_linux_x86_64.c:7421:a62sc %? %@2152sc!1q0?
+grp 1%f+ unterminated_string:.*?
+				/\* XXX: indicate line number of start of string \*/.*?
+.*?
+(				tok_flags &= ~TOK_FLAG_BOL;)7??0?
+grp 07??m 26220reg p OK tcc_linux_x86_64.c:7421:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 	--file->buf_ptr;
+	do \{
+		ch = ninp\(\);.*(redo_start:)
+	start_of_line = 1;
+	in_warn_or_error = 0;8??0?
+grp 08??-60m 26220reg p OK tcc_linux_x86_64.c:7421:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> static int skip_spaces\(void\)
+\{
+	int ch;.*(			file->line_num\+\+;)
+			p\+\+;
+			goto redo_start;9??0?
+grp 09??-74m 26220reg p OK tcc_linux_x86_64.c:7421:a92sc %? %@2152sc!'\''00?
+1;2;3;4;5;6;7;8;9??!219reg tcc_linux_x86_64.c:74212sc %? %@2132sc!0?
 ?0?
 %f+ 				tcc_error\("missing terminating %c character", sep\);
 			} else if \(c == '\''\\\\'\''\) \{
@@ -564,8 +1045,33 @@ unterminated_string:
 4??+2m 27220reg p OK tcc_linux_x86_64.c:7424:a42sc %? %@2152sc!1q0?
 ;0fr.,$f+ ^$
 5??0?
-5??-4m 27220reg p OK tcc_linux_x86_64.c:7424:a52sc %? %@2152sc!fr 98fr 980?
-1;2;3;4;5??!219reg tcc_linux_x86_64.c:74242sc %? %@2132sc!0?
+5??-4m 27220reg p OK tcc_linux_x86_64.c:7424:a52sc %? %@2152sc!fr 981qfr 980?
+%f+ ..	.t.._er...."m.....g....m..at....%. ch.ra..e... ..p\).
+.	.....s. i.... .. '\''\\.....
+...........\)
+...	.c...........r. ...
+......=...\+p.
+.	../. ad..c.a.............u...n......a..y...
+
+6??0?
+6??+2m 27220reg p OK tcc_linux_x86_64.c:7424:a62sc %? %@2152sc!1q0?
+grp 1%f+ 				tcc_error\("missing terminating %c character", sep\);.*?
+			} else if \(c == '\''\\\\'\''\) \{.*?
+(				if \(str\))7??0?
+grp 07??m 27220reg p OK tcc_linux_x86_64.c:7424:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 	--file->buf_ptr;
+	do \{
+		ch = ninp\(\);.*(redo_start:)
+	start_of_line = 1;
+	in_warn_or_error = 0;8??0?
+grp 08??-57m 27220reg p OK tcc_linux_x86_64.c:7424:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> static int skip_spaces\(void\)
+\{
+	int ch;.*(			file->line_num\+\+;)
+			p\+\+;
+			goto redo_start;9??0?
+grp 09??-71m 27220reg p OK tcc_linux_x86_64.c:7424:a92sc %? %@2152sc!'\''00?
+1;2;3;4;5;6;7;8;9??!219reg tcc_linux_x86_64.c:74242sc %? %@2132sc!0?
 ?0?
 %f+ 
 				if \(c == '\''\\\\'\''\) \{
@@ -586,8 +1092,30 @@ unterminated_string:
 						goto unterminated_string;3??0?
 3??m 28220reg p OK tcc_linux_x86_64.c:7429:a32sc %? %@2152sc!1q0?
 ;0fr.,$f+ ^				}$4??0?
-4??-4m 28220reg p OK tcc_linux_x86_64.c:7429:a42sc %? %@2152sc!fr 98fr 980?
-1;2;3;4??!219reg tcc_linux_x86_64.c:74292sc %? %@2132sc!0?
+4??-4m 28220reg p OK tcc_linux_x86_64.c:7429:a42sc %? %@2152sc!fr 981qfr 980?
+%f+ 
+.		..........'\''\\\\....
+.	...... h..d.........;
+...	..f..........E...
+	..	..g.t. .n.e...n.te..s.....;
+	....6??0?
+6??+1m 28220reg p OK tcc_linux_x86_64.c:7429:a62sc %? %@2152sc!1q0?
+grp 1%f+ .*?
+(				if \(c == '\''\\\\'\''\) \{)7??0?
+grp 07??m 28220reg p OK tcc_linux_x86_64.c:7429:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 	--file->buf_ptr;
+	do \{
+		ch = ninp\(\);.*(redo_start:)
+	start_of_line = 1;
+	in_warn_or_error = 0;8??0?
+grp 08??-52m 28220reg p OK tcc_linux_x86_64.c:7429:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> static int skip_spaces\(void\)
+\{
+	int ch;.*(			file->line_num\+\+;)
+			p\+\+;
+			goto redo_start;9??0?
+grp 09??-66m 28220reg p OK tcc_linux_x86_64.c:7429:a92sc %? %@2152sc!'\''00?
+1;2;3;4;6;7;8;9??!219reg tcc_linux_x86_64.c:74292sc %? %@2132sc!0?
 ?0?
 %f+ 				}
 				goto add_char;
@@ -610,8 +1138,30 @@ unterminated_string:
 4??+1m 29220reg p OK tcc_linux_x86_64.c:7434:a42sc %? %@2152sc!fr 981qfr 980?
 %f+ 			}
 		} else if \(c == '\''\\n'\''\) \{5??0?
-5??-3m 29220reg p OK tcc_linux_x86_64.c:7434:a52sc %? %@2152sc!0?
-1;2;3;4;5??!219reg tcc_linux_x86_64.c:74342sc %? %@2132sc!0?
+5??-3m 29220reg p OK tcc_linux_x86_64.c:7434:a52sc %? %@2152sc!1q0?
+%f+ 	.	.}
+	........a.......;
+.	.. .... .
+.	....t. r....
+	...
+.	...ls.........=...n....6??0?
+6??+1m 29220reg p OK tcc_linux_x86_64.c:7434:a62sc %? %@2152sc!1q0?
+grp 1%f+ 				}.*?
+(				goto add_char;)7??0?
+grp 07??m 29220reg p OK tcc_linux_x86_64.c:7434:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 	--file->buf_ptr;
+	do \{
+		ch = ninp\(\);.*(redo_start:)
+	start_of_line = 1;
+	in_warn_or_error = 0;8??0?
+grp 08??-47m 29220reg p OK tcc_linux_x86_64.c:7434:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> static int skip_spaces\(void\)
+\{
+	int ch;.*(			file->line_num\+\+;)
+			p\+\+;
+			goto redo_start;9??0?
+grp 09??-61m 29220reg p OK tcc_linux_x86_64.c:7434:a92sc %? %@2152sc!'\''00?
+1;2;3;4;5;6;7;8;9??!219reg tcc_linux_x86_64.c:74342sc %? %@2132sc!0?
 ?0?
 %f+ 			}
 		} else if \(c == '\''\\n'\''\) \{
@@ -633,8 +1183,31 @@ add_lf:
 4??+2m 30220reg p OK tcc_linux_x86_64.c:7439:a42sc %? %@2152sc!1q0?
 %f+ 				file->line_num\+\+;
 				goto add_char;5??0?
-5??-2m 30220reg p OK tcc_linux_x86_64.c:7439:a52sc %? %@2152sc!0?
-1;2;3;4;5??!219reg tcc_linux_x86_64.c:74392sc %? %@2132sc!0?
+5??-2m 30220reg p OK tcc_linux_x86_64.c:7439:a52sc %? %@2152sc!1q0?
+%f+ 	...
+... ...........=..'\''..'\''...
+a......
+...........P...._I..STR..GS...
+..	.fi........_.u..\+.
+............_...r.6??0?
+6??+2m 30220reg p OK tcc_linux_x86_64.c:7439:a62sc %? %@2152sc!1q0?
+grp 1%f+ 			}.*?
+		} else if \(c == '\''\\n'\''\) \{.*?
+(add_lf:)7??0?
+grp 07??m 30220reg p OK tcc_linux_x86_64.c:7439:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 	--file->buf_ptr;
+	do \{
+		ch = ninp\(\);.*(redo_start:)
+	start_of_line = 1;
+	in_warn_or_error = 0;8??0?
+grp 08??-42m 30220reg p OK tcc_linux_x86_64.c:7439:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> static int skip_spaces\(void\)
+\{
+	int ch;.*(			file->line_num\+\+;)
+			p\+\+;
+			goto redo_start;9??0?
+grp 09??-56m 30220reg p OK tcc_linux_x86_64.c:7439:a92sc %? %@2152sc!'\''00?
+1;2;3;4;5;6;7;8;9??!219reg tcc_linux_x86_64.c:74392sc %? %@2132sc!0?
 ?0?
 %f+ 				file->line_num\+\+;
 				goto add_char;
@@ -668,8 +1241,35 @@ add_lf:
 				goto add_char;4??0?
 4??+2m 31220reg p OK tcc_linux_x86_64.c:7443:a42sc %? %@2152sc!1q0?
 ;0fr.,$f+ ^			}$5??0?
-5??-7m 31220reg p OK tcc_linux_x86_64.c:7443:a52sc %? %@2152sc!fr 98fr 980?
-1;2;3;4;5??!219reg tcc_linux_x86_64.c:74432sc %? %@2132sc!0?
+5??-7m 31220reg p OK tcc_linux_x86_64.c:7443:a52sc %? %@2152sc!fr 981qfr 980?
+%f+ .	.....e-....e.......
+..		...o........r.
+			....s...f...t..../......s.i.p....\*/
+
+...............i......s..i...
+	..}.......
+./..........g..........t.......... %. ..a......",....\).
+
+....r.t.r..p.
+	...6??0?
+6??+2m 31220reg p OK tcc_linux_x86_64.c:7443:a62sc %? %@2152sc!1q0?
+grp 1%f+ 				file->line_num\+\+;.*?
+				goto add_char;.*?
+(			} else if \(str\) \{/\* not skipping \*/)7??0?
+grp 07??m 31220reg p OK tcc_linux_x86_64.c:7443:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 	--file->buf_ptr;
+	do \{
+		ch = ninp\(\);.*(redo_start:)
+	start_of_line = 1;
+	in_warn_or_error = 0;8??0?
+grp 08??-38m 31220reg p OK tcc_linux_x86_64.c:7443:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> static int skip_spaces\(void\)
+\{
+	int ch;.*(			file->line_num\+\+;)
+			p\+\+;
+			goto redo_start;9??0?
+grp 09??-52m 31220reg p OK tcc_linux_x86_64.c:7443:a92sc %? %@2152sc!'\''00?
+1;2;3;4;5;6;7;8;9??!219reg tcc_linux_x86_64.c:74432sc %? %@2132sc!0?
 ?0?
 %f+ 			}
 		} else if \(c == '\''\\r'\''\) \{
@@ -719,8 +1319,39 @@ add_char:
 %f+ 		} else \{
 add_char:
 			if \(str\)5??0?
-5??-11m 32220reg p OK tcc_linux_x86_64.c:7451:a52sc %? %@2152sc!0?
-1;2;3;4;5??!219reg tcc_linux_x86_64.c:74512sc %? %@2132sc!0?
+5??-11m 32220reg p OK tcc_linux_x86_64.c:7451:a52sc %? %@2152sc!1q0?
+%f+ 	...
+... e.s...f.....=........
+.... =......
+.........=..'\''....
+........h...l........;
+........ =..'\''\\n..
+......t..a.....;
+......\(c ..........
+....g....u.t..m....e.........
+....f.\(....
+..	..str...a..s....'\''.r..;
+..	g.........
+	.}......\{
+..d...a..
+	..........6??0?
+6??+1m 32220reg p OK tcc_linux_x86_64.c:7451:a62sc %? %@2152sc!1q0?
+grp 1%f+ 			}.*?
+(		} else if \(c == '\''\\r'\''\) \{)7??0?
+grp 07??m 32220reg p OK tcc_linux_x86_64.c:7451:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 	--file->buf_ptr;
+	do \{
+		ch = ninp\(\);.*(redo_start:)
+	start_of_line = 1;
+	in_warn_or_error = 0;8??0?
+grp 08??-30m 32220reg p OK tcc_linux_x86_64.c:7451:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> static int skip_spaces\(void\)
+\{
+	int ch;.*(			file->line_num\+\+;)
+			p\+\+;
+			goto redo_start;9??0?
+grp 09??-44m 32220reg p OK tcc_linux_x86_64.c:7451:a92sc %? %@2152sc!'\''00?
+1;2;3;4;5;6;7;8;9??!219reg tcc_linux_x86_64.c:74512sc %? %@2132sc!0?
 ?0?
 %f+ add_char:
 			if \(str\)
@@ -732,8 +1363,24 @@ add_char:
 %f+ add_char:
 			if \(str\)
 				cstr_ccat\(str, c\);4??0?
-4??+2m 33220reg p OK tcc_linux_x86_64.c:7465:a42sc %? %@2152sc!0?
-1;4??!219reg tcc_linux_x86_64.c:74652sc %? %@2132sc!0?
+4??+2m 33220reg p OK tcc_linux_x86_64.c:7465:a42sc %? %@2152sc!1q0?
+grp 1%f+ add_char:.*?
+			if \(str\).*?
+(				cstr_ccat\(str, c\);)7??0?
+grp 07??m 33220reg p OK tcc_linux_x86_64.c:7465:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 	--file->buf_ptr;
+	do \{
+		ch = ninp\(\);.*(redo_start:)
+	start_of_line = 1;
+	in_warn_or_error = 0;8??0?
+grp 08??-16m 33220reg p OK tcc_linux_x86_64.c:7465:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> static int skip_spaces\(void\)
+\{
+	int ch;.*(			file->line_num\+\+;)
+			p\+\+;
+			goto redo_start;9??0?
+grp 09??-30m 33220reg p OK tcc_linux_x86_64.c:7465:a92sc %? %@2152sc!'\''00?
+1;4;7;8;9??!219reg tcc_linux_x86_64.c:74652sc %? %@2132sc!0?
 ?0?
 %f+ 	return p;
 }
@@ -754,8 +1401,32 @@ add_char:
 4??+3m 34220reg p OK tcc_linux_x86_64.c:7472:a42sc %? %@2152sc!1q0?
 ;0fr.,$f+ ^$
 5??0?
-5??-1m 34220reg p OK tcc_linux_x86_64.c:7472:a52sc %? %@2152sc!fr 98fr 980?
-1;2;3;4;5??!219reg tcc_linux_x86_64.c:74722sc %? %@2132sc!0?
+5??-1m 34220reg p OK tcc_linux_x86_64.c:7472:a52sc %? %@2152sc!fr 981qfr 980?
+%f+ 	..t.r....
+}
+/..s.ip...oc. .. .e..........e...,....if o........\....i. ...o .a....o.
+ . .i./....if ..
+
+6??0?
+6??+3m 34220reg p OK tcc_linux_x86_64.c:7472:a62sc %? %@2152sc!1q0?
+grp 1%f+ 	return p;.*?
+}.*?
+/\* skip block of text until #else, #elif or #endif\. skip also pairs of.*?
+(   #if/#endif \*/)7??0?
+grp 07??m 34220reg p OK tcc_linux_x86_64.c:7472:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 	--file->buf_ptr;
+	do \{
+		ch = ninp\(\);.*(redo_start:)
+	start_of_line = 1;
+	in_warn_or_error = 0;8??0?
+grp 08??-9m 34220reg p OK tcc_linux_x86_64.c:7472:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> static int skip_spaces\(void\)
+\{
+	int ch;.*(			file->line_num\+\+;)
+			p\+\+;
+			goto redo_start;9??0?
+grp 09??-23m 34220reg p OK tcc_linux_x86_64.c:7472:a92sc %? %@2152sc!'\''00?
+1;2;3;4;5;6;7;8;9??!219reg tcc_linux_x86_64.c:74722sc %? %@2132sc!0?
 ?0?
 %f+ 
 static void preprocess_skip\(void\)
@@ -775,8 +1446,29 @@ static void preprocess_skip\(void\)
 %f+ \{
 	int a, start_of_line, c, in_warn_or_error;
 	uint8_t \*p;5??0?
-5??-1m 35220reg p OK tcc_linux_x86_64.c:7474:a52sc %? %@2152sc!0?
-1;2;3;4;5??!219reg tcc_linux_x86_64.c:74742sc %? %@2132sc!0?
+5??-1m 35220reg p OK tcc_linux_x86_64.c:7474:a52sc %? %@2152sc!1q0?
+%f+ 
+s........i. .....o.e.....ip....d.
+\{
+	..t .,....................n..........r....
+...n.8.....;6??0?
+6??+1m 35220reg p OK tcc_linux_x86_64.c:7474:a62sc %? %@2152sc!1q0?
+grp 1%f+ .*?
+(static void preprocess_skip\(void\))7??0?
+grp 07??m 35220reg p OK tcc_linux_x86_64.c:7474:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 	--file->buf_ptr;
+	do \{
+		ch = ninp\(\);.*(redo_start:)
+	start_of_line = 1;
+	in_warn_or_error = 0;8??0?
+grp 08??-7m 35220reg p OK tcc_linux_x86_64.c:7474:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> static int skip_spaces\(void\)
+\{
+	int ch;.*(			file->line_num\+\+;)
+			p\+\+;
+			goto redo_start;9??0?
+grp 09??-21m 35220reg p OK tcc_linux_x86_64.c:7474:a92sc %? %@2152sc!'\''00?
+1;2;3;4;5;6;7;8;9??!219reg tcc_linux_x86_64.c:74742sc %? %@2132sc!0?
 ?0?
 %f+ 		case '\''\\f'\'':
 		case '\''\\v'\'':
@@ -788,8 +1480,20 @@ static void preprocess_skip\(void\)
 %f+ 		case '\''\\f'\'':
 		case '\''\\v'\'':
 		case '\''\\r'\'':4??0?
-4??+2m 36220reg p OK tcc_linux_x86_64.c:7491:a42sc %? %@2152sc!0?
-1;4??!219reg tcc_linux_x86_64.c:74912sc %? %@2132sc!0?
+4??+2m 36220reg p OK tcc_linux_x86_64.c:7491:a42sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 		switch \(c\) \{
+		case '\'' '\'':
+		case '\''\\t'\'':.*(			if \(c == CH_EOF\))
+				expect\("#endif"\);
+			if \(c == '\''\\\\'\''\)8??0?
+grp 08??-9m 36220reg p OK tcc_linux_x86_64.c:7491:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> 	in_warn_or_error = 0;
+	for \(;;\) \{
+		c = \*p;.*(				\+\+p;)
+			continue;
+		/\* skip strings \*/9??0?
+grp 09??-12m 36220reg p OK tcc_linux_x86_64.c:7491:a92sc %? %@2152sc!'\''00?
+1;4;8;9??!219reg tcc_linux_x86_64.c:74912sc %? %@2132sc!0?
 ?0?
 %f+ 			p\+\+;
 			continue;
@@ -801,8 +1505,24 @@ static void preprocess_skip\(void\)
 %f+ 			p\+\+;
 			continue;
 		case '\''\\n'\'':4??0?
-4??+2m 37220reg p OK tcc_linux_x86_64.c:7494:a42sc %? %@2152sc!0?
-1;4??!219reg tcc_linux_x86_64.c:74942sc %? %@2132sc!0?
+4??+2m 37220reg p OK tcc_linux_x86_64.c:7494:a42sc %? %@2152sc!1q0?
+grp 1%f+ 			p\+\+;.*?
+			continue;.*?
+(		case '\''\\n'\'':)7??0?
+grp 07??m 37220reg p OK tcc_linux_x86_64.c:7494:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 		switch \(c\) \{
+		case '\'' '\'':
+		case '\''\\t'\'':.*(			if \(c == CH_EOF\))
+				expect\("#endif"\);
+			if \(c == '\''\\\\'\''\)8??0?
+grp 08??-6m 37220reg p OK tcc_linux_x86_64.c:7494:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> 	in_warn_or_error = 0;
+	for \(;;\) \{
+		c = \*p;.*(				\+\+p;)
+			continue;
+		/\* skip strings \*/9??0?
+grp 09??-9m 37220reg p OK tcc_linux_x86_64.c:7494:a92sc %? %@2152sc!'\''00?
+1;4;7;8;9??!219reg tcc_linux_x86_64.c:74942sc %? %@2132sc!0?
 ?0?
 %f+ 			if \(in_warn_or_error\)
 				goto _default;
@@ -829,8 +1549,34 @@ static void preprocess_skip\(void\)
 		/\* skip comments \*/
 
 5??0?
-5??-1m 38220reg p OK tcc_linux_x86_64.c:7512:a52sc %? %@2152sc!0?
-1;2;3;4;5??!219reg tcc_linux_x86_64.c:75122sc %? %@2132sc!0?
+5??-1m 38220reg p OK tcc_linux_x86_64.c:7512:a52sc %? %@2152sc!1q0?
+%f+ 	.	i......w..n_....r.or.
+.....o..._.......;
+......_......&. .....F.....OL.
+	... ........p..s....g.p.... N...\).
+.	.b.e.k.
+.......i..c..m..t....
+
+6??0?
+6??+3m 38220reg p OK tcc_linux_x86_64.c:7512:a62sc %? %@2152sc!1q0?
+grp 1%f+ 			if \(in_warn_or_error\).*?
+				goto _default;.*?
+			tok_flags &= ~TOK_FLAG_BOL;.*?
+(			p = parse_pp_string\(p, c, NULL\);)7??0?
+grp 07??m 38220reg p OK tcc_linux_x86_64.c:7512:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 				\+\+p;
+			continue;
+		/\* skip strings \*/.*(			if \(in_warn_or_error\))
+				goto _default;
+			\+\+p;8??0?
+grp 08??-5m 38220reg p OK tcc_linux_x86_64.c:7512:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> 			if \(c == CH_EOF\)
+				expect\("#endif"\);
+			if \(c == '\''\\\\'\''\).*(			c = handle_bs\(&p\);)
+			if \(c == '\''\*'\''\) \{
+				p = parse_comment\(p\);9??0?
+grp 09??-8m 38220reg p OK tcc_linux_x86_64.c:7512:a92sc %? %@2152sc!'\''00?
+1;2;3;4;5;6;7;8;9??!219reg tcc_linux_x86_64.c:75122sc %? %@2132sc!0?
 ?0?
 %f+ 			\+\+p;
 			c = handle_bs\(&p\);
@@ -848,8 +1594,31 @@ static void preprocess_skip\(void\)
 			if \(c == '\''\*'\''\) \{4??0?
 4??+3m 40220reg p OK tcc_linux_x86_64.c:7522:a42sc %? %@2152sc!1q0?
 ;0fr.,$f+ ^			} else if \(c == '\''/'\''\) \{$5??0?
-5??-1m 40220reg p OK tcc_linux_x86_64.c:7522:a52sc %? %@2152sc!fr 98fr 980?
-1;2;3;4;5??!219reg tcc_linux_x86_64.c:75222sc %? %@2132sc!0?
+5??-1m 40220reg p OK tcc_linux_x86_64.c:7522:a52sc %? %@2152sc!fr 981qfr 980?
+%f+ 	.	\+\+p.
+...........l._..\(&.\).
+........ ...'\''....\{
+.	..p...p...e..om..n....;
+.	....lse ............. .6??0?
+6??+3m 40220reg p OK tcc_linux_x86_64.c:7522:a62sc %? %@2152sc!1q0?
+grp 1%f+ 			\+\+p;.*?
+			c = handle_bs\(&p\);.*?
+			if \(c == '\''\*'\''\) \{.*?
+(				p = parse_comment\(p\);)7??0?
+grp 07??m 40220reg p OK tcc_linux_x86_64.c:7522:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 		case '\''/'\'':
+			if \(in_warn_or_error\)
+				goto _default;.*(				if \(tok == TOK_IF \|\| tok == TOK_IFDEF \|\| tok == TOK_IFNDEF\))
+					a\+\+;
+				else if \(tok == TOK_ENDIF\)8??0?
+grp 08??-14m 40220reg p OK tcc_linux_x86_64.c:7522:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> 			p = parse_pp_string\(p, c, NULL\);
+			break;
+		/\* skip comments \*/.*(					a--;)
+				else if \( tok == TOK_ERROR \|\| tok == TOK_WARNING\)
+					in_warn_or_error = 1;9??0?
+grp 09??-17m 40220reg p OK tcc_linux_x86_64.c:7522:a92sc %? %@2152sc!'\''00?
+1;2;3;4;5;6;7;8;9??!219reg tcc_linux_x86_64.c:75222sc %? %@2132sc!0?
 ?0?
 %f+ 			} else if \(c == '\''/'\''\) \{
 				p = parse_line_comment\(p\);
@@ -869,8 +1638,29 @@ static void preprocess_skip\(void\)
 %f+ 			}
 			continue;
 		case '\''#'\'':5??0?
-5??-1m 41220reg p OK tcc_linux_x86_64.c:7524:a52sc %? %@2152sc!0?
-1;2;3;4;5??!219reg tcc_linux_x86_64.c:75242sc %? %@2132sc!0?
+5??-1m 41220reg p OK tcc_linux_x86_64.c:7524:a52sc %? %@2152sc!1q0?
+%f+ .....e........c... '\''.....
+....p.. p.rs......_...m.n.....
+	..}
+.........ue.
+.........'\''.6??0?
+6??+1m 41220reg p OK tcc_linux_x86_64.c:7524:a62sc %? %@2152sc!1q0?
+grp 1%f+ 			} else if \(c == '\''/'\''\) \{.*?
+(				p = parse_line_comment\(p\);)7??0?
+grp 07??m 41220reg p OK tcc_linux_x86_64.c:7524:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 		case '\''/'\'':
+			if \(in_warn_or_error\)
+				goto _default;.*(				if \(tok == TOK_IF \|\| tok == TOK_IFDEF \|\| tok == TOK_IFNDEF\))
+					a\+\+;
+				else if \(tok == TOK_ENDIF\)8??0?
+grp 08??-12m 41220reg p OK tcc_linux_x86_64.c:7524:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> 			p = parse_pp_string\(p, c, NULL\);
+			break;
+		/\* skip comments \*/.*(					a--;)
+				else if \( tok == TOK_ERROR \|\| tok == TOK_WARNING\)
+					in_warn_or_error = 1;9??0?
+grp 09??-15m 41220reg p OK tcc_linux_x86_64.c:7524:a92sc %? %@2152sc!'\''00?
+1;2;3;4;5;6;7;8;9??!219reg tcc_linux_x86_64.c:75242sc %? %@2132sc!0?
 ?0?
 %f+ 			}
 			continue;
@@ -882,8 +1672,24 @@ static void preprocess_skip\(void\)
 %f+ 			}
 			continue;
 		case '\''#'\'':4??0?
-4??+2m 43220reg p OK tcc_linux_x86_64.c:7527:a42sc %? %@2152sc!0?
-1;4??!219reg tcc_linux_x86_64.c:75272sc %? %@2132sc!0?
+4??+2m 43220reg p OK tcc_linux_x86_64.c:7527:a42sc %? %@2152sc!1q0?
+grp 1%f+ 			}.*?
+			continue;.*?
+(		case '\''#'\'':)7??0?
+grp 07??m 43220reg p OK tcc_linux_x86_64.c:7527:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 		case '\''/'\'':
+			if \(in_warn_or_error\)
+				goto _default;.*(				if \(tok == TOK_IF \|\| tok == TOK_IFDEF \|\| tok == TOK_IFNDEF\))
+					a\+\+;
+				else if \(tok == TOK_ENDIF\)8??0?
+grp 08??-9m 43220reg p OK tcc_linux_x86_64.c:7527:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> 			p = parse_pp_string\(p, c, NULL\);
+			break;
+		/\* skip comments \*/.*(					a--;)
+				else if \( tok == TOK_ERROR \|\| tok == TOK_WARNING\)
+					in_warn_or_error = 1;9??0?
+grp 09??-12m 43220reg p OK tcc_linux_x86_64.c:7527:a92sc %? %@2152sc!'\''00?
+1;4;7;8;9??!219reg tcc_linux_x86_64.c:75272sc %? %@2132sc!0?
 ?0?
 %f+ 				file->buf_ptr = p;
 				next_nomacro\(\);
@@ -895,8 +1701,24 @@ static void preprocess_skip\(void\)
 %f+ 				file->buf_ptr = p;
 				next_nomacro\(\);
 				p = file->buf_ptr;4??0?
-4??+2m 44220reg p OK tcc_linux_x86_64.c:7532:a42sc %? %@2152sc!0?
-1;4??!219reg tcc_linux_x86_64.c:75322sc %? %@2132sc!0?
+4??+2m 44220reg p OK tcc_linux_x86_64.c:7532:a42sc %? %@2152sc!1q0?
+grp 1%f+ 				file->buf_ptr = p;.*?
+				next_nomacro\(\);.*?
+(				p = file->buf_ptr;)7??0?
+grp 07??m 44220reg p OK tcc_linux_x86_64.c:7532:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 		case '\''/'\'':
+			if \(in_warn_or_error\)
+				goto _default;.*(				if \(tok == TOK_IF \|\| tok == TOK_IFDEF \|\| tok == TOK_IFNDEF\))
+					a\+\+;
+				else if \(tok == TOK_ENDIF\)8??0?
+grp 08??-4m 44220reg p OK tcc_linux_x86_64.c:7532:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> 			p = parse_pp_string\(p, c, NULL\);
+			break;
+		/\* skip comments \*/.*(					a--;)
+				else if \( tok == TOK_ERROR \|\| tok == TOK_WARNING\)
+					in_warn_or_error = 1;9??0?
+grp 09??-7m 44220reg p OK tcc_linux_x86_64.c:7532:a92sc %? %@2152sc!'\''00?
+1;4;7;8;9??!219reg tcc_linux_x86_64.c:75322sc %? %@2132sc!0?
 ?0?
 %f+ 				else if \(tok == TOK_LINEFEED\)
 					goto redo_start;
@@ -920,8 +1742,33 @@ static void preprocess_skip\(void\)
 %f+ 			}
 
 			else if \(parse_flags & PARSE_FLAG_ASM_FILE\)5??0?
-5??-1m 45220reg p OK tcc_linux_x86_64.c:7545:a52sc %? %@2152sc!0?
-1;2;3;4;5??!219reg tcc_linux_x86_64.c:75452sc %? %@2132sc!0?
+5??-1m 45220reg p OK tcc_linux_x86_64.c:7545:a52sc %? %@2152sc!1q0?
+%f+ .	....s.....\(.ok... T......E....\)
+.			..... r..o.s....;
+..	........ .pa..e_...g. &.PA.......G..SM...L..
+..........ar.....n._.....n.......\).
+	...
+
+.....se... .p..s.....g. ......E.F..G_..._FI.E.6??0?
+6??+3m 45220reg p OK tcc_linux_x86_64.c:7545:a62sc %? %@2152sc!1q0?
+grp 1%f+ 				else if \(tok == TOK_LINEFEED\).*?
+					goto redo_start;.*?
+				else if \(parse_flags & PARSE_FLAG_ASM_FILE\).*?
+(					p = parse_line_comment\(p - 1\);)7??0?
+grp 07??m 45220reg p OK tcc_linux_x86_64.c:7545:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 					a--;
+				else if \( tok == TOK_ERROR \|\| tok == TOK_WARNING\)
+					in_warn_or_error = 1;.*(		start_of_line = 0;)
+	}
+the_end: ;8??0?
+grp 08??-12m 45220reg p OK tcc_linux_x86_64.c:7545:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> 				if \(tok == TOK_IF \|\| tok == TOK_IFDEF \|\| tok == TOK_IFNDEF\)
+					a\+\+;
+				else if \(tok == TOK_ENDIF\).*(/\* token string handling \*/)
+ST_INLN void tok_str_new\(TokenString \*s\)
+\{9??0?
+grp 09??-17m 45220reg p OK tcc_linux_x86_64.c:7545:a92sc %? %@2152sc!'\''00?
+1;2;3;4;5;6;7;8;9??!219reg tcc_linux_x86_64.c:75452sc %? %@2132sc!0?
 ?0?
 %f+ 			}
 
@@ -945,8 +1792,33 @@ _default:2??0?
 %f+ 
 			break;
 _default:5??0?
-5??-1m 46220reg p OK tcc_linux_x86_64.c:7549:a52sc %? %@2152sc!0?
-1;2;3;4;5??!219reg tcc_linux_x86_64.c:75492sc %? %@2132sc!0?
+5??-1m 46220reg p OK tcc_linux_x86_64.c:7549:a52sc %? %@2152sc!1q0?
+%f+ ..	.
+
+....l.. .. \(...se_..........R...F..G..S......\)
+.	..........e_...e....m....p .....
+
+...b.e..;
+....a.lt.6??0?
+6??+3m 46220reg p OK tcc_linux_x86_64.c:7549:a62sc %? %@2152sc!1q0?
+grp 1%f+ 			}.*?
+.*?
+			else if \(parse_flags & PARSE_FLAG_ASM_FILE\).*?
+(				p = parse_line_comment\(p - 1\);)7??0?
+grp 07??m 46220reg p OK tcc_linux_x86_64.c:7549:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 					a--;
+				else if \( tok == TOK_ERROR \|\| tok == TOK_WARNING\)
+					in_warn_or_error = 1;.*(		start_of_line = 0;)
+	}
+the_end: ;8??0?
+grp 08??-8m 46220reg p OK tcc_linux_x86_64.c:7549:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> 				if \(tok == TOK_IF \|\| tok == TOK_IFDEF \|\| tok == TOK_IFNDEF\)
+					a\+\+;
+				else if \(tok == TOK_ENDIF\).*(/\* token string handling \*/)
+ST_INLN void tok_str_new\(TokenString \*s\)
+\{9??0?
+grp 09??-13m 46220reg p OK tcc_linux_x86_64.c:7549:a92sc %? %@2152sc!'\''00?
+1;2;3;4;5;6;7;8;9??!219reg tcc_linux_x86_64.c:75492sc %? %@2132sc!0?
 ?0?
 %f+ 			break;
 _default:
@@ -958,8 +1830,24 @@ _default:
 %f+ 			break;
 _default:
 		default:4??0?
-4??+2m 47220reg p OK tcc_linux_x86_64.c:7553:a42sc %? %@2152sc!0?
-1;4??!219reg tcc_linux_x86_64.c:75532sc %? %@2132sc!0?
+4??+2m 47220reg p OK tcc_linux_x86_64.c:7553:a42sc %? %@2152sc!1q0?
+grp 1%f+ 			break;.*?
+_default:.*?
+(		default:)7??0?
+grp 07??m 47220reg p OK tcc_linux_x86_64.c:7553:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 					a--;
+				else if \( tok == TOK_ERROR \|\| tok == TOK_WARNING\)
+					in_warn_or_error = 1;.*(		start_of_line = 0;)
+	}
+the_end: ;8??0?
+grp 08??-4m 47220reg p OK tcc_linux_x86_64.c:7553:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> 				if \(tok == TOK_IF \|\| tok == TOK_IFDEF \|\| tok == TOK_IFNDEF\)
+					a\+\+;
+				else if \(tok == TOK_ENDIF\).*(/\* token string handling \*/)
+ST_INLN void tok_str_new\(TokenString \*s\)
+\{9??0?
+grp 09??-9m 47220reg p OK tcc_linux_x86_64.c:7553:a92sc %? %@2152sc!'\''00?
+1;4;7;8;9??!219reg tcc_linux_x86_64.c:75532sc %? %@2132sc!0?
 ?0?
 %f+ 	}
 the_end: ;
@@ -971,8 +1859,24 @@ ST_INLN void tok_str_new\(TokenString \*s\)1??0?
 %f+ 	}
 the_end: ;
 	file->buf_ptr = p;4??0?
-4??+2m 48220reg p OK tcc_linux_x86_64.c:7560:a42sc %? %@2152sc!0?
-1;4??!219reg tcc_linux_x86_64.c:75602sc %? %@2132sc!0?
+4??+2m 48220reg p OK tcc_linux_x86_64.c:7560:a42sc %? %@2152sc!1q0?
+grp 1%f+ 	}.*?
+the_end: ;.*?
+(	file->buf_ptr = p;)7??0?
+grp 07??m 48220reg p OK tcc_linux_x86_64.c:7560:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 			break;
+		}
+		start_of_line = 0;.*(	s->str = NULL;)
+	s->len = s->need_spc = 0;
+	s->allocated_len = 0;8??0?
+grp 08??-5m 48220reg p OK tcc_linux_x86_64.c:7560:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> _default:
+		default:
+			p\+\+;.*(ST_FUNC TokenString \*tok_str_alloc\(void\))
+\{
+	TokenString \*str = tal_realloc\(&tokstr_alloc, 0, sizeof \*str\);9??0?
+grp 09??-11m 48220reg p OK tcc_linux_x86_64.c:7560:a92sc %? %@2152sc!'\''00?
+1;4;7;8;9??!219reg tcc_linux_x86_64.c:75602sc %? %@2132sc!0?
 ?0?
 %f+ 	s->next = first_arg;
 	table_ident\[v - TOK_IDENT]->sym_define = s;
@@ -997,8 +1901,33 @@ the_end: ;
 %f+ 		tcc_warning\("%s redefined", get_tok_str\(v, NULL\)\);
 }
 /\* undefined a define symbol\. Its name is just set to zero \*/5??0?
-5??-1m 49220reg p OK tcc_linux_x86_64.c:7811:a52sc %? %@2152sc!0?
-1;2;3;4;5??!219reg tcc_linux_x86_64.c:78112sc %? %@2132sc!0?
+5??-1m 49220reg p OK tcc_linux_x86_64.c:7811:a52sc %? %@2152sc!1q0?
+%f+ ..-..e.t..........r.;
+	....e.i.....v.-.......E....>.ym..e...... .;
+
+..f... &&............q.a.\(...d,.......
+.	.cc..a.......%...e.e........g.._..k...r.v....LL...
+}
+.. .n..f...d ..d.......ym.o...... ...e......st...........o...6??0?
+6??+3m 49220reg p OK tcc_linux_x86_64.c:7811:a62sc %? %@2152sc!1q0?
+grp 1%f+ 	s->next = first_arg;.*?
+	table_ident\[v - TOK_IDENT]->sym_define = s;.*?
+.*?
+(	if \(o && !macro_is_equal\(o->d, s->d\)\))7??0?
+grp 07??m 49220reg p OK tcc_linux_x86_64.c:7811:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 	o = define_find\(v\);
+	s = sym_push2\(&define_stack, v, macro_type, 0\);
+	s->d = str;.*(ST_FUNC void define_undef\(Sym \*s\))
+\{
+	int v = s->v;8??0?
+grp 08??-5m 49220reg p OK tcc_linux_x86_64.c:7811:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> ST_INLN void define_push\(int v, int macro_type, int \*str, Sym \*first_arg\)
+\{
+	Sym \*s, \*o;.*(	if \(v >= TOK_IDENT && v < tok_ident\))
+		table_ident\[v - TOK_IDENT]->sym_define = NULL;
+}9??0?
+grp 09??-8m 49220reg p OK tcc_linux_x86_64.c:7811:a92sc %? %@2152sc!'\''00?
+1;2;3;4;5;6;7;8;9??!219reg tcc_linux_x86_64.c:78112sc %? %@2132sc!0?
 ?0?
 %f+ 		tcc_warning\("extra tokens after directive"\);
 	while \(macro_stack\)
@@ -1019,8 +1948,32 @@ the_end: ;
 		end_macro\(\);4??0?
 4??+3m 50220reg p OK tcc_linux_x86_64.c:7866:a42sc %? %@2152sc!1q0?
 ;0fr.,$f+ ^}$5??0?
-5??-2m 50220reg p OK tcc_linux_x86_64.c:7866:a52sc %? %@2152sc!fr 98fr 980?
-1;2;3;4;5??!219reg tcc_linux_x86_64.c:78662sc %? %@2132sc!0?
+5??-2m 50220reg p OK tcc_linux_x86_64.c:7866:a52sc %? %@2152sc!fr 981qfr 980?
+%f+ .......a.........t...to..n....te....r.........
+........m..ro_..a.k.
+		en..m.c...\).
+.......bu................n..c.....t\(......b...... ...\);
+...x............
+}6??0?
+6??+3m 50220reg p OK tcc_linux_x86_64.c:7866:a62sc %? %@2152sc!1q0?
+grp 1%f+ 		tcc_warning\("extra tokens after directive"\);.*?
+	while \(macro_stack\).*?
+		end_macro\(\);.*?
+(	file->buf_ptr = parse_line_comment\(file->buf_ptr - 1\);)7??0?
+grp 07??m 50220reg p OK tcc_linux_x86_64.c:7866:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 	if \(tok == TOK_LINEFEED\)
+		return;
+	if \(warn\).*(		parse_flags = PARSE_FLAG_PREPROCESS)
+			      \| PARSE_FLAG_LINEFEED
+			      \| \(parse_flags & PARSE_FLAG_ASM_FILE\);8??0?
+grp 08??-24m 50220reg p OK tcc_linux_x86_64.c:7866:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> 	fprintf\(s->ppfp, &"\\n\[%s]\\n"\[!\(s->dflag & 32\)], p\), fflush\(s->ppfp\);
+	define_push\(tok, MACRO_OBJ, NULL, NULL\);
+}.*(		name\[0] = 0;)
+		for \(;;\) \{
+			next\(\);9??0?
+grp 09??-27m 50220reg p OK tcc_linux_x86_64.c:7866:a92sc %? %@2152sc!'\''00?
+1;2;3;4;5;6;7;8;9??!219reg tcc_linux_x86_64.c:78662sc %? %@2132sc!0?
 ?0?
 %f+ }
 
@@ -1030,8 +1983,27 @@ search_cached_include\(TCCState \*s1, const char \*filename, int add\);
 1??0?
 1??+1m 511q0?
 ;0fr.,$f+ ^}$4??0?
-4??+1m 51220reg p OK tcc_linux_x86_64.c:7869:a42sc %? %@2152sc!fr 98fr 980?
-1;4??!219reg tcc_linux_x86_64.c:78692sc %? %@2132sc!0?
+4??+1m 51220reg p OK tcc_linux_x86_64.c:7869:a42sc %? %@2152sc!fr 981qfr 980?
+%f+ }
+
+s......C...e....l.....
+....c...a.h........d.....S.a......,...... char..f.l.....,..n. .d...
+
+6??0?
+6??+1m 51220reg p OK tcc_linux_x86_64.c:7869:a62sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 	if \(tok == TOK_LINEFEED\)
+		return;
+	if \(warn\).*(		parse_flags = PARSE_FLAG_PREPROCESS)
+			      \| PARSE_FLAG_LINEFEED
+			      \| \(parse_flags & PARSE_FLAG_ASM_FILE\);8??0?
+grp 08??-21m 51220reg p OK tcc_linux_x86_64.c:7869:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> 	fprintf\(s->ppfp, &"\\n\[%s]\\n"\[!\(s->dflag & 32\)], p\), fflush\(s->ppfp\);
+	define_push\(tok, MACRO_OBJ, NULL, NULL\);
+}.*(		name\[0] = 0;)
+		for \(;;\) \{
+			next\(\);9??0?
+grp 09??-24m 51220reg p OK tcc_linux_x86_64.c:7869:a92sc %? %@2152sc!'\''00?
+1;4;6;8;9??!219reg tcc_linux_x86_64.c:78692sc %? %@2132sc!0?
 ?0?
 %f+ 
 static int parse_include\(TCCState \*s1, int do_next, int test\)
@@ -1058,8 +2030,34 @@ static int parse_include\(TCCState \*s1, int do_next, int test\)
 	CachedInclude \*e;
 
 5??0?
-5??-1m 52220reg p OK tcc_linux_x86_64.c:7875:a52sc %? %@2152sc!0?
-1;2;3;4;5??!219reg tcc_linux_x86_64.c:78752sc %? %@2132sc!0?
+5??-1m 52220reg p OK tcc_linux_x86_64.c:7875:a52sc %? %@2152sc!1q0?
+%f+ 
+s...........a..e.i.....e........e.\*s1......do...... ..t.t...\)
+\{
+......,...
+	.....n...\[..2.]................
+.........c.... \*.;
+
+6??0?
+6??+3m 52220reg p OK tcc_linux_x86_64.c:7875:a62sc %? %@2152sc!1q0?
+grp 1%f+ .*?
+static int parse_include\(TCCState \*s1, int do_next, int test\).*?
+\{.*?
+(	int c, i;)7??0?
+grp 07??m 52220reg p OK tcc_linux_x86_64.c:7875:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 	if \(tok == TOK_LINEFEED\)
+		return;
+	if \(warn\).*(		parse_flags = PARSE_FLAG_PREPROCESS)
+			      \| PARSE_FLAG_LINEFEED
+			      \| \(parse_flags & PARSE_FLAG_ASM_FILE\);8??0?
+grp 08??-15m 52220reg p OK tcc_linux_x86_64.c:7875:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> 	fprintf\(s->ppfp, &"\\n\[%s]\\n"\[!\(s->dflag & 32\)], p\), fflush\(s->ppfp\);
+	define_push\(tok, MACRO_OBJ, NULL, NULL\);
+}.*(		name\[0] = 0;)
+		for \(;;\) \{
+			next\(\);9??0?
+grp 09??-18m 52220reg p OK tcc_linux_x86_64.c:7875:a92sc %? %@2152sc!'\''00?
+1;2;3;4;5;6;7;8;9??!219reg tcc_linux_x86_64.c:78752sc %? %@2132sc!0?
 ?0?
 %f+ 	CachedInclude \*e;
 
@@ -1070,8 +2068,24 @@ static int parse_include\(TCCState \*s1, int do_next, int test\)
 %f+ 	CachedInclude \*e;
 
 	c = skip_spaces\(\);4??0?
-4??+2m 53220reg p OK tcc_linux_x86_64.c:7879:a42sc %? %@2152sc!0?
-1;4??!219reg tcc_linux_x86_64.c:78792sc %? %@2132sc!0?
+4??+2m 53220reg p OK tcc_linux_x86_64.c:7879:a42sc %? %@2152sc!1q0?
+grp 1%f+ 	CachedInclude \*e;.*?
+.*?
+(	c = skip_spaces\(\);)7??0?
+grp 07??m 53220reg p OK tcc_linux_x86_64.c:7879:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 	if \(tok == TOK_LINEFEED\)
+		return;
+	if \(warn\).*(		parse_flags = PARSE_FLAG_PREPROCESS)
+			      \| PARSE_FLAG_LINEFEED
+			      \| \(parse_flags & PARSE_FLAG_ASM_FILE\);8??0?
+grp 08??-11m 53220reg p OK tcc_linux_x86_64.c:7879:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> 	fprintf\(s->ppfp, &"\\n\[%s]\\n"\[!\(s->dflag & 32\)], p\), fflush\(s->ppfp\);
+	define_push\(tok, MACRO_OBJ, NULL, NULL\);
+}.*(		name\[0] = 0;)
+		for \(;;\) \{
+			next\(\);9??0?
+grp 09??-14m 53220reg p OK tcc_linux_x86_64.c:7879:a92sc %? %@2152sc!'\''00?
+1;4;7;8;9??!219reg tcc_linux_x86_64.c:78792sc %? %@2132sc!0?
 ?0?
 %f+ 	if \(c == '\''<'\'' \|\| c == '\''\\"'\''\) \{
 		cstr_reset\(&tokcstr\);
@@ -1090,8 +2104,30 @@ static int parse_include\(TCCState \*s1, int do_next, int test\)
 4??+2m 54220reg p OK tcc_linux_x86_64.c:7882:a42sc %? %@2152sc!1q0?
 %f+ 		i = tokcstr\.size;
 		pstrncpy\(name, sizeof name, tokcstr\.data, i\);5??0?
-5??-1m 54220reg p OK tcc_linux_x86_64.c:7882:a52sc %? %@2152sc!0?
-1;2;3;4;5??!219reg tcc_linux_x86_64.c:78822sc %? %@2132sc!0?
+5??-1m 54220reg p OK tcc_linux_x86_64.c:7882:a52sc %? %@2152sc!1q0?
+%f+ .....c.==.....\|\|.c..=...".\)..
+..cs....e........cs....
+	.f..e..b.......= .a....p.....i.g...l........tr, . =........'\''>'\'' : .,....kc...\).
+.	. ...o......s.z..
+.	.........n.me......of...m.............ta. i.;6??0?
+6??+2m 54220reg p OK tcc_linux_x86_64.c:7882:a62sc %? %@2152sc!1q0?
+grp 1%f+ 	if \(c == '\''<'\'' \|\| c == '\''\\"'\''\) \{.*?
+		cstr_reset\(&tokcstr\);.*?
+(		file->buf_ptr = parse_pp_string\(file->buf_ptr, c == '\''<'\'' \? '\''>'\'' : c, &tokcstr\);)7??0?
+grp 07??m 54220reg p OK tcc_linux_x86_64.c:7882:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 	if \(tok == TOK_LINEFEED\)
+		return;
+	if \(warn\).*(		parse_flags = PARSE_FLAG_PREPROCESS)
+			      \| PARSE_FLAG_LINEFEED
+			      \| \(parse_flags & PARSE_FLAG_ASM_FILE\);8??0?
+grp 08??-8m 54220reg p OK tcc_linux_x86_64.c:7882:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> 	fprintf\(s->ppfp, &"\\n\[%s]\\n"\[!\(s->dflag & 32\)], p\), fflush\(s->ppfp\);
+	define_push\(tok, MACRO_OBJ, NULL, NULL\);
+}.*(		name\[0] = 0;)
+		for \(;;\) \{
+			next\(\);9??0?
+grp 09??-11m 54220reg p OK tcc_linux_x86_64.c:7882:a92sc %? %@2152sc!'\''00?
+1;2;3;4;5;6;7;8;9??!219reg tcc_linux_x86_64.c:78822sc %? %@2132sc!0?
 ?0?
 %f+ 		i = tokcstr\.size;
 		pstrncpy\(name, sizeof name, tokcstr\.data, i\);
@@ -1113,8 +2149,31 @@ static int parse_include\(TCCState \*s1, int do_next, int test\)
 %f+ 	} else \{
 		/\* computed #include : concatenate tokens until result is one of
 		           the two accepted forms\.  Don'\''t convert pp-tokens to tokens here\. \*/5??0?
-5??-1m 55220reg p OK tcc_linux_x86_64.c:7885:a52sc %? %@2152sc!0?
-1;2;3;4;5??!219reg tcc_linux_x86_64.c:78852sc %? %@2132sc!0?
+5??-1m 55220reg p OK tcc_linux_x86_64.c:7885:a52sc %? %@2152sc!1q0?
+%f+ .	..=.t....t.\.....;
+.........y\(..m.. .....f..........c.t....t.,....
+	...xt...........
+...e.....
+......o...te. #i...u.. ..c...a.......t........t...r...l. .. ....o.
+.. .  .. ....th..........pte......s.. .o..t...n...t.pp..o......o to..ns.....\..\*.6??0?
+6??+2m 55220reg p OK tcc_linux_x86_64.c:7885:a62sc %? %@2152sc!1q0?
+grp 1%f+ 		i = tokcstr\.size;.*?
+		pstrncpy\(name, sizeof name, tokcstr\.data, i\);.*?
+(		next_nomacro\(\);)7??0?
+grp 07??m 55220reg p OK tcc_linux_x86_64.c:7885:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 	if \(tok == TOK_LINEFEED\)
+		return;
+	if \(warn\).*(		parse_flags = PARSE_FLAG_PREPROCESS)
+			      \| PARSE_FLAG_LINEFEED
+			      \| \(parse_flags & PARSE_FLAG_ASM_FILE\);8??0?
+grp 08??-5m 55220reg p OK tcc_linux_x86_64.c:7885:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> 	fprintf\(s->ppfp, &"\\n\[%s]\\n"\[!\(s->dflag & 32\)], p\), fflush\(s->ppfp\);
+	define_push\(tok, MACRO_OBJ, NULL, NULL\);
+}.*(		name\[0] = 0;)
+		for \(;;\) \{
+			next\(\);9??0?
+grp 09??-8m 55220reg p OK tcc_linux_x86_64.c:7885:a92sc %? %@2152sc!'\''00?
+1;2;3;4;5;6;7;8;9??!219reg tcc_linux_x86_64.c:78852sc %? %@2132sc!0?
 ?0?
 %f+ 		memmove\(p, p \+ 1, i - 1\), p\[i - 1] = 0;
 	}
@@ -1139,8 +2198,33 @@ static int parse_include\(TCCState \*s1, int do_next, int test\)
 %f+ 		skip_to_eol\(1\);
 
 	i = do_next \? file->include_next_index : -1;5??0?
-5??-1m 56220reg p OK tcc_linux_x86_64.c:7911:a52sc %? %@2152sc!0?
-1;2;3;4;5??!219reg tcc_linux_x86_64.c:79112sc %? %@2132sc!0?
+5??-1m 56220reg p OK tcc_linux_x86_64.c:7911:a52sc %? %@2152sc!1q0?
+%f+ .	......e\(p..p .....i.-......\[i.. .. . ..
+.}
+
+..........\)
+....i._.._......;
+
+.....do........f......n....._.ex....... .....6??0?
+6??+3m 56220reg p OK tcc_linux_x86_64.c:7911:a62sc %? %@2152sc!1q0?
+grp 1%f+ 		memmove\(p, p \+ 1, i - 1\), p\[i - 1] = 0;.*?
+	}.*?
+.*?
+(	if \(!test\))7??0?
+grp 07??m 56220reg p OK tcc_linux_x86_64.c:7911:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 		}
+		c = p\[0];
+		/\* remove '\''<>\|""'\'' \*/.*(			if \(!IS_ABSPATH\(name\)\))
+				continue;
+			buf\[0] = '\''\\0'\'';8??0?
+grp 08??-9m 56220reg p OK tcc_linux_x86_64.c:7911:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> 			if \(tok == TOK_LINEFEED\)
+				tcc_error\("'\''#include'\'' expects \\"FILENAME\\" or <FILENAME>"\);
+			pstrcat\(name, sizeof name, get_tok_str\(tok, &tokc\)\);.*(			if \(c != '\''\\"'\''\))
+				continue;
+			p = file->true_filename;9??0?
+grp 09??-15m 56220reg p OK tcc_linux_x86_64.c:7911:a92sc %? %@2152sc!'\''00?
+1;2;3;4;5;6;7;8;9??!219reg tcc_linux_x86_64.c:79112sc %? %@2132sc!0?
 ?0?
 %f+ 			buf\[0] = '\''\\0'\'';
 		} else if \(i == 1\) \{
@@ -1154,19 +2238,27 @@ static int parse_include\(TCCState \*s1, int do_next, int test\)
 		} else if \(i == 1\) \{
 			/\* search in file'\''s dir if "header\.h" \*/4??0?
 4??+3m 57220reg p OK tcc_linux_x86_64.c:7925:a42sc %? %@2152sc!1q0?
-m 01;0grp 1%f> 	return !\(\*a \|\| \*b\);
-}
-/\* defines handling \*/.*(	/\* Not in -E: the hihon amal has this warning commented out\.  Any)
-	   warning here would also inject a stray newline into the dump
-	   \(error1\(\) emits one while ppfp == stdout\), and tcc\.c legitimately8??0?
-grp 08??-7m 57220reg p OK tcc_linux_x86_64.c:7925:a82sc %? %@2152sc!'\''08??1q0?
-m 01;0grp 1%f> 		if \(strcmp\(tokcstr\.data, get_tok_str\(t, &cv\)\)\)
-			return 0;
-	}.*(	   re-includes its \*-gen\.c/\*-link\.c defs blocks, so this fires often\. \*/)
-	if \(o && !macro_is_equal\(o->d, s->d\) && !pp_echo\)
-		tcc_warning\("%s redefined", get_tok_str\(v, NULL\)\);9??0?
-grp 09??-10m 57220reg p OK tcc_linux_x86_64.c:7925:a92sc %? %@2152sc!'\''00?
-1;4;8;9??!219reg tcc_linux_x86_64.c:79252sc %? %@2132sc!0?
+%f+ .	..............;
+	.....s..i. ....=..\)..
+....\*...a.c. ....i......i..i...h.........\*.
+
+.	.if... .=.'\''...\)
+.	.....t.....
+	..p.=..........._.........6??0?
+6??+3m 57220reg p OK tcc_linux_x86_64.c:7925:a62sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 		\+\+i;
+		if \(i == 0\) \{
+			/\* check absolute include path \*/.*(			pstrncpy\(buf, sizeof buf, p, tcc_basename\(p\) - p\);)
+		} else \{
+			int j = i - 2, k = j - s1->nb_include_paths;8??0?
+grp 08??-4m 57220reg p OK tcc_linux_x86_64.c:7925:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> 		}
+		c = p\[0];
+		/\* remove '\''<>\|""'\'' \*/.*(			if \(k < 0\))
+				p = s1->include_paths\[j];
+			else if \(k < s1->nb_sysinclude_paths\)9??0?
+grp 09??-7m 57220reg p OK tcc_linux_x86_64.c:7925:a92sc %? %@2152sc!'\''00?
+1;4;6;8;9??!219reg tcc_linux_x86_64.c:79252sc %? %@2132sc!0?
 ?0?
 %f+ 				p = s1->sysinclude_paths\[k];
 			else if \(test\)
@@ -1178,8 +2270,24 @@ static int parse_include\(TCCState \*s1, int do_next, int test\)
 %f+ 				p = s1->sysinclude_paths\[k];
 			else if \(test\)
 				return 0;4??0?
-4??+2m 58220reg p OK tcc_linux_x86_64.c:7937:a42sc %? %@2152sc!0?
-1;4??!219reg tcc_linux_x86_64.c:79372sc %? %@2132sc!0?
+4??+2m 58220reg p OK tcc_linux_x86_64.c:7937:a42sc %? %@2152sc!1q0?
+grp 1%f+ 				p = s1->sysinclude_paths\[k];.*?
+			else if \(test\).*?
+(				return 0;)7??0?
+grp 07??m 58220reg p OK tcc_linux_x86_64.c:7937:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 			if \(k < 0\)
+				p = s1->include_paths\[j];
+			else if \(k < s1->nb_sysinclude_paths\).*(			pstrcat\(buf, sizeof buf, "/"\);)
+		}
+		pstrcat\(buf, sizeof buf, name\);8??0?
+grp 08??-4m 58220reg p OK tcc_linux_x86_64.c:7937:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> 			pstrncpy\(buf, sizeof buf, p, tcc_basename\(p\) - p\);
+		} else \{
+			int j = i - 2, k = j - s1->nb_include_paths;.*(		e = search_cached_include\(s1, buf, 0\);)
+		if \(e && \(define_find\(e->ifndef_macro\) \|\| e->once\)\) \{
+			/\* no need to parse the include because the '\''ifndef macro'\''9??0?
+grp 09??-7m 58220reg p OK tcc_linux_x86_64.c:7937:a92sc %? %@2152sc!'\''00?
+1;4;7;8;9??!219reg tcc_linux_x86_64.c:79372sc %? %@2132sc!0?
 ?0?
 %f+ \{
 	TCCState \*s1 = tcc_state;
@@ -1192,8 +2300,24 @@ static int parse_include\(TCCState \*s1, int do_next, int test\)
 %f+ \{
 	TCCState \*s1 = tcc_state;
 	int c, n, saved_parse_flags;4??0?
-4??+2m 59220reg p OK tcc_linux_x86_64.c:8363:a42sc %? %@2152sc!0?
-1;4??!219reg tcc_linux_x86_64.c:83632sc %? %@2132sc!0?
+4??+2m 59220reg p OK tcc_linux_x86_64.c:8363:a42sc %? %@2152sc!1q0?
+grp 1%f+ \{.*?
+	TCCState \*s1 = tcc_state;.*?
+(	int c, n, saved_parse_flags;)7??0?
+grp 07??m 59220reg p OK tcc_linux_x86_64.c:8363:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 	tcc_debug_newfile\(tcc_state\);
+}
+/\* is_bof is true if first non space token at beginning of file \*/.*(	saved_parse_flags = parse_flags;)
+	parse_flags = PARSE_FLAG_PREPROCESS
+		      \| PARSE_FLAG_TOK_NUM8??0?
+grp 08??-4m 59220reg p OK tcc_linux_x86_64.c:8363:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> 	if \(file->true_filename == file->filename\)
+		file->true_filename = tcc_strdup\(file->filename\);
+	pstrcpy\(file->filename, sizeof file->filename, buf\);.*(		      \| PARSE_FLAG_TOK_STR)
+		      \| PARSE_FLAG_LINEFEED
+		      \| \(parse_flags & PARSE_FLAG_ASM_FILE\)9??0?
+grp 09??-7m 59220reg p OK tcc_linux_x86_64.c:8363:a92sc %? %@2152sc!'\''00?
+1;4;7;8;9??!219reg tcc_linux_x86_64.c:83632sc %? %@2132sc!0?
 ?0?
 %f+ 		c = 1;
 		goto do_ifdef;
@@ -1203,8 +2327,24 @@ static int parse_include\(TCCState \*s1, int do_next, int test\)
 %f+ 		c = 1;
 		goto do_ifdef;
 	case TOK_IF:4??0?
-4??+2m 60220reg p OK tcc_linux_x86_64.c:8402:a42sc %? %@2152sc!0?
-1;4??!219reg tcc_linux_x86_64.c:84022sc %? %@2132sc!0?
+4??+2m 60220reg p OK tcc_linux_x86_64.c:8402:a42sc %? %@2152sc!1q0?
+grp 1%f+ 		c = 1;.*?
+		goto do_ifdef;.*?
+(	case TOK_IF:)7??0?
+grp 07??m 60220reg p OK tcc_linux_x86_64.c:8402:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 		parse_include\(s1, tok - TOK_INCLUDE, 0\);
+		goto the_end;
+	case TOK_IFNDEF:.*(do_ifdef:)
+		next_nomacro\(\);
+		if \(tok < TOK_IDENT\)8??0?
+grp 08??-5m 60220reg p OK tcc_linux_x86_64.c:8402:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> 		break;
+	case TOK_INCLUDE:
+	case TOK_INCLUDE_NEXT:.*(			tcc_error\("invalid argument for '\''#if%sdef'\''", c \? "n" : ""\);)
+		if \(is_bof\) \{
+			if \(c\) \{9??0?
+grp 09??-8m 60220reg p OK tcc_linux_x86_64.c:8402:a92sc %? %@2152sc!'\''00?
+1;4;7;8;9??!219reg tcc_linux_x86_64.c:84022sc %? %@2132sc!0?
 ?0?
 %f+ 		c = expr_preprocess\(s1\);
 		goto do_if;
@@ -1212,8 +2352,20 @@ static int parse_include\(TCCState \*s1, int do_next, int test\)
 		c = 0;1??0?
 1??m 611q0?
 ;0fr.,$f+ ^		c = expr_preprocess\(s1\);$4??0?
-4??m 61220reg p OK tcc_linux_x86_64.c:8403:a42sc %? %@2152sc!fr 98fr 980?
-1;4??!219reg tcc_linux_x86_64.c:84032sc %? %@2132sc!0?
+4??m 61220reg p OK tcc_linux_x86_64.c:8403:a42sc %? %@2152sc!fr 981qfr 980?
+m 01;0grp 1%f> 		parse_include\(s1, tok - TOK_INCLUDE, 0\);
+		goto the_end;
+	case TOK_IFNDEF:.*(do_ifdef:)
+		next_nomacro\(\);
+		if \(tok < TOK_IDENT\)8??0?
+grp 08??-4m 61220reg p OK tcc_linux_x86_64.c:8403:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> 		break;
+	case TOK_INCLUDE:
+	case TOK_INCLUDE_NEXT:.*(			tcc_error\("invalid argument for '\''#if%sdef'\''", c \? "n" : ""\);)
+		if \(is_bof\) \{
+			if \(c\) \{9??0?
+grp 09??-7m 61220reg p OK tcc_linux_x86_64.c:8403:a92sc %? %@2152sc!'\''00?
+1;4;8;9??!219reg tcc_linux_x86_64.c:84032sc %? %@2132sc!0?
 ?0?
 %f+ 		next_nomacro\(\);
 		if \(tok < TOK_IDENT\)
@@ -1226,8 +2378,24 @@ static int parse_include\(TCCState \*s1, int do_next, int test\)
 %f+ 		next_nomacro\(\);
 		if \(tok < TOK_IDENT\)
 			tcc_error\("invalid argument for '\''#if%sdef'\''", c \? "n" : ""\);4??0?
-4??+2m 62220reg p OK tcc_linux_x86_64.c:8410:a42sc %? %@2152sc!0?
-1;4??!219reg tcc_linux_x86_64.c:84102sc %? %@2132sc!0?
+4??+2m 62220reg p OK tcc_linux_x86_64.c:8410:a42sc %? %@2152sc!1q0?
+grp 1%f+ 		next_nomacro\(\);.*?
+		if \(tok < TOK_IDENT\).*?
+(			tcc_error\("invalid argument for '\''#if%sdef'\''", c \? "n" : ""\);)7??0?
+grp 07??m 62220reg p OK tcc_linux_x86_64.c:8410:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 	case TOK_IFDEF:
+		c = 0;
+do_ifdef:.*(				file->ifndef_macro = tok;)
+			}
+		}8??0?
+grp 08??-4m 62220reg p OK tcc_linux_x86_64.c:8410:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> 	case TOK_IF:
+		c = expr_preprocess\(s1\);
+		goto do_if;.*(		if \(define_find\(tok\))
+		    \|\| tok == TOK___HAS_INCLUDE
+		    \|\| tok == TOK___HAS_INCLUDE_NEXT\)9??0?
+grp 09??-7m 62220reg p OK tcc_linux_x86_64.c:8410:a92sc %? %@2152sc!'\''00?
+1;4;7;8;9??!219reg tcc_linux_x86_64.c:84102sc %? %@2132sc!0?
 ?0?
 %f+ 		    \|\| tok == TOK___HAS_INCLUDE
 		    \|\| tok == TOK___HAS_INCLUDE_NEXT\)
@@ -1251,8 +2419,33 @@ do_if:
 %f+ do_if:
 		if \(s1->ifdef_stack_ptr >= s1->ifdef_stack \+ IFDEF_STACK_SIZE\)
 			tcc_error\("memory full \(ifdef\)"\);5??0?
-5??-1m 63220reg p OK tcc_linux_x86_64.c:8421:a52sc %? %@2152sc!0?
-1;2;3;4;5??!219reg tcc_linux_x86_64.c:84212sc %? %@2132sc!0?
+5??-1m 63220reg p OK tcc_linux_x86_64.c:8421:a52sc %? %@2152sc!1q0?
+%f+ 		. ...\|...k..=.......H.S....L.D.
+.. ......t...=. T.......S_I...U.._....\)
+......= ..
+....x......c.....
+.o_i.:
+..i.....-.if........._.........->.......t..... .FD.F.ST.C...I..\)
+.	..c...r...\(..........l..\(i.d.f..\).6??0?
+6??+3m 63220reg p OK tcc_linux_x86_64.c:8421:a62sc %? %@2152sc!1q0?
+grp 1%f+ 		    \|\| tok == TOK___HAS_INCLUDE.*?
+		    \|\| tok == TOK___HAS_INCLUDE_NEXT\).*?
+			c \^= 1;.*?
+(		next_nomacro\(\);)7??0?
+grp 07??m 63220reg p OK tcc_linux_x86_64.c:8421:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 			}
+		}
+		if \(define_find\(tok\).*(			tcc_error\("#elif without matching #if"\);)
+		c = s1->ifdef_stack_ptr\[-1];
+		if \(c > 1\)8??0?
+grp 08??-16m 63220reg p OK tcc_linux_x86_64.c:8421:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> 			tcc_error\("invalid argument for '\''#if%sdef'\''", c \? "n" : ""\);
+		if \(is_bof\) \{
+			if \(c\) \{.*(		if \(c == 1\) \{)
+			skip_to_eol\(0\);
+			c = 0;9??0?
+grp 09??-22m 63220reg p OK tcc_linux_x86_64.c:8421:a92sc %? %@2152sc!'\''00?
+1;2;3;4;5;6;7;8;9??!219reg tcc_linux_x86_64.c:84212sc %? %@2132sc!0?
 ?0?
 %f+ 		\*s1->ifdef_stack_ptr\+\+ = c;
 		goto test_skip;
@@ -1276,8 +2469,33 @@ do_if:
 %f+ 		if \(s1->ifdef_stack_ptr == s1->ifdef_stack\)
 			tcc_error\("#else without matching #if"\);
 		if \(s1->ifdef_stack_ptr\[-1] & 2\)5??0?
-5??-1m 64220reg p OK tcc_linux_x86_64.c:8428:a52sc %? %@2152sc!0?
-1;2;3;4;5??!219reg tcc_linux_x86_64.c:84282sc %? %@2132sc!0?
+5??-1m 64220reg p OK tcc_linux_x86_64.c:8428:a52sc %? %@2152sc!1q0?
+%f+ ....1.>.f..._..a...p.........
+...o.o...........
+....e.TOK..L...
+		n..._.....r.\(..
+	... .............a.k.... ...s1..............
+	....c...ro......s..w.....t ......n. .if..;
+.	.. ......f..f.s.....ptr.........6??0?
+6??+3m 64220reg p OK tcc_linux_x86_64.c:8428:a62sc %? %@2152sc!1q0?
+grp 1%f+ 		\*s1->ifdef_stack_ptr\+\+ = c;.*?
+		goto test_skip;.*?
+	case TOK_ELSE:.*?
+(		next_nomacro\(\);)7??0?
+grp 07??m 64220reg p OK tcc_linux_x86_64.c:8428:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 			}
+		}
+		if \(define_find\(tok\).*(			tcc_error\("#elif without matching #if"\);)
+		c = s1->ifdef_stack_ptr\[-1];
+		if \(c > 1\)8??0?
+grp 08??-9m 64220reg p OK tcc_linux_x86_64.c:8428:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> 			tcc_error\("invalid argument for '\''#if%sdef'\''", c \? "n" : ""\);
+		if \(is_bof\) \{
+			if \(c\) \{.*(		if \(c == 1\) \{)
+			skip_to_eol\(0\);
+			c = 0;9??0?
+grp 09??-15m 64220reg p OK tcc_linux_x86_64.c:8428:a92sc %? %@2152sc!'\''00?
+1;2;3;4;5;6;7;8;9??!219reg tcc_linux_x86_64.c:84282sc %? %@2132sc!0?
 ?0?
 %f+ 		if \(s1->ifdef_stack_ptr\[-1] & 2\)
 			tcc_error\("#else after #else"\);
@@ -1289,8 +2507,24 @@ do_if:
 %f+ 		if \(s1->ifdef_stack_ptr\[-1] & 2\)
 			tcc_error\("#else after #else"\);
 		c = \(s1->ifdef_stack_ptr\[-1] \^= 3\);4??0?
-4??+2m 65220reg p OK tcc_linux_x86_64.c:8433:a42sc %? %@2152sc!0?
-1;4??!219reg tcc_linux_x86_64.c:84332sc %? %@2132sc!0?
+4??+2m 65220reg p OK tcc_linux_x86_64.c:8433:a42sc %? %@2152sc!1q0?
+grp 1%f+ 		if \(s1->ifdef_stack_ptr\[-1] & 2\).*?
+			tcc_error\("#else after #else"\);.*?
+(		c = \(s1->ifdef_stack_ptr\[-1] \^= 3\);)7??0?
+grp 07??m 65220reg p OK tcc_linux_x86_64.c:8433:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 			}
+		}
+		if \(define_find\(tok\).*(			tcc_error\("#elif without matching #if"\);)
+		c = s1->ifdef_stack_ptr\[-1];
+		if \(c > 1\)8??0?
+grp 08??-4m 65220reg p OK tcc_linux_x86_64.c:8433:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> 			tcc_error\("invalid argument for '\''#if%sdef'\''", c \? "n" : ""\);
+		if \(is_bof\) \{
+			if \(c\) \{.*(		if \(c == 1\) \{)
+			skip_to_eol\(0\);
+			c = 0;9??0?
+grp 09??-10m 65220reg p OK tcc_linux_x86_64.c:8433:a92sc %? %@2152sc!'\''00?
+1;4;7;8;9??!219reg tcc_linux_x86_64.c:84332sc %? %@2132sc!0?
 ?0?
 %f+ 			tcc_error\("#elif after #else"\);
 		/\* last #if/#elif expression was true: we skip \*/
@@ -1303,8 +2537,20 @@ do_if:
 		/\* last #if/#elif expression was true: we skip \*/
 
 4??0?
-4??+2m 66220reg p OK tcc_linux_x86_64.c:8442:a42sc %? %@2152sc!0?
-1;4??!219reg tcc_linux_x86_64.c:84422sc %? %@2132sc!0?
+4??+2m 66220reg p OK tcc_linux_x86_64.c:8442:a42sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 			tcc_error\("#elif without matching #if"\);
+		c = s1->ifdef_stack_ptr\[-1];
+		if \(c > 1\).*(			c = expr_preprocess\(s1\);)
+			s1->ifdef_stack_ptr\[-1] = c;
+		}8??0?
+grp 08??-5m 66220reg p OK tcc_linux_x86_64.c:8442:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> 		goto test_else;
+	case TOK_ELIF:
+		if \(s1->ifdef_stack_ptr == s1->ifdef_stack\).*(test_else:)
+		if \(s1->ifdef_stack_ptr == file->ifdef_stack_ptr \+ 1\)
+			file->ifndef_macro = 0;9??0?
+grp 09??-8m 66220reg p OK tcc_linux_x86_64.c:8442:a92sc %? %@2152sc!'\''00?
+1;4;8;9??!219reg tcc_linux_x86_64.c:84422sc %? %@2132sc!0?
 ?0?
 %f+ 			file->ifndef_macro = 0;
 test_skip:
@@ -1331,8 +2577,34 @@ test_skip:
 %f+ 			is_bof = 0;
 			goto redo;
 		}5??0?
-5??-2m 67220reg p OK tcc_linux_x86_64.c:8455:a52sc %? %@2152sc!0?
-1;2;3;4;5??!219reg tcc_linux_x86_64.c:84552sc %? %@2132sc!0?
+5??-2m 67220reg p OK tcc_linux_x86_64.c:8455:a52sc %? %@2152sc!1q0?
+%f+ ...f..e->.............=.0.
+.e.t......
+.	....!......\)...
+............o....;
+.	...e.roc..s......\).
+	.............
+..	.o......o.
+	..6??0?
+6??+3m 67220reg p OK tcc_linux_x86_64.c:8455:a62sc %? %@2152sc!1q0?
+grp 1%f+ 			file->ifndef_macro = 0;.*?
+test_skip:.*?
+		if \(!\(c & 1\)\) \{.*?
+(			skip_to_eol\(1\);)7??0?
+grp 07??m 67220reg p OK tcc_linux_x86_64.c:8455:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 		}
+test_else:
+		if \(s1->ifdef_stack_ptr == file->ifdef_stack_ptr \+ 1\).*(		if \(file->ifndef_macro &&)
+		    s1->ifdef_stack_ptr == file->ifdef_stack_ptr\) \{
+			file->ifndef_macro_saved = file->ifndef_macro;8??0?
+grp 08??-14m 67220reg p OK tcc_linux_x86_64.c:8455:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> 		} else \{
+			c = expr_preprocess\(s1\);
+			s1->ifdef_stack_ptr\[-1] = c;.*(			file->ifndef_macro = 0;)
+			tok_flags \|= TOK_FLAG_ENDIF;
+		}9??0?
+grp 09??-20m 67220reg p OK tcc_linux_x86_64.c:8455:a92sc %? %@2152sc!'\''00?
+1;2;3;4;5;6;7;8;9??!219reg tcc_linux_x86_64.c:84552sc %? %@2132sc!0?
 ?0?
 %f+ 		}
 		break;
@@ -1362,8 +2634,35 @@ test_skip:
 %f+ 		s1->ifdef_stack_ptr--;
 		/\* '\''#ifndef macro'\'' was at the start of file\. Now we check if
 		           an '\''#endif'\'' is exactly at the end of file \*/5??0?
-5??-3m 68220reg p OK tcc_linux_x86_64.c:8462:a52sc %? %@2152sc!0?
-1;2;3;4;5??!219reg tcc_linux_x86_64.c:84622sc %? %@2132sc!0?
+5??-3m 68220reg p OK tcc_linux_x86_64.c:8462:a52sc %? %@2152sc!1q0?
+%f+ 	..
+.	....k.
+	........_......
+.	n....n..a..o.\).
+	... .s.-....ef_....._.t. ....i.e....d.f..t........
+....c._er.......n..f.wi..o...m..c.i...#i."..
+..s....fd.._.......t.-.;
+	./..'\''.i.n.....a.r.......a...h..s....... .i.e..N...w..........
+.. ...  ......n......i...i. .x.ct...a........d .f........6??0?
+6??+3m 68220reg p OK tcc_linux_x86_64.c:8462:a62sc %? %@2152sc!1q0?
+grp 1%f+ 		}.*?
+		break;.*?
+	case TOK_ENDIF:.*?
+(		next_nomacro\(\);)7??0?
+grp 07??m 68220reg p OK tcc_linux_x86_64.c:8462:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 		}
+test_else:
+		if \(s1->ifdef_stack_ptr == file->ifdef_stack_ptr \+ 1\).*(		if \(file->ifndef_macro &&)
+		    s1->ifdef_stack_ptr == file->ifdef_stack_ptr\) \{
+			file->ifndef_macro_saved = file->ifndef_macro;8??0?
+grp 08??-7m 68220reg p OK tcc_linux_x86_64.c:8462:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> 		} else \{
+			c = expr_preprocess\(s1\);
+			s1->ifdef_stack_ptr\[-1] = c;.*(			file->ifndef_macro = 0;)
+			tok_flags \|= TOK_FLAG_ENDIF;
+		}9??0?
+grp 09??-13m 68220reg p OK tcc_linux_x86_64.c:8462:a92sc %? %@2152sc!'\''00?
+1;2;3;4;5;6;7;8;9??!219reg tcc_linux_x86_64.c:84622sc %? %@2132sc!0?
 ?0?
 %f+ 			               #ifndef at middle of file \*/
 
@@ -1373,15 +2672,43 @@ test_skip:
 %f+ 			               #ifndef at middle of file \*/
 
 			file->ifndef_macro = 0;4??0?
-4??+2m 69220reg p OK tcc_linux_x86_64.c:8475:a42sc %? %@2152sc!0?
-1;4??!219reg tcc_linux_x86_64.c:84752sc %? %@2132sc!0?
+4??+2m 69220reg p OK tcc_linux_x86_64.c:8475:a42sc %? %@2152sc!1q0?
+grp 1%f+ 			               #ifndef at middle of file \*/.*?
+.*?
+(			file->ifndef_macro = 0;)7??0?
+grp 07??m 69220reg p OK tcc_linux_x86_64.c:8475:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 		    s1->ifdef_stack_ptr == file->ifdef_stack_ptr\) \{
+			file->ifndef_macro_saved = file->ifndef_macro;
+			/\* need to set to zero to avoid false matches if another.*(		parse_flags &= ~PARSE_FLAG_TOK_NUM;)
+		next\(\);
+		if \(tok != TOK_PPNUM\) \{8??0?
+grp 08??-6m 69220reg p OK tcc_linux_x86_64.c:8475:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> 		s1->ifdef_stack_ptr--;
+		/\* '\''#ifndef macro'\'' was at the start of file\. Now we check if
+		           an '\''#endif'\'' is exactly at the end of file \*/.*(_line_err:)
+			tcc_error\("wrong #line format"\);
+		}9??0?
+grp 09??-9m 69220reg p OK tcc_linux_x86_64.c:8475:a92sc %? %@2152sc!'\''00?
+1;4;7;8;9??!219reg tcc_linux_x86_64.c:84752sc %? %@2132sc!0?
 ?0?
 %f+ 			tok_flags \|= TOK_FLAG_ENDIF;
 		}1??0?
 1??m 701q0?
 ;0fr.,$f+ ^			tok_flags \|= TOK_FLAG_ENDIF;$4??0?
-4??m 70220reg p OK tcc_linux_x86_64.c:8476:a42sc %? %@2152sc!fr 98fr 980?
-1;4??!219reg tcc_linux_x86_64.c:84762sc %? %@2132sc!0?
+4??m 70220reg p OK tcc_linux_x86_64.c:8476:a42sc %? %@2152sc!fr 981qfr 980?
+m 01;0grp 1%f> 		    s1->ifdef_stack_ptr == file->ifdef_stack_ptr\) \{
+			file->ifndef_macro_saved = file->ifndef_macro;
+			/\* need to set to zero to avoid false matches if another.*(		parse_flags &= ~PARSE_FLAG_TOK_NUM;)
+		next\(\);
+		if \(tok != TOK_PPNUM\) \{8??0?
+grp 08??-5m 70220reg p OK tcc_linux_x86_64.c:8476:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> 		s1->ifdef_stack_ptr--;
+		/\* '\''#ifndef macro'\'' was at the start of file\. Now we check if
+		           an '\''#endif'\'' is exactly at the end of file \*/.*(_line_err:)
+			tcc_error\("wrong #line format"\);
+		}9??0?
+grp 09??-8m 70220reg p OK tcc_linux_x86_64.c:8476:a92sc %? %@2152sc!'\''00?
+1;4;8;9??!219reg tcc_linux_x86_64.c:84762sc %? %@2132sc!0?
 ?0?
 %f+ 		}
 		break;
@@ -1389,8 +2716,20 @@ test_skip:
 	case TOK_LINE:1??0?
 1??m 711q0?
 ;0fr.,$f+ ^		}$4??0?
-4??m 71220reg p OK tcc_linux_x86_64.c:8477:a42sc %? %@2152sc!fr 98fr 980?
-1;4??!219reg tcc_linux_x86_64.c:84772sc %? %@2132sc!0?
+4??m 71220reg p OK tcc_linux_x86_64.c:8477:a42sc %? %@2152sc!fr 981qfr 980?
+m 01;0grp 1%f> 		    s1->ifdef_stack_ptr == file->ifdef_stack_ptr\) \{
+			file->ifndef_macro_saved = file->ifndef_macro;
+			/\* need to set to zero to avoid false matches if another.*(		parse_flags &= ~PARSE_FLAG_TOK_NUM;)
+		next\(\);
+		if \(tok != TOK_PPNUM\) \{8??0?
+grp 08??-4m 71220reg p OK tcc_linux_x86_64.c:8477:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> 		s1->ifdef_stack_ptr--;
+		/\* '\''#ifndef macro'\'' was at the start of file\. Now we check if
+		           an '\''#endif'\'' is exactly at the end of file \*/.*(_line_err:)
+			tcc_error\("wrong #line format"\);
+		}9??0?
+grp 09??-7m 71220reg p OK tcc_linux_x86_64.c:8477:a92sc %? %@2152sc!'\''00?
+1;4;8;9??!219reg tcc_linux_x86_64.c:84772sc %? %@2132sc!0?
 ?0?
 %f+ 			c = ninp\(\);
 		}
@@ -1408,8 +2747,31 @@ test_skip:
 		\*q = '\''\\0'\'';4??0?
 4??+3m 72220reg p OK tcc_linux_x86_64.c:8528:a42sc %? %@2152sc!1q0?
 ;0fr.,$f+ ^			tcc_error\("#error %s", buf\);$5??0?
-5??-1m 72220reg p OK tcc_linux_x86_64.c:8528:a52sc %? %@2152sc!fr 98fr 980?
-1;2;3;4;5??!219reg tcc_linux_x86_64.c:85282sc %? %@2132sc!0?
+5??-1m 72220reg p OK tcc_linux_x86_64.c:8528:a52sc %? %@2152sc!fr 981qfr 980?
+%f+ ..	. =....p\(\).
+	..
+		...=..\\...
+.	......k..=.T.K...RO..
+..	.c..................",.b....6??0?
+6??+3m 72220reg p OK tcc_linux_x86_64.c:8528:a62sc %? %@2152sc!1q0?
+grp 1%f+ 			c = ninp\(\);.*?
+		}.*?
+		\*q = '\''\\0'\'';.*?
+(		if \(tok == TOK_ERROR\))7??0?
+grp 07??m 72220reg p OK tcc_linux_x86_64.c:8528:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 		while \(c != '\''\\n'\'' && c != CH_EOF\) \{
+			if \(\(q - buf\) < sizeof\(buf\) - 1\)
+				\*q\+\+ = c;.*(	case TOK_LINEFEED:)
+		goto the_end;
+	default:8??0?
+grp 08??-11m 72220reg p OK tcc_linux_x86_64.c:8528:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> 	case TOK_WARNING: \{
+		q = buf;
+		c = skip_spaces\(\);.*(		if \(saved_parse_flags & PARSE_FLAG_ASM_FILE\))
+			goto ignore;
+		if \(tok == '\''!'\'' && is_bof\)9??0?
+grp 09??-16m 72220reg p OK tcc_linux_x86_64.c:8528:a92sc %? %@2152sc!'\''00?
+1;2;3;4;5;6;7;8;9??!219reg tcc_linux_x86_64.c:85282sc %? %@2132sc!0?
 ?0?
 %f+ 			tcc_error\("#error %s", buf\);
 		else
@@ -1423,15 +2785,46 @@ test_skip:
 ;0fr.,$f+ ^			tcc_error\("#error %s", buf\);$4??0?
 4??+1m 73220reg p OK tcc_linux_x86_64.c:8530:a42sc %? %@2152sc!fr 981qfr 980?
 ;0fr.,$f+ ^			tcc_warning\("#warning %s", buf\);$5??0?
-5??-1m 73220reg p OK tcc_linux_x86_64.c:8530:a52sc %? %@2152sc!fr 98fr 980?
-1;2;3;4;5??!219reg tcc_linux_x86_64.c:85302sc %? %@2132sc!0?
+5??-1m 73220reg p OK tcc_linux_x86_64.c:8530:a52sc %? %@2152sc!fr 981qfr 980?
+%f+ .	.t.._.r...\(....ro. .."..bu.\).
+.	..s.
+.......w..ni..\(...a..... ..........6??0?
+6??+1m 73220reg p OK tcc_linux_x86_64.c:8530:a62sc %? %@2152sc!1q0?
+grp 1%f+ 			tcc_error\("#error %s", buf\);.*?
+(		else)7??0?
+grp 07??m 73220reg p OK tcc_linux_x86_64.c:8530:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 		while \(c != '\''\\n'\'' && c != CH_EOF\) \{
+			if \(\(q - buf\) < sizeof\(buf\) - 1\)
+				\*q\+\+ = c;.*(	case TOK_LINEFEED:)
+		goto the_end;
+	default:8??0?
+grp 08??-9m 73220reg p OK tcc_linux_x86_64.c:8530:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> 	case TOK_WARNING: \{
+		q = buf;
+		c = skip_spaces\(\);.*(		if \(saved_parse_flags & PARSE_FLAG_ASM_FILE\))
+			goto ignore;
+		if \(tok == '\''!'\'' && is_bof\)9??0?
+grp 09??-14m 73220reg p OK tcc_linux_x86_64.c:8530:a92sc %? %@2152sc!'\''00?
+1;2;3;4;5;6;7;8;9??!219reg tcc_linux_x86_64.c:85302sc %? %@2132sc!0?
 ?0?
 %f+ 			tcc_warning\("#warning %s", buf\);
 		next_nomacro\(\);1??0?
 1??m 741q0?
 ;0fr.,$f+ ^			tcc_warning\("#warning %s", buf\);$4??0?
-4??m 74220reg p OK tcc_linux_x86_64.c:8531:a42sc %? %@2152sc!fr 98fr 980?
-1;4??!219reg tcc_linux_x86_64.c:85312sc %? %@2132sc!0?
+4??m 74220reg p OK tcc_linux_x86_64.c:8531:a42sc %? %@2152sc!fr 981qfr 980?
+m 01;0grp 1%f> 		while \(c != '\''\\n'\'' && c != CH_EOF\) \{
+			if \(\(q - buf\) < sizeof\(buf\) - 1\)
+				\*q\+\+ = c;.*(	case TOK_LINEFEED:)
+		goto the_end;
+	default:8??0?
+grp 08??-8m 74220reg p OK tcc_linux_x86_64.c:8531:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> 	case TOK_WARNING: \{
+		q = buf;
+		c = skip_spaces\(\);.*(		if \(saved_parse_flags & PARSE_FLAG_ASM_FILE\))
+			goto ignore;
+		if \(tok == '\''!'\'' && is_bof\)9??0?
+grp 09??-13m 74220reg p OK tcc_linux_x86_64.c:8531:a92sc %? %@2152sc!'\''00?
+1;4;8;9??!219reg tcc_linux_x86_64.c:85312sc %? %@2132sc!0?
 ?0?
 %f+ 		next_nomacro\(\);
 		break;
@@ -1439,8 +2832,20 @@ test_skip:
 	case TOK_PRAGMA:1??0?
 1??m 751q0?
 ;0fr.,$f+ ^		next_nomacro\(\);$4??0?
-4??m 75220reg p OK tcc_linux_x86_64.c:8532:a42sc %? %@2152sc!fr 98fr 980?
-1;4??!219reg tcc_linux_x86_64.c:85322sc %? %@2132sc!0?
+4??m 75220reg p OK tcc_linux_x86_64.c:8532:a42sc %? %@2152sc!fr 981qfr 980?
+m 01;0grp 1%f> 		while \(c != '\''\\n'\'' && c != CH_EOF\) \{
+			if \(\(q - buf\) < sizeof\(buf\) - 1\)
+				\*q\+\+ = c;.*(	case TOK_LINEFEED:)
+		goto the_end;
+	default:8??0?
+grp 08??-7m 75220reg p OK tcc_linux_x86_64.c:8532:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> 	case TOK_WARNING: \{
+		q = buf;
+		c = skip_spaces\(\);.*(		if \(saved_parse_flags & PARSE_FLAG_ASM_FILE\))
+			goto ignore;
+		if \(tok == '\''!'\'' && is_bof\)9??0?
+grp 09??-12m 75220reg p OK tcc_linux_x86_64.c:8532:a92sc %? %@2152sc!'\''00?
+1;4;8;9??!219reg tcc_linux_x86_64.c:85322sc %? %@2132sc!0?
 ?0?
 %f+ 		break;
 	}
@@ -1452,8 +2857,24 @@ test_skip:
 %f+ 		break;
 	}
 	case TOK_PRAGMA:4??0?
-4??+2m 76220reg p OK tcc_linux_x86_64.c:8535:a42sc %? %@2152sc!0?
-1;4??!219reg tcc_linux_x86_64.c:85352sc %? %@2132sc!0?
+4??+2m 76220reg p OK tcc_linux_x86_64.c:8535:a42sc %? %@2152sc!1q0?
+grp 1%f+ 		break;.*?
+	}.*?
+(	case TOK_PRAGMA:)7??0?
+grp 07??m 76220reg p OK tcc_linux_x86_64.c:8535:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 		while \(c != '\''\\n'\'' && c != CH_EOF\) \{
+			if \(\(q - buf\) < sizeof\(buf\) - 1\)
+				\*q\+\+ = c;.*(	case TOK_LINEFEED:)
+		goto the_end;
+	default:8??0?
+grp 08??-4m 76220reg p OK tcc_linux_x86_64.c:8535:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> 	case TOK_WARNING: \{
+		q = buf;
+		c = skip_spaces\(\);.*(		if \(saved_parse_flags & PARSE_FLAG_ASM_FILE\))
+			goto ignore;
+		if \(tok == '\''!'\'' && is_bof\)9??0?
+grp 09??-9m 76220reg p OK tcc_linux_x86_64.c:8535:a92sc %? %@2152sc!'\''00?
+1;4;7;8;9??!219reg tcc_linux_x86_64.c:85352sc %? %@2132sc!0?
 ?0?
 %f+ 			goto ignore;
 		tcc_warning\("ignoring unknown preprocessing directive #%s", get_tok_str\(tok,
@@ -1463,8 +2884,24 @@ ignore:1??0?
 %f+ 			goto ignore;
 		tcc_warning\("ignoring unknown preprocessing directive #%s", get_tok_str\(tok,
 				&tokc\)\);4??0?
-4??+2m 77220reg p OK tcc_linux_x86_64.c:8551:a42sc %? %@2152sc!0?
-1;4??!219reg tcc_linux_x86_64.c:85512sc %? %@2132sc!0?
+4??+2m 77220reg p OK tcc_linux_x86_64.c:8551:a42sc %? %@2152sc!1q0?
+grp 1%f+ 			goto ignore;.*?
+		tcc_warning\("ignoring unknown preprocessing directive #%s", get_tok_str\(tok,.*?
+(				&tokc\)\);)7??0?
+grp 07??m 77220reg p OK tcc_linux_x86_64.c:8551:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 			goto ignore;
+		if \(tok == '\''!'\'' && is_bof\)
+			/\* '\''#!'\'' is ignored at beginning to allow C scripts\. \*/.*(static void parse_escape_string\(CString \*outstr, const uint8_t \*buf,)
+				int is_long\)
+\{8??0?
+grp 08??-11m 77220reg p OK tcc_linux_x86_64.c:8551:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> 		goto the_end;
+	default:
+		/\* ignore gas line comment in an '\''S'\'' file\. \*/.*(	p = buf;)
+	for \(;;\) \{
+		c = \*p;9??0?
+grp 09??-17m 77220reg p OK tcc_linux_x86_64.c:8551:a92sc %? %@2152sc!'\''00?
+1;4;7;8;9??!219reg tcc_linux_x86_64.c:85512sc %? %@2132sc!0?
 ?0?
 %f+ ignore:
 		skip_to_eol\(0\);
@@ -1481,8 +2918,28 @@ ignore:1??0?
 4??+1m 78220reg p OK tcc_linux_x86_64.c:8553:a42sc %? %@2152sc!fr 981qfr 980?
 %f+ 		goto the_end;
 	}5??0?
-5??-1m 78220reg p OK tcc_linux_x86_64.c:8553:a52sc %? %@2152sc!0?
-1;2;3;4;5??!219reg tcc_linux_x86_64.c:85532sc %? %@2132sc!0?
+5??-1m 78220reg p OK tcc_linux_x86_64.c:8553:a52sc %? %@2152sc!1q0?
+%f+ .g..r..
+...ki.....e....\).
+..go.o...e..n..
+	.6??0?
+6??+1m 78220reg p OK tcc_linux_x86_64.c:8553:a62sc %? %@2152sc!1q0?
+grp 1%f+ ignore:.*?
+(		skip_to_eol\(0\);)7??0?
+grp 07??m 78220reg p OK tcc_linux_x86_64.c:8553:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 			goto ignore;
+		if \(tok == '\''!'\'' && is_bof\)
+			/\* '\''#!'\'' is ignored at beginning to allow C scripts\. \*/.*(static void parse_escape_string\(CString \*outstr, const uint8_t \*buf,)
+				int is_long\)
+\{8??0?
+grp 08??-9m 78220reg p OK tcc_linux_x86_64.c:8553:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> 		goto the_end;
+	default:
+		/\* ignore gas line comment in an '\''S'\'' file\. \*/.*(	p = buf;)
+	for \(;;\) \{
+		c = \*p;9??0?
+grp 09??-15m 78220reg p OK tcc_linux_x86_64.c:8553:a92sc %? %@2152sc!'\''00?
+1;2;3;4;5;6;7;8;9??!219reg tcc_linux_x86_64.c:85532sc %? %@2132sc!0?
 ?0?
 %f+ 		goto the_end;
 	}
@@ -1504,8 +2961,31 @@ the_end:
 %f+ the_end:
 	parse_flags = saved_parse_flags;
 }5??0?
-5??-1m 79220reg p OK tcc_linux_x86_64.c:8556:a52sc %? %@2152sc!0?
-1;2;3;4;5??!219reg tcc_linux_x86_64.c:85562sc %? %@2132sc!0?
+5??-1m 79220reg p OK tcc_linux_x86_64.c:8556:a52sc %? %@2152sc!1q0?
+%f+ .	......h._....
+	.
+...i..........\).
+t.e.....
+...r.e...a.. =.s...._............
+}6??0?
+6??+2m 79220reg p OK tcc_linux_x86_64.c:8556:a62sc %? %@2152sc!1q0?
+grp 1%f+ 		goto the_end;.*?
+	}.*?
+(	skip_to_eol\(1\);)7??0?
+grp 07??m 79220reg p OK tcc_linux_x86_64.c:8556:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 			goto ignore;
+		if \(tok == '\''!'\'' && is_bof\)
+			/\* '\''#!'\'' is ignored at beginning to allow C scripts\. \*/.*(static void parse_escape_string\(CString \*outstr, const uint8_t \*buf,)
+				int is_long\)
+\{8??0?
+grp 08??-6m 79220reg p OK tcc_linux_x86_64.c:8556:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> 		goto the_end;
+	default:
+		/\* ignore gas line comment in an '\''S'\'' file\. \*/.*(	p = buf;)
+	for \(;;\) \{
+		c = \*p;9??0?
+grp 09??-12m 79220reg p OK tcc_linux_x86_64.c:8556:a92sc %? %@2152sc!'\''00?
+1;2;3;4;5;6;7;8;9??!219reg tcc_linux_x86_64.c:85562sc %? %@2132sc!0?
 ?0?
 %f+ 				tcc_close\(\);
 				s1->include_stack_ptr--;
@@ -1529,8 +3009,33 @@ the_end:
 %f+ 			}
 		} else \{
 			goto redo_no_start;5??0?
-5??-1m 80220reg p OK tcc_linux_x86_64.c:9202:a52sc %? %@2152sc!0?
-1;2;3;4;5??!219reg tcc_linux_x86_64.c:92022sc %? %@2132sc!0?
+5??-1m 80220reg p OK tcc_linux_x86_64.c:9202:a52sc %? %@2152sc!1q0?
+%f+ .........l..e\(..
+	...s........d..s.ac._......
+.	... = .ile....._p.r.
+	......o ..........in..
+	...
+..}..l....
+.....t.....o_.........6??0?
+6??+3m 80220reg p OK tcc_linux_x86_64.c:9202:a62sc %? %@2152sc!1q0?
+grp 1%f+ 				tcc_close\(\);.*?
+				s1->include_stack_ptr--;.*?
+				p = file->buf_ptr;.*?
+(				goto maybe_newline;)7??0?
+grp 07??m 80220reg p OK tcc_linux_x86_64.c:9202:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 					tok_flags &= ~TOK_FLAG_ENDIF;
+				}
+				/\* add end of include file debug info \*/.*(		file->line_num\+\+;)
+		p\+\+;
+maybe_newline:8??0?
+grp 08??-8m 80220reg p OK tcc_linux_x86_64.c:9202:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> 				/\* pop include file \*/
+				/\* test if previous '\''#endif'\'' was after a #ifdef at
+				                   start of file \*/.*(		tok_flags \|= TOK_FLAG_BOL;)
+		if \(0 == \(parse_flags & PARSE_FLAG_LINEFEED\)\)
+			goto redo_no_start;9??0?
+grp 09??-11m 80220reg p OK tcc_linux_x86_64.c:9202:a92sc %? %@2152sc!'\''00?
+1;2;3;4;5;6;7;8;9??!219reg tcc_linux_x86_64.c:92022sc %? %@2132sc!0?
 ?0?
 %f+ 			} else \{
 
@@ -1557,8 +3062,34 @@ the_end:
 				} else
 
 5??0?
-5??-1m 81220reg p OK tcc_linux_x86_64.c:9237:a52sc %? %@2152sc!0?
-1;2;3;4;5??!219reg tcc_linux_x86_64.c:92372sc %? %@2132sc!0?
+5??-1m 81220reg p OK tcc_linux_x86_64.c:9237:a52sc %? %@2152sc!1q0?
+%f+ ...}..... .
+
+		.	if..p...._...g. ...AR.....A._......LE...
+	........pa......n....m....\(.....\).
+.......t..r.d.....s.....
+..	...el.e
+
+6??0?
+6??+3m 81220reg p OK tcc_linux_x86_64.c:9237:a62sc %? %@2152sc!1q0?
+grp 1%f+ 			} else \{.*?
+.*?
+				if \(parse_flags & PARSE_FLAG_ASM_FILE\) \{.*?
+(					p = parse_line_comment\(p - 1\);)7??0?
+grp 07??m 81220reg p OK tcc_linux_x86_64.c:9237:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 			if \(c == '\''#'\''\) \{
+				p\+\+;
+				tok = TOK_TWOSHARPS;.*(				\{)
+					tok = '\''#'\'';
+				}8??0?
+grp 08??-4m 81220reg p OK tcc_linux_x86_64.c:9237:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> 			p = file->buf_ptr;
+			goto maybe_newline;
+		} else \{.*(		if \(!\(isidnum_table\['\''\$'\'' - CH_EOF] & IS_ID\))
+		    \|\| \(parse_flags & PARSE_FLAG_ASM_FILE\)\)
+			goto parse_simple;9??0?
+grp 09??-13m 81220reg p OK tcc_linux_x86_64.c:9237:a92sc %? %@2152sc!'\''00?
+1;2;3;4;5;6;7;8;9??!219reg tcc_linux_x86_64.c:92372sc %? %@2132sc!0?
 ?0?
 %f+ 		if \(is_long\)
 			cstr_ccat\(&tokcstr, '\''L'\''\);
@@ -1582,8 +3113,33 @@ the_end:
 %f+ 		cstr_ccat\(&tokcstr, c\);
 		cstr_ccat\(&tokcstr, '\''\\0'\''\);
 		tokc\.str\.size = tokcstr\.size;5??0?
-5??-1m 82220reg p OK tcc_linux_x86_64.c:9431:a52sc %? %@2152sc!0?
-1;2;3;4;5??!219reg tcc_linux_x86_64.c:94312sc %? %@2132sc!0?
+5??-1m 82220reg p OK tcc_linux_x86_64.c:9431:a52sc %? %@2152sc!1q0?
+%f+ .	....is.l..g.
+.	.cs.r.....\(......tr. '\''.'\''\);
+...s.....at\(..o.c..r..c..
+....= .......p_...ing\(......&t.k.....;
+.	..t...........c.... ...
+..c.t................ ......
+.	tok.....\...............\.size.6??0?
+6??+3m 82220reg p OK tcc_linux_x86_64.c:9431:a62sc %? %@2152sc!1q0?
+grp 1%f+ 		if \(is_long\).*?
+			cstr_ccat\(&tokcstr, '\''L'\''\);.*?
+		cstr_ccat\(&tokcstr, c\);.*?
+(		p = parse_pp_string\(p, c, &tokcstr\);)7??0?
+grp 07??m 82220reg p OK tcc_linux_x86_64.c:9431:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 		is_long = 0;
+str_const:
+		cstr_reset\(&tokcstr\);.*(	case '\''<'\'':)
+		PEEKC\(c, p\);
+		if \(c == '\''='\''\) \{8??0?
+grp 08??-8m 82220reg p OK tcc_linux_x86_64.c:9431:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> 		break;
+	case '\''\\'\'''\'':
+	case '\''\\"'\'':.*(			tok = TOK_LE;)
+		} else if \(c == '\''<'\''\) \{
+			PEEKC\(c, p\);9??0?
+grp 09??-12m 82220reg p OK tcc_linux_x86_64.c:9431:a92sc %? %@2152sc!'\''00?
+1;2;3;4;5;6;7;8;9??!219reg tcc_linux_x86_64.c:94312sc %? %@2132sc!0?
 ?0?
 %f+ 	case '\''/'\'':
 		PEEKC\(c, p\);
@@ -1607,8 +3163,33 @@ the_end:
 %f+ 			/\* comments replaced by a blank \*/
 
 			tok = '\'' '\'';5??0?
-5??-1m 83220reg p OK tcc_linux_x86_64.c:9539:a52sc %? %@2152sc!0?
-1;2;3;4;5??!219reg tcc_linux_x86_64.c:95392sc %? %@2132sc!0?
+5??-1m 83220reg p OK tcc_linux_x86_64.c:9539:a52sc %? %@2152sc!1q0?
+%f+ .c......'\''.
+....E...., ...
+.	.f.\(c... ......
+	..........._..m.......;
+.../............e.....d.b... ...n. ..
+
+..	.........;6??0?
+6??+3m 83220reg p OK tcc_linux_x86_64.c:9539:a62sc %? %@2152sc!1q0?
+grp 1%f+ 	case '\''/'\'':.*?
+		PEEKC\(c, p\);.*?
+		if \(c == '\''\*'\''\) \{.*?
+(			p = parse_comment\(p\);)7??0?
+grp 07??m 83220reg p OK tcc_linux_x86_64.c:9539:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 		PARSE2\('\''%'\'', '\''%'\'', '\''='\'', TOK_A_MOD\)
+		PARSE2\('\''\^'\'', '\''\^'\'', '\''='\'', TOK_A_XOR\)
+	/\* comments or operator \*/.*(			tok = TOK_A_DIV;)
+		} else \{
+			tok = '\''/'\'';8??0?
+grp 08??-11m 83220reg p OK tcc_linux_x86_64.c:9539:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> 		PARSE2\('\''!'\'', '\''!'\'', '\''='\'', TOK_NE\)
+		PARSE2\('\''='\'', '\''='\'', '\''='\'', TOK_EQ\)
+		PARSE2\('\''\*'\'', '\''\*'\'', '\''='\'', TOK_A_MUL\).*(	case '\''\)'\'':)
+	case '\''\['\'':
+	case '\'']'\'':9??0?
+grp 09??-21m 83220reg p OK tcc_linux_x86_64.c:9539:a92sc %? %@2152sc!'\''00?
+1;2;3;4;5;6;7;8;9??!219reg tcc_linux_x86_64.c:95392sc %? %@2132sc!0?
 ?0?
 %f+ 			tok = '\'' '\'';
 			goto maybe_space;
@@ -1632,8 +3213,33 @@ the_end:
 %f+ 			tok = '\'' '\'';
 			goto maybe_space;
 		} else if \(c == '\''='\''\) \{5??0?
-5??-1m 84220reg p OK tcc_linux_x86_64.c:9545:a52sc %? %@2152sc!0?
-1;2;3;4;5??!219reg tcc_linux_x86_64.c:95452sc %? %@2132sc!0?
+5??-1m 84220reg p OK tcc_linux_x86_64.c:9545:a52sc %? %@2152sc!1q0?
+%f+ ..	..... ....
+.	..o...............
+.....l.e.i. ......'\''/....
+.......pa..e...n..c........\).
+		.to..=....;
+	..g..o .a......ac..
+..}.......f...... .=....6??0?
+6??+3m 84220reg p OK tcc_linux_x86_64.c:9545:a62sc %? %@2152sc!1q0?
+grp 1%f+ 			tok = '\'' '\'';.*?
+			goto maybe_space;.*?
+		} else if \(c == '\''/'\''\) \{.*?
+(			p = parse_line_comment\(p\);)7??0?
+grp 07??m 84220reg p OK tcc_linux_x86_64.c:9545:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 		PARSE2\('\''%'\'', '\''%'\'', '\''='\'', TOK_A_MOD\)
+		PARSE2\('\''\^'\'', '\''\^'\'', '\''='\'', TOK_A_XOR\)
+	/\* comments or operator \*/.*(			tok = TOK_A_DIV;)
+		} else \{
+			tok = '\''/'\'';8??0?
+grp 08??-5m 84220reg p OK tcc_linux_x86_64.c:9545:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> 		PARSE2\('\''!'\'', '\''!'\'', '\''='\'', TOK_NE\)
+		PARSE2\('\''='\'', '\''='\'', '\''='\'', TOK_EQ\)
+		PARSE2\('\''\*'\'', '\''\*'\'', '\''='\'', TOK_A_MUL\).*(	case '\''\)'\'':)
+	case '\''\['\'':
+	case '\'']'\'':9??0?
+grp 09??-15m 84220reg p OK tcc_linux_x86_64.c:9545:a92sc %? %@2152sc!'\''00?
+1;2;3;4;5;6;7;8;9??!219reg tcc_linux_x86_64.c:95452sc %? %@2132sc!0?
 ?0?
 %f+ 		case '\''/'\'':
 			PEEKC\(c, p\);
@@ -1651,8 +3257,31 @@ the_end:
 			if \(c == '\''\*'\''\)4??0?
 4??+3m 85220reg p OK tcc_linux_x86_64.c:9787:a42sc %? %@2152sc!1q0?
 ;0fr.,$f+ ^			else if \(c == '\''/'\''\)$5??0?
-5??-1m 85220reg p OK tcc_linux_x86_64.c:9787:a52sc %? %@2152sc!fr 98fr 980?
-1;2;3;4;5??!219reg tcc_linux_x86_64.c:97872sc %? %@2132sc!0?
+5??-1m 85220reg p OK tcc_linux_x86_64.c:9787:a52sc %? %@2152sc!fr 981qfr 980?
+%f+ .	.a.e...'\''.
+...P....\(......
+	.... .. .......
+.	....= ....e.......t....
+	.......if..c........6??0?
+6??+3m 85220reg p OK tcc_linux_x86_64.c:9787:a62sc %? %@2152sc!1q0?
+grp 1%f+ 		case '\''/'\'':.*?
+			PEEKC\(c, p\);.*?
+			if \(c == '\''\*'\''\).*?
+(				p = parse_comment\(p\);)7??0?
+grp 07??m 85220reg p OK tcc_linux_x86_64.c:9787:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 	for \(;;\) \{
+		PEEKC\(c, p\);
+		switch \(c\) \{.*(			--p, c = '\'' '\'';)
+			break;
+		case '\'' '\'':8??0?
+grp 08??-7m 85220reg p OK tcc_linux_x86_64.c:9787:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> \{
+	uint8_t \*p = file->buf_ptr - 1;
+	int c;.*(		case '\''\\t'\'':)
+			break;
+		case '\''\\f'\'':9??0?
+grp 09??-10m 85220reg p OK tcc_linux_x86_64.c:9787:a92sc %? %@2152sc!'\''00?
+1;2;3;4;5;6;7;8;9??!219reg tcc_linux_x86_64.c:97872sc %? %@2132sc!0?
 ?0?
 %f+ 			else if \(c == '\''/'\''\)
 				p = parse_line_comment\(p\);
@@ -1672,8 +3301,29 @@ the_end:
 %f+ 			else \{
 				c = \*--p = '\''/'\'';
 				goto leave;5??0?
-5??-1m 86220reg p OK tcc_linux_x86_64.c:9789:a52sc %? %@2152sc!0?
-1;2;3;4;5??!219reg tcc_linux_x86_64.c:97892sc %? %@2132sc!0?
+5??-1m 86220reg p OK tcc_linux_x86_64.c:9789:a52sc %? %@2152sc!1q0?
+%f+ 	.	..s..i............
+..	.. ...a..e...n......e.t\(..;
+	........
+......= .-.....'\''...
+.	.......l.a...6??0?
+6??+1m 86220reg p OK tcc_linux_x86_64.c:9789:a62sc %? %@2152sc!1q0?
+grp 1%f+ 			else if \(c == '\''/'\''\).*?
+(				p = parse_line_comment\(p\);)7??0?
+grp 07??m 86220reg p OK tcc_linux_x86_64.c:9789:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 	for \(;;\) \{
+		PEEKC\(c, p\);
+		switch \(c\) \{.*(			--p, c = '\'' '\'';)
+			break;
+		case '\'' '\'':8??0?
+grp 08??-5m 86220reg p OK tcc_linux_x86_64.c:9789:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> \{
+	uint8_t \*p = file->buf_ptr - 1;
+	int c;.*(		case '\''\\t'\'':)
+			break;
+		case '\''\\f'\'':9??0?
+grp 09??-8m 86220reg p OK tcc_linux_x86_64.c:9789:a92sc %? %@2152sc!'\''00?
+1;2;3;4;5;6;7;8;9??!219reg tcc_linux_x86_64.c:97892sc %? %@2132sc!0?
 ?0?
 %f+ 	} else if \(s1->Pflag == LINE_MACRO_OUTPUT_FORMAT_STD\) \{
 		fprintf\(s1->ppfp, "#line %d \\"%s\\"\\n", f->line_num, f->filename\);
@@ -1697,8 +3347,33 @@ the_end:
 %f+ 			level > 0 \? " 1" : level < 0 \? " 2" : ""\);
 	}
 	f->line_ref = f->line_num;5??0?
-5??-1m 87220reg p OK tcc_linux_x86_64.c:10407:a52sc %? %@2152sc!0?
-1;2;3;4;5??!219reg tcc_linux_x86_64.c:104072sc %? %@2132sc!0?
+5??-1m 87220reg p OK tcc_linux_x86_64.c:10407:a52sc %? %@2152sc!1q0?
+%f+ .. ......f.\(......... =.........C.....TP.._...M.._...\) .
+..f..................#...e... \\......."........e..........ilen..e..
+	...... .
+	.f...nt.\(..-.p......#........\\...\\......>...._.... ............
+.	..e............1... ........0.....2....""..
+.}
+...>.in..r.f ..f....n..n..;6??0?
+6??+3m 87220reg p OK tcc_linux_x86_64.c:10407:a62sc %? %@2152sc!1q0?
+grp 1%f+ 	} else if \(s1->Pflag == LINE_MACRO_OUTPUT_FORMAT_STD\) \{.*?
+		fprintf\(s1->ppfp, "#line %d \\"%s\\"\\n", f->line_num, f->filename\);.*?
+	} else \{.*?
+(		fprintf\(s1->ppfp, "# %d \\"%s\\"%s\\n", f->line_num, f->filename,)7??0?
+grp 07??m 87220reg p OK tcc_linux_x86_64.c:10407:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 	} else if \(level == 0 && f->line_ref && d < 8\) \{
+		while \(d > 0\)
+			fputs\("\\n", s1->ppfp\), --d;.*(static void define_print\(TCCState \*s1, int v\))
+\{
+	FILE \*fp;8??0?
+grp 08??-6m 87220reg p OK tcc_linux_x86_64.c:10407:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> static void pp_line\(TCCState \*s1, BufferedFile \*f, int level\)
+\{
+	int d = f->line_num - f->line_ref;.*(	s = define_find\(v\);)
+	if \(NULL == s \|\| NULL == s->d\)
+		return;9??0?
+grp 09??-11m 87220reg p OK tcc_linux_x86_64.c:10407:a92sc %? %@2152sc!'\''00?
+1;2;3;4;5;6;7;8;9??!219reg tcc_linux_x86_64.c:104072sc %? %@2132sc!0?
 ?0?
 %f+ 		return 0;
 	}
@@ -1732,8 +3407,36 @@ the_end:
 %f+ 
 	for \(;;\) \{
 		iptr = s1->include_stack_ptr;5??0?
-5??-4m 88220reg p OK tcc_linux_x86_64.c:10516:a52sc %? %@2152sc!0?
-1;2;3;4;5??!219reg tcc_linux_x86_64.c:105162sc %? %@2132sc!0?
+5??-4m 88220reg p OK tcc_linux_x86_64.c:10516:a52sc %? %@2152sc!1q0?
+%f+ 	...t.....;
+.}
+
+........e.. ...........E.D..s..s =......... . ..
+	......le.......
+.	.p......... ....-.pr.v........\+..
+..p...n....,....e,..e...\).
+
+	..........
+	........s.-..n..u.............6??0?
+6??+3m 88220reg p OK tcc_linux_x86_64.c:10516:a62sc %? %@2152sc!1q0?
+grp 1%f+ 		return 0;.*?
+	}.*?
+.*?
+(	token_seen = TOK_LINEFEED, spcs = 0, level = 0;)7??0?
+grp 07??m 88220reg p OK tcc_linux_x86_64.c:10516:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 		do
+			next\(\);
+		while \(tok != TOK_EOF\);.*(		level = s1->include_stack_ptr - iptr;)
+		if \(level\) \{
+			if \(level > 0\)8??0?
+grp 08??-11m 88220reg p OK tcc_linux_x86_64.c:10516:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> 	/\* Credits to Fabrice Bellard'\''s initial revision to demonstrate its
+	       capability to compile and run itself, provided all numbers are
+	       given as decimals\. tcc -E -P10 will do\. \*/.*(				pp_line\(s1, \*iptr, 0\);)
+			pp_line\(s1, file, level\);
+		}9??0?
+grp 09??-14m 88220reg p OK tcc_linux_x86_64.c:10516:a92sc %? %@2152sc!'\''00?
+1;2;3;4;5;6;7;8;9??!219reg tcc_linux_x86_64.c:105162sc %? %@2132sc!0?
 ?0?
 %f+ 
 	for \(;;\) \{
@@ -1760,8 +3463,34 @@ the_end:
 			break;
 
 5??0?
-5??-1m 89220reg p OK tcc_linux_x86_64.c:10523:a52sc %? %@2152sc!0?
-1;2;3;4;5??!219reg tcc_linux_x86_64.c:105232sc %? %@2132sc!0?
+5??-1m 89220reg p OK tcc_linux_x86_64.c:10523:a52sc %? %@2152sc!1q0?
+%f+ 
+.......;\).\{
+.	.p.... .1........._s.a...p...
+....x.\(\).
+	.....t.k...........\)
+......a.;
+
+6??0?
+6??+3m 89220reg p OK tcc_linux_x86_64.c:10523:a62sc %? %@2152sc!1q0?
+grp 1%f+ .*?
+	for \(;;\) \{.*?
+		iptr = s1->include_stack_ptr;.*?
+(		next\(\);)7??0?
+grp 07??m 89220reg p OK tcc_linux_x86_64.c:10523:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 		do
+			next\(\);
+		while \(tok != TOK_EOF\);.*(		level = s1->include_stack_ptr - iptr;)
+		if \(level\) \{
+			if \(level > 0\)8??0?
+grp 08??-4m 89220reg p OK tcc_linux_x86_64.c:10523:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> 	/\* Credits to Fabrice Bellard'\''s initial revision to demonstrate its
+	       capability to compile and run itself, provided all numbers are
+	       given as decimals\. tcc -E -P10 will do\. \*/.*(				pp_line\(s1, \*iptr, 0\);)
+			pp_line\(s1, file, level\);
+		}9??0?
+grp 09??-7m 89220reg p OK tcc_linux_x86_64.c:10523:a92sc %? %@2152sc!'\''00?
+1;2;3;4;5;6;7;8;9??!219reg tcc_linux_x86_64.c:105232sc %? %@2132sc!0?
 ?0?
 %f+ 				pp_line\(s1, \*iptr, 0\);
 			pp_line\(s1, file, level\);
@@ -1797,8 +3526,37 @@ the_end:
 %f+ 
 		if \(is_space\(tok\)\) \{
 			if \(spcs < sizeof white - 1\)5??0?
-5??-5m 90220reg p OK tcc_linux_x86_64.c:10533:a52sc %? %@2152sc!0?
-1;2;3;4;5??!219reg tcc_linux_x86_64.c:105332sc %? %@2132sc!0?
+5??-5m 90220reg p OK tcc_linux_x86_64.c:10533:a52sc %? %@2152sc!1q0?
+%f+ 	....p...ne\(.1.....tr.....
+	..p..l....s.....l., ..v....
+	..
+...f.\(..->..l.g & ....
+.	..._...ug....in....1..
+...i....1...f... &...
+	.	.c.n.....;
+..}
+
+		.f...s_.p.....ok....
+		........s....i.e....hi.... 1.6??0?
+6??+3m 90220reg p OK tcc_linux_x86_64.c:10533:a62sc %? %@2152sc!1q0?
+grp 1%f+ 				pp_line\(s1, \*iptr, 0\);.*?
+			pp_line\(s1, file, level\);.*?
+		}.*?
+(		if \(s1->dflag & 7\) \{)7??0?
+grp 07??m 90220reg p OK tcc_linux_x86_64.c:10533:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 		level = s1->include_stack_ptr - iptr;
+		if \(level\) \{
+			if \(level > 0\).*(				white\[spcs\+\+] = tok;)
+			continue;
+		} else if \(tok == TOK_LINEFEED\) \{8??0?
+grp 08??-8m 90220reg p OK tcc_linux_x86_64.c:10533:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> 		iptr = s1->include_stack_ptr;
+		next\(\);
+		if \(tok == TOK_EOF\).*(			spcs = 0;)
+			if \(token_seen == TOK_LINEFEED\)
+				continue;9??0?
+grp 09??-11m 90220reg p OK tcc_linux_x86_64.c:10533:a92sc %? %@2152sc!'\''00?
+1;2;3;4;5;6;7;8;9??!219reg tcc_linux_x86_64.c:105332sc %? %@2132sc!0?
 ?0?
 %f+ 	if \(!s1->error_func\) \{
 		/\* default case: stderr \*/
@@ -1816,23 +3574,50 @@ the_end:
 		fflush\(stdout\);/\* flush -v output \*/
 
 2??0?
-2??m 92220reg p OK tcc_linux_x86_64.c:32750:a22sc %? %@2152sc!1q0?
+2??m 92220reg p OK tcc_linux_x86_64.c:32751:a22sc %? %@2152sc!1q0?
 %f+ 		if \(s1 && s1->output_type == TCC_OUTPUT_PREPROCESS && s1->ppfp == stdout\)
 			printf\("\\n"\);/\* print a newline during tcc -E \*/3??0?
-3??m 92220reg p OK tcc_linux_x86_64.c:32750:a32sc %? %@2152sc!1q0?
+3??m 92220reg p OK tcc_linux_x86_64.c:32751:a32sc %? %@2152sc!1q0?
 %f+ 	if \(!s1->error_func\) \{
 		/\* default case: stderr \*/
 
 4??0?
-4??+3m 92220reg p OK tcc_linux_x86_64.c:32750:a42sc %? %@2152sc!1q0?
+4??+3m 92220reg p OK tcc_linux_x86_64.c:32751:a42sc %? %@2152sc!1q0?
 %f+ 
 		fflush\(stdout\);/\* flush -v output \*/
 
 5??0?
-5??-2m 92220reg p OK tcc_linux_x86_64.c:32750:a52sc %? %@2152sc!0?
-1;2;3;4;5??!219reg tcc_linux_x86_64.c:327502sc %? %@2132sc!0?
+5??-2m 92220reg p OK tcc_linux_x86_64.c:32751:a52sc %? %@2152sc!1q0?
+%f+ ..f ....-.e.r......c...
+	... ...a................ \*.
+
+...f.....&..........u._.yp. .....C.....U........CE.. .&......p.. .....do...
+..	.......".n..;/\*........ ne......du.i..........\*/
+
+...f.us.....o.t.......u.h.-. o...u. ..
+
+6??0?
+6??+3m 92220reg p OK tcc_linux_x86_64.c:32751:a62sc %? %@2152sc!1q0?
+grp 1%f+ 	if \(!s1->error_func\) \{.*?
+		/\* default case: stderr \*/.*?
+.*?
+(		if \(s1 && s1->output_type == TCC_OUTPUT_PREPROCESS && s1->ppfp == stdout\))7??0?
+grp 07??m 92220reg p OK tcc_linux_x86_64.c:32751:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 	cstr_printf\(&cs, mode == ERROR_WARN \? "warning: " : "error: "\);
+	if \(pp_expr > 1\)
+		pp_error\(&cs\);/\* special handler for preprocessor expression errors \*/.*(		s1->error_func\(s1->error_opaque, \(char \*\)cs\.data\);)
+	}
+	cstr_free\(&cs\);8??0?
+grp 08??-9m 92220reg p OK tcc_linux_x86_64.c:32751:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> 	} else \{
+		cstr_printf\(&cs, "tcc: "\);
+	}.*(	if \(mode != ERROR_WARN\))
+		s1->nb_errors\+\+;
+	if \(mode == ERROR_ERROR && s1->error_set_jmp_enabled\) \{9??0?
+grp 09??-12m 92220reg p OK tcc_linux_x86_64.c:32751:a92sc %? %@2152sc!'\''00?
+1;2;3;4;5;6;7;8;9??!219reg tcc_linux_x86_64.c:327512sc %? %@2132sc!0?
 '\''1i 	uint8_t *buf_top;
-??!219reg tcc_linux_x86_64.c:1860:m12sc %? %@2142sc!0?
+??!219reg tcc_linux_x86_64.c:1861:m12sc %? %@2142sc!0?
 '\''2i 		bf->buf_top = bf->buffer;
 ??!219reg tcc_linux_x86_64.c:7255:m22sc %? %@2142sc!0?
 '\''3i #define PEEKC_EOB(c, p)\
@@ -2267,7 +4052,7 @@ after_star:
 ??!219reg tcc_linux_x86_64.c:10533:m902sc %? %@2142sc!0?
 '\''92,#+1c 		/* No newline into ppfp here (stock/amal do): diagnostics go to
 		   stderr, so it would only punch a blank line into the -E dump. */
-??!219reg tcc_linux_x86_64.c:32750:m922sc %? %@2142sc!b1%ya 98?0?
+??!219reg tcc_linux_x86_64.c:32751:m922sc %? %@2142sc!b1%ya 98?0?
 %f> 
 typedef struct BufferedFile \{
 	uint8_t \*buf_ptr;
@@ -2282,8 +4067,20 @@ typedef struct BufferedFile \{
 grp 1%f> .*?
 typedef struct BufferedFile \{.*?
 (	uint8_t \*buf_ptr;)7??0?
-grp 07??m 1220reg p OK tcc_win64_x86_64.c:1685:a72sc %? %@2152sc!0?
-1;4;7??!219reg tcc_win64_x86_64.c:16852sc %? %@2132sc!0?
+grp 07??m 1220reg p OK tcc_win64_x86_64.c:1685:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> #define TYPE_PARAM 4
+/\* nested call to post_type \*/
+#define TYPE_NEST 8.*(#define CH_EOB '\''\\\\'\'')
+/\* end of file \*/
+#define CH_EOF \(-1\)8??0?
+grp 08??-28m 1220reg p OK tcc_win64_x86_64.c:1685:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> /\* type with variable \*/
+#define TYPE_DIRECT 2
+/\* type declares function parameter \*/.*(typedef struct TokenString \{)
+	int \*str;
+	int len;9??0?
+grp 09??-33m 1220reg p OK tcc_win64_x86_64.c:1685:a92sc %? %@2152sc!'\''00?
+1;4;7;8;9??!219reg tcc_win64_x86_64.c:16852sc %? %@2132sc!0?
 ?0?
 %f+ 		}
 		total_bytes \+= len;
@@ -2295,8 +4092,24 @@ typedef struct BufferedFile \{.*?
 %f+ 		}
 		total_bytes \+= len;
 		bf->buf_ptr = bf->buffer;4??0?
-4??+2m 2220reg p OK tcc_win64_x86_64.c:7068:a42sc %? %@2152sc!0?
-1;4??!219reg tcc_win64_x86_64.c:70682sc %? %@2132sc!0?
+4??+2m 2220reg p OK tcc_win64_x86_64.c:7068:a42sc %? %@2152sc!1q0?
+grp 1%f+ 		}.*?
+		total_bytes \+= len;.*?
+(		bf->buf_ptr = bf->buffer;)7??0?
+grp 07??m 2220reg p OK tcc_win64_x86_64.c:7068:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 				len = 0;
+		} else \{
+			len = 0;.*(	if \(bf->buf_ptr < bf->buf_end\) \{)
+		return bf->buf_ptr\[0];
+	} else \{8??0?
+grp 08??-4m 2220reg p OK tcc_win64_x86_64.c:7068:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> 	BufferedFile \*bf = file;
+	int len;
+	/\* only tries to read if really end of buffer \*/.*(		bf->buf_ptr = bf->buf_end;)
+		return CH_EOF;
+	}9??0?
+grp 09??-7m 2220reg p OK tcc_win64_x86_64.c:7068:a92sc %? %@2152sc!'\''00?
+1;4;7;8;9??!219reg tcc_win64_x86_64.c:70682sc %? %@2132sc!0?
 ?0?
 %f+ 
 #define PEEKC\(c,p\) \{ c = \*\+\+p; if \(c == '\''\\\\'\''\) c = handle_stray\(&p\); }
@@ -2310,18 +4123,18 @@ static int skip_spaces\(void\)
 
 4??0?
 4??+2m 3220reg p OK tcc_win64_x86_64.c:7142:a42sc %? %@2152sc!1q0?
-m 01;0grp 1%f> 	c = handle_stray_noerror\(!\(parse_flags & PARSE_FLAG_ACCEPT_STRAYS\)\);
-	\*p = file->buf_ptr;
-	return c;.*(    p\+\+;\\)
-    c = \*p;\\
-    if \(c == '\''\\\\'\''\) \{\\8??0?
-grp 08??-5m 3220reg p OK tcc_win64_x86_64.c:7142:a82sc %? %@2152sc!'\''08??1q0?
-m 01;0grp 1%f> static int handle_stray\(uint8_t \*\*p\)
-\{
-	int c;.*(        file->buf_ptr = p;\\)
-        c = handle_eob\(\);\\
-        p = file->buf_ptr;\\9??0?
-grp 09??-8m 3220reg p OK tcc_win64_x86_64.c:7142:a92sc %? %@2152sc!'\''00?
+m 01;0grp 1%f> 	return c;
+}
+/\* handle the complicated stray case \*/.*(	--file->buf_ptr;)
+	do \{
+		ch = ninp\(\);8??0?
+grp 08??-4m 3220reg p OK tcc_win64_x86_64.c:7142:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> 	file->buf_ptr = \*p - 1;
+	c = handle_stray_noerror\(!\(parse_flags & PARSE_FLAG_ACCEPT_STRAYS\)\);
+	\*p = file->buf_ptr;.*(	} while \(isidnum_table\[ch - CH_EOF] & IS_SPC\);)
+	return ch;
+}9??0?
+grp 09??-7m 3220reg p OK tcc_win64_x86_64.c:7142:a92sc %? %@2152sc!'\''00?
 1;4;8;9??!219reg tcc_win64_x86_64.c:71422sc %? %@2132sc!0?
 ?0?
 %f+ 	} while \(isidnum_table\[ch - CH_EOF] & IS_SPC\);
@@ -2334,8 +4147,24 @@ static int skip_spaces\(void\)
 %f+ 	} while \(isidnum_table\[ch - CH_EOF] & IS_SPC\);
 	return ch;
 }4??0?
-4??+2m 4220reg p OK tcc_win64_x86_64.c:7151:a42sc %? %@2152sc!0?
-1;4??!219reg tcc_win64_x86_64.c:71512sc %? %@2132sc!0?
+4??+2m 4220reg p OK tcc_win64_x86_64.c:7151:a42sc %? %@2152sc!1q0?
+grp 1%f+ 	} while \(isidnum_table\[ch - CH_EOF] & IS_SPC\);.*?
+	return ch;.*?
+(})7??0?
+grp 07??m 4220reg p OK tcc_win64_x86_64.c:7151:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 	--file->buf_ptr;
+	do \{
+		ch = ninp\(\);.*(redo_start:)
+	start_of_line = 1;
+	in_warn_or_error = 0;8??0?
+grp 08??-143m 4220reg p OK tcc_win64_x86_64.c:7151:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> static int skip_spaces\(void\)
+\{
+	int ch;.*(			file->line_num\+\+;)
+			p\+\+;
+			goto redo_start;9??0?
+grp 09??-157m 4220reg p OK tcc_win64_x86_64.c:7151:a92sc %? %@2152sc!'\''00?
+1;4;7;8;9??!219reg tcc_win64_x86_64.c:71512sc %? %@2132sc!0?
 ?0?
 %f+ /\* single line C\+\+ comments \*/
 
@@ -2355,8 +4184,30 @@ static uint8_t \*parse_line_comment\(uint8_t \*p\)
 4??+2m 5220reg p OK tcc_win64_x86_64.c:7154:a42sc %? %@2152sc!1q0?
 %f+ \{
 	int c;5??0?
-5??-1m 5220reg p OK tcc_win64_x86_64.c:7154:a52sc %? %@2152sc!0?
-1;2;3;4;5??!219reg tcc_win64_x86_64.c:71542sc %? %@2132sc!0?
+5??-1m 5220reg p OK tcc_win64_x86_64.c:7154:a52sc %? %@2152sc!1q0?
+%f+ /. s......li.. ..\+.c.m........
+
+.t..i....n......p...e.l..e........\(..n...t \*.\)
+\{
+.... ..6??0?
+6??+2m 5220reg p OK tcc_win64_x86_64.c:7154:a62sc %? %@2152sc!1q0?
+grp 1%f+ /\* single line C\+\+ comments \*/.*?
+.*?
+(static uint8_t \*parse_line_comment\(uint8_t \*p\))7??0?
+grp 07??m 5220reg p OK tcc_win64_x86_64.c:7154:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 	--file->buf_ptr;
+	do \{
+		ch = ninp\(\);.*(redo_start:)
+	start_of_line = 1;
+	in_warn_or_error = 0;8??0?
+grp 08??-140m 5220reg p OK tcc_win64_x86_64.c:7154:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> static int skip_spaces\(void\)
+\{
+	int ch;.*(			file->line_num\+\+;)
+			p\+\+;
+			goto redo_start;9??0?
+grp 09??-154m 5220reg p OK tcc_win64_x86_64.c:7154:a92sc %? %@2152sc!'\''00?
+1;2;3;4;5;6;7;8;9??!219reg tcc_win64_x86_64.c:71542sc %? %@2132sc!0?
 ?0?
 %f+ \{
 	int c;
@@ -2364,8 +4215,20 @@ static uint8_t \*parse_line_comment\(uint8_t \*p\)
 1??+1m 61q0?
 %f+ \{
 	int c;4??0?
-4??+1m 6220reg p OK tcc_win64_x86_64.c:7156:a42sc %? %@2152sc!0?
-1;4??!219reg tcc_win64_x86_64.c:71562sc %? %@2132sc!0?
+4??+1m 6220reg p OK tcc_win64_x86_64.c:7156:a42sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 	--file->buf_ptr;
+	do \{
+		ch = ninp\(\);.*(redo_start:)
+	start_of_line = 1;
+	in_warn_or_error = 0;8??0?
+grp 08??-138m 6220reg p OK tcc_win64_x86_64.c:7156:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> static int skip_spaces\(void\)
+\{
+	int ch;.*(			file->line_num\+\+;)
+			p\+\+;
+			goto redo_start;9??0?
+grp 09??-152m 6220reg p OK tcc_win64_x86_64.c:7156:a92sc %? %@2152sc!'\''00?
+1;4;8;9??!219reg tcc_win64_x86_64.c:71562sc %? %@2132sc!0?
 ?0?
 %f+ 	for \(;;\) \{
 		for \(;;\) \{
@@ -2382,8 +4245,28 @@ redo:2??0?
 ;0fr.,$f+ ^	for \(;;\) \{$4??0?
 4??+1m 7220reg p OK tcc_win64_x86_64.c:7158:a42sc %? %@2152sc!fr 981qfr 980?
 ;0fr.,$f+ ^redo:$5??0?
-5??-2m 7220reg p OK tcc_win64_x86_64.c:7158:a52sc %? %@2152sc!fr 98fr 980?
-1;2;3;4;5??!219reg tcc_win64_x86_64.c:71582sc %? %@2132sc!0?
+5??-2m 7220reg p OK tcc_win64_x86_64.c:7158:a52sc %? %@2152sc!fr 981qfr 980?
+%f+ .....\(... .
+...or.\(.....
+		.... .....
+....:6??0?
+6??+1m 7220reg p OK tcc_win64_x86_64.c:7158:a62sc %? %@2152sc!1q0?
+grp 1%f+ 	for \(;;\) \{.*?
+(		for \(;;\) \{)7??0?
+grp 07??m 7220reg p OK tcc_win64_x86_64.c:7158:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 	--file->buf_ptr;
+	do \{
+		ch = ninp\(\);.*(redo_start:)
+	start_of_line = 1;
+	in_warn_or_error = 0;8??0?
+grp 08??-136m 7220reg p OK tcc_win64_x86_64.c:7158:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> static int skip_spaces\(void\)
+\{
+	int ch;.*(			file->line_num\+\+;)
+			p\+\+;
+			goto redo_start;9??0?
+grp 09??-150m 7220reg p OK tcc_win64_x86_64.c:7158:a92sc %? %@2152sc!'\''00?
+1;2;3;4;5;6;7;8;9??!219reg tcc_win64_x86_64.c:71582sc %? %@2132sc!0?
 ?0?
 %f+ redo:
 			if \(c == '\''\\n'\'' \|\| c == '\''\\\\'\''\)
@@ -2424,8 +4307,36 @@ redo:2??0?
 ;0fr.,$f+ ^redo:$4??0?
 4??+1m 8220reg p OK tcc_win64_x86_64.c:7161:a42sc %? %@2152sc!fr 981qfr 980?
 ;0fr.,$f+ ^			break;$5??0?
-5??-10m 8220reg p OK tcc_win64_x86_64.c:7161:a52sc %? %@2152sc!fr 98fr 980?
-1;2;3;4;5??!219reg tcc_win64_x86_64.c:71612sc %? %@2132sc!0?
+5??-10m 8220reg p OK tcc_win64_x86_64.c:7161:a52sc %? %@2152sc!fr 981qfr 980?
+%f+ redo:
+	.	i.... .=..\\.. .\| .....'\''\\.'\''.
+.......ak.
+			... .\+\+p.
+.	.i......= ......... .=......
+	.....e...
+	..
+.........= '\''\\...
+.	...e.k;
+	.c.. ha.d...b....\);
+..i. \(......H_....
+....r.a.;6??0?
+6??+1m 8220reg p OK tcc_win64_x86_64.c:7161:a62sc %? %@2152sc!1q0?
+grp 1%f+ redo:.*?
+(			if \(c == '\''\\n'\'' \|\| c == '\''\\\\'\''\))7??0?
+grp 07??m 8220reg p OK tcc_win64_x86_64.c:7161:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 	--file->buf_ptr;
+	do \{
+		ch = ninp\(\);.*(redo_start:)
+	start_of_line = 1;
+	in_warn_or_error = 0;8??0?
+grp 08??-133m 8220reg p OK tcc_win64_x86_64.c:7161:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> static int skip_spaces\(void\)
+\{
+	int ch;.*(			file->line_num\+\+;)
+			p\+\+;
+			goto redo_start;9??0?
+grp 09??-147m 8220reg p OK tcc_win64_x86_64.c:7161:a92sc %? %@2152sc!'\''00?
+1;2;3;4;5;6;7;8;9??!219reg tcc_win64_x86_64.c:71612sc %? %@2132sc!0?
 ?0?
 %f+ 			break;
 		if \(c != '\''\\\\'\''\)
@@ -2448,8 +4359,30 @@ redo:2??0?
 %f+ 	}
 	return p;
 }5??0?
-5??-2m 9220reg p OK tcc_win64_x86_64.c:7172:a52sc %? %@2152sc!0?
-1;2;3;4;5??!219reg tcc_win64_x86_64.c:71722sc %? %@2132sc!0?
+5??-2m 9220reg p OK tcc_win64_x86_64.c:7172:a52sc %? %@2152sc!1q0?
+%f+ ..	......
+.	.f............
+.........e.o;
+	.
+......n p.
+}6??0?
+6??+1m 9220reg p OK tcc_win64_x86_64.c:7172:a62sc %? %@2152sc!1q0?
+grp 1%f+ 			break;.*?
+(		if \(c != '\''\\\\'\''\))7??0?
+grp 07??m 9220reg p OK tcc_win64_x86_64.c:7172:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 	--file->buf_ptr;
+	do \{
+		ch = ninp\(\);.*(redo_start:)
+	start_of_line = 1;
+	in_warn_or_error = 0;8??0?
+grp 08??-122m 9220reg p OK tcc_win64_x86_64.c:7172:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> static int skip_spaces\(void\)
+\{
+	int ch;.*(			file->line_num\+\+;)
+			p\+\+;
+			goto redo_start;9??0?
+grp 09??-136m 9220reg p OK tcc_win64_x86_64.c:7172:a92sc %? %@2152sc!'\''00?
+1;2;3;4;5;6;7;8;9??!219reg tcc_win64_x86_64.c:71722sc %? %@2132sc!0?
 ?0?
 %f+ 	}
 	return p;
@@ -2461,8 +4394,20 @@ redo:2??0?
 %f+ 	}
 	return p;
 }4??0?
-4??+2m 10220reg p OK tcc_win64_x86_64.c:7176:a42sc %? %@2152sc!0?
-1;4??!219reg tcc_win64_x86_64.c:71762sc %? %@2132sc!0?
+4??+2m 10220reg p OK tcc_win64_x86_64.c:7176:a42sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 	--file->buf_ptr;
+	do \{
+		ch = ninp\(\);.*(redo_start:)
+	start_of_line = 1;
+	in_warn_or_error = 0;8??0?
+grp 08??-118m 10220reg p OK tcc_win64_x86_64.c:7176:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> static int skip_spaces\(void\)
+\{
+	int ch;.*(			file->line_num\+\+;)
+			p\+\+;
+			goto redo_start;9??0?
+grp 09??-132m 10220reg p OK tcc_win64_x86_64.c:7176:a92sc %? %@2152sc!'\''00?
+1;4;8;9??!219reg tcc_win64_x86_64.c:71762sc %? %@2132sc!0?
 ?0?
 %f+ /\* C comments \*/
 
@@ -2482,8 +4427,30 @@ static uint8_t \*parse_comment\(uint8_t \*p\)
 4??+2m 11220reg p OK tcc_win64_x86_64.c:7179:a42sc %? %@2152sc!1q0?
 %f+ \{
 	int c;5??0?
-5??-1m 11220reg p OK tcc_win64_x86_64.c:7179:a52sc %? %@2152sc!0?
-1;2;3;4;5??!219reg tcc_win64_x86_64.c:71792sc %? %@2132sc!0?
+5??-1m 11220reg p OK tcc_win64_x86_64.c:7179:a52sc %? %@2152sc!1q0?
+%f+ .\*.. ........../
+
+....i..u.......\*............t\(.i..._..\*..
+\{
+.i.t...6??0?
+6??+2m 11220reg p OK tcc_win64_x86_64.c:7179:a62sc %? %@2152sc!1q0?
+grp 1%f+ /\* C comments \*/.*?
+.*?
+(static uint8_t \*parse_comment\(uint8_t \*p\))7??0?
+grp 07??m 11220reg p OK tcc_win64_x86_64.c:7179:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 	--file->buf_ptr;
+	do \{
+		ch = ninp\(\);.*(redo_start:)
+	start_of_line = 1;
+	in_warn_or_error = 0;8??0?
+grp 08??-115m 11220reg p OK tcc_win64_x86_64.c:7179:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> static int skip_spaces\(void\)
+\{
+	int ch;.*(			file->line_num\+\+;)
+			p\+\+;
+			goto redo_start;9??0?
+grp 09??-129m 11220reg p OK tcc_win64_x86_64.c:7179:a92sc %? %@2152sc!'\''00?
+1;2;3;4;5;6;7;8;9??!219reg tcc_win64_x86_64.c:71792sc %? %@2132sc!0?
 ?0?
 %f+ \{
 	int c;
@@ -2494,8 +4461,20 @@ static uint8_t \*parse_comment\(uint8_t \*p\)
 1??+1m 121q0?
 %f+ \{
 	int c;4??0?
-4??+1m 12220reg p OK tcc_win64_x86_64.c:7181:a42sc %? %@2152sc!0?
-1;4??!219reg tcc_win64_x86_64.c:71812sc %? %@2132sc!0?
+4??+1m 12220reg p OK tcc_win64_x86_64.c:7181:a42sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 	--file->buf_ptr;
+	do \{
+		ch = ninp\(\);.*(redo_start:)
+	start_of_line = 1;
+	in_warn_or_error = 0;8??0?
+grp 08??-113m 12220reg p OK tcc_win64_x86_64.c:7181:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> static int skip_spaces\(void\)
+\{
+	int ch;.*(			file->line_num\+\+;)
+			p\+\+;
+			goto redo_start;9??0?
+grp 09??-127m 12220reg p OK tcc_win64_x86_64.c:7181:a92sc %? %@2152sc!'\''00?
+1;4;8;9??!219reg tcc_win64_x86_64.c:71812sc %? %@2132sc!0?
 ?0?
 %f+ 		/\* fast skip loop \*/
 
@@ -2519,8 +4498,33 @@ redo:3??0?
 4??+3m 13220reg p OK tcc_win64_x86_64.c:7186:a42sc %? %@2152sc!1q0?
 %f+ 			if \(c == '\''\\n'\'' \|\| c == '\''\*'\'' \|\| c == '\''\\\\'\''\)
 				break;5??0?
-5??-2m 13220reg p OK tcc_win64_x86_64.c:7186:a52sc %? %@2152sc!0?
-1;2;3;4;5??!219reg tcc_win64_x86_64.c:71862sc %? %@2132sc!0?
+5??-2m 13220reg p OK tcc_win64_x86_64.c:7186:a52sc %? %@2152sc!1q0?
+%f+ ......... ............
+
+.	f...\(;.\).\{
+	.	... .....
+re..:
+	...f....=..'\''.n.... ..=.......... .=..\\.'\''.
+.	.	..ea.;6??0?
+6??+3m 13220reg p OK tcc_win64_x86_64.c:7186:a62sc %? %@2152sc!1q0?
+grp 1%f+ 		/\* fast skip loop \*/.*?
+.*?
+		for \(;;\) \{.*?
+(			c = \*\+\+p;)7??0?
+grp 07??m 13220reg p OK tcc_win64_x86_64.c:7186:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 	--file->buf_ptr;
+	do \{
+		ch = ninp\(\);.*(redo_start:)
+	start_of_line = 1;
+	in_warn_or_error = 0;8??0?
+grp 08??-108m 13220reg p OK tcc_win64_x86_64.c:7186:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> static int skip_spaces\(void\)
+\{
+	int ch;.*(			file->line_num\+\+;)
+			p\+\+;
+			goto redo_start;9??0?
+grp 09??-122m 13220reg p OK tcc_win64_x86_64.c:7186:a92sc %? %@2152sc!'\''00?
+1;2;3;4;5;6;7;8;9??!219reg tcc_win64_x86_64.c:71862sc %? %@2132sc!0?
 ?0?
 %f+ 			if \(c == '\''\\n'\'' \|\| c == '\''\*'\'' \|\| c == '\''\\\\'\''\)
 				break;
@@ -2536,8 +4540,30 @@ redo:3??0?
 3??m 14220reg p OK tcc_win64_x86_64.c:7190:a32sc %? %@2152sc!fr 981qfr 980?
 %f+ 			if \(c == '\''\\n'\'' \|\| c == '\''\*'\'' \|\| c == '\''\\\\'\''\)
 				break;4??0?
-4??+2m 14220reg p OK tcc_win64_x86_64.c:7190:a42sc %? %@2152sc!0?
-1;2;3;4??!219reg tcc_win64_x86_64.c:71902sc %? %@2132sc!0?
+4??+2m 14220reg p OK tcc_win64_x86_64.c:7190:a42sc %? %@2152sc!1q0?
+%f+ 	.........=........ c..=.... \|....==..\\...
+.		.......
+.	.....\*..p.
+............'\''\\.'\'' .... ...'\''\*'\''.\|.......'\''...\)
+...	......6??0?
+6??+2m 14220reg p OK tcc_win64_x86_64.c:7190:a62sc %? %@2152sc!1q0?
+grp 1%f+ 			if \(c == '\''\\n'\'' \|\| c == '\''\*'\'' \|\| c == '\''\\\\'\''\).*?
+				break;.*?
+(			c = \*\+\+p;)7??0?
+grp 07??m 14220reg p OK tcc_win64_x86_64.c:7190:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 	--file->buf_ptr;
+	do \{
+		ch = ninp\(\);.*(redo_start:)
+	start_of_line = 1;
+	in_warn_or_error = 0;8??0?
+grp 08??-104m 14220reg p OK tcc_win64_x86_64.c:7190:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> static int skip_spaces\(void\)
+\{
+	int ch;.*(			file->line_num\+\+;)
+			p\+\+;
+			goto redo_start;9??0?
+grp 09??-118m 14220reg p OK tcc_win64_x86_64.c:7190:a92sc %? %@2152sc!'\''00?
+1;2;3;4;6;7;8;9??!219reg tcc_win64_x86_64.c:71902sc %? %@2132sc!0?
 ?0?
 %f+ 			if \(c == '\''\\n'\'' \|\| c == '\''\*'\'' \|\| c == '\''\\\\'\''\)
 				break;
@@ -2545,8 +4571,20 @@ redo:3??0?
 1??+1m 151q0?
 %f+ 			if \(c == '\''\\n'\'' \|\| c == '\''\*'\'' \|\| c == '\''\\\\'\''\)
 				break;4??0?
-4??+1m 15220reg p OK tcc_win64_x86_64.c:7192:a42sc %? %@2152sc!0?
-1;4??!219reg tcc_win64_x86_64.c:71922sc %? %@2132sc!0?
+4??+1m 15220reg p OK tcc_win64_x86_64.c:7192:a42sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 	--file->buf_ptr;
+	do \{
+		ch = ninp\(\);.*(redo_start:)
+	start_of_line = 1;
+	in_warn_or_error = 0;8??0?
+grp 08??-102m 15220reg p OK tcc_win64_x86_64.c:7192:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> static int skip_spaces\(void\)
+\{
+	int ch;.*(			file->line_num\+\+;)
+			p\+\+;
+			goto redo_start;9??0?
+grp 09??-116m 15220reg p OK tcc_win64_x86_64.c:7192:a92sc %? %@2152sc!'\''00?
+1;4;8;9??!219reg tcc_win64_x86_64.c:71922sc %? %@2132sc!0?
 ?0?
 %f+ 		}
 		/\* now we can handle all the cases \*/
@@ -2554,8 +4592,20 @@ redo:3??0?
 		if \(c == '\''\\n'\''\) \{1??0?
 1??m 161q0?
 ;0fr.,$f+ ^		}$4??0?
-4??m 16220reg p OK tcc_win64_x86_64.c:7193:a42sc %? %@2152sc!fr 98fr 980?
-1;4??!219reg tcc_win64_x86_64.c:71932sc %? %@2132sc!0?
+4??m 16220reg p OK tcc_win64_x86_64.c:7193:a42sc %? %@2152sc!fr 981qfr 980?
+m 01;0grp 1%f> 	--file->buf_ptr;
+	do \{
+		ch = ninp\(\);.*(redo_start:)
+	start_of_line = 1;
+	in_warn_or_error = 0;8??0?
+grp 08??-101m 16220reg p OK tcc_win64_x86_64.c:7193:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> static int skip_spaces\(void\)
+\{
+	int ch;.*(			file->line_num\+\+;)
+			p\+\+;
+			goto redo_start;9??0?
+grp 09??-115m 16220reg p OK tcc_win64_x86_64.c:7193:a92sc %? %@2152sc!'\''00?
+1;4;8;9??!219reg tcc_win64_x86_64.c:71932sc %? %@2132sc!0?
 ?0?
 %f+ 
 		if \(c == '\''\\n'\''\) \{
@@ -2565,8 +4615,24 @@ redo:3??0?
 %f+ 
 		if \(c == '\''\\n'\''\) \{
 			file->line_num\+\+;4??0?
-4??+2m 17220reg p OK tcc_win64_x86_64.c:7197:a42sc %? %@2152sc!0?
-1;4??!219reg tcc_win64_x86_64.c:71972sc %? %@2132sc!0?
+4??+2m 17220reg p OK tcc_win64_x86_64.c:7197:a42sc %? %@2152sc!1q0?
+grp 1%f+ .*?
+		if \(c == '\''\\n'\''\) \{.*?
+(			file->line_num\+\+;)7??0?
+grp 07??m 17220reg p OK tcc_win64_x86_64.c:7197:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 	--file->buf_ptr;
+	do \{
+		ch = ninp\(\);.*(redo_start:)
+	start_of_line = 1;
+	in_warn_or_error = 0;8??0?
+grp 08??-97m 17220reg p OK tcc_win64_x86_64.c:7197:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> static int skip_spaces\(void\)
+\{
+	int ch;.*(			file->line_num\+\+;)
+			p\+\+;
+			goto redo_start;9??0?
+grp 09??-111m 17220reg p OK tcc_win64_x86_64.c:7197:a92sc %? %@2152sc!'\''00?
+1;4;7;8;9??!219reg tcc_win64_x86_64.c:71972sc %? %@2132sc!0?
 ?0?
 %f+ 		} else if \(c == '\''\*'\''\) \{
 			do \{
@@ -2601,8 +4667,34 @@ redo:3??0?
 ;0fr.,$f+ ^		} else if \(c == '\''\*'\''\) \{$4??0?
 4??+1m 18220reg p OK tcc_win64_x86_64.c:7199:a42sc %? %@2152sc!fr 981qfr 980?
 ;0fr.,$f+ ^		} else \{$5??0?
-5??-8m 18220reg p OK tcc_win64_x86_64.c:7199:a52sc %? %@2152sc!fr 98fr 980?
-1;2;3;4;5??!219reg tcc_win64_x86_64.c:71992sc %? %@2132sc!0?
+5??-8m 18220reg p OK tcc_win64_x86_64.c:7199:a52sc %? %@2152sc!fr 981qfr 980?
+%f+ .......e..f .c..=.'\''.....
+	...o..
+	............
+	..}.w..le..c..= .....
+	.....\(c... .\\...
+		..c.= ...d......&..;
+	..i.... ==.....
+.......a..
+.		g.......c._...;
+......se.\{6??0?
+6??+1m 18220reg p OK tcc_win64_x86_64.c:7199:a62sc %? %@2152sc!1q0?
+grp 1%f+ 		} else if \(c == '\''\*'\''\) \{.*?
+(			do \{)7??0?
+grp 07??m 18220reg p OK tcc_win64_x86_64.c:7199:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 	--file->buf_ptr;
+	do \{
+		ch = ninp\(\);.*(redo_start:)
+	start_of_line = 1;
+	in_warn_or_error = 0;8??0?
+grp 08??-95m 18220reg p OK tcc_win64_x86_64.c:7199:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> static int skip_spaces\(void\)
+\{
+	int ch;.*(			file->line_num\+\+;)
+			p\+\+;
+			goto redo_start;9??0?
+grp 09??-109m 18220reg p OK tcc_win64_x86_64.c:7199:a92sc %? %@2152sc!'\''00?
+1;2;3;4;5;6;7;8;9??!219reg tcc_win64_x86_64.c:71992sc %? %@2132sc!0?
 ?0?
 %f+ 		} else \{
 			c = handle_bs\(&p\);
@@ -2622,8 +4714,29 @@ check_eof:
 ;0fr.,$f+ ^		} else \{$4??0?
 4??+1m 19220reg p OK tcc_win64_x86_64.c:7208:a42sc %? %@2152sc!fr 981qfr 980?
 ;0fr.,$f+ ^				tcc_error\("unexpected end of file in comment"\);$5??0?
-5??-3m 19220reg p OK tcc_win64_x86_64.c:7208:a52sc %? %@2152sc!fr 98fr 980?
-1;2;3;4;5??!219reg tcc_win64_x86_64.c:72082sc %? %@2132sc!0?
+5??-3m 19220reg p OK tcc_win64_x86_64.c:7208:a52sc %? %@2152sc!fr 981qfr 980?
+%f+ ... .....\{
+.	.c.. ....l....\(....
+..e...eo..
+	..i........CH.EOF.
+.	....c.er.....u.e...cte.........f............n...;6??0?
+6??+1m 19220reg p OK tcc_win64_x86_64.c:7208:a62sc %? %@2152sc!1q0?
+grp 1%f+ 		} else \{.*?
+(			c = handle_bs\(&p\);)7??0?
+grp 07??m 19220reg p OK tcc_win64_x86_64.c:7208:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 	--file->buf_ptr;
+	do \{
+		ch = ninp\(\);.*(redo_start:)
+	start_of_line = 1;
+	in_warn_or_error = 0;8??0?
+grp 08??-86m 19220reg p OK tcc_win64_x86_64.c:7208:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> static int skip_spaces\(void\)
+\{
+	int ch;.*(			file->line_num\+\+;)
+			p\+\+;
+			goto redo_start;9??0?
+grp 09??-100m 19220reg p OK tcc_win64_x86_64.c:7208:a92sc %? %@2152sc!'\''00?
+1;2;3;4;5;6;7;8;9??!219reg tcc_win64_x86_64.c:72082sc %? %@2132sc!0?
 ?0?
 %f+ 				tcc_error\("unexpected end of file in comment"\);
 			if \(c != '\''\\\\'\''\)
@@ -2643,8 +4756,29 @@ check_eof:
 4??+1m 20220reg p OK tcc_win64_x86_64.c:7212:a42sc %? %@2152sc!fr 981qfr 980?
 %f+ 		}
 	}5??0?
-5??-2m 20220reg p OK tcc_win64_x86_64.c:7212:a52sc %? %@2152sc!0?
-1;2;3;4;5??!219reg tcc_win64_x86_64.c:72122sc %? %@2132sc!0?
+5??-2m 20220reg p OK tcc_win64_x86_64.c:7212:a52sc %? %@2152sc!1q0?
+%f+ .		........o...u.e..e..e. ..d............co.m..t...
+......\(...=......
+.	.....o..ed..
+	..
+	.6??0?
+6??+1m 20220reg p OK tcc_win64_x86_64.c:7212:a62sc %? %@2152sc!1q0?
+grp 1%f+ 				tcc_error\("unexpected end of file in comment"\);.*?
+(			if \(c != '\''\\\\'\''\))7??0?
+grp 07??m 20220reg p OK tcc_win64_x86_64.c:7212:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 	--file->buf_ptr;
+	do \{
+		ch = ninp\(\);.*(redo_start:)
+	start_of_line = 1;
+	in_warn_or_error = 0;8??0?
+grp 08??-82m 20220reg p OK tcc_win64_x86_64.c:7212:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> static int skip_spaces\(void\)
+\{
+	int ch;.*(			file->line_num\+\+;)
+			p\+\+;
+			goto redo_start;9??0?
+grp 09??-96m 20220reg p OK tcc_win64_x86_64.c:7212:a92sc %? %@2152sc!'\''00?
+1;2;3;4;5;6;7;8;9??!219reg tcc_win64_x86_64.c:72122sc %? %@2132sc!0?
 ?0?
 %f+ 		}
 	}
@@ -2669,8 +4803,32 @@ check_eof:
 /\* parse a string without interpreting escapes \*/
 
 5??0?
-5??-1m 21220reg p OK tcc_win64_x86_64.c:7216:a52sc %? %@2152sc!0?
-1;2;3;4;5??!219reg tcc_win64_x86_64.c:72162sc %? %@2132sc!0?
+5??-1m 21220reg p OK tcc_win64_x86_64.c:7216:a52sc %? %@2152sc!1q0?
+%f+ .	.
+	.
+.ret....p....;
+}
+.\*.pa..e.a......g..i...u. ..t......i........e. ./
+
+6??0?
+6??+2m 21220reg p OK tcc_win64_x86_64.c:7216:a62sc %? %@2152sc!1q0?
+grp 1%f+ 		}.*?
+	}.*?
+(	return p \+ 1;)7??0?
+grp 07??m 21220reg p OK tcc_win64_x86_64.c:7216:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 	--file->buf_ptr;
+	do \{
+		ch = ninp\(\);.*(redo_start:)
+	start_of_line = 1;
+	in_warn_or_error = 0;8??0?
+grp 08??-78m 21220reg p OK tcc_win64_x86_64.c:7216:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> static int skip_spaces\(void\)
+\{
+	int ch;.*(			file->line_num\+\+;)
+			p\+\+;
+			goto redo_start;9??0?
+grp 09??-92m 21220reg p OK tcc_win64_x86_64.c:7216:a92sc %? %@2152sc!'\''00?
+1;2;3;4;5;6;7;8;9??!219reg tcc_win64_x86_64.c:72162sc %? %@2132sc!0?
 ?0?
 %f+ }
 /\* parse a string without interpreting escapes \*/
@@ -2692,8 +4850,32 @@ static uint8_t \*parse_pp_string\(uint8_t \*p, int sep, CString \*str\)
 4??+3m 22220reg p OK tcc_win64_x86_64.c:7220:a42sc %? %@2152sc!1q0?
 %f+ \{
 	int c;5??0?
-5??-1m 22220reg p OK tcc_win64_x86_64.c:7220:a52sc %? %@2152sc!0?
-1;2;3;4;5??!219reg tcc_win64_x86_64.c:72202sc %? %@2132sc!0?
+5??-1m 22220reg p OK tcc_win64_x86_64.c:7220:a52sc %? %@2152sc!1q0?
+%f+ }
+.\* ......a......g.w....u. ........t.ng...........
+
+..a.ic..i..8_...pa........t....\(............... ..............s..\)
+\{
+.i.....6??0?
+6??+3m 22220reg p OK tcc_win64_x86_64.c:7220:a62sc %? %@2152sc!1q0?
+grp 1%f+ }.*?
+/\* parse a string without interpreting escapes \*/.*?
+.*?
+(static uint8_t \*parse_pp_string\(uint8_t \*p, int sep, CString \*str\))7??0?
+grp 07??m 22220reg p OK tcc_win64_x86_64.c:7220:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 	--file->buf_ptr;
+	do \{
+		ch = ninp\(\);.*(redo_start:)
+	start_of_line = 1;
+	in_warn_or_error = 0;8??0?
+grp 08??-74m 22220reg p OK tcc_win64_x86_64.c:7220:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> static int skip_spaces\(void\)
+\{
+	int ch;.*(			file->line_num\+\+;)
+			p\+\+;
+			goto redo_start;9??0?
+grp 09??-88m 22220reg p OK tcc_win64_x86_64.c:7220:a92sc %? %@2152sc!'\''00?
+1;2;3;4;5;6;7;8;9??!219reg tcc_win64_x86_64.c:72202sc %? %@2132sc!0?
 ?0?
 %f+ \{
 	int c;
@@ -2701,8 +4883,20 @@ static uint8_t \*parse_pp_string\(uint8_t \*p, int sep, CString \*str\)
 1??+1m 231q0?
 %f+ \{
 	int c;4??0?
-4??+1m 23220reg p OK tcc_win64_x86_64.c:7222:a42sc %? %@2152sc!0?
-1;4??!219reg tcc_win64_x86_64.c:72222sc %? %@2132sc!0?
+4??+1m 23220reg p OK tcc_win64_x86_64.c:7222:a42sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 	--file->buf_ptr;
+	do \{
+		ch = ninp\(\);.*(redo_start:)
+	start_of_line = 1;
+	in_warn_or_error = 0;8??0?
+grp 08??-72m 23220reg p OK tcc_win64_x86_64.c:7222:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> static int skip_spaces\(void\)
+\{
+	int ch;.*(			file->line_num\+\+;)
+			p\+\+;
+			goto redo_start;9??0?
+grp 09??-86m 23220reg p OK tcc_win64_x86_64.c:7222:a92sc %? %@2152sc!'\''00?
+1;4;8;9??!219reg tcc_win64_x86_64.c:72222sc %? %@2132sc!0?
 ?0?
 %f+ 	for \(;;\) \{
 		c = \*\+\+p;
@@ -2725,8 +4919,27 @@ redo:3??0?
 %f+ 		if \(c == sep\) \{
 			break;
 		} else if \(c == '\''\\\\'\''\) \{5??0?
-5??-2m 24220reg p OK tcc_win64_x86_64.c:7224:a52sc %? %@2152sc!0?
-1;2;3;4;5??!219reg tcc_win64_x86_64.c:72242sc %? %@2132sc!0?
+5??-2m 24220reg p OK tcc_win64_x86_64.c:7224:a52sc %? %@2152sc!1q0?
+%f+ 	.or..... .
+..c = .....
+re...
+...f.............
+.....e...
+.	......... .c ...'\''.... .6??0?
+6??+1m 24220reg p OK tcc_win64_x86_64.c:7224:a62sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 	--file->buf_ptr;
+	do \{
+		ch = ninp\(\);.*(redo_start:)
+	start_of_line = 1;
+	in_warn_or_error = 0;8??0?
+grp 08??-70m 24220reg p OK tcc_win64_x86_64.c:7224:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> static int skip_spaces\(void\)
+\{
+	int ch;.*(			file->line_num\+\+;)
+			p\+\+;
+			goto redo_start;9??0?
+grp 09??-84m 24220reg p OK tcc_win64_x86_64.c:7224:a92sc %? %@2152sc!'\''00?
+1;2;3;4;5;6;8;9??!219reg tcc_win64_x86_64.c:72242sc %? %@2132sc!0?
 ?0?
 %f+ 		if \(c == sep\) \{
 			break;
@@ -2750,8 +4963,33 @@ unterminated_string:
 %f+ 			if \(c == CH_EOF\) \{
 unterminated_string:
 				/\* XXX: indicate line number of start of string \*/5??0?
-5??-1m 25220reg p OK tcc_win64_x86_64.c:7229:a52sc %? %@2152sc!0?
-1;2;3;4;5??!219reg tcc_win64_x86_64.c:72292sc %? %@2132sc!0?
+5??-1m 25220reg p OK tcc_win64_x86_64.c:7229:a52sc %? %@2152sc!1q0?
+%f+ ...f........... \{
+...b...k.
+.....ls......c......\\'\''...
+	.	.....a.d.....\(....
+.	......... .H.......
+.n........e........:
+...	....X.: in...a.. l.n....m........ta.. ......i...\*.6??0?
+6??+3m 25220reg p OK tcc_win64_x86_64.c:7229:a62sc %? %@2152sc!1q0?
+grp 1%f+ 		if \(c == sep\) \{.*?
+			break;.*?
+		} else if \(c == '\''\\\\'\''\) \{.*?
+(			c = handle_bs\(&p\);)7??0?
+grp 07??m 25220reg p OK tcc_win64_x86_64.c:7229:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 	--file->buf_ptr;
+	do \{
+		ch = ninp\(\);.*(redo_start:)
+	start_of_line = 1;
+	in_warn_or_error = 0;8??0?
+grp 08??-65m 25220reg p OK tcc_win64_x86_64.c:7229:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> static int skip_spaces\(void\)
+\{
+	int ch;.*(			file->line_num\+\+;)
+			p\+\+;
+			goto redo_start;9??0?
+grp 09??-79m 25220reg p OK tcc_win64_x86_64.c:7229:a92sc %? %@2152sc!'\''00?
+1;2;3;4;5;6;7;8;9??!219reg tcc_win64_x86_64.c:72292sc %? %@2132sc!0?
 ?0?
 %f+ unterminated_string:
 				/\* XXX: indicate line number of start of string \*/
@@ -2773,8 +5011,32 @@ unterminated_string:
 4??+3m 26220reg p OK tcc_win64_x86_64.c:7234:a42sc %? %@2152sc!1q0?
 %f+ 				tcc_error\("missing terminating %c character", sep\);
 			} else if \(c == '\''\\\\'\''\) \{5??0?
-5??-1m 26220reg p OK tcc_win64_x86_64.c:7234:a52sc %? %@2152sc!0?
-1;2;3;4;5??!219reg tcc_win64_x86_64.c:72342sc %? %@2132sc!0?
+5??-1m 26220reg p OK tcc_win64_x86_64.c:7234:a52sc %? %@2152sc!1q0?
+%f+ ...e...........ri...
+.......X... ....c......n........ ...s.a.. ...s.ri.g...
+
+..	......l....&....O...L.._...;
+....tcc.er.........i.g...rm..a..n...c....r.........e.\).
+..	......... ...=.........6??0?
+6??+3m 26220reg p OK tcc_win64_x86_64.c:7234:a62sc %? %@2152sc!1q0?
+grp 1%f+ unterminated_string:.*?
+				/\* XXX: indicate line number of start of string \*/.*?
+.*?
+(				tok_flags &= ~TOK_FLAG_BOL;)7??0?
+grp 07??m 26220reg p OK tcc_win64_x86_64.c:7234:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 	--file->buf_ptr;
+	do \{
+		ch = ninp\(\);.*(redo_start:)
+	start_of_line = 1;
+	in_warn_or_error = 0;8??0?
+grp 08??-60m 26220reg p OK tcc_win64_x86_64.c:7234:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> static int skip_spaces\(void\)
+\{
+	int ch;.*(			file->line_num\+\+;)
+			p\+\+;
+			goto redo_start;9??0?
+grp 09??-74m 26220reg p OK tcc_win64_x86_64.c:7234:a92sc %? %@2152sc!'\''00?
+1;2;3;4;5;6;7;8;9??!219reg tcc_win64_x86_64.c:72342sc %? %@2132sc!0?
 ?0?
 %f+ 				tcc_error\("missing terminating %c character", sep\);
 			} else if \(c == '\''\\\\'\''\) \{
@@ -2802,8 +5064,33 @@ unterminated_string:
 4??+2m 27220reg p OK tcc_win64_x86_64.c:7237:a42sc %? %@2152sc!1q0?
 ;0fr.,$f+ ^$
 5??0?
-5??-4m 27220reg p OK tcc_win64_x86_64.c:7237:a52sc %? %@2152sc!fr 98fr 980?
-1;2;3;4;5??!219reg tcc_win64_x86_64.c:72372sc %? %@2132sc!0?
+5??-4m 27220reg p OK tcc_win64_x86_64.c:7237:a52sc %? %@2152sc!fr 981qfr 980?
+%f+ ..	.t.._er...."m.....g....m..at....%. ch.ra..e... ..p\).
+.	.....s. i.... .. '\''\\.....
+...........\)
+...	.c...........r. ...
+......=...\+p.
+.	../. ad..c.a.............u...n......a..y...
+
+6??0?
+6??+2m 27220reg p OK tcc_win64_x86_64.c:7237:a62sc %? %@2152sc!1q0?
+grp 1%f+ 				tcc_error\("missing terminating %c character", sep\);.*?
+			} else if \(c == '\''\\\\'\''\) \{.*?
+(				if \(str\))7??0?
+grp 07??m 27220reg p OK tcc_win64_x86_64.c:7237:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 	--file->buf_ptr;
+	do \{
+		ch = ninp\(\);.*(redo_start:)
+	start_of_line = 1;
+	in_warn_or_error = 0;8??0?
+grp 08??-57m 27220reg p OK tcc_win64_x86_64.c:7237:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> static int skip_spaces\(void\)
+\{
+	int ch;.*(			file->line_num\+\+;)
+			p\+\+;
+			goto redo_start;9??0?
+grp 09??-71m 27220reg p OK tcc_win64_x86_64.c:7237:a92sc %? %@2152sc!'\''00?
+1;2;3;4;5;6;7;8;9??!219reg tcc_win64_x86_64.c:72372sc %? %@2132sc!0?
 ?0?
 %f+ 
 				if \(c == '\''\\\\'\''\) \{
@@ -2824,8 +5111,30 @@ unterminated_string:
 						goto unterminated_string;3??0?
 3??m 28220reg p OK tcc_win64_x86_64.c:7242:a32sc %? %@2152sc!1q0?
 ;0fr.,$f+ ^				}$4??0?
-4??-4m 28220reg p OK tcc_win64_x86_64.c:7242:a42sc %? %@2152sc!fr 98fr 980?
-1;2;3;4??!219reg tcc_win64_x86_64.c:72422sc %? %@2132sc!0?
+4??-4m 28220reg p OK tcc_win64_x86_64.c:7242:a42sc %? %@2152sc!fr 981qfr 980?
+%f+ 
+.		..........'\''\\\\....
+.	...... h..d.........;
+...	..f..........E...
+	..	..g.t. .n.e...n.te..s.....;
+	....6??0?
+6??+1m 28220reg p OK tcc_win64_x86_64.c:7242:a62sc %? %@2152sc!1q0?
+grp 1%f+ .*?
+(				if \(c == '\''\\\\'\''\) \{)7??0?
+grp 07??m 28220reg p OK tcc_win64_x86_64.c:7242:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 	--file->buf_ptr;
+	do \{
+		ch = ninp\(\);.*(redo_start:)
+	start_of_line = 1;
+	in_warn_or_error = 0;8??0?
+grp 08??-52m 28220reg p OK tcc_win64_x86_64.c:7242:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> static int skip_spaces\(void\)
+\{
+	int ch;.*(			file->line_num\+\+;)
+			p\+\+;
+			goto redo_start;9??0?
+grp 09??-66m 28220reg p OK tcc_win64_x86_64.c:7242:a92sc %? %@2152sc!'\''00?
+1;2;3;4;6;7;8;9??!219reg tcc_win64_x86_64.c:72422sc %? %@2132sc!0?
 ?0?
 %f+ 				}
 				goto add_char;
@@ -2848,8 +5157,30 @@ unterminated_string:
 4??+1m 29220reg p OK tcc_win64_x86_64.c:7247:a42sc %? %@2152sc!fr 981qfr 980?
 %f+ 			}
 		} else if \(c == '\''\\n'\''\) \{5??0?
-5??-3m 29220reg p OK tcc_win64_x86_64.c:7247:a52sc %? %@2152sc!0?
-1;2;3;4;5??!219reg tcc_win64_x86_64.c:72472sc %? %@2132sc!0?
+5??-3m 29220reg p OK tcc_win64_x86_64.c:7247:a52sc %? %@2152sc!1q0?
+%f+ 	.	.}
+	........a.......;
+.	.. .... .
+.	....t. r....
+	...
+.	...ls.........=...n....6??0?
+6??+1m 29220reg p OK tcc_win64_x86_64.c:7247:a62sc %? %@2152sc!1q0?
+grp 1%f+ 				}.*?
+(				goto add_char;)7??0?
+grp 07??m 29220reg p OK tcc_win64_x86_64.c:7247:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 	--file->buf_ptr;
+	do \{
+		ch = ninp\(\);.*(redo_start:)
+	start_of_line = 1;
+	in_warn_or_error = 0;8??0?
+grp 08??-47m 29220reg p OK tcc_win64_x86_64.c:7247:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> static int skip_spaces\(void\)
+\{
+	int ch;.*(			file->line_num\+\+;)
+			p\+\+;
+			goto redo_start;9??0?
+grp 09??-61m 29220reg p OK tcc_win64_x86_64.c:7247:a92sc %? %@2152sc!'\''00?
+1;2;3;4;5;6;7;8;9??!219reg tcc_win64_x86_64.c:72472sc %? %@2132sc!0?
 ?0?
 %f+ 			}
 		} else if \(c == '\''\\n'\''\) \{
@@ -2871,8 +5202,31 @@ add_lf:
 4??+2m 30220reg p OK tcc_win64_x86_64.c:7252:a42sc %? %@2152sc!1q0?
 %f+ 				file->line_num\+\+;
 				goto add_char;5??0?
-5??-2m 30220reg p OK tcc_win64_x86_64.c:7252:a52sc %? %@2152sc!0?
-1;2;3;4;5??!219reg tcc_win64_x86_64.c:72522sc %? %@2132sc!0?
+5??-2m 30220reg p OK tcc_win64_x86_64.c:7252:a52sc %? %@2152sc!1q0?
+%f+ 	...
+... ...........=..'\''..'\''...
+a......
+...........P...._I..STR..GS...
+..	.fi........_.u..\+.
+............_...r.6??0?
+6??+2m 30220reg p OK tcc_win64_x86_64.c:7252:a62sc %? %@2152sc!1q0?
+grp 1%f+ 			}.*?
+		} else if \(c == '\''\\n'\''\) \{.*?
+(add_lf:)7??0?
+grp 07??m 30220reg p OK tcc_win64_x86_64.c:7252:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 	--file->buf_ptr;
+	do \{
+		ch = ninp\(\);.*(redo_start:)
+	start_of_line = 1;
+	in_warn_or_error = 0;8??0?
+grp 08??-42m 30220reg p OK tcc_win64_x86_64.c:7252:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> static int skip_spaces\(void\)
+\{
+	int ch;.*(			file->line_num\+\+;)
+			p\+\+;
+			goto redo_start;9??0?
+grp 09??-56m 30220reg p OK tcc_win64_x86_64.c:7252:a92sc %? %@2152sc!'\''00?
+1;2;3;4;5;6;7;8;9??!219reg tcc_win64_x86_64.c:72522sc %? %@2132sc!0?
 ?0?
 %f+ 				file->line_num\+\+;
 				goto add_char;
@@ -2906,8 +5260,35 @@ add_lf:
 				goto add_char;4??0?
 4??+2m 31220reg p OK tcc_win64_x86_64.c:7256:a42sc %? %@2152sc!1q0?
 ;0fr.,$f+ ^			}$5??0?
-5??-7m 31220reg p OK tcc_win64_x86_64.c:7256:a52sc %? %@2152sc!fr 98fr 980?
-1;2;3;4;5??!219reg tcc_win64_x86_64.c:72562sc %? %@2132sc!0?
+5??-7m 31220reg p OK tcc_win64_x86_64.c:7256:a52sc %? %@2152sc!fr 981qfr 980?
+%f+ .	.....e-....e.......
+..		...o........r.
+			....s...f...t..../......s.i.p....\*/
+
+...............i......s..i...
+	..}.......
+./..........g..........t.......... %. ..a......",....\).
+
+....r.t.r..p.
+	...6??0?
+6??+2m 31220reg p OK tcc_win64_x86_64.c:7256:a62sc %? %@2152sc!1q0?
+grp 1%f+ 				file->line_num\+\+;.*?
+				goto add_char;.*?
+(			} else if \(str\) \{/\* not skipping \*/)7??0?
+grp 07??m 31220reg p OK tcc_win64_x86_64.c:7256:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 	--file->buf_ptr;
+	do \{
+		ch = ninp\(\);.*(redo_start:)
+	start_of_line = 1;
+	in_warn_or_error = 0;8??0?
+grp 08??-38m 31220reg p OK tcc_win64_x86_64.c:7256:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> static int skip_spaces\(void\)
+\{
+	int ch;.*(			file->line_num\+\+;)
+			p\+\+;
+			goto redo_start;9??0?
+grp 09??-52m 31220reg p OK tcc_win64_x86_64.c:7256:a92sc %? %@2152sc!'\''00?
+1;2;3;4;5;6;7;8;9??!219reg tcc_win64_x86_64.c:72562sc %? %@2132sc!0?
 ?0?
 %f+ 			}
 		} else if \(c == '\''\\r'\''\) \{
@@ -2957,8 +5338,39 @@ add_char:
 %f+ 		} else \{
 add_char:
 			if \(str\)5??0?
-5??-11m 32220reg p OK tcc_win64_x86_64.c:7264:a52sc %? %@2152sc!0?
-1;2;3;4;5??!219reg tcc_win64_x86_64.c:72642sc %? %@2132sc!0?
+5??-11m 32220reg p OK tcc_win64_x86_64.c:7264:a52sc %? %@2152sc!1q0?
+%f+ 	...
+... e.s...f.....=........
+.... =......
+.........=..'\''....
+........h...l........;
+........ =..'\''\\n..
+......t..a.....;
+......\(c ..........
+....g....u.t..m....e.........
+....f.\(....
+..	..str...a..s....'\''.r..;
+..	g.........
+	.}......\{
+..d...a..
+	..........6??0?
+6??+1m 32220reg p OK tcc_win64_x86_64.c:7264:a62sc %? %@2152sc!1q0?
+grp 1%f+ 			}.*?
+(		} else if \(c == '\''\\r'\''\) \{)7??0?
+grp 07??m 32220reg p OK tcc_win64_x86_64.c:7264:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 	--file->buf_ptr;
+	do \{
+		ch = ninp\(\);.*(redo_start:)
+	start_of_line = 1;
+	in_warn_or_error = 0;8??0?
+grp 08??-30m 32220reg p OK tcc_win64_x86_64.c:7264:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> static int skip_spaces\(void\)
+\{
+	int ch;.*(			file->line_num\+\+;)
+			p\+\+;
+			goto redo_start;9??0?
+grp 09??-44m 32220reg p OK tcc_win64_x86_64.c:7264:a92sc %? %@2152sc!'\''00?
+1;2;3;4;5;6;7;8;9??!219reg tcc_win64_x86_64.c:72642sc %? %@2132sc!0?
 ?0?
 %f+ add_char:
 			if \(str\)
@@ -2970,8 +5382,24 @@ add_char:
 %f+ add_char:
 			if \(str\)
 				cstr_ccat\(str, c\);4??0?
-4??+2m 33220reg p OK tcc_win64_x86_64.c:7278:a42sc %? %@2152sc!0?
-1;4??!219reg tcc_win64_x86_64.c:72782sc %? %@2132sc!0?
+4??+2m 33220reg p OK tcc_win64_x86_64.c:7278:a42sc %? %@2152sc!1q0?
+grp 1%f+ add_char:.*?
+			if \(str\).*?
+(				cstr_ccat\(str, c\);)7??0?
+grp 07??m 33220reg p OK tcc_win64_x86_64.c:7278:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 	--file->buf_ptr;
+	do \{
+		ch = ninp\(\);.*(redo_start:)
+	start_of_line = 1;
+	in_warn_or_error = 0;8??0?
+grp 08??-16m 33220reg p OK tcc_win64_x86_64.c:7278:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> static int skip_spaces\(void\)
+\{
+	int ch;.*(			file->line_num\+\+;)
+			p\+\+;
+			goto redo_start;9??0?
+grp 09??-30m 33220reg p OK tcc_win64_x86_64.c:7278:a92sc %? %@2152sc!'\''00?
+1;4;7;8;9??!219reg tcc_win64_x86_64.c:72782sc %? %@2132sc!0?
 ?0?
 %f+ 	return p;
 }
@@ -2992,8 +5420,32 @@ add_char:
 4??+3m 34220reg p OK tcc_win64_x86_64.c:7285:a42sc %? %@2152sc!1q0?
 ;0fr.,$f+ ^$
 5??0?
-5??-1m 34220reg p OK tcc_win64_x86_64.c:7285:a52sc %? %@2152sc!fr 98fr 980?
-1;2;3;4;5??!219reg tcc_win64_x86_64.c:72852sc %? %@2132sc!0?
+5??-1m 34220reg p OK tcc_win64_x86_64.c:7285:a52sc %? %@2152sc!fr 981qfr 980?
+%f+ 	..t.r....
+}
+/..s.ip...oc. .. .e..........e...,....if o........\....i. ...o .a....o.
+ . .i./....if ..
+
+6??0?
+6??+3m 34220reg p OK tcc_win64_x86_64.c:7285:a62sc %? %@2152sc!1q0?
+grp 1%f+ 	return p;.*?
+}.*?
+/\* skip block of text until #else, #elif or #endif\. skip also pairs of.*?
+(   #if/#endif \*/)7??0?
+grp 07??m 34220reg p OK tcc_win64_x86_64.c:7285:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 	--file->buf_ptr;
+	do \{
+		ch = ninp\(\);.*(redo_start:)
+	start_of_line = 1;
+	in_warn_or_error = 0;8??0?
+grp 08??-9m 34220reg p OK tcc_win64_x86_64.c:7285:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> static int skip_spaces\(void\)
+\{
+	int ch;.*(			file->line_num\+\+;)
+			p\+\+;
+			goto redo_start;9??0?
+grp 09??-23m 34220reg p OK tcc_win64_x86_64.c:7285:a92sc %? %@2152sc!'\''00?
+1;2;3;4;5;6;7;8;9??!219reg tcc_win64_x86_64.c:72852sc %? %@2132sc!0?
 ?0?
 %f+ 
 static void preprocess_skip\(void\)
@@ -3013,8 +5465,29 @@ static void preprocess_skip\(void\)
 %f+ \{
 	int a, start_of_line, c, in_warn_or_error;
 	uint8_t \*p;5??0?
-5??-1m 35220reg p OK tcc_win64_x86_64.c:7287:a52sc %? %@2152sc!0?
-1;2;3;4;5??!219reg tcc_win64_x86_64.c:72872sc %? %@2132sc!0?
+5??-1m 35220reg p OK tcc_win64_x86_64.c:7287:a52sc %? %@2152sc!1q0?
+%f+ 
+s........i. .....o.e.....ip....d.
+\{
+	..t .,....................n..........r....
+...n.8.....;6??0?
+6??+1m 35220reg p OK tcc_win64_x86_64.c:7287:a62sc %? %@2152sc!1q0?
+grp 1%f+ .*?
+(static void preprocess_skip\(void\))7??0?
+grp 07??m 35220reg p OK tcc_win64_x86_64.c:7287:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 	--file->buf_ptr;
+	do \{
+		ch = ninp\(\);.*(redo_start:)
+	start_of_line = 1;
+	in_warn_or_error = 0;8??0?
+grp 08??-7m 35220reg p OK tcc_win64_x86_64.c:7287:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> static int skip_spaces\(void\)
+\{
+	int ch;.*(			file->line_num\+\+;)
+			p\+\+;
+			goto redo_start;9??0?
+grp 09??-21m 35220reg p OK tcc_win64_x86_64.c:7287:a92sc %? %@2152sc!'\''00?
+1;2;3;4;5;6;7;8;9??!219reg tcc_win64_x86_64.c:72872sc %? %@2132sc!0?
 ?0?
 %f+ 		case '\''\\f'\'':
 		case '\''\\v'\'':
@@ -3026,8 +5499,20 @@ static void preprocess_skip\(void\)
 %f+ 		case '\''\\f'\'':
 		case '\''\\v'\'':
 		case '\''\\r'\'':4??0?
-4??+2m 36220reg p OK tcc_win64_x86_64.c:7304:a42sc %? %@2152sc!0?
-1;4??!219reg tcc_win64_x86_64.c:73042sc %? %@2132sc!0?
+4??+2m 36220reg p OK tcc_win64_x86_64.c:7304:a42sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 		switch \(c\) \{
+		case '\'' '\'':
+		case '\''\\t'\'':.*(			if \(c == CH_EOF\))
+				expect\("#endif"\);
+			if \(c == '\''\\\\'\''\)8??0?
+grp 08??-9m 36220reg p OK tcc_win64_x86_64.c:7304:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> 	in_warn_or_error = 0;
+	for \(;;\) \{
+		c = \*p;.*(				\+\+p;)
+			continue;
+		/\* skip strings \*/9??0?
+grp 09??-12m 36220reg p OK tcc_win64_x86_64.c:7304:a92sc %? %@2152sc!'\''00?
+1;4;8;9??!219reg tcc_win64_x86_64.c:73042sc %? %@2132sc!0?
 ?0?
 %f+ 			p\+\+;
 			continue;
@@ -3039,8 +5524,24 @@ static void preprocess_skip\(void\)
 %f+ 			p\+\+;
 			continue;
 		case '\''\\n'\'':4??0?
-4??+2m 37220reg p OK tcc_win64_x86_64.c:7307:a42sc %? %@2152sc!0?
-1;4??!219reg tcc_win64_x86_64.c:73072sc %? %@2132sc!0?
+4??+2m 37220reg p OK tcc_win64_x86_64.c:7307:a42sc %? %@2152sc!1q0?
+grp 1%f+ 			p\+\+;.*?
+			continue;.*?
+(		case '\''\\n'\'':)7??0?
+grp 07??m 37220reg p OK tcc_win64_x86_64.c:7307:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 		switch \(c\) \{
+		case '\'' '\'':
+		case '\''\\t'\'':.*(			if \(c == CH_EOF\))
+				expect\("#endif"\);
+			if \(c == '\''\\\\'\''\)8??0?
+grp 08??-6m 37220reg p OK tcc_win64_x86_64.c:7307:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> 	in_warn_or_error = 0;
+	for \(;;\) \{
+		c = \*p;.*(				\+\+p;)
+			continue;
+		/\* skip strings \*/9??0?
+grp 09??-9m 37220reg p OK tcc_win64_x86_64.c:7307:a92sc %? %@2152sc!'\''00?
+1;4;7;8;9??!219reg tcc_win64_x86_64.c:73072sc %? %@2132sc!0?
 ?0?
 %f+ 			if \(in_warn_or_error\)
 				goto _default;
@@ -3067,8 +5568,34 @@ static void preprocess_skip\(void\)
 		/\* skip comments \*/
 
 5??0?
-5??-1m 38220reg p OK tcc_win64_x86_64.c:7325:a52sc %? %@2152sc!0?
-1;2;3;4;5??!219reg tcc_win64_x86_64.c:73252sc %? %@2132sc!0?
+5??-1m 38220reg p OK tcc_win64_x86_64.c:7325:a52sc %? %@2152sc!1q0?
+%f+ 	.	i......w..n_....r.or.
+.....o..._.......;
+......_......&. .....F.....OL.
+	... ........p..s....g.p.... N...\).
+.	.b.e.k.
+.......i..c..m..t....
+
+6??0?
+6??+3m 38220reg p OK tcc_win64_x86_64.c:7325:a62sc %? %@2152sc!1q0?
+grp 1%f+ 			if \(in_warn_or_error\).*?
+				goto _default;.*?
+			tok_flags &= ~TOK_FLAG_BOL;.*?
+(			p = parse_pp_string\(p, c, NULL\);)7??0?
+grp 07??m 38220reg p OK tcc_win64_x86_64.c:7325:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 				\+\+p;
+			continue;
+		/\* skip strings \*/.*(			if \(in_warn_or_error\))
+				goto _default;
+			\+\+p;8??0?
+grp 08??-5m 38220reg p OK tcc_win64_x86_64.c:7325:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> 			if \(c == CH_EOF\)
+				expect\("#endif"\);
+			if \(c == '\''\\\\'\''\).*(			c = handle_bs\(&p\);)
+			if \(c == '\''\*'\''\) \{
+				p = parse_comment\(p\);9??0?
+grp 09??-8m 38220reg p OK tcc_win64_x86_64.c:7325:a92sc %? %@2152sc!'\''00?
+1;2;3;4;5;6;7;8;9??!219reg tcc_win64_x86_64.c:73252sc %? %@2132sc!0?
 ?0?
 %f+ 			\+\+p;
 			c = handle_bs\(&p\);
@@ -3086,8 +5613,31 @@ static void preprocess_skip\(void\)
 			if \(c == '\''\*'\''\) \{4??0?
 4??+3m 40220reg p OK tcc_win64_x86_64.c:7335:a42sc %? %@2152sc!1q0?
 ;0fr.,$f+ ^			} else if \(c == '\''/'\''\) \{$5??0?
-5??-1m 40220reg p OK tcc_win64_x86_64.c:7335:a52sc %? %@2152sc!fr 98fr 980?
-1;2;3;4;5??!219reg tcc_win64_x86_64.c:73352sc %? %@2132sc!0?
+5??-1m 40220reg p OK tcc_win64_x86_64.c:7335:a52sc %? %@2152sc!fr 981qfr 980?
+%f+ 	.	\+\+p.
+...........l._..\(&.\).
+........ ...'\''....\{
+.	..p...p...e..om..n....;
+.	....lse ............. .6??0?
+6??+3m 40220reg p OK tcc_win64_x86_64.c:7335:a62sc %? %@2152sc!1q0?
+grp 1%f+ 			\+\+p;.*?
+			c = handle_bs\(&p\);.*?
+			if \(c == '\''\*'\''\) \{.*?
+(				p = parse_comment\(p\);)7??0?
+grp 07??m 40220reg p OK tcc_win64_x86_64.c:7335:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 		case '\''/'\'':
+			if \(in_warn_or_error\)
+				goto _default;.*(				if \(tok == TOK_IF \|\| tok == TOK_IFDEF \|\| tok == TOK_IFNDEF\))
+					a\+\+;
+				else if \(tok == TOK_ENDIF\)8??0?
+grp 08??-14m 40220reg p OK tcc_win64_x86_64.c:7335:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> 			p = parse_pp_string\(p, c, NULL\);
+			break;
+		/\* skip comments \*/.*(					a--;)
+				else if \( tok == TOK_ERROR \|\| tok == TOK_WARNING\)
+					in_warn_or_error = 1;9??0?
+grp 09??-17m 40220reg p OK tcc_win64_x86_64.c:7335:a92sc %? %@2152sc!'\''00?
+1;2;3;4;5;6;7;8;9??!219reg tcc_win64_x86_64.c:73352sc %? %@2132sc!0?
 ?0?
 %f+ 			} else if \(c == '\''/'\''\) \{
 				p = parse_line_comment\(p\);
@@ -3107,8 +5657,29 @@ static void preprocess_skip\(void\)
 %f+ 			}
 			continue;
 		case '\''#'\'':5??0?
-5??-1m 41220reg p OK tcc_win64_x86_64.c:7337:a52sc %? %@2152sc!0?
-1;2;3;4;5??!219reg tcc_win64_x86_64.c:73372sc %? %@2132sc!0?
+5??-1m 41220reg p OK tcc_win64_x86_64.c:7337:a52sc %? %@2152sc!1q0?
+%f+ .....e........c... '\''.....
+....p.. p.rs......_...m.n.....
+	..}
+.........ue.
+.........'\''.6??0?
+6??+1m 41220reg p OK tcc_win64_x86_64.c:7337:a62sc %? %@2152sc!1q0?
+grp 1%f+ 			} else if \(c == '\''/'\''\) \{.*?
+(				p = parse_line_comment\(p\);)7??0?
+grp 07??m 41220reg p OK tcc_win64_x86_64.c:7337:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 		case '\''/'\'':
+			if \(in_warn_or_error\)
+				goto _default;.*(				if \(tok == TOK_IF \|\| tok == TOK_IFDEF \|\| tok == TOK_IFNDEF\))
+					a\+\+;
+				else if \(tok == TOK_ENDIF\)8??0?
+grp 08??-12m 41220reg p OK tcc_win64_x86_64.c:7337:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> 			p = parse_pp_string\(p, c, NULL\);
+			break;
+		/\* skip comments \*/.*(					a--;)
+				else if \( tok == TOK_ERROR \|\| tok == TOK_WARNING\)
+					in_warn_or_error = 1;9??0?
+grp 09??-15m 41220reg p OK tcc_win64_x86_64.c:7337:a92sc %? %@2152sc!'\''00?
+1;2;3;4;5;6;7;8;9??!219reg tcc_win64_x86_64.c:73372sc %? %@2132sc!0?
 ?0?
 %f+ 			}
 			continue;
@@ -3120,8 +5691,24 @@ static void preprocess_skip\(void\)
 %f+ 			}
 			continue;
 		case '\''#'\'':4??0?
-4??+2m 43220reg p OK tcc_win64_x86_64.c:7340:a42sc %? %@2152sc!0?
-1;4??!219reg tcc_win64_x86_64.c:73402sc %? %@2132sc!0?
+4??+2m 43220reg p OK tcc_win64_x86_64.c:7340:a42sc %? %@2152sc!1q0?
+grp 1%f+ 			}.*?
+			continue;.*?
+(		case '\''#'\'':)7??0?
+grp 07??m 43220reg p OK tcc_win64_x86_64.c:7340:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 		case '\''/'\'':
+			if \(in_warn_or_error\)
+				goto _default;.*(				if \(tok == TOK_IF \|\| tok == TOK_IFDEF \|\| tok == TOK_IFNDEF\))
+					a\+\+;
+				else if \(tok == TOK_ENDIF\)8??0?
+grp 08??-9m 43220reg p OK tcc_win64_x86_64.c:7340:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> 			p = parse_pp_string\(p, c, NULL\);
+			break;
+		/\* skip comments \*/.*(					a--;)
+				else if \( tok == TOK_ERROR \|\| tok == TOK_WARNING\)
+					in_warn_or_error = 1;9??0?
+grp 09??-12m 43220reg p OK tcc_win64_x86_64.c:7340:a92sc %? %@2152sc!'\''00?
+1;4;7;8;9??!219reg tcc_win64_x86_64.c:73402sc %? %@2132sc!0?
 ?0?
 %f+ 				file->buf_ptr = p;
 				next_nomacro\(\);
@@ -3133,8 +5720,24 @@ static void preprocess_skip\(void\)
 %f+ 				file->buf_ptr = p;
 				next_nomacro\(\);
 				p = file->buf_ptr;4??0?
-4??+2m 44220reg p OK tcc_win64_x86_64.c:7345:a42sc %? %@2152sc!0?
-1;4??!219reg tcc_win64_x86_64.c:73452sc %? %@2132sc!0?
+4??+2m 44220reg p OK tcc_win64_x86_64.c:7345:a42sc %? %@2152sc!1q0?
+grp 1%f+ 				file->buf_ptr = p;.*?
+				next_nomacro\(\);.*?
+(				p = file->buf_ptr;)7??0?
+grp 07??m 44220reg p OK tcc_win64_x86_64.c:7345:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 		case '\''/'\'':
+			if \(in_warn_or_error\)
+				goto _default;.*(				if \(tok == TOK_IF \|\| tok == TOK_IFDEF \|\| tok == TOK_IFNDEF\))
+					a\+\+;
+				else if \(tok == TOK_ENDIF\)8??0?
+grp 08??-4m 44220reg p OK tcc_win64_x86_64.c:7345:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> 			p = parse_pp_string\(p, c, NULL\);
+			break;
+		/\* skip comments \*/.*(					a--;)
+				else if \( tok == TOK_ERROR \|\| tok == TOK_WARNING\)
+					in_warn_or_error = 1;9??0?
+grp 09??-7m 44220reg p OK tcc_win64_x86_64.c:7345:a92sc %? %@2152sc!'\''00?
+1;4;7;8;9??!219reg tcc_win64_x86_64.c:73452sc %? %@2132sc!0?
 ?0?
 %f+ 				else if \(tok == TOK_LINEFEED\)
 					goto redo_start;
@@ -3158,8 +5761,33 @@ static void preprocess_skip\(void\)
 %f+ 			}
 
 			else if \(parse_flags & PARSE_FLAG_ASM_FILE\)5??0?
-5??-1m 45220reg p OK tcc_win64_x86_64.c:7358:a52sc %? %@2152sc!0?
-1;2;3;4;5??!219reg tcc_win64_x86_64.c:73582sc %? %@2132sc!0?
+5??-1m 45220reg p OK tcc_win64_x86_64.c:7358:a52sc %? %@2152sc!1q0?
+%f+ .	....s.....\(.ok... T......E....\)
+.			..... r..o.s....;
+..	........ .pa..e_...g. &.PA.......G..SM...L..
+..........ar.....n._.....n.......\).
+	...
+
+.....se... .p..s.....g. ......E.F..G_..._FI.E.6??0?
+6??+3m 45220reg p OK tcc_win64_x86_64.c:7358:a62sc %? %@2152sc!1q0?
+grp 1%f+ 				else if \(tok == TOK_LINEFEED\).*?
+					goto redo_start;.*?
+				else if \(parse_flags & PARSE_FLAG_ASM_FILE\).*?
+(					p = parse_line_comment\(p - 1\);)7??0?
+grp 07??m 45220reg p OK tcc_win64_x86_64.c:7358:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 					a--;
+				else if \( tok == TOK_ERROR \|\| tok == TOK_WARNING\)
+					in_warn_or_error = 1;.*(		start_of_line = 0;)
+	}
+the_end: ;8??0?
+grp 08??-12m 45220reg p OK tcc_win64_x86_64.c:7358:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> 				if \(tok == TOK_IF \|\| tok == TOK_IFDEF \|\| tok == TOK_IFNDEF\)
+					a\+\+;
+				else if \(tok == TOK_ENDIF\).*(/\* token string handling \*/)
+ST_INLN void tok_str_new\(TokenString \*s\)
+\{9??0?
+grp 09??-17m 45220reg p OK tcc_win64_x86_64.c:7358:a92sc %? %@2152sc!'\''00?
+1;2;3;4;5;6;7;8;9??!219reg tcc_win64_x86_64.c:73582sc %? %@2132sc!0?
 ?0?
 %f+ 			}
 
@@ -3183,8 +5811,33 @@ _default:2??0?
 %f+ 
 			break;
 _default:5??0?
-5??-1m 46220reg p OK tcc_win64_x86_64.c:7362:a52sc %? %@2152sc!0?
-1;2;3;4;5??!219reg tcc_win64_x86_64.c:73622sc %? %@2132sc!0?
+5??-1m 46220reg p OK tcc_win64_x86_64.c:7362:a52sc %? %@2152sc!1q0?
+%f+ ..	.
+
+....l.. .. \(...se_..........R...F..G..S......\)
+.	..........e_...e....m....p .....
+
+...b.e..;
+....a.lt.6??0?
+6??+3m 46220reg p OK tcc_win64_x86_64.c:7362:a62sc %? %@2152sc!1q0?
+grp 1%f+ 			}.*?
+.*?
+			else if \(parse_flags & PARSE_FLAG_ASM_FILE\).*?
+(				p = parse_line_comment\(p - 1\);)7??0?
+grp 07??m 46220reg p OK tcc_win64_x86_64.c:7362:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 					a--;
+				else if \( tok == TOK_ERROR \|\| tok == TOK_WARNING\)
+					in_warn_or_error = 1;.*(		start_of_line = 0;)
+	}
+the_end: ;8??0?
+grp 08??-8m 46220reg p OK tcc_win64_x86_64.c:7362:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> 				if \(tok == TOK_IF \|\| tok == TOK_IFDEF \|\| tok == TOK_IFNDEF\)
+					a\+\+;
+				else if \(tok == TOK_ENDIF\).*(/\* token string handling \*/)
+ST_INLN void tok_str_new\(TokenString \*s\)
+\{9??0?
+grp 09??-13m 46220reg p OK tcc_win64_x86_64.c:7362:a92sc %? %@2152sc!'\''00?
+1;2;3;4;5;6;7;8;9??!219reg tcc_win64_x86_64.c:73622sc %? %@2132sc!0?
 ?0?
 %f+ 			break;
 _default:
@@ -3196,8 +5849,24 @@ _default:
 %f+ 			break;
 _default:
 		default:4??0?
-4??+2m 47220reg p OK tcc_win64_x86_64.c:7366:a42sc %? %@2152sc!0?
-1;4??!219reg tcc_win64_x86_64.c:73662sc %? %@2132sc!0?
+4??+2m 47220reg p OK tcc_win64_x86_64.c:7366:a42sc %? %@2152sc!1q0?
+grp 1%f+ 			break;.*?
+_default:.*?
+(		default:)7??0?
+grp 07??m 47220reg p OK tcc_win64_x86_64.c:7366:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 					a--;
+				else if \( tok == TOK_ERROR \|\| tok == TOK_WARNING\)
+					in_warn_or_error = 1;.*(		start_of_line = 0;)
+	}
+the_end: ;8??0?
+grp 08??-4m 47220reg p OK tcc_win64_x86_64.c:7366:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> 				if \(tok == TOK_IF \|\| tok == TOK_IFDEF \|\| tok == TOK_IFNDEF\)
+					a\+\+;
+				else if \(tok == TOK_ENDIF\).*(/\* token string handling \*/)
+ST_INLN void tok_str_new\(TokenString \*s\)
+\{9??0?
+grp 09??-9m 47220reg p OK tcc_win64_x86_64.c:7366:a92sc %? %@2152sc!'\''00?
+1;4;7;8;9??!219reg tcc_win64_x86_64.c:73662sc %? %@2132sc!0?
 ?0?
 %f+ 	}
 the_end: ;
@@ -3209,8 +5878,24 @@ ST_INLN void tok_str_new\(TokenString \*s\)1??0?
 %f+ 	}
 the_end: ;
 	file->buf_ptr = p;4??0?
-4??+2m 48220reg p OK tcc_win64_x86_64.c:7373:a42sc %? %@2152sc!0?
-1;4??!219reg tcc_win64_x86_64.c:73732sc %? %@2132sc!0?
+4??+2m 48220reg p OK tcc_win64_x86_64.c:7373:a42sc %? %@2152sc!1q0?
+grp 1%f+ 	}.*?
+the_end: ;.*?
+(	file->buf_ptr = p;)7??0?
+grp 07??m 48220reg p OK tcc_win64_x86_64.c:7373:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 			break;
+		}
+		start_of_line = 0;.*(	s->str = NULL;)
+	s->len = s->need_spc = 0;
+	s->allocated_len = 0;8??0?
+grp 08??-5m 48220reg p OK tcc_win64_x86_64.c:7373:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> _default:
+		default:
+			p\+\+;.*(ST_FUNC TokenString \*tok_str_alloc\(void\))
+\{
+	TokenString \*str = tal_realloc\(&tokstr_alloc, 0, sizeof \*str\);9??0?
+grp 09??-11m 48220reg p OK tcc_win64_x86_64.c:7373:a92sc %? %@2152sc!'\''00?
+1;4;7;8;9??!219reg tcc_win64_x86_64.c:73732sc %? %@2132sc!0?
 ?0?
 %f+ 	s->next = first_arg;
 	table_ident\[v - TOK_IDENT]->sym_define = s;
@@ -3235,8 +5920,33 @@ the_end: ;
 %f+ 		tcc_warning\("%s redefined", get_tok_str\(v, NULL\)\);
 }
 /\* undefined a define symbol\. Its name is just set to zero \*/5??0?
-5??-1m 49220reg p OK tcc_win64_x86_64.c:7622:a52sc %? %@2152sc!0?
-1;2;3;4;5??!219reg tcc_win64_x86_64.c:76222sc %? %@2132sc!0?
+5??-1m 49220reg p OK tcc_win64_x86_64.c:7622:a52sc %? %@2152sc!1q0?
+%f+ ..-..e.t..........r.;
+	....e.i.....v.-.......E....>.ym..e...... .;
+
+..f... &&............q.a.\(...d,.......
+.	.cc..a.......%...e.e........g.._..k...r.v....LL...
+}
+.. .n..f...d ..d.......ym.o...... ...e......st...........o...6??0?
+6??+3m 49220reg p OK tcc_win64_x86_64.c:7622:a62sc %? %@2152sc!1q0?
+grp 1%f+ 	s->next = first_arg;.*?
+	table_ident\[v - TOK_IDENT]->sym_define = s;.*?
+.*?
+(	if \(o && !macro_is_equal\(o->d, s->d\)\))7??0?
+grp 07??m 49220reg p OK tcc_win64_x86_64.c:7622:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 	o = define_find\(v\);
+	s = sym_push2\(&define_stack, v, macro_type, 0\);
+	s->d = str;.*(ST_FUNC void define_undef\(Sym \*s\))
+\{
+	int v = s->v;8??0?
+grp 08??-5m 49220reg p OK tcc_win64_x86_64.c:7622:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> ST_INLN void define_push\(int v, int macro_type, int \*str, Sym \*first_arg\)
+\{
+	Sym \*s, \*o;.*(	if \(v >= TOK_IDENT && v < tok_ident\))
+		table_ident\[v - TOK_IDENT]->sym_define = NULL;
+}9??0?
+grp 09??-8m 49220reg p OK tcc_win64_x86_64.c:7622:a92sc %? %@2152sc!'\''00?
+1;2;3;4;5;6;7;8;9??!219reg tcc_win64_x86_64.c:76222sc %? %@2132sc!0?
 ?0?
 %f+ 		tcc_warning\("extra tokens after directive"\);
 	while \(macro_stack\)
@@ -3263,8 +5973,34 @@ static CachedInclude \*2??0?
 %f+ }
 
 static CachedInclude \*5??0?
-5??-2m 50220reg p OK tcc_win64_x86_64.c:7677:a52sc %? %@2152sc!0?
-1;2;3;4;5??!219reg tcc_win64_x86_64.c:76772sc %? %@2132sc!0?
+5??-2m 50220reg p OK tcc_win64_x86_64.c:7677:a52sc %? %@2152sc!1q0?
+%f+ ......wa...ng\(................t.. d...........
+	..il...m.....s.a...
+..e......ro...
+	...e...uf...r.=...r.e.........me......e....._..r...1..
+.n.........ro\(.;
+}
+
+st.t.c ...hed.........6??0?
+6??+3m 50220reg p OK tcc_win64_x86_64.c:7677:a62sc %? %@2152sc!1q0?
+grp 1%f+ 		tcc_warning\("extra tokens after directive"\);.*?
+	while \(macro_stack\).*?
+		end_macro\(\);.*?
+(	file->buf_ptr = parse_line_comment\(file->buf_ptr - 1\);)7??0?
+grp 07??m 50220reg p OK tcc_win64_x86_64.c:7677:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 	if \(tok == TOK_LINEFEED\)
+		return;
+	if \(warn\).*(static int parse_include\(TCCState \*s1, int do_next, int test\))
+\{
+	int c, i;8??0?
+grp 08??-7m 50220reg p OK tcc_win64_x86_64.c:7677:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> 	fprintf\(s->ppfp, &"\\n\[%s]\\n"\[!\(s->dflag & 32\)], p\), fflush\(s->ppfp\);
+	define_push\(tok, MACRO_OBJ, NULL, NULL\);
+}.*(	if \(c == '\''<'\'' \|\| c == '\''\\"'\''\) \{)
+		cstr_reset\(&tokcstr\);
+		file->buf_ptr = parse_pp_string\(file->buf_ptr, c == '\''<'\'' \? '\''>'\'' : c, &tokcstr\);9??0?
+grp 09??-14m 50220reg p OK tcc_win64_x86_64.c:7677:a92sc %? %@2152sc!'\''00?
+1;2;3;4;5;6;7;8;9??!219reg tcc_win64_x86_64.c:76772sc %? %@2132sc!0?
 ?0?
 %f+ 
 static int parse_include\(TCCState \*s1, int do_next, int test\)
@@ -3291,8 +6027,34 @@ static int parse_include\(TCCState \*s1, int do_next, int test\)
 	CachedInclude \*e;
 
 5??0?
-5??-1m 51220reg p OK tcc_win64_x86_64.c:7686:a52sc %? %@2152sc!0?
-1;2;3;4;5??!219reg tcc_win64_x86_64.c:76862sc %? %@2132sc!0?
+5??-1m 51220reg p OK tcc_win64_x86_64.c:7686:a52sc %? %@2152sc!1q0?
+%f+ 
+s...........a..e.i.....e........e.\*s1......do...... ..t.t...\)
+\{
+......,...
+	.....n...\[..2.]................
+.........c.... \*.;
+
+6??0?
+6??+3m 51220reg p OK tcc_win64_x86_64.c:7686:a62sc %? %@2152sc!1q0?
+grp 1%f+ .*?
+static int parse_include\(TCCState \*s1, int do_next, int test\).*?
+\{.*?
+(	int c, i;)7??0?
+grp 07??m 51220reg p OK tcc_win64_x86_64.c:7686:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 	file->buf_ptr = parse_line_comment\(file->buf_ptr - 1\);
+	next_nomacro\(\);
+}.*(		parse_flags = PARSE_FLAG_PREPROCESS)
+			      \| PARSE_FLAG_LINEFEED
+			      \| \(parse_flags & PARSE_FLAG_ASM_FILE\);8??0?
+grp 08??-15m 51220reg p OK tcc_win64_x86_64.c:7686:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> 		tcc_warning\("extra tokens after directive"\);
+	while \(macro_stack\)
+		end_macro\(\);.*(		name\[0] = 0;)
+		for \(;;\) \{
+			next\(\);9??0?
+grp 09??-18m 51220reg p OK tcc_win64_x86_64.c:7686:a92sc %? %@2152sc!'\''00?
+1;2;3;4;5;6;7;8;9??!219reg tcc_win64_x86_64.c:76862sc %? %@2132sc!0?
 ?0?
 %f+ 	CachedInclude \*e;
 
@@ -3303,8 +6065,24 @@ static int parse_include\(TCCState \*s1, int do_next, int test\)
 %f+ 	CachedInclude \*e;
 
 	c = skip_spaces\(\);4??0?
-4??+2m 52220reg p OK tcc_win64_x86_64.c:7690:a42sc %? %@2152sc!0?
-1;4??!219reg tcc_win64_x86_64.c:76902sc %? %@2132sc!0?
+4??+2m 52220reg p OK tcc_win64_x86_64.c:7690:a42sc %? %@2152sc!1q0?
+grp 1%f+ 	CachedInclude \*e;.*?
+.*?
+(	c = skip_spaces\(\);)7??0?
+grp 07??m 52220reg p OK tcc_win64_x86_64.c:7690:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 	file->buf_ptr = parse_line_comment\(file->buf_ptr - 1\);
+	next_nomacro\(\);
+}.*(		parse_flags = PARSE_FLAG_PREPROCESS)
+			      \| PARSE_FLAG_LINEFEED
+			      \| \(parse_flags & PARSE_FLAG_ASM_FILE\);8??0?
+grp 08??-11m 52220reg p OK tcc_win64_x86_64.c:7690:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> 		tcc_warning\("extra tokens after directive"\);
+	while \(macro_stack\)
+		end_macro\(\);.*(		name\[0] = 0;)
+		for \(;;\) \{
+			next\(\);9??0?
+grp 09??-14m 52220reg p OK tcc_win64_x86_64.c:7690:a92sc %? %@2152sc!'\''00?
+1;4;7;8;9??!219reg tcc_win64_x86_64.c:76902sc %? %@2132sc!0?
 ?0?
 %f+ 	if \(c == '\''<'\'' \|\| c == '\''\\"'\''\) \{
 		cstr_reset\(&tokcstr\);
@@ -3323,8 +6101,30 @@ static int parse_include\(TCCState \*s1, int do_next, int test\)
 4??+2m 53220reg p OK tcc_win64_x86_64.c:7693:a42sc %? %@2152sc!1q0?
 %f+ 		i = tokcstr\.size;
 		pstrncpy\(name, sizeof name, tokcstr\.data, i\);5??0?
-5??-1m 53220reg p OK tcc_win64_x86_64.c:7693:a52sc %? %@2152sc!0?
-1;2;3;4;5??!219reg tcc_win64_x86_64.c:76932sc %? %@2132sc!0?
+5??-1m 53220reg p OK tcc_win64_x86_64.c:7693:a52sc %? %@2152sc!1q0?
+%f+ .....c.==.....\|\|.c..=...".\)..
+..cs....e........cs....
+	.f..e..b.......= .a....p.....i.g...l........tr, . =........'\''>'\'' : .,....kc...\).
+.	. ...o......s.z..
+.	.........n.me......of...m.............ta. i.;6??0?
+6??+2m 53220reg p OK tcc_win64_x86_64.c:7693:a62sc %? %@2152sc!1q0?
+grp 1%f+ 	if \(c == '\''<'\'' \|\| c == '\''\\"'\''\) \{.*?
+		cstr_reset\(&tokcstr\);.*?
+(		file->buf_ptr = parse_pp_string\(file->buf_ptr, c == '\''<'\'' \? '\''>'\'' : c, &tokcstr\);)7??0?
+grp 07??m 53220reg p OK tcc_win64_x86_64.c:7693:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 	file->buf_ptr = parse_line_comment\(file->buf_ptr - 1\);
+	next_nomacro\(\);
+}.*(		parse_flags = PARSE_FLAG_PREPROCESS)
+			      \| PARSE_FLAG_LINEFEED
+			      \| \(parse_flags & PARSE_FLAG_ASM_FILE\);8??0?
+grp 08??-8m 53220reg p OK tcc_win64_x86_64.c:7693:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> 		tcc_warning\("extra tokens after directive"\);
+	while \(macro_stack\)
+		end_macro\(\);.*(		name\[0] = 0;)
+		for \(;;\) \{
+			next\(\);9??0?
+grp 09??-11m 53220reg p OK tcc_win64_x86_64.c:7693:a92sc %? %@2152sc!'\''00?
+1;2;3;4;5;6;7;8;9??!219reg tcc_win64_x86_64.c:76932sc %? %@2132sc!0?
 ?0?
 %f+ 		i = tokcstr\.size;
 		pstrncpy\(name, sizeof name, tokcstr\.data, i\);
@@ -3346,8 +6146,31 @@ static int parse_include\(TCCState \*s1, int do_next, int test\)
 %f+ 	} else \{
 		/\* computed #include : concatenate tokens until result is one of
 		           the two accepted forms\.  Don'\''t convert pp-tokens to tokens here\. \*/5??0?
-5??-1m 54220reg p OK tcc_win64_x86_64.c:7696:a52sc %? %@2152sc!0?
-1;2;3;4;5??!219reg tcc_win64_x86_64.c:76962sc %? %@2132sc!0?
+5??-1m 54220reg p OK tcc_win64_x86_64.c:7696:a52sc %? %@2152sc!1q0?
+%f+ .	..=.t....t.\.....;
+.........y\(..m.. .....f..........c.t....t.,....
+	...xt...........
+...e.....
+......o...te. #i...u.. ..c...a.......t........t...r...l. .. ....o.
+.. .  .. ....th..........pte......s.. .o..t...n...t.pp..o......o to..ns.....\..\*.6??0?
+6??+2m 54220reg p OK tcc_win64_x86_64.c:7696:a62sc %? %@2152sc!1q0?
+grp 1%f+ 		i = tokcstr\.size;.*?
+		pstrncpy\(name, sizeof name, tokcstr\.data, i\);.*?
+(		next_nomacro\(\);)7??0?
+grp 07??m 54220reg p OK tcc_win64_x86_64.c:7696:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 	file->buf_ptr = parse_line_comment\(file->buf_ptr - 1\);
+	next_nomacro\(\);
+}.*(		parse_flags = PARSE_FLAG_PREPROCESS)
+			      \| PARSE_FLAG_LINEFEED
+			      \| \(parse_flags & PARSE_FLAG_ASM_FILE\);8??0?
+grp 08??-5m 54220reg p OK tcc_win64_x86_64.c:7696:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> 		tcc_warning\("extra tokens after directive"\);
+	while \(macro_stack\)
+		end_macro\(\);.*(		name\[0] = 0;)
+		for \(;;\) \{
+			next\(\);9??0?
+grp 09??-8m 54220reg p OK tcc_win64_x86_64.c:7696:a92sc %? %@2152sc!'\''00?
+1;2;3;4;5;6;7;8;9??!219reg tcc_win64_x86_64.c:76962sc %? %@2132sc!0?
 ?0?
 %f+ 		memmove\(p, p \+ 1, i - 1\), p\[i - 1] = 0;
 	}
@@ -3372,8 +6195,33 @@ static int parse_include\(TCCState \*s1, int do_next, int test\)
 %f+ 		skip_to_eol\(1\);
 
 	i = do_next \? file->include_next_index : -1;5??0?
-5??-1m 55220reg p OK tcc_win64_x86_64.c:7722:a52sc %? %@2152sc!0?
-1;2;3;4;5??!219reg tcc_win64_x86_64.c:77222sc %? %@2132sc!0?
+5??-1m 55220reg p OK tcc_win64_x86_64.c:7722:a52sc %? %@2152sc!1q0?
+%f+ .	......e\(p..p .....i.-......\[i.. .. . ..
+.}
+
+..........\)
+....i._.._......;
+
+.....do........f......n....._.ex....... .....6??0?
+6??+3m 55220reg p OK tcc_win64_x86_64.c:7722:a62sc %? %@2152sc!1q0?
+grp 1%f+ 		memmove\(p, p \+ 1, i - 1\), p\[i - 1] = 0;.*?
+	}.*?
+.*?
+(	if \(!test\))7??0?
+grp 07??m 55220reg p OK tcc_win64_x86_64.c:7722:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 		}
+		c = p\[0];
+		/\* remove '\''<>\|""'\'' \*/.*(		\+\+i;)
+		if \(i == 0\) \{
+			/\* check absolute include path \*/8??0?
+grp 08??-5m 55220reg p OK tcc_win64_x86_64.c:7722:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> 			if \(tok == TOK_LINEFEED\)
+				tcc_error\("'\''#include'\'' expects \\"FILENAME\\" or <FILENAME>"\);
+			pstrcat\(name, sizeof name, get_tok_str\(tok, &tokc\)\);.*(			if \(!IS_ABSPATH\(name\)\))
+				continue;
+			buf\[0] = '\''\\0'\'';9??0?
+grp 09??-9m 55220reg p OK tcc_win64_x86_64.c:7722:a92sc %? %@2152sc!'\''00?
+1;2;3;4;5;6;7;8;9??!219reg tcc_win64_x86_64.c:77222sc %? %@2132sc!0?
 ?0?
 %f+ 			buf\[0] = '\''\\0'\'';
 		} else if \(i == 1\) \{
@@ -3387,19 +6235,27 @@ static int parse_include\(TCCState \*s1, int do_next, int test\)
 		} else if \(i == 1\) \{
 			/\* search in file'\''s dir if "header\.h" \*/4??0?
 4??+3m 56220reg p OK tcc_win64_x86_64.c:7736:a42sc %? %@2152sc!1q0?
-m 01;0grp 1%f> 	return !\(\*a \|\| \*b\);
-}
-/\* defines handling \*/.*(	/\* Not in -E: the hihon amal has this warning commented out\.  Any)
-	   warning here would also inject a stray newline into the dump
-	   \(error1\(\) emits one while ppfp == stdout\), and tcc\.c legitimately8??0?
-grp 08??-7m 56220reg p OK tcc_win64_x86_64.c:7736:a82sc %? %@2152sc!'\''08??1q0?
-m 01;0grp 1%f> 		if \(strcmp\(tokcstr\.data, get_tok_str\(t, &cv\)\)\)
-			return 0;
-	}.*(	   re-includes its \*-gen\.c/\*-link\.c defs blocks, so this fires often\. \*/)
-	if \(o && !macro_is_equal\(o->d, s->d\) && !pp_echo\)
-		tcc_warning\("%s redefined", get_tok_str\(v, NULL\)\);9??0?
-grp 09??-10m 56220reg p OK tcc_win64_x86_64.c:7736:a92sc %? %@2152sc!'\''00?
-1;4;8;9??!219reg tcc_win64_x86_64.c:77362sc %? %@2132sc!0?
+%f+ .	..............;
+	.....s..i. ....=..\)..
+....\*...a.c. ....i......i..i...h.........\*.
+
+.	.if... .=.'\''...\)
+.	.....t.....
+	..p.=..........._.........6??0?
+6??+3m 56220reg p OK tcc_win64_x86_64.c:7736:a62sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 		\+\+i;
+		if \(i == 0\) \{
+			/\* check absolute include path \*/.*(			pstrncpy\(buf, sizeof buf, p, tcc_basename\(p\) - p\);)
+		} else \{
+			int j = i - 2, k = j - s1->nb_include_paths;8??0?
+grp 08??-4m 56220reg p OK tcc_win64_x86_64.c:7736:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> 		}
+		c = p\[0];
+		/\* remove '\''<>\|""'\'' \*/.*(			if \(k < 0\))
+				p = s1->include_paths\[j];
+			else if \(k < s1->nb_sysinclude_paths\)9??0?
+grp 09??-7m 56220reg p OK tcc_win64_x86_64.c:7736:a92sc %? %@2152sc!'\''00?
+1;4;6;8;9??!219reg tcc_win64_x86_64.c:77362sc %? %@2132sc!0?
 ?0?
 %f+ 				p = s1->sysinclude_paths\[k];
 			else if \(test\)
@@ -3411,8 +6267,24 @@ static int parse_include\(TCCState \*s1, int do_next, int test\)
 %f+ 				p = s1->sysinclude_paths\[k];
 			else if \(test\)
 				return 0;4??0?
-4??+2m 57220reg p OK tcc_win64_x86_64.c:7748:a42sc %? %@2152sc!0?
-1;4??!219reg tcc_win64_x86_64.c:77482sc %? %@2132sc!0?
+4??+2m 57220reg p OK tcc_win64_x86_64.c:7748:a42sc %? %@2152sc!1q0?
+grp 1%f+ 				p = s1->sysinclude_paths\[k];.*?
+			else if \(test\).*?
+(				return 0;)7??0?
+grp 07??m 57220reg p OK tcc_win64_x86_64.c:7748:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 			if \(k < 0\)
+				p = s1->include_paths\[j];
+			else if \(k < s1->nb_sysinclude_paths\).*(			pstrcat\(buf, sizeof buf, "/"\);)
+		}
+		pstrcat\(buf, sizeof buf, name\);8??0?
+grp 08??-4m 57220reg p OK tcc_win64_x86_64.c:7748:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> 			pstrncpy\(buf, sizeof buf, p, tcc_basename\(p\) - p\);
+		} else \{
+			int j = i - 2, k = j - s1->nb_include_paths;.*(		e = search_cached_include\(s1, buf, 0\);)
+		if \(e && \(define_find\(e->ifndef_macro\) \|\| e->once\)\) \{
+			/\* no need to parse the include because the '\''ifndef macro'\''9??0?
+grp 09??-7m 57220reg p OK tcc_win64_x86_64.c:7748:a92sc %? %@2152sc!'\''00?
+1;4;7;8;9??!219reg tcc_win64_x86_64.c:77482sc %? %@2132sc!0?
 ?0?
 %f+ \{
 	TCCState \*s1 = tcc_state;
@@ -3425,8 +6297,24 @@ static int parse_include\(TCCState \*s1, int do_next, int test\)
 %f+ \{
 	TCCState \*s1 = tcc_state;
 	int c, n, saved_parse_flags;4??0?
-4??+2m 58220reg p OK tcc_win64_x86_64.c:8176:a42sc %? %@2152sc!0?
-1;4??!219reg tcc_win64_x86_64.c:81762sc %? %@2132sc!0?
+4??+2m 58220reg p OK tcc_win64_x86_64.c:8176:a42sc %? %@2152sc!1q0?
+grp 1%f+ \{.*?
+	TCCState \*s1 = tcc_state;.*?
+(	int c, n, saved_parse_flags;)7??0?
+grp 07??m 58220reg p OK tcc_win64_x86_64.c:8176:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 	tcc_debug_newfile\(tcc_state\);
+}
+/\* is_bof is true if first non space token at beginning of file \*/.*(	saved_parse_flags = parse_flags;)
+	parse_flags = PARSE_FLAG_PREPROCESS
+		      \| PARSE_FLAG_TOK_NUM8??0?
+grp 08??-4m 58220reg p OK tcc_win64_x86_64.c:8176:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> 	if \(file->true_filename == file->filename\)
+		file->true_filename = tcc_strdup\(file->filename\);
+	pstrcpy\(file->filename, sizeof file->filename, buf\);.*(		      \| PARSE_FLAG_TOK_STR)
+		      \| PARSE_FLAG_LINEFEED
+		      \| \(parse_flags & PARSE_FLAG_ASM_FILE\)9??0?
+grp 09??-7m 58220reg p OK tcc_win64_x86_64.c:8176:a92sc %? %@2152sc!'\''00?
+1;4;7;8;9??!219reg tcc_win64_x86_64.c:81762sc %? %@2132sc!0?
 ?0?
 %f+ 		c = 1;
 		goto do_ifdef;
@@ -3436,8 +6324,24 @@ static int parse_include\(TCCState \*s1, int do_next, int test\)
 %f+ 		c = 1;
 		goto do_ifdef;
 	case TOK_IF:4??0?
-4??+2m 59220reg p OK tcc_win64_x86_64.c:8215:a42sc %? %@2152sc!0?
-1;4??!219reg tcc_win64_x86_64.c:82152sc %? %@2132sc!0?
+4??+2m 59220reg p OK tcc_win64_x86_64.c:8215:a42sc %? %@2152sc!1q0?
+grp 1%f+ 		c = 1;.*?
+		goto do_ifdef;.*?
+(	case TOK_IF:)7??0?
+grp 07??m 59220reg p OK tcc_win64_x86_64.c:8215:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 		parse_include\(s1, tok - TOK_INCLUDE, 0\);
+		goto the_end;
+	case TOK_IFNDEF:.*(do_ifdef:)
+		next_nomacro\(\);
+		if \(tok < TOK_IDENT\)8??0?
+grp 08??-5m 59220reg p OK tcc_win64_x86_64.c:8215:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> 		break;
+	case TOK_INCLUDE:
+	case TOK_INCLUDE_NEXT:.*(			tcc_error\("invalid argument for '\''#if%sdef'\''", c \? "n" : ""\);)
+		if \(is_bof\) \{
+			if \(c\) \{9??0?
+grp 09??-8m 59220reg p OK tcc_win64_x86_64.c:8215:a92sc %? %@2152sc!'\''00?
+1;4;7;8;9??!219reg tcc_win64_x86_64.c:82152sc %? %@2132sc!0?
 ?0?
 %f+ 		c = expr_preprocess\(s1\);
 		goto do_if;
@@ -3445,8 +6349,20 @@ static int parse_include\(TCCState \*s1, int do_next, int test\)
 		c = 0;1??0?
 1??m 601q0?
 ;0fr.,$f+ ^		c = expr_preprocess\(s1\);$4??0?
-4??m 60220reg p OK tcc_win64_x86_64.c:8216:a42sc %? %@2152sc!fr 98fr 980?
-1;4??!219reg tcc_win64_x86_64.c:82162sc %? %@2132sc!0?
+4??m 60220reg p OK tcc_win64_x86_64.c:8216:a42sc %? %@2152sc!fr 981qfr 980?
+m 01;0grp 1%f> 		parse_include\(s1, tok - TOK_INCLUDE, 0\);
+		goto the_end;
+	case TOK_IFNDEF:.*(do_ifdef:)
+		next_nomacro\(\);
+		if \(tok < TOK_IDENT\)8??0?
+grp 08??-4m 60220reg p OK tcc_win64_x86_64.c:8216:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> 		break;
+	case TOK_INCLUDE:
+	case TOK_INCLUDE_NEXT:.*(			tcc_error\("invalid argument for '\''#if%sdef'\''", c \? "n" : ""\);)
+		if \(is_bof\) \{
+			if \(c\) \{9??0?
+grp 09??-7m 60220reg p OK tcc_win64_x86_64.c:8216:a92sc %? %@2152sc!'\''00?
+1;4;8;9??!219reg tcc_win64_x86_64.c:82162sc %? %@2132sc!0?
 ?0?
 %f+ 		next_nomacro\(\);
 		if \(tok < TOK_IDENT\)
@@ -3459,8 +6375,24 @@ static int parse_include\(TCCState \*s1, int do_next, int test\)
 %f+ 		next_nomacro\(\);
 		if \(tok < TOK_IDENT\)
 			tcc_error\("invalid argument for '\''#if%sdef'\''", c \? "n" : ""\);4??0?
-4??+2m 61220reg p OK tcc_win64_x86_64.c:8223:a42sc %? %@2152sc!0?
-1;4??!219reg tcc_win64_x86_64.c:82232sc %? %@2132sc!0?
+4??+2m 61220reg p OK tcc_win64_x86_64.c:8223:a42sc %? %@2152sc!1q0?
+grp 1%f+ 		next_nomacro\(\);.*?
+		if \(tok < TOK_IDENT\).*?
+(			tcc_error\("invalid argument for '\''#if%sdef'\''", c \? "n" : ""\);)7??0?
+grp 07??m 61220reg p OK tcc_win64_x86_64.c:8223:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 	case TOK_IFDEF:
+		c = 0;
+do_ifdef:.*(				file->ifndef_macro = tok;)
+			}
+		}8??0?
+grp 08??-4m 61220reg p OK tcc_win64_x86_64.c:8223:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> 	case TOK_IF:
+		c = expr_preprocess\(s1\);
+		goto do_if;.*(		if \(define_find\(tok\))
+		    \|\| tok == TOK___HAS_INCLUDE
+		    \|\| tok == TOK___HAS_INCLUDE_NEXT\)9??0?
+grp 09??-7m 61220reg p OK tcc_win64_x86_64.c:8223:a92sc %? %@2152sc!'\''00?
+1;4;7;8;9??!219reg tcc_win64_x86_64.c:82232sc %? %@2132sc!0?
 ?0?
 %f+ 		    \|\| tok == TOK___HAS_INCLUDE
 		    \|\| tok == TOK___HAS_INCLUDE_NEXT\)
@@ -3484,8 +6416,33 @@ do_if:
 %f+ do_if:
 		if \(s1->ifdef_stack_ptr >= s1->ifdef_stack \+ IFDEF_STACK_SIZE\)
 			tcc_error\("memory full \(ifdef\)"\);5??0?
-5??-1m 62220reg p OK tcc_win64_x86_64.c:8234:a52sc %? %@2152sc!0?
-1;2;3;4;5??!219reg tcc_win64_x86_64.c:82342sc %? %@2132sc!0?
+5??-1m 62220reg p OK tcc_win64_x86_64.c:8234:a52sc %? %@2152sc!1q0?
+%f+ 		. ...\|...k..=.......H.S....L.D.
+.. ......t...=. T.......S_I...U.._....\)
+......= ..
+....x......c.....
+.o_i.:
+..i.....-.if........._.........->.......t..... .FD.F.ST.C...I..\)
+.	..c...r...\(..........l..\(i.d.f..\).6??0?
+6??+3m 62220reg p OK tcc_win64_x86_64.c:8234:a62sc %? %@2152sc!1q0?
+grp 1%f+ 		    \|\| tok == TOK___HAS_INCLUDE.*?
+		    \|\| tok == TOK___HAS_INCLUDE_NEXT\).*?
+			c \^= 1;.*?
+(		next_nomacro\(\);)7??0?
+grp 07??m 62220reg p OK tcc_win64_x86_64.c:8234:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 			}
+		}
+		if \(define_find\(tok\).*(			tcc_error\("#elif without matching #if"\);)
+		c = s1->ifdef_stack_ptr\[-1];
+		if \(c > 1\)8??0?
+grp 08??-16m 62220reg p OK tcc_win64_x86_64.c:8234:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> 			tcc_error\("invalid argument for '\''#if%sdef'\''", c \? "n" : ""\);
+		if \(is_bof\) \{
+			if \(c\) \{.*(		if \(c == 1\) \{)
+			skip_to_eol\(0\);
+			c = 0;9??0?
+grp 09??-22m 62220reg p OK tcc_win64_x86_64.c:8234:a92sc %? %@2152sc!'\''00?
+1;2;3;4;5;6;7;8;9??!219reg tcc_win64_x86_64.c:82342sc %? %@2132sc!0?
 ?0?
 %f+ 		\*s1->ifdef_stack_ptr\+\+ = c;
 		goto test_skip;
@@ -3509,8 +6466,33 @@ do_if:
 %f+ 		if \(s1->ifdef_stack_ptr == s1->ifdef_stack\)
 			tcc_error\("#else without matching #if"\);
 		if \(s1->ifdef_stack_ptr\[-1] & 2\)5??0?
-5??-1m 63220reg p OK tcc_win64_x86_64.c:8241:a52sc %? %@2152sc!0?
-1;2;3;4;5??!219reg tcc_win64_x86_64.c:82412sc %? %@2132sc!0?
+5??-1m 63220reg p OK tcc_win64_x86_64.c:8241:a52sc %? %@2152sc!1q0?
+%f+ ....1.>.f..._..a...p.........
+...o.o...........
+....e.TOK..L...
+		n..._.....r.\(..
+	... .............a.k.... ...s1..............
+	....c...ro......s..w.....t ......n. .if..;
+.	.. ......f..f.s.....ptr.........6??0?
+6??+3m 63220reg p OK tcc_win64_x86_64.c:8241:a62sc %? %@2152sc!1q0?
+grp 1%f+ 		\*s1->ifdef_stack_ptr\+\+ = c;.*?
+		goto test_skip;.*?
+	case TOK_ELSE:.*?
+(		next_nomacro\(\);)7??0?
+grp 07??m 63220reg p OK tcc_win64_x86_64.c:8241:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 			}
+		}
+		if \(define_find\(tok\).*(			tcc_error\("#elif without matching #if"\);)
+		c = s1->ifdef_stack_ptr\[-1];
+		if \(c > 1\)8??0?
+grp 08??-9m 63220reg p OK tcc_win64_x86_64.c:8241:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> 			tcc_error\("invalid argument for '\''#if%sdef'\''", c \? "n" : ""\);
+		if \(is_bof\) \{
+			if \(c\) \{.*(		if \(c == 1\) \{)
+			skip_to_eol\(0\);
+			c = 0;9??0?
+grp 09??-15m 63220reg p OK tcc_win64_x86_64.c:8241:a92sc %? %@2152sc!'\''00?
+1;2;3;4;5;6;7;8;9??!219reg tcc_win64_x86_64.c:82412sc %? %@2132sc!0?
 ?0?
 %f+ 		if \(s1->ifdef_stack_ptr\[-1] & 2\)
 			tcc_error\("#else after #else"\);
@@ -3522,8 +6504,24 @@ do_if:
 %f+ 		if \(s1->ifdef_stack_ptr\[-1] & 2\)
 			tcc_error\("#else after #else"\);
 		c = \(s1->ifdef_stack_ptr\[-1] \^= 3\);4??0?
-4??+2m 64220reg p OK tcc_win64_x86_64.c:8246:a42sc %? %@2152sc!0?
-1;4??!219reg tcc_win64_x86_64.c:82462sc %? %@2132sc!0?
+4??+2m 64220reg p OK tcc_win64_x86_64.c:8246:a42sc %? %@2152sc!1q0?
+grp 1%f+ 		if \(s1->ifdef_stack_ptr\[-1] & 2\).*?
+			tcc_error\("#else after #else"\);.*?
+(		c = \(s1->ifdef_stack_ptr\[-1] \^= 3\);)7??0?
+grp 07??m 64220reg p OK tcc_win64_x86_64.c:8246:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 			}
+		}
+		if \(define_find\(tok\).*(			tcc_error\("#elif without matching #if"\);)
+		c = s1->ifdef_stack_ptr\[-1];
+		if \(c > 1\)8??0?
+grp 08??-4m 64220reg p OK tcc_win64_x86_64.c:8246:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> 			tcc_error\("invalid argument for '\''#if%sdef'\''", c \? "n" : ""\);
+		if \(is_bof\) \{
+			if \(c\) \{.*(		if \(c == 1\) \{)
+			skip_to_eol\(0\);
+			c = 0;9??0?
+grp 09??-10m 64220reg p OK tcc_win64_x86_64.c:8246:a92sc %? %@2152sc!'\''00?
+1;4;7;8;9??!219reg tcc_win64_x86_64.c:82462sc %? %@2132sc!0?
 ?0?
 %f+ 			tcc_error\("#elif after #else"\);
 		/\* last #if/#elif expression was true: we skip \*/
@@ -3536,8 +6534,20 @@ do_if:
 		/\* last #if/#elif expression was true: we skip \*/
 
 4??0?
-4??+2m 65220reg p OK tcc_win64_x86_64.c:8255:a42sc %? %@2152sc!0?
-1;4??!219reg tcc_win64_x86_64.c:82552sc %? %@2132sc!0?
+4??+2m 65220reg p OK tcc_win64_x86_64.c:8255:a42sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 			tcc_error\("#elif without matching #if"\);
+		c = s1->ifdef_stack_ptr\[-1];
+		if \(c > 1\).*(			c = expr_preprocess\(s1\);)
+			s1->ifdef_stack_ptr\[-1] = c;
+		}8??0?
+grp 08??-5m 65220reg p OK tcc_win64_x86_64.c:8255:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> 		goto test_else;
+	case TOK_ELIF:
+		if \(s1->ifdef_stack_ptr == s1->ifdef_stack\).*(test_else:)
+		if \(s1->ifdef_stack_ptr == file->ifdef_stack_ptr \+ 1\)
+			file->ifndef_macro = 0;9??0?
+grp 09??-8m 65220reg p OK tcc_win64_x86_64.c:8255:a92sc %? %@2152sc!'\''00?
+1;4;8;9??!219reg tcc_win64_x86_64.c:82552sc %? %@2132sc!0?
 ?0?
 %f+ 			file->ifndef_macro = 0;
 test_skip:
@@ -3564,8 +6574,34 @@ test_skip:
 %f+ 			is_bof = 0;
 			goto redo;
 		}5??0?
-5??-2m 66220reg p OK tcc_win64_x86_64.c:8268:a52sc %? %@2152sc!0?
-1;2;3;4;5??!219reg tcc_win64_x86_64.c:82682sc %? %@2132sc!0?
+5??-2m 66220reg p OK tcc_win64_x86_64.c:8268:a52sc %? %@2152sc!1q0?
+%f+ ...f..e->.............=.0.
+.e.t......
+.	....!......\)...
+............o....;
+.	...e.roc..s......\).
+	.............
+..	.o......o.
+	..6??0?
+6??+3m 66220reg p OK tcc_win64_x86_64.c:8268:a62sc %? %@2152sc!1q0?
+grp 1%f+ 			file->ifndef_macro = 0;.*?
+test_skip:.*?
+		if \(!\(c & 1\)\) \{.*?
+(			skip_to_eol\(1\);)7??0?
+grp 07??m 66220reg p OK tcc_win64_x86_64.c:8268:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 		}
+test_else:
+		if \(s1->ifdef_stack_ptr == file->ifdef_stack_ptr \+ 1\).*(		if \(file->ifndef_macro &&)
+		    s1->ifdef_stack_ptr == file->ifdef_stack_ptr\) \{
+			file->ifndef_macro_saved = file->ifndef_macro;8??0?
+grp 08??-14m 66220reg p OK tcc_win64_x86_64.c:8268:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> 		} else \{
+			c = expr_preprocess\(s1\);
+			s1->ifdef_stack_ptr\[-1] = c;.*(			file->ifndef_macro = 0;)
+			tok_flags \|= TOK_FLAG_ENDIF;
+		}9??0?
+grp 09??-20m 66220reg p OK tcc_win64_x86_64.c:8268:a92sc %? %@2152sc!'\''00?
+1;2;3;4;5;6;7;8;9??!219reg tcc_win64_x86_64.c:82682sc %? %@2132sc!0?
 ?0?
 %f+ 		}
 		break;
@@ -3595,8 +6631,35 @@ test_skip:
 %f+ 		s1->ifdef_stack_ptr--;
 		/\* '\''#ifndef macro'\'' was at the start of file\. Now we check if
 		           an '\''#endif'\'' is exactly at the end of file \*/5??0?
-5??-3m 67220reg p OK tcc_win64_x86_64.c:8275:a52sc %? %@2152sc!0?
-1;2;3;4;5??!219reg tcc_win64_x86_64.c:82752sc %? %@2132sc!0?
+5??-3m 67220reg p OK tcc_win64_x86_64.c:8275:a52sc %? %@2152sc!1q0?
+%f+ 	..
+.	....k.
+	........_......
+.	n....n..a..o.\).
+	... .s.-....ef_....._.t. ....i.e....d.f..t........
+....c._er.......n..f.wi..o...m..c.i...#i."..
+..s....fd.._.......t.-.;
+	./..'\''.i.n.....a.r.......a...h..s....... .i.e..N...w..........
+.. ...  ......n......i...i. .x.ct...a........d .f........6??0?
+6??+3m 67220reg p OK tcc_win64_x86_64.c:8275:a62sc %? %@2152sc!1q0?
+grp 1%f+ 		}.*?
+		break;.*?
+	case TOK_ENDIF:.*?
+(		next_nomacro\(\);)7??0?
+grp 07??m 67220reg p OK tcc_win64_x86_64.c:8275:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 		}
+test_else:
+		if \(s1->ifdef_stack_ptr == file->ifdef_stack_ptr \+ 1\).*(		if \(file->ifndef_macro &&)
+		    s1->ifdef_stack_ptr == file->ifdef_stack_ptr\) \{
+			file->ifndef_macro_saved = file->ifndef_macro;8??0?
+grp 08??-7m 67220reg p OK tcc_win64_x86_64.c:8275:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> 		} else \{
+			c = expr_preprocess\(s1\);
+			s1->ifdef_stack_ptr\[-1] = c;.*(			file->ifndef_macro = 0;)
+			tok_flags \|= TOK_FLAG_ENDIF;
+		}9??0?
+grp 09??-13m 67220reg p OK tcc_win64_x86_64.c:8275:a92sc %? %@2152sc!'\''00?
+1;2;3;4;5;6;7;8;9??!219reg tcc_win64_x86_64.c:82752sc %? %@2132sc!0?
 ?0?
 %f+ 			               #ifndef at middle of file \*/
 
@@ -3606,15 +6669,43 @@ test_skip:
 %f+ 			               #ifndef at middle of file \*/
 
 			file->ifndef_macro = 0;4??0?
-4??+2m 68220reg p OK tcc_win64_x86_64.c:8288:a42sc %? %@2152sc!0?
-1;4??!219reg tcc_win64_x86_64.c:82882sc %? %@2132sc!0?
+4??+2m 68220reg p OK tcc_win64_x86_64.c:8288:a42sc %? %@2152sc!1q0?
+grp 1%f+ 			               #ifndef at middle of file \*/.*?
+.*?
+(			file->ifndef_macro = 0;)7??0?
+grp 07??m 68220reg p OK tcc_win64_x86_64.c:8288:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 		    s1->ifdef_stack_ptr == file->ifdef_stack_ptr\) \{
+			file->ifndef_macro_saved = file->ifndef_macro;
+			/\* need to set to zero to avoid false matches if another.*(		parse_flags &= ~PARSE_FLAG_TOK_NUM;)
+		next\(\);
+		if \(tok != TOK_PPNUM\) \{8??0?
+grp 08??-6m 68220reg p OK tcc_win64_x86_64.c:8288:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> 		s1->ifdef_stack_ptr--;
+		/\* '\''#ifndef macro'\'' was at the start of file\. Now we check if
+		           an '\''#endif'\'' is exactly at the end of file \*/.*(_line_err:)
+			tcc_error\("wrong #line format"\);
+		}9??0?
+grp 09??-9m 68220reg p OK tcc_win64_x86_64.c:8288:a92sc %? %@2152sc!'\''00?
+1;4;7;8;9??!219reg tcc_win64_x86_64.c:82882sc %? %@2132sc!0?
 ?0?
 %f+ 			tok_flags \|= TOK_FLAG_ENDIF;
 		}1??0?
 1??m 691q0?
 ;0fr.,$f+ ^			tok_flags \|= TOK_FLAG_ENDIF;$4??0?
-4??m 69220reg p OK tcc_win64_x86_64.c:8289:a42sc %? %@2152sc!fr 98fr 980?
-1;4??!219reg tcc_win64_x86_64.c:82892sc %? %@2132sc!0?
+4??m 69220reg p OK tcc_win64_x86_64.c:8289:a42sc %? %@2152sc!fr 981qfr 980?
+m 01;0grp 1%f> 		    s1->ifdef_stack_ptr == file->ifdef_stack_ptr\) \{
+			file->ifndef_macro_saved = file->ifndef_macro;
+			/\* need to set to zero to avoid false matches if another.*(		parse_flags &= ~PARSE_FLAG_TOK_NUM;)
+		next\(\);
+		if \(tok != TOK_PPNUM\) \{8??0?
+grp 08??-5m 69220reg p OK tcc_win64_x86_64.c:8289:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> 		s1->ifdef_stack_ptr--;
+		/\* '\''#ifndef macro'\'' was at the start of file\. Now we check if
+		           an '\''#endif'\'' is exactly at the end of file \*/.*(_line_err:)
+			tcc_error\("wrong #line format"\);
+		}9??0?
+grp 09??-8m 69220reg p OK tcc_win64_x86_64.c:8289:a92sc %? %@2152sc!'\''00?
+1;4;8;9??!219reg tcc_win64_x86_64.c:82892sc %? %@2132sc!0?
 ?0?
 %f+ 		}
 		break;
@@ -3622,8 +6713,20 @@ test_skip:
 	case TOK_LINE:1??0?
 1??m 701q0?
 ;0fr.,$f+ ^		}$4??0?
-4??m 70220reg p OK tcc_win64_x86_64.c:8290:a42sc %? %@2152sc!fr 98fr 980?
-1;4??!219reg tcc_win64_x86_64.c:82902sc %? %@2132sc!0?
+4??m 70220reg p OK tcc_win64_x86_64.c:8290:a42sc %? %@2152sc!fr 981qfr 980?
+m 01;0grp 1%f> 		    s1->ifdef_stack_ptr == file->ifdef_stack_ptr\) \{
+			file->ifndef_macro_saved = file->ifndef_macro;
+			/\* need to set to zero to avoid false matches if another.*(		parse_flags &= ~PARSE_FLAG_TOK_NUM;)
+		next\(\);
+		if \(tok != TOK_PPNUM\) \{8??0?
+grp 08??-4m 70220reg p OK tcc_win64_x86_64.c:8290:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> 		s1->ifdef_stack_ptr--;
+		/\* '\''#ifndef macro'\'' was at the start of file\. Now we check if
+		           an '\''#endif'\'' is exactly at the end of file \*/.*(_line_err:)
+			tcc_error\("wrong #line format"\);
+		}9??0?
+grp 09??-7m 70220reg p OK tcc_win64_x86_64.c:8290:a92sc %? %@2152sc!'\''00?
+1;4;8;9??!219reg tcc_win64_x86_64.c:82902sc %? %@2132sc!0?
 ?0?
 %f+ 			c = ninp\(\);
 		}
@@ -3641,8 +6744,31 @@ test_skip:
 		\*q = '\''\\0'\'';4??0?
 4??+3m 71220reg p OK tcc_win64_x86_64.c:8341:a42sc %? %@2152sc!1q0?
 ;0fr.,$f+ ^			tcc_error\("#error %s", buf\);$5??0?
-5??-1m 71220reg p OK tcc_win64_x86_64.c:8341:a52sc %? %@2152sc!fr 98fr 980?
-1;2;3;4;5??!219reg tcc_win64_x86_64.c:83412sc %? %@2132sc!0?
+5??-1m 71220reg p OK tcc_win64_x86_64.c:8341:a52sc %? %@2152sc!fr 981qfr 980?
+%f+ ..	. =....p\(\).
+	..
+		...=..\\...
+.	......k..=.T.K...RO..
+..	.c..................",.b....6??0?
+6??+3m 71220reg p OK tcc_win64_x86_64.c:8341:a62sc %? %@2152sc!1q0?
+grp 1%f+ 			c = ninp\(\);.*?
+		}.*?
+		\*q = '\''\\0'\'';.*?
+(		if \(tok == TOK_ERROR\))7??0?
+grp 07??m 71220reg p OK tcc_win64_x86_64.c:8341:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 		while \(c != '\''\\n'\'' && c != CH_EOF\) \{
+			if \(\(q - buf\) < sizeof\(buf\) - 1\)
+				\*q\+\+ = c;.*(	case TOK_LINEFEED:)
+		goto the_end;
+	default:8??0?
+grp 08??-11m 71220reg p OK tcc_win64_x86_64.c:8341:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> 	case TOK_WARNING: \{
+		q = buf;
+		c = skip_spaces\(\);.*(		if \(saved_parse_flags & PARSE_FLAG_ASM_FILE\))
+			goto ignore;
+		if \(tok == '\''!'\'' && is_bof\)9??0?
+grp 09??-16m 71220reg p OK tcc_win64_x86_64.c:8341:a92sc %? %@2152sc!'\''00?
+1;2;3;4;5;6;7;8;9??!219reg tcc_win64_x86_64.c:83412sc %? %@2132sc!0?
 ?0?
 %f+ 			tcc_error\("#error %s", buf\);
 		else
@@ -3656,15 +6782,46 @@ test_skip:
 ;0fr.,$f+ ^			tcc_error\("#error %s", buf\);$4??0?
 4??+1m 72220reg p OK tcc_win64_x86_64.c:8343:a42sc %? %@2152sc!fr 981qfr 980?
 ;0fr.,$f+ ^			tcc_warning\("#warning %s", buf\);$5??0?
-5??-1m 72220reg p OK tcc_win64_x86_64.c:8343:a52sc %? %@2152sc!fr 98fr 980?
-1;2;3;4;5??!219reg tcc_win64_x86_64.c:83432sc %? %@2132sc!0?
+5??-1m 72220reg p OK tcc_win64_x86_64.c:8343:a52sc %? %@2152sc!fr 981qfr 980?
+%f+ .	.t.._.r...\(....ro. .."..bu.\).
+.	..s.
+.......w..ni..\(...a..... ..........6??0?
+6??+1m 72220reg p OK tcc_win64_x86_64.c:8343:a62sc %? %@2152sc!1q0?
+grp 1%f+ 			tcc_error\("#error %s", buf\);.*?
+(		else)7??0?
+grp 07??m 72220reg p OK tcc_win64_x86_64.c:8343:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 		while \(c != '\''\\n'\'' && c != CH_EOF\) \{
+			if \(\(q - buf\) < sizeof\(buf\) - 1\)
+				\*q\+\+ = c;.*(	case TOK_LINEFEED:)
+		goto the_end;
+	default:8??0?
+grp 08??-9m 72220reg p OK tcc_win64_x86_64.c:8343:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> 	case TOK_WARNING: \{
+		q = buf;
+		c = skip_spaces\(\);.*(		if \(saved_parse_flags & PARSE_FLAG_ASM_FILE\))
+			goto ignore;
+		if \(tok == '\''!'\'' && is_bof\)9??0?
+grp 09??-14m 72220reg p OK tcc_win64_x86_64.c:8343:a92sc %? %@2152sc!'\''00?
+1;2;3;4;5;6;7;8;9??!219reg tcc_win64_x86_64.c:83432sc %? %@2132sc!0?
 ?0?
 %f+ 			tcc_warning\("#warning %s", buf\);
 		next_nomacro\(\);1??0?
 1??m 731q0?
 ;0fr.,$f+ ^			tcc_warning\("#warning %s", buf\);$4??0?
-4??m 73220reg p OK tcc_win64_x86_64.c:8344:a42sc %? %@2152sc!fr 98fr 980?
-1;4??!219reg tcc_win64_x86_64.c:83442sc %? %@2132sc!0?
+4??m 73220reg p OK tcc_win64_x86_64.c:8344:a42sc %? %@2152sc!fr 981qfr 980?
+m 01;0grp 1%f> 		while \(c != '\''\\n'\'' && c != CH_EOF\) \{
+			if \(\(q - buf\) < sizeof\(buf\) - 1\)
+				\*q\+\+ = c;.*(	case TOK_LINEFEED:)
+		goto the_end;
+	default:8??0?
+grp 08??-8m 73220reg p OK tcc_win64_x86_64.c:8344:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> 	case TOK_WARNING: \{
+		q = buf;
+		c = skip_spaces\(\);.*(		if \(saved_parse_flags & PARSE_FLAG_ASM_FILE\))
+			goto ignore;
+		if \(tok == '\''!'\'' && is_bof\)9??0?
+grp 09??-13m 73220reg p OK tcc_win64_x86_64.c:8344:a92sc %? %@2152sc!'\''00?
+1;4;8;9??!219reg tcc_win64_x86_64.c:83442sc %? %@2132sc!0?
 ?0?
 %f+ 		next_nomacro\(\);
 		break;
@@ -3672,8 +6829,20 @@ test_skip:
 	case TOK_PRAGMA:1??0?
 1??m 741q0?
 ;0fr.,$f+ ^		next_nomacro\(\);$4??0?
-4??m 74220reg p OK tcc_win64_x86_64.c:8345:a42sc %? %@2152sc!fr 98fr 980?
-1;4??!219reg tcc_win64_x86_64.c:83452sc %? %@2132sc!0?
+4??m 74220reg p OK tcc_win64_x86_64.c:8345:a42sc %? %@2152sc!fr 981qfr 980?
+m 01;0grp 1%f> 		while \(c != '\''\\n'\'' && c != CH_EOF\) \{
+			if \(\(q - buf\) < sizeof\(buf\) - 1\)
+				\*q\+\+ = c;.*(	case TOK_LINEFEED:)
+		goto the_end;
+	default:8??0?
+grp 08??-7m 74220reg p OK tcc_win64_x86_64.c:8345:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> 	case TOK_WARNING: \{
+		q = buf;
+		c = skip_spaces\(\);.*(		if \(saved_parse_flags & PARSE_FLAG_ASM_FILE\))
+			goto ignore;
+		if \(tok == '\''!'\'' && is_bof\)9??0?
+grp 09??-12m 74220reg p OK tcc_win64_x86_64.c:8345:a92sc %? %@2152sc!'\''00?
+1;4;8;9??!219reg tcc_win64_x86_64.c:83452sc %? %@2132sc!0?
 ?0?
 %f+ 		break;
 	}
@@ -3685,8 +6854,24 @@ test_skip:
 %f+ 		break;
 	}
 	case TOK_PRAGMA:4??0?
-4??+2m 75220reg p OK tcc_win64_x86_64.c:8348:a42sc %? %@2152sc!0?
-1;4??!219reg tcc_win64_x86_64.c:83482sc %? %@2132sc!0?
+4??+2m 75220reg p OK tcc_win64_x86_64.c:8348:a42sc %? %@2152sc!1q0?
+grp 1%f+ 		break;.*?
+	}.*?
+(	case TOK_PRAGMA:)7??0?
+grp 07??m 75220reg p OK tcc_win64_x86_64.c:8348:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 		while \(c != '\''\\n'\'' && c != CH_EOF\) \{
+			if \(\(q - buf\) < sizeof\(buf\) - 1\)
+				\*q\+\+ = c;.*(	case TOK_LINEFEED:)
+		goto the_end;
+	default:8??0?
+grp 08??-4m 75220reg p OK tcc_win64_x86_64.c:8348:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> 	case TOK_WARNING: \{
+		q = buf;
+		c = skip_spaces\(\);.*(		if \(saved_parse_flags & PARSE_FLAG_ASM_FILE\))
+			goto ignore;
+		if \(tok == '\''!'\'' && is_bof\)9??0?
+grp 09??-9m 75220reg p OK tcc_win64_x86_64.c:8348:a92sc %? %@2152sc!'\''00?
+1;4;7;8;9??!219reg tcc_win64_x86_64.c:83482sc %? %@2132sc!0?
 ?0?
 %f+ 			goto ignore;
 		tcc_warning\("ignoring unknown preprocessing directive #%s", get_tok_str\(tok,
@@ -3696,8 +6881,24 @@ ignore:1??0?
 %f+ 			goto ignore;
 		tcc_warning\("ignoring unknown preprocessing directive #%s", get_tok_str\(tok,
 				&tokc\)\);4??0?
-4??+2m 76220reg p OK tcc_win64_x86_64.c:8364:a42sc %? %@2152sc!0?
-1;4??!219reg tcc_win64_x86_64.c:83642sc %? %@2132sc!0?
+4??+2m 76220reg p OK tcc_win64_x86_64.c:8364:a42sc %? %@2152sc!1q0?
+grp 1%f+ 			goto ignore;.*?
+		tcc_warning\("ignoring unknown preprocessing directive #%s", get_tok_str\(tok,.*?
+(				&tokc\)\);)7??0?
+grp 07??m 76220reg p OK tcc_win64_x86_64.c:8364:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 			goto ignore;
+		if \(tok == '\''!'\'' && is_bof\)
+			/\* '\''#!'\'' is ignored at beginning to allow C scripts\. \*/.*(static void parse_escape_string\(CString \*outstr, const uint8_t \*buf,)
+				int is_long\)
+\{8??0?
+grp 08??-11m 76220reg p OK tcc_win64_x86_64.c:8364:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> 		goto the_end;
+	default:
+		/\* ignore gas line comment in an '\''S'\'' file\. \*/.*(	p = buf;)
+	for \(;;\) \{
+		c = \*p;9??0?
+grp 09??-17m 76220reg p OK tcc_win64_x86_64.c:8364:a92sc %? %@2152sc!'\''00?
+1;4;7;8;9??!219reg tcc_win64_x86_64.c:83642sc %? %@2132sc!0?
 ?0?
 %f+ ignore:
 		skip_to_eol\(0\);
@@ -3714,8 +6915,28 @@ ignore:1??0?
 4??+1m 77220reg p OK tcc_win64_x86_64.c:8366:a42sc %? %@2152sc!fr 981qfr 980?
 %f+ 		goto the_end;
 	}5??0?
-5??-1m 77220reg p OK tcc_win64_x86_64.c:8366:a52sc %? %@2152sc!0?
-1;2;3;4;5??!219reg tcc_win64_x86_64.c:83662sc %? %@2132sc!0?
+5??-1m 77220reg p OK tcc_win64_x86_64.c:8366:a52sc %? %@2152sc!1q0?
+%f+ .g..r..
+...ki.....e....\).
+..go.o...e..n..
+	.6??0?
+6??+1m 77220reg p OK tcc_win64_x86_64.c:8366:a62sc %? %@2152sc!1q0?
+grp 1%f+ ignore:.*?
+(		skip_to_eol\(0\);)7??0?
+grp 07??m 77220reg p OK tcc_win64_x86_64.c:8366:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 			goto ignore;
+		if \(tok == '\''!'\'' && is_bof\)
+			/\* '\''#!'\'' is ignored at beginning to allow C scripts\. \*/.*(static void parse_escape_string\(CString \*outstr, const uint8_t \*buf,)
+				int is_long\)
+\{8??0?
+grp 08??-9m 77220reg p OK tcc_win64_x86_64.c:8366:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> 		goto the_end;
+	default:
+		/\* ignore gas line comment in an '\''S'\'' file\. \*/.*(	p = buf;)
+	for \(;;\) \{
+		c = \*p;9??0?
+grp 09??-15m 77220reg p OK tcc_win64_x86_64.c:8366:a92sc %? %@2152sc!'\''00?
+1;2;3;4;5;6;7;8;9??!219reg tcc_win64_x86_64.c:83662sc %? %@2132sc!0?
 ?0?
 %f+ 		goto the_end;
 	}
@@ -3737,8 +6958,31 @@ the_end:
 %f+ the_end:
 	parse_flags = saved_parse_flags;
 }5??0?
-5??-1m 78220reg p OK tcc_win64_x86_64.c:8369:a52sc %? %@2152sc!0?
-1;2;3;4;5??!219reg tcc_win64_x86_64.c:83692sc %? %@2132sc!0?
+5??-1m 78220reg p OK tcc_win64_x86_64.c:8369:a52sc %? %@2152sc!1q0?
+%f+ .	......h._....
+	.
+...i..........\).
+t.e.....
+...r.e...a.. =.s...._............
+}6??0?
+6??+2m 78220reg p OK tcc_win64_x86_64.c:8369:a62sc %? %@2152sc!1q0?
+grp 1%f+ 		goto the_end;.*?
+	}.*?
+(	skip_to_eol\(1\);)7??0?
+grp 07??m 78220reg p OK tcc_win64_x86_64.c:8369:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 			goto ignore;
+		if \(tok == '\''!'\'' && is_bof\)
+			/\* '\''#!'\'' is ignored at beginning to allow C scripts\. \*/.*(static void parse_escape_string\(CString \*outstr, const uint8_t \*buf,)
+				int is_long\)
+\{8??0?
+grp 08??-6m 78220reg p OK tcc_win64_x86_64.c:8369:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> 		goto the_end;
+	default:
+		/\* ignore gas line comment in an '\''S'\'' file\. \*/.*(	p = buf;)
+	for \(;;\) \{
+		c = \*p;9??0?
+grp 09??-12m 78220reg p OK tcc_win64_x86_64.c:8369:a92sc %? %@2152sc!'\''00?
+1;2;3;4;5;6;7;8;9??!219reg tcc_win64_x86_64.c:83692sc %? %@2132sc!0?
 ?0?
 %f+ 				tcc_close\(\);
 				s1->include_stack_ptr--;
@@ -3762,8 +7006,33 @@ the_end:
 %f+ 			}
 		} else \{
 			goto redo_no_start;5??0?
-5??-1m 79220reg p OK tcc_win64_x86_64.c:9024:a52sc %? %@2152sc!0?
-1;2;3;4;5??!219reg tcc_win64_x86_64.c:90242sc %? %@2132sc!0?
+5??-1m 79220reg p OK tcc_win64_x86_64.c:9024:a52sc %? %@2152sc!1q0?
+%f+ .........l..e\(..
+	...s........d..s.ac._......
+.	... = .ile....._p.r.
+	......o ..........in..
+	...
+..}..l....
+.....t.....o_.........6??0?
+6??+3m 79220reg p OK tcc_win64_x86_64.c:9024:a62sc %? %@2152sc!1q0?
+grp 1%f+ 				tcc_close\(\);.*?
+				s1->include_stack_ptr--;.*?
+				p = file->buf_ptr;.*?
+(				goto maybe_newline;)7??0?
+grp 07??m 79220reg p OK tcc_win64_x86_64.c:9024:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 					tok_flags &= ~TOK_FLAG_ENDIF;
+				}
+				/\* add end of include file debug info \*/.*(		file->line_num\+\+;)
+		p\+\+;
+maybe_newline:8??0?
+grp 08??-8m 79220reg p OK tcc_win64_x86_64.c:9024:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> 				/\* pop include file \*/
+				/\* test if previous '\''#endif'\'' was after a #ifdef at
+				                   start of file \*/.*(		tok_flags \|= TOK_FLAG_BOL;)
+		if \(0 == \(parse_flags & PARSE_FLAG_LINEFEED\)\)
+			goto redo_no_start;9??0?
+grp 09??-11m 79220reg p OK tcc_win64_x86_64.c:9024:a92sc %? %@2152sc!'\''00?
+1;2;3;4;5;6;7;8;9??!219reg tcc_win64_x86_64.c:90242sc %? %@2132sc!0?
 ?0?
 %f+ 			} else \{
 
@@ -3790,8 +7059,34 @@ the_end:
 				} else
 
 5??0?
-5??-1m 80220reg p OK tcc_win64_x86_64.c:9059:a52sc %? %@2152sc!0?
-1;2;3;4;5??!219reg tcc_win64_x86_64.c:90592sc %? %@2132sc!0?
+5??-1m 80220reg p OK tcc_win64_x86_64.c:9059:a52sc %? %@2152sc!1q0?
+%f+ ...}..... .
+
+		.	if..p...._...g. ...AR.....A._......LE...
+	........pa......n....m....\(.....\).
+.......t..r.d.....s.....
+..	...el.e
+
+6??0?
+6??+3m 80220reg p OK tcc_win64_x86_64.c:9059:a62sc %? %@2152sc!1q0?
+grp 1%f+ 			} else \{.*?
+.*?
+				if \(parse_flags & PARSE_FLAG_ASM_FILE\) \{.*?
+(					p = parse_line_comment\(p - 1\);)7??0?
+grp 07??m 80220reg p OK tcc_win64_x86_64.c:9059:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 			if \(c == '\''#'\''\) \{
+				p\+\+;
+				tok = TOK_TWOSHARPS;.*(					tok = '\''#'\'';)
+				}
+			}8??0?
+grp 08??-5m 80220reg p OK tcc_win64_x86_64.c:9059:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> 			p = file->buf_ptr;
+			goto maybe_newline;
+		} else \{.*(	case '\''\$'\'':)
+		if \(!\(isidnum_table\['\''\$'\'' - CH_EOF] & IS_ID\)
+		    \|\| \(parse_flags & PARSE_FLAG_ASM_FILE\)\)9??0?
+grp 09??-12m 80220reg p OK tcc_win64_x86_64.c:9059:a92sc %? %@2152sc!'\''00?
+1;2;3;4;5;6;7;8;9??!219reg tcc_win64_x86_64.c:90592sc %? %@2132sc!0?
 ?0?
 %f+ 		if \(is_long\)
 			cstr_ccat\(&tokcstr, '\''L'\''\);
@@ -3815,8 +7110,33 @@ the_end:
 %f+ 		cstr_ccat\(&tokcstr, c\);
 		cstr_ccat\(&tokcstr, '\''\\0'\''\);
 		tokc\.str\.size = tokcstr\.size;5??0?
-5??-1m 81220reg p OK tcc_win64_x86_64.c:9253:a52sc %? %@2152sc!0?
-1;2;3;4;5??!219reg tcc_win64_x86_64.c:92532sc %? %@2132sc!0?
+5??-1m 81220reg p OK tcc_win64_x86_64.c:9253:a52sc %? %@2152sc!1q0?
+%f+ .	....is.l..g.
+.	.cs.r.....\(......tr. '\''.'\''\);
+...s.....at\(..o.c..r..c..
+....= .......p_...ing\(......&t.k.....;
+.	..t...........c.... ...
+..c.t................ ......
+.	tok.....\...............\.size.6??0?
+6??+3m 81220reg p OK tcc_win64_x86_64.c:9253:a62sc %? %@2152sc!1q0?
+grp 1%f+ 		if \(is_long\).*?
+			cstr_ccat\(&tokcstr, '\''L'\''\);.*?
+		cstr_ccat\(&tokcstr, c\);.*?
+(		p = parse_pp_string\(p, c, &tokcstr\);)7??0?
+grp 07??m 81220reg p OK tcc_win64_x86_64.c:9253:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 		is_long = 0;
+str_const:
+		cstr_reset\(&tokcstr\);.*(	case '\''<'\'':)
+		PEEKC\(c, p\);
+		if \(c == '\''='\''\) \{8??0?
+grp 08??-8m 81220reg p OK tcc_win64_x86_64.c:9253:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> 		break;
+	case '\''\\'\'''\'':
+	case '\''\\"'\'':.*(			tok = TOK_LE;)
+		} else if \(c == '\''<'\''\) \{
+			PEEKC\(c, p\);9??0?
+grp 09??-12m 81220reg p OK tcc_win64_x86_64.c:9253:a92sc %? %@2152sc!'\''00?
+1;2;3;4;5;6;7;8;9??!219reg tcc_win64_x86_64.c:92532sc %? %@2132sc!0?
 ?0?
 %f+ 	case '\''/'\'':
 		PEEKC\(c, p\);
@@ -3840,8 +7160,33 @@ the_end:
 %f+ 			/\* comments replaced by a blank \*/
 
 			tok = '\'' '\'';5??0?
-5??-1m 82220reg p OK tcc_win64_x86_64.c:9361:a52sc %? %@2152sc!0?
-1;2;3;4;5??!219reg tcc_win64_x86_64.c:93612sc %? %@2132sc!0?
+5??-1m 82220reg p OK tcc_win64_x86_64.c:9361:a52sc %? %@2152sc!1q0?
+%f+ .c......'\''.
+....E...., ...
+.	.f.\(c... ......
+	..........._..m.......;
+.../............e.....d.b... ...n. ..
+
+..	.........;6??0?
+6??+3m 82220reg p OK tcc_win64_x86_64.c:9361:a62sc %? %@2152sc!1q0?
+grp 1%f+ 	case '\''/'\'':.*?
+		PEEKC\(c, p\);.*?
+		if \(c == '\''\*'\''\) \{.*?
+(			p = parse_comment\(p\);)7??0?
+grp 07??m 82220reg p OK tcc_win64_x86_64.c:9361:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 		PARSE2\('\''%'\'', '\''%'\'', '\''='\'', TOK_A_MOD\)
+		PARSE2\('\''\^'\'', '\''\^'\'', '\''='\'', TOK_A_XOR\)
+	/\* comments or operator \*/.*(			tok = TOK_A_DIV;)
+		} else \{
+			tok = '\''/'\'';8??0?
+grp 08??-11m 82220reg p OK tcc_win64_x86_64.c:9361:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> 		PARSE2\('\''!'\'', '\''!'\'', '\''='\'', TOK_NE\)
+		PARSE2\('\''='\'', '\''='\'', '\''='\'', TOK_EQ\)
+		PARSE2\('\''\*'\'', '\''\*'\'', '\''='\'', TOK_A_MUL\).*(	case '\''\)'\'':)
+	case '\''\['\'':
+	case '\'']'\'':9??0?
+grp 09??-21m 82220reg p OK tcc_win64_x86_64.c:9361:a92sc %? %@2152sc!'\''00?
+1;2;3;4;5;6;7;8;9??!219reg tcc_win64_x86_64.c:93612sc %? %@2132sc!0?
 ?0?
 %f+ 			tok = '\'' '\'';
 			goto maybe_space;
@@ -3865,8 +7210,33 @@ the_end:
 %f+ 			tok = '\'' '\'';
 			goto maybe_space;
 		} else if \(c == '\''='\''\) \{5??0?
-5??-1m 83220reg p OK tcc_win64_x86_64.c:9367:a52sc %? %@2152sc!0?
-1;2;3;4;5??!219reg tcc_win64_x86_64.c:93672sc %? %@2132sc!0?
+5??-1m 83220reg p OK tcc_win64_x86_64.c:9367:a52sc %? %@2152sc!1q0?
+%f+ ..	..... ....
+.	..o...............
+.....l.e.i. ......'\''/....
+.......pa..e...n..c........\).
+		.to..=....;
+	..g..o .a......ac..
+..}.......f...... .=....6??0?
+6??+3m 83220reg p OK tcc_win64_x86_64.c:9367:a62sc %? %@2152sc!1q0?
+grp 1%f+ 			tok = '\'' '\'';.*?
+			goto maybe_space;.*?
+		} else if \(c == '\''/'\''\) \{.*?
+(			p = parse_line_comment\(p\);)7??0?
+grp 07??m 83220reg p OK tcc_win64_x86_64.c:9367:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 		PARSE2\('\''%'\'', '\''%'\'', '\''='\'', TOK_A_MOD\)
+		PARSE2\('\''\^'\'', '\''\^'\'', '\''='\'', TOK_A_XOR\)
+	/\* comments or operator \*/.*(			tok = TOK_A_DIV;)
+		} else \{
+			tok = '\''/'\'';8??0?
+grp 08??-5m 83220reg p OK tcc_win64_x86_64.c:9367:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> 		PARSE2\('\''!'\'', '\''!'\'', '\''='\'', TOK_NE\)
+		PARSE2\('\''='\'', '\''='\'', '\''='\'', TOK_EQ\)
+		PARSE2\('\''\*'\'', '\''\*'\'', '\''='\'', TOK_A_MUL\).*(	case '\''\)'\'':)
+	case '\''\['\'':
+	case '\'']'\'':9??0?
+grp 09??-15m 83220reg p OK tcc_win64_x86_64.c:9367:a92sc %? %@2152sc!'\''00?
+1;2;3;4;5;6;7;8;9??!219reg tcc_win64_x86_64.c:93672sc %? %@2132sc!0?
 ?0?
 %f+ 		case '\''/'\'':
 			PEEKC\(c, p\);
@@ -3884,8 +7254,31 @@ the_end:
 			if \(c == '\''\*'\''\)4??0?
 4??+3m 84220reg p OK tcc_win64_x86_64.c:9609:a42sc %? %@2152sc!1q0?
 ;0fr.,$f+ ^			else if \(c == '\''/'\''\)$5??0?
-5??-1m 84220reg p OK tcc_win64_x86_64.c:9609:a52sc %? %@2152sc!fr 98fr 980?
-1;2;3;4;5??!219reg tcc_win64_x86_64.c:96092sc %? %@2132sc!0?
+5??-1m 84220reg p OK tcc_win64_x86_64.c:9609:a52sc %? %@2152sc!fr 981qfr 980?
+%f+ .	.a.e...'\''.
+...P....\(......
+	.... .. .......
+.	....= ....e.......t....
+	.......if..c........6??0?
+6??+3m 84220reg p OK tcc_win64_x86_64.c:9609:a62sc %? %@2152sc!1q0?
+grp 1%f+ 		case '\''/'\'':.*?
+			PEEKC\(c, p\);.*?
+			if \(c == '\''\*'\''\).*?
+(				p = parse_comment\(p\);)7??0?
+grp 07??m 84220reg p OK tcc_win64_x86_64.c:9609:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 	for \(;;\) \{
+		PEEKC\(c, p\);
+		switch \(c\) \{.*(			--p, c = '\'' '\'';)
+			break;
+		case '\'' '\'':8??0?
+grp 08??-7m 84220reg p OK tcc_win64_x86_64.c:9609:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> \{
+	uint8_t \*p = file->buf_ptr - 1;
+	int c;.*(		case '\''\\t'\'':)
+			break;
+		case '\''\\f'\'':9??0?
+grp 09??-10m 84220reg p OK tcc_win64_x86_64.c:9609:a92sc %? %@2152sc!'\''00?
+1;2;3;4;5;6;7;8;9??!219reg tcc_win64_x86_64.c:96092sc %? %@2132sc!0?
 ?0?
 %f+ 			else if \(c == '\''/'\''\)
 				p = parse_line_comment\(p\);
@@ -3905,8 +7298,29 @@ the_end:
 %f+ 			else \{
 				c = \*--p = '\''/'\'';
 				goto leave;5??0?
-5??-1m 85220reg p OK tcc_win64_x86_64.c:9611:a52sc %? %@2152sc!0?
-1;2;3;4;5??!219reg tcc_win64_x86_64.c:96112sc %? %@2132sc!0?
+5??-1m 85220reg p OK tcc_win64_x86_64.c:9611:a52sc %? %@2152sc!1q0?
+%f+ 	.	..s..i............
+..	.. ...a..e...n......e.t\(..;
+	........
+......= .-.....'\''...
+.	.......l.a...6??0?
+6??+1m 85220reg p OK tcc_win64_x86_64.c:9611:a62sc %? %@2152sc!1q0?
+grp 1%f+ 			else if \(c == '\''/'\''\).*?
+(				p = parse_line_comment\(p\);)7??0?
+grp 07??m 85220reg p OK tcc_win64_x86_64.c:9611:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 	for \(;;\) \{
+		PEEKC\(c, p\);
+		switch \(c\) \{.*(			--p, c = '\'' '\'';)
+			break;
+		case '\'' '\'':8??0?
+grp 08??-5m 85220reg p OK tcc_win64_x86_64.c:9611:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> \{
+	uint8_t \*p = file->buf_ptr - 1;
+	int c;.*(		case '\''\\t'\'':)
+			break;
+		case '\''\\f'\'':9??0?
+grp 09??-8m 85220reg p OK tcc_win64_x86_64.c:9611:a92sc %? %@2152sc!'\''00?
+1;2;3;4;5;6;7;8;9??!219reg tcc_win64_x86_64.c:96112sc %? %@2132sc!0?
 ?0?
 %f+ 	} else if \(s1->Pflag == LINE_MACRO_OUTPUT_FORMAT_STD\) \{
 		fprintf\(s1->ppfp, "#line %d \\"%s\\"\\n", f->line_num, f->filename\);
@@ -3930,8 +7344,33 @@ the_end:
 %f+ 			level > 0 \? " 1" : level < 0 \? " 2" : ""\);
 	}
 	f->line_ref = f->line_num;5??0?
-5??-1m 86220reg p OK tcc_win64_x86_64.c:10227:a52sc %? %@2152sc!0?
-1;2;3;4;5??!219reg tcc_win64_x86_64.c:102272sc %? %@2132sc!0?
+5??-1m 86220reg p OK tcc_win64_x86_64.c:10227:a52sc %? %@2152sc!1q0?
+%f+ .. ......f.\(......... =.........C.....TP.._...M.._...\) .
+..f..................#...e... \\......."........e..........ilen..e..
+	...... .
+	.f...nt.\(..-.p......#........\\...\\......>...._.... ............
+.	..e............1... ........0.....2....""..
+.}
+...>.in..r.f ..f....n..n..;6??0?
+6??+3m 86220reg p OK tcc_win64_x86_64.c:10227:a62sc %? %@2152sc!1q0?
+grp 1%f+ 	} else if \(s1->Pflag == LINE_MACRO_OUTPUT_FORMAT_STD\) \{.*?
+		fprintf\(s1->ppfp, "#line %d \\"%s\\"\\n", f->line_num, f->filename\);.*?
+	} else \{.*?
+(		fprintf\(s1->ppfp, "# %d \\"%s\\"%s\\n", f->line_num, f->filename,)7??0?
+grp 07??m 86220reg p OK tcc_win64_x86_64.c:10227:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 	} else if \(level == 0 && f->line_ref && d < 8\) \{
+		while \(d > 0\)
+			fputs\("\\n", s1->ppfp\), --d;.*(static void define_print\(TCCState \*s1, int v\))
+\{
+	FILE \*fp;8??0?
+grp 08??-6m 86220reg p OK tcc_win64_x86_64.c:10227:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> static void pp_line\(TCCState \*s1, BufferedFile \*f, int level\)
+\{
+	int d = f->line_num - f->line_ref;.*(	s = define_find\(v\);)
+	if \(NULL == s \|\| NULL == s->d\)
+		return;9??0?
+grp 09??-11m 86220reg p OK tcc_win64_x86_64.c:10227:a92sc %? %@2152sc!'\''00?
+1;2;3;4;5;6;7;8;9??!219reg tcc_win64_x86_64.c:102272sc %? %@2132sc!0?
 ?0?
 %f+ 		return 0;
 	}
@@ -3965,8 +7404,36 @@ the_end:
 %f+ 
 	for \(;;\) \{
 		iptr = s1->include_stack_ptr;5??0?
-5??-4m 87220reg p OK tcc_win64_x86_64.c:10336:a52sc %? %@2152sc!0?
-1;2;3;4;5??!219reg tcc_win64_x86_64.c:103362sc %? %@2132sc!0?
+5??-4m 87220reg p OK tcc_win64_x86_64.c:10336:a52sc %? %@2152sc!1q0?
+%f+ 	...t.....;
+.}
+
+........e.. ...........E.D..s..s =......... . ..
+	......le.......
+.	.p......... ....-.pr.v........\+..
+..p...n....,....e,..e...\).
+
+	..........
+	........s.-..n..u.............6??0?
+6??+3m 87220reg p OK tcc_win64_x86_64.c:10336:a62sc %? %@2152sc!1q0?
+grp 1%f+ 		return 0;.*?
+	}.*?
+.*?
+(	token_seen = TOK_LINEFEED, spcs = 0, level = 0;)7??0?
+grp 07??m 87220reg p OK tcc_win64_x86_64.c:10336:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 		do
+			next\(\);
+		while \(tok != TOK_EOF\);.*(		level = s1->include_stack_ptr - iptr;)
+		if \(level\) \{
+			if \(level > 0\)8??0?
+grp 08??-11m 87220reg p OK tcc_win64_x86_64.c:10336:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> 	/\* Credits to Fabrice Bellard'\''s initial revision to demonstrate its
+	       capability to compile and run itself, provided all numbers are
+	       given as decimals\. tcc -E -P10 will do\. \*/.*(				pp_line\(s1, \*iptr, 0\);)
+			pp_line\(s1, file, level\);
+		}9??0?
+grp 09??-14m 87220reg p OK tcc_win64_x86_64.c:10336:a92sc %? %@2152sc!'\''00?
+1;2;3;4;5;6;7;8;9??!219reg tcc_win64_x86_64.c:103362sc %? %@2132sc!0?
 ?0?
 %f+ 
 	for \(;;\) \{
@@ -3993,8 +7460,34 @@ the_end:
 			break;
 
 5??0?
-5??-1m 88220reg p OK tcc_win64_x86_64.c:10343:a52sc %? %@2152sc!0?
-1;2;3;4;5??!219reg tcc_win64_x86_64.c:103432sc %? %@2132sc!0?
+5??-1m 88220reg p OK tcc_win64_x86_64.c:10343:a52sc %? %@2152sc!1q0?
+%f+ 
+.......;\).\{
+.	.p.... .1........._s.a...p...
+....x.\(\).
+	.....t.k...........\)
+......a.;
+
+6??0?
+6??+3m 88220reg p OK tcc_win64_x86_64.c:10343:a62sc %? %@2152sc!1q0?
+grp 1%f+ .*?
+	for \(;;\) \{.*?
+		iptr = s1->include_stack_ptr;.*?
+(		next\(\);)7??0?
+grp 07??m 88220reg p OK tcc_win64_x86_64.c:10343:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 		do
+			next\(\);
+		while \(tok != TOK_EOF\);.*(		level = s1->include_stack_ptr - iptr;)
+		if \(level\) \{
+			if \(level > 0\)8??0?
+grp 08??-4m 88220reg p OK tcc_win64_x86_64.c:10343:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> 	/\* Credits to Fabrice Bellard'\''s initial revision to demonstrate its
+	       capability to compile and run itself, provided all numbers are
+	       given as decimals\. tcc -E -P10 will do\. \*/.*(				pp_line\(s1, \*iptr, 0\);)
+			pp_line\(s1, file, level\);
+		}9??0?
+grp 09??-7m 88220reg p OK tcc_win64_x86_64.c:10343:a92sc %? %@2152sc!'\''00?
+1;2;3;4;5;6;7;8;9??!219reg tcc_win64_x86_64.c:103432sc %? %@2132sc!0?
 ?0?
 %f+ 				pp_line\(s1, \*iptr, 0\);
 			pp_line\(s1, file, level\);
@@ -4030,8 +7523,37 @@ the_end:
 %f+ 
 		if \(is_space\(tok\)\) \{
 			if \(spcs < sizeof white - 1\)5??0?
-5??-5m 89220reg p OK tcc_win64_x86_64.c:10353:a52sc %? %@2152sc!0?
-1;2;3;4;5??!219reg tcc_win64_x86_64.c:103532sc %? %@2132sc!0?
+5??-5m 89220reg p OK tcc_win64_x86_64.c:10353:a52sc %? %@2152sc!1q0?
+%f+ 	....p...ne\(.1.....tr.....
+	..p..l....s.....l., ..v....
+	..
+...f.\(..->..l.g & ....
+.	..._...ug....in....1..
+...i....1...f... &...
+	.	.c.n.....;
+..}
+
+		.f...s_.p.....ok....
+		........s....i.e....hi.... 1.6??0?
+6??+3m 89220reg p OK tcc_win64_x86_64.c:10353:a62sc %? %@2152sc!1q0?
+grp 1%f+ 				pp_line\(s1, \*iptr, 0\);.*?
+			pp_line\(s1, file, level\);.*?
+		}.*?
+(		if \(s1->dflag & 7\) \{)7??0?
+grp 07??m 89220reg p OK tcc_win64_x86_64.c:10353:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 		level = s1->include_stack_ptr - iptr;
+		if \(level\) \{
+			if \(level > 0\).*(				white\[spcs\+\+] = tok;)
+			continue;
+		} else if \(tok == TOK_LINEFEED\) \{8??0?
+grp 08??-8m 89220reg p OK tcc_win64_x86_64.c:10353:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> 		iptr = s1->include_stack_ptr;
+		next\(\);
+		if \(tok == TOK_EOF\).*(			spcs = 0;)
+			if \(token_seen == TOK_LINEFEED\)
+				continue;9??0?
+grp 09??-11m 89220reg p OK tcc_win64_x86_64.c:10353:a92sc %? %@2152sc!'\''00?
+1;2;3;4;5;6;7;8;9??!219reg tcc_win64_x86_64.c:103532sc %? %@2132sc!0?
 ?0?
 %f+ 	if \(!s1->error_func\) \{
 		/\* default case: stderr \*/
@@ -4062,8 +7584,35 @@ the_end:
 		fflush\(stdout\);/\* flush -v output \*/
 
 5??0?
-5??-2m 90220reg p OK tcc_win64_x86_64.c:32218:a52sc %? %@2152sc!0?
-1;2;3;4;5??!219reg tcc_win64_x86_64.c:322182sc %? %@2132sc!0?
+5??-2m 90220reg p OK tcc_win64_x86_64.c:32218:a52sc %? %@2152sc!1q0?
+%f+ ..f ....-.e.r......c...
+	... ...a................ \*.
+
+...f.....&..........u._.yp. .....C.....U........CE.. .&......p.. .....do...
+..	.......".n..;/\*........ ne......du.i..........\*/
+
+...f.us.....o.t.......u.h.-. o...u. ..
+
+6??0?
+6??+3m 90220reg p OK tcc_win64_x86_64.c:32218:a62sc %? %@2152sc!1q0?
+grp 1%f+ 	if \(!s1->error_func\) \{.*?
+		/\* default case: stderr \*/.*?
+.*?
+(		if \(s1 && s1->output_type == TCC_OUTPUT_PREPROCESS && s1->ppfp == stdout\))7??0?
+grp 07??m 90220reg p OK tcc_win64_x86_64.c:32218:a72sc %? %@2152sc!1q0?
+m 01;0grp 1%f> 	cstr_printf\(&cs, mode == ERROR_WARN \? "warning: " : "error: "\);
+	if \(pp_expr > 1\)
+		pp_error\(&cs\);/\* special handler for preprocessor expression errors \*/.*(		s1->error_func\(s1->error_opaque, \(char \*\)cs\.data\);)
+	}
+	cstr_free\(&cs\);8??0?
+grp 08??-9m 90220reg p OK tcc_win64_x86_64.c:32218:a82sc %? %@2152sc!'\''08??1q0?
+m 01;0grp 1%f> 	} else \{
+		cstr_printf\(&cs, "tcc: "\);
+	}.*(	if \(mode != ERROR_WARN\))
+		s1->nb_errors\+\+;
+	if \(mode == ERROR_ERROR && s1->error_set_jmp_enabled\) \{9??0?
+grp 09??-12m 90220reg p OK tcc_win64_x86_64.c:32218:a92sc %? %@2152sc!'\''00?
+1;2;3;4;5;6;7;8;9??!219reg tcc_win64_x86_64.c:322182sc %? %@2132sc!0?
 '\''1i 	uint8_t *buf_top;
 ??!219reg tcc_win64_x86_64.c:1685:m12sc %? %@2142sc!0?
 '\''2i 		bf->buf_top = bf->buffer;
@@ -4512,10 +8061,10 @@ fi
 exit 0
 === PATCH2VI PATCH ===
 diff --git a/tcc_linux_x86_64.c b/tcc_linux_x86_64.c
-index 15a7232..1af0434 100644
+index 55a2342..3f6262e 100644
 --- a/tcc_linux_x86_64.c
 +++ b/tcc_linux_x86_64.c
-@@ -1858,6 +1858,7 @@ typedef struct DLLReference {
+@@ -1859,6 +1859,7 @@ typedef struct DLLReference {
  
  typedef struct BufferedFile {
  	uint8_t *buf_ptr;
@@ -5343,7 +8892,7 @@ index 15a7232..1af0434 100644
  
  		if (is_space(tok)) {
  			if (spcs < sizeof white - 1)
-@@ -32747,8 +32995,8 @@ static void error1(int mode, const char *fmt, va_list ap)
+@@ -32748,8 +32996,8 @@ static void error1(int mode, const char *fmt, va_list ap)
  	if (!s1->error_func) {
  		/* default case: stderr */
  
