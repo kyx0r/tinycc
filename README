@@ -49,3 +49,4 @@ Updating amalgamation to the latest git version is automated using custom script
 
 win64_x86_64.sh
 linux_x86_64.sh
+amal.sh - tcc preprocessor extension for amalgamation
