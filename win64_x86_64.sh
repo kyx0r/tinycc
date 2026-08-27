@@ -2,6 +2,15 @@
 
 IFS=$(printf ' \t\n@'); IFS=${IFS%@}
 
+# ./configure's config.h is host-specific and absent from a fresh checkout, so
+# hide it to keep the output the same either way.  TCC_VERSION comes from the
+# VERSION file below.  First line recovers it after a run killed before its trap.
+[ -f config.h.amalhidden ] && [ ! -f config.h ] && mv config.h.amalhidden config.h
+if [ -f config.h ]; then
+	mv config.h config.h.amalhidden || exit 1
+	trap 'mv -f config.h.amalhidden config.h' EXIT HUP INT TERM
+fi
+
 amal -DONE_SOURCE -E tcc.c > all.c
 # cleanup multiline macros for compat with unifdef
 EXINIT="$(printf '$?\\%%s/(defined[^\n]*?)[ \t]*[\\\\]\n[ \t]*/\\1 /gm:wq')" vi -e all.c
