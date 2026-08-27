@@ -6,6 +6,7 @@ Entire core of TCC compiler in one file. Separate file for each target arch/plat
 Arch/Platform unrelated code stripped out.
 
 Supported architectures:
+tcc_linux_x86_64 - 35177L LOC
 tcc_win64_x86_64 - 35217L LOC
 
 RATIONALE
@@ -20,6 +21,16 @@ just do it.
 
 COMPILING
 ---------
+Linux (x86_64):
+
+Bootstrap with GCC
+gcc tcc_linux_x86_64.c -o gnu_tcc
+
+Self re-compile
+./gnu_tcc -I./include tcc_linux_x86_64.c -o tcc
+./tcc -I /usr/include -I ./include tcc_linux_x86_64.c -o _tcc
+
+Windows (x86_64, UCRT):
 
 Setup UCRT:
 pacman -S mingw-w64-ucrt-x86_64-toolchain
@@ -37,3 +48,4 @@ UPDATING
 Updating amalgamation to the latest git version is automated using custom scripts.
 
 win64_x86_64.sh
+linux_x86_64.sh
