@@ -15,7 +15,7 @@ cat lib/libtcc1.c >> __all.c
 # newline in the replacement instead
 NL='
 '
-EXINIT="1,#>/\*>-1d:1s@^@#define TCC_VERSION \"$(git rev-parse --verify HEAD)\"$NL:g/if \(TCC_LIBTCC1\[0\]\)/.,.+1d:wq" vi -e __all.c
+EXINIT="1,#>/\*>-1d:1s@^@#define TCC_VERSION \"$(head -n1 VERSION)\"$NL#define TCC_GITHASH \"$(git rev-parse --verify HEAD)\"$NL:g/if \(TCC_LIBTCC1\[0\]\)/.,.+1d:wq" vi -e __all.c
 grep -q '^#define TCC_VERSION "' __all.c ||
 	{ echo "TCC_VERSION header not inserted" >&2; exit 1; }
 
@@ -188,7 +188,6 @@ DEFS="\
 -UCONFIG_TCCBOOT \
 -UTCC_LIBGCC \
 -UTCC_PROFILE \
--UTCC_GITHASH \
 -UTCC_CROSS_TEST \
 -UPARSE_DEBUG \
 -UPP_DEBUG \

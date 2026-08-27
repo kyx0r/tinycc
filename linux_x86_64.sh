@@ -10,8 +10,9 @@ EXINIT='>ifndef ONE_SOURCE>,$s#/\*([^*]|\*+[^*/])*Copyright([^*]|\*+[^*/])*\*+/#
 cp all.c __all.c
 
 cat lib/libtcc1.c >> __all.c
-EXINIT="1,#>/\*>-1d:0i #define TCC_VERSION \"$(git rev-parse --verify HEAD)\"
-:g/if \(TCC_LIBTCC1\[0\]\)/.,.+1d:wq" vi -e __all.c
+NL='
+'
+EXINIT="1,#>/\*>-1d:1s@^@#define TCC_VERSION \"$(head -n1 VERSION)\"$NL#define TCC_GITHASH \"$(git rev-parse --verify HEAD)\"$NL:g/if \(TCC_LIBTCC1\[0\]\)/.,.+1d:wq" vi -e __all.c
 
 # tcc's x86_64 SysV __builtin_va_arg macro (tccdefs.h) expands to a call to
 # __va_arg, a helper normally provided by lib/va_list.c in libtcc1.a.  Embed
@@ -124,7 +125,6 @@ DEFS="\
 -UCONFIG_TCCBOOT \
 -UTCC_LIBGCC \
 -UTCC_PROFILE \
--UTCC_GITHASH \
 -UTCC_CROSS_TEST \
 -UPARSE_DEBUG \
 -UPP_DEBUG \

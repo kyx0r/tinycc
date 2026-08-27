@@ -1,4 +1,5 @@
-#define TCC_VERSION "2ba12e83b3599ca8f5d50c179fe5138fe956f0c9"
+#define TCC_VERSION "0.9.28rc"
+#define TCC_GITHASH "2ba12e83b3599ca8f5d50c179fe5138fe956f0c9"
 /*
  *  TCC - Tiny C Compiler
  *
@@ -34248,6 +34249,10 @@ static const char help2[] =
 
 static const char version[] =
 	"tcc version "TCC_VERSION
+#ifdef TCC_GITHASH
+
+	" "TCC_GITHASH
+#endif
 
 	" ("
 
