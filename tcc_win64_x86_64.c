@@ -1,4 +1,4 @@
-#define TCC_VERSION "f10ab130ecbefc99177f5569c69ebe7f375a3d44"
+#define TCC_VERSION "2ba12e83b3599ca8f5d50c179fe5138fe956f0c9"
 /*
  *  TCC - Tiny C Compiler
  *
@@ -18,15 +18,10 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-// 19 "tcc.c" 2
+/* ==================== tcc.c ==================== */
 
-// 1 "tcc.h" 1
-#ifndef _TCC_H
-// 22 "tcc.h"
-#define _TCC_H
+/* ==================== tcc.h ==================== */
 
-#define _GNU_SOURCE
-#define _DARWIN_C_SOURCE
 #include <stdarg.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -43,6 +38,10 @@
 #include <time.h>
 
 #define WIN32_LEAN_AND_MEAN 1
+#ifndef _WIN32_WINNT
+#define _WIN32_WINNT 0x502 /* AddVectoredExceptionHandler */
+
+#endif
 #include <windows.h>
 #include <io.h> /* open, close etc. */
 /* open, close etc. */
@@ -50,11 +49,7 @@
 /* getcwd */
 #include <malloc.h> /* alloca */
 /* alloca */
-#ifdef __GNUC__
-
 #include <stdint.h>
-#endif
-
 #define inline __inline
 #define snprintf _snprintf
 #define vsnprintf _vsnprintf
@@ -65,13 +60,16 @@
 #define strtoll _strtoi64
 #define strtoull _strtoui64
 #endif
+/* some compilers don't know ldexpl and windows doesn't have long doubles anyway */
+
+#undef ldexpl
+#define ldexpl ldexp
 #ifdef LIBTCC_AS_DLL
 
 #define LIBTCCAPI __declspec(dllexport)
 #define PUB_FUNC LIBTCCAPI
 #endif
 #ifndef va_copy
-// 90 "tcc.h"
 #define va_copy(a,b) a = b
 #endif
 #ifndef O_BINARY
@@ -83,12 +81,9 @@
 #define offsetof(type,field) ((size_t) &((type *)0)->field)
 #endif
 #ifndef countof
-
-#define countof(tab) (sizeof(tab) / sizeof((tab)[0]))
 #endif
 
 #define NORETURN __attribute__((noreturn))
-#define ALIGNED(x) __attribute__((aligned(x)))
 #define PRINTF_LIKE(x,y) __attribute__ ((format (printf, (x), (y))))
 
 #define IS_DIRSEP(c) (c == '/' || c == '\\')
@@ -121,124 +116,47 @@
 /* risc-v code generator */
 /* default target is I386 */
 /* only native compiler supports -run */
-// 181 "tcc.h"
-#define TCC_IS_NATIVE
-#if defined CONFIG_TCC_BACKTRACE && CONFIG_TCC_BACKTRACE==0
-#undef CONFIG_TCC_BACKTRACE
-#else
 /* enable builtin stack backtraces */
-// 194 "tcc.h"
-#define CONFIG_TCC_BACKTRACE 1
-#endif
-#if defined CONFIG_TCC_BCHECK && CONFIG_TCC_BCHECK==0
-#undef CONFIG_TCC_BCHECK
-#else
-/* enable bound checking code */
 
-#define CONFIG_TCC_BCHECK 1
-#endif
-/* enable new macho code */
-
-#define CONFIG_NEW_MACHO 1
-/* create elf .o but native executables */
-// 219 "tcc.h"
-#define ELF_OBJ_ONLY
 /* No ten-byte long doubles on window and macos except in
    cross-compilers made by a mingw-GCC */
-// 229 "tcc.h"
-#define TCC_USING_DOUBLE_FOR_LDOUBLE 1
-#ifdef CONFIG_TCC_PIE
-
-#define CONFIG_TCC_PIC 1
-#endif
 /* support using libtcc from threads */
-#ifndef CONFIG_TCC_SEMLOCK
-// 238 "tcc.h"
-#define CONFIG_TCC_SEMLOCK 1
-#endif
 /* ------------ path configuration ------------ */
 #ifndef CONFIG_SYSROOT
 
 #define CONFIG_SYSROOT ""
 #endif
-#ifndef CONFIG_LDDIR
-
-#define CONFIG_LDDIR "lib"
-#endif
-#ifdef CONFIG_TRIPLET
-
-#define USE_TRIPLET(s) s "/" CONFIG_TRIPLET
-#define ALSO_TRIPLET(s) USE_TRIPLET(s) ":" s
-#else
-
-#define USE_TRIPLET(s) s
-#define ALSO_TRIPLET(s) s
-#endif
 /* path to find crt1.o, crti.o and crtn.o */
 #ifndef CONFIG_TCC_CRTPREFIX
-
-#define CONFIG_TCC_CRTPREFIX USE_TRIPLET(CONFIG_SYSROOT "/usr/" CONFIG_LDDIR)
-#endif
-#ifndef CONFIG_USR_INCLUDE
-
-#define CONFIG_USR_INCLUDE "/usr/include"
 #endif
 /* Below: {B} is substituted by CONFIG_TCCDIR (rsp. -B option) */
 /* system include paths */
 #ifndef CONFIG_TCC_SYSINCLUDEPATHS
-
-#define CONFIG_TCC_SYSINCLUDEPATHS "{B}/include"PATHSEP"{B}/include/winapi"
+#define CONFIG_TCC_SYSINCLUDEPATHS     "{B}/include" PATHSEP "{B}/include/winapi"
 #endif
 /* library search paths */
 #ifndef CONFIG_TCC_LIBPATHS
-// 286 "tcc.h"
-#define CONFIG_TCC_LIBPATHS "{B}/lib"
+#define CONFIG_TCC_LIBPATHS     "{B}/lib"
 #endif
 /* name of ELF interpreter */
 #ifndef CONFIG_TCC_ELFINTERP
-#if defined __GNU__
-#define CONFIG_TCC_ELFINTERP "/lib/ld.so"
-#else
-// 301 "tcc.h"
-#define CONFIG_TCC_ELFINTERP "-"
-#endif
-#endif
-/* var elf_interp dans *-gen.c */
-#ifndef DEFAULT_ELFINTERP
-// 317 "tcc.h"
-#define DEFAULT_ELFINTERP(s) CONFIG_TCC_ELFINTERP
 #endif
 /* (target specific) libtcc1.a */
 #ifndef TCC_LIBTCC1
-
 #define TCC_LIBTCC1 "libtcc1.a"
-#endif
-/* library to use with CONFIG_USE_LIBGCC instead of libtcc1.a */
-#if defined CONFIG_USE_LIBGCC && !defined TCC_LIBGCC
-#define TCC_LIBGCC USE_TRIPLET(CONFIG_SYSROOT "/" CONFIG_LDDIR) "/libgcc_s.so.1"
 #endif
 /* <cross-prefix-to->libtcc1.a */
 #ifndef CONFIG_TCC_CROSSPREFIX
-// 332 "tcc.h"
+
 #define CONFIG_TCC_CROSSPREFIX ""
 #endif
 /* -------------------------------------------- */
 
-// 1 "libtcc.h" 1
-#ifndef LIBTCC_H
-
-#define LIBTCC_H
-#ifndef LIBTCCAPI
+/* ==================== libtcc.h ==================== */
 
 #define LIBTCCAPI
-#endif
-#ifdef __cplusplus
-
-extern "C" {
-#endif
 /**/
 /* set custom allocator for all allocations (optional), NULL for default. */
-// 14 "libtcc.h"
 typedef void *TCCReallocFunc(void *ptr, unsigned long size);
 LIBTCCAPI void tcc_set_realloc(TCCReallocFunc *my_realloc);
 /**/
@@ -289,7 +207,6 @@ LIBTCCAPI int tcc_compile_string(TCCState *s, const char *buf);
 /**/
 /* linking commands */
 /* set output type. MUST BE CALLED before any compilation */
-// 67 "libtcc.h"
 LIBTCCAPI int tcc_set_output_type(TCCState *s, int output_type);
 /* output will be run in memory */
 #define TCC_OUTPUT_MEMORY 1
@@ -338,37 +255,12 @@ LIBTCCAPI void *_tcc_setjmp(TCCState *s1, void *jmp_buf, void *top_func,
 /* custom error printer for runtime exceptions. Returning 0 stops backtrace */
 
 typedef int TCCBtFunc(void *udata, void *pc, const char *file, int line,
-		      const char* func, const char *msg);
-LIBTCCAPI void tcc_set_backtrace_func(TCCState *s1, void* userdata, TCCBtFunc*);
-#ifdef __cplusplus
+		      const char *func, const char *msg);
+LIBTCCAPI void tcc_set_backtrace_func(TCCState *s1, void *userdata,
+				      TCCBtFunc *);
+/* ==================== elf.h ==================== */
 
-}
-#endif
-#endif /* LIBTCC_H */
-// 338 "tcc.h" 2
-// 1 "elf.h" 1
-/* This file defines standard ELF types, structures, and macros.
-   Copyright (C) 1995-2012 Free Software Foundation, Inc.
-   This file is part of the GNU C Library.
-
-   The GNU C Library is free software; you can redistribute it and/or
-   modify it under the terms of the GNU Lesser General Public
-   License as published by the Free Software Foundation; either
-   version 2.1 of the License, or (at your option) any later version.
-
-   The GNU C Library is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   Lesser General Public License for more details.
-
-   You should have received a copy of the GNU Lesser General Public
-   License along with the GNU C Library; if not, see
-   <http://www.gnu.org/licenses/>.  */
-#ifndef _ELF_H
-// 20 "elf.h"
-#define _ELF_H 1
 #ifndef __int8_t_defined
-
 #define __int8_t_defined
 typedef signed char int8_t;
 typedef short int int16_t;
@@ -381,7 +273,6 @@ typedef unsigned long long int uint64_t;
 #endif
 /* Standard ELF types.  */
 /* Type for a 16-bit quantity.  */
-
 typedef uint16_t Elf32_Half;
 typedef uint16_t Elf64_Half;
 /* Types for signed and unsigned 32-bit quantities.  */
@@ -419,37 +310,6 @@ typedef Elf64_Half Elf64_Versym;
 typedef struct {
 	unsigned char	e_ident[EI_NIDENT];/* Magic number and other info */
 
-	Elf32_Half	e_type;/* Object file type */
-
-	Elf32_Half	e_machine;/* Architecture */
-
-	Elf32_Word	e_version;/* Object file version */
-
-	Elf32_Addr	e_entry;/* Entry point virtual address */
-
-	Elf32_Off	e_phoff;/* Program header table file offset */
-
-	Elf32_Off	e_shoff;/* Section header table file offset */
-
-	Elf32_Word	e_flags;/* Processor-specific flags */
-
-	Elf32_Half	e_ehsize;/* ELF header size in bytes */
-
-	Elf32_Half	e_phentsize;/* Program header table entry size */
-
-	Elf32_Half	e_phnum;/* Program header table entry count */
-
-	Elf32_Half	e_shentsize;/* Section header table entry size */
-
-	Elf32_Half	e_shnum;/* Section header table entry count */
-
-	Elf32_Half	e_shstrndx;/* Section header string table index */
-
-} Elf32_Ehdr;
-
-typedef struct {
-	unsigned char	e_ident[EI_NIDENT];/* Magic number and other info */
-
 	Elf64_Half	e_type;/* Object file type */
 
 	Elf64_Half	e_machine;/* Architecture */
@@ -480,325 +340,35 @@ typedef struct {
 /* Fields in the e_ident array.  The EI_* macros are indices into the
    array.  The macros under each EI_* macro are the values the byte
    may have.  */
-/* File identification byte 0 index */
-
-#define EI_MAG0 0
 /* Magic number byte 0 */
 #define ELFMAG0 0x7f
-/* File identification byte 1 index */
-
-#define EI_MAG1 1
 /* Magic number byte 1 */
 #define ELFMAG1 'E'
-/* File identification byte 2 index */
-
-#define EI_MAG2 2
 /* Magic number byte 2 */
 #define ELFMAG2 'L'
-/* File identification byte 3 index */
-
-#define EI_MAG3 3
 /* Magic number byte 3 */
 #define ELFMAG3 'F'
 /* Conglomeration of the identification bytes, for easy testing as a word.  */
 
 #define ELFMAG "\177ELF"
-#define SELFMAG 4
-/* File class byte index */
-
-#define EI_CLASS 4
-/* Invalid class */
-#define ELFCLASSNONE 0
-/* 32-bit objects */
-#define ELFCLASS32 1
 /* 64-bit objects */
 #define ELFCLASS64 2
-#define ELFCLASSNUM 3
-/* Data encoding byte index */
-
-#define EI_DATA 5
-/* Invalid data encoding */
-#define ELFDATANONE 0
 /* 2's complement, little endian */
 #define ELFDATA2LSB 1
-/* 2's complement, big endian */
-#define ELFDATA2MSB 2
-#define ELFDATANUM 3
-/* File version byte index */
-
-#define EI_VERSION 6
-/* Value must be EV_CURRENT */
-/* OS ABI identification */
-
-#define EI_OSABI 7
-/* UNIX System V ABI */
-#define ELFOSABI_NONE 0
-/* Alias.  */
-#define ELFOSABI_SYSV 0
-/* HP-UX */
-#define ELFOSABI_HPUX 1
-/* NetBSD.  */
-#define ELFOSABI_NETBSD 2
-/* Object uses GNU ELF extensions.  */
-#define ELFOSABI_GNU 3
-/* Compatibility alias.  */
-#define ELFOSABI_LINUX ELFOSABI_GNU
-/* Sun Solaris.  */
-#define ELFOSABI_SOLARIS 6
-/* IBM AIX.  */
-#define ELFOSABI_AIX 7
-/* SGI Irix.  */
-#define ELFOSABI_IRIX 8
-/* FreeBSD.  */
-#define ELFOSABI_FREEBSD 9
-/* Compaq TRU64 UNIX.  */
-#define ELFOSABI_TRU64 10
-/* Novell Modesto.  */
-#define ELFOSABI_MODESTO 11
-/* OpenBSD.  */
-#define ELFOSABI_OPENBSD 12
-#define ELFOSABI_OPENVMS 13
-/* Hewlett-Packard Non-Stop Kernel.  */
-#define ELFOSABI_NSK 14
-/* Amiga Research OS.  */
-#define ELFOSABI_AROS 15
-/* FenixOS.  */
-#define ELFOSABI_FENIXOS 16
-/* ARM EABI.  */
-#define ELFOSABI_ARM_AEABI 64
-/* Linux TMS320C6000.  */
-#define ELFOSABI_C6000_LINUX 65
-/* ARM */
-#define ELFOSABI_ARM 97
-/* Standalone (embedded) application */
-#define ELFOSABI_STANDALONE 255
-/* ABI version */
-
-#define EI_ABIVERSION 8
-/* Byte index of padding bytes */
-
-#define EI_PAD 9
-/* Legal values for e_type (object file type).  */
-/* No file type */
-
-#define ET_NONE 0
 /* Relocatable file */
 #define ET_REL 1
 /* Executable file */
 #define ET_EXEC 2
 /* Shared object file */
 #define ET_DYN 3
-/* Core file */
-#define ET_CORE 4
-/* Number of defined types */
-#define ET_NUM 5
-/* OS-specific range start */
-#define ET_LOOS 0xfe00
-/* OS-specific range end */
-#define ET_HIOS 0xfeff
-/* Processor-specific range start */
-#define ET_LOPROC 0xff00
-/* Processor-specific range end */
-#define ET_HIPROC 0xffff
-/* Legal values for e_machine (architecture).  */
-/* No machine */
-
-#define EM_NONE 0
-/* AT&T WE 32100 */
-#define EM_M32 1
-/* SUN SPARC */
-#define EM_SPARC 2
-/* Intel 80386 */
-#define EM_386 3
-/* Motorola m68k family */
-#define EM_68K 4
-/* Motorola m88k family */
-#define EM_88K 5
-/* Intel 80860 */
-#define EM_860 7
-/* MIPS R3000 big-endian */
-#define EM_MIPS 8
-/* IBM System/370 */
-#define EM_S370 9
-/* MIPS R3000 little-endian */
-#define EM_MIPS_RS3_LE 10
-/* HPPA */
-
-#define EM_PARISC 15
-/* Fujitsu VPP500 */
-#define EM_VPP500 17
-/* Sun's "v8plus" */
-#define EM_SPARC32PLUS 18
-/* Intel 80960 */
-#define EM_960 19
-/* PowerPC */
-#define EM_PPC 20
-/* PowerPC 64-bit */
-#define EM_PPC64 21
-/* IBM S390 */
-#define EM_S390 22
-/* NEC V800 series */
-
-#define EM_V800 36
-/* Fujitsu FR20 */
-#define EM_FR20 37
-/* TRW RH-32 */
-#define EM_RH32 38
-/* Motorola RCE */
-#define EM_RCE 39
-/* ARM */
-#define EM_ARM 40
-/* Digital Alpha */
-#define EM_FAKE_ALPHA 41
-/* Hitachi SH */
-#define EM_SH 42
-/* SPARC v9 64-bit */
-#define EM_SPARCV9 43
-/* Siemens Tricore */
-#define EM_TRICORE 44
-/* Argonaut RISC Core */
-#define EM_ARC 45
-/* Hitachi H8/300 */
-#define EM_H8_300 46
-/* H\itachi H8/300H */
-#define EM_H8_300H 47
-/* Hitachi H8S */
-#define EM_H8S 48
-/* Hitachi H8/500 */
-#define EM_H8_500 49
-/* Intel Merced */
-#define EM_IA_64 50
-/* Stanford MIPS-X */
-#define EM_MIPS_X 51
-/* Motorola Coldfire */
-#define EM_COLDFIRE 52
-/* Motorola M68HC12 */
-#define EM_68HC12 53
-/* Fujitsu MMA Multimedia Accelerator*/
-#define EM_MMA 54
-/* Siemens PCP */
-#define EM_PCP 55
-/* Sony nCPU embedded RISC */
-#define EM_NCPU 56
-/* Denso NDR1 microprocessor */
-#define EM_NDR1 57
-/* Motorola Start*Core processor */
-#define EM_STARCORE 58
-/* Toyota ME16 processor */
-#define EM_ME16 59
-/* STMicroelectronic ST100 processor */
-#define EM_ST100 60
-/* Advanced Logic Corp. Tinyj emb.fam*/
-#define EM_TINYJ 61
 /* AMD x86-64 architecture */
 #define EM_X86_64 62
-/* Sony DSP Processor */
-#define EM_PDSP 63
-/* Siemens FX66 microcontroller */
-
-#define EM_FX66 66
-/* STMicroelectronics ST9+ 8/16 mc */
-#define EM_ST9PLUS 67
-/* STMicroelectronics ST7 8 bit mc */
-#define EM_ST7 68
-/* Motorola MC68HC16 microcontroller */
-#define EM_68HC16 69
-/* Motorola MC68HC11 microcontroller */
-#define EM_68HC11 70
-/* Motorola MC68HC08 microcontroller */
-#define EM_68HC08 71
-/* Motorola MC68HC05 microcontroller */
-#define EM_68HC05 72
-/* Silicon Graphics SVx */
-#define EM_SVX 73
-/* STMicroelectronics ST19 8 bit mc */
-#define EM_ST19 74
-/* Digital VAX */
-#define EM_VAX 75
-/* Axis Communications 32-bit embedded processor */
-#define EM_CRIS 76
-/* Infineon Technologies 32-bit embedded processor */
-#define EM_JAVELIN 77
-/* Element 14 64-bit DSP Processor */
-#define EM_FIREPATH 78
-/* LSI Logic 16-bit DSP Processor */
-#define EM_ZSP 79
-/* Donald Knuth's educational 64-bit processor */
-#define EM_MMIX 80
-/* Harvard University machine-independent object files */
-#define EM_HUANY 81
-/* SiTera Prism */
-#define EM_PRISM 82
-/* Atmel AVR 8-bit microcontroller */
-#define EM_AVR 83
-/* Fujitsu FR30 */
-#define EM_FR30 84
-/* Mitsubishi D10V */
-#define EM_D10V 85
-/* Mitsubishi D30V */
-#define EM_D30V 86
-/* NEC v850 */
-#define EM_V850 87
-/* Mitsubishi M32R */
-#define EM_M32R 88
-/* Matsushita MN10300 */
-#define EM_MN10300 89
-/* Matsushita MN10200 */
-#define EM_MN10200 90
-/* picoJava */
-#define EM_PJ 91
-/* OpenRISC 32-bit embedded processor */
-#define EM_OPENRISC 92
-/* ARC Cores Tangent-A5 */
-#define EM_ARC_A5 93
-/* Tensilica Xtensa Architecture */
-#define EM_XTENSA 94
-/* ARM AARCH64 */
-#define EM_AARCH64 183
-/* Tilera TILEPro */
-#define EM_TILEPRO 188
-/* Tilera TILE-Gx */
-#define EM_TILEGX 191
-/* RISC-V */
-#define EM_RISCV 243
-#define EM_NUM 253
 /* If it is necessary to assign new unofficial EM_* values, please
    pick large random numbers (0x8523, 0xa7f2, etc.) to minimize the
    chances of collision with official or non-GNU unofficial values.  */
-
-#define EM_ALPHA 0x9026
-#define EM_C60 0x9c60
-/* Legal values for e_version (version).  */
-/* Invalid ELF version */
-
-#define EV_NONE 0
 /* Current version */
 #define EV_CURRENT 1
-#define EV_NUM 2
 /* Section header.  */
-
-typedef struct {
-	Elf32_Word	sh_name;/* Section name (string tbl index) */
-
-	Elf32_Word	sh_type;/* Section type */
-
-	Elf32_Word	sh_flags;/* Section flags */
-
-	Elf32_Addr	sh_addr;/* Section virtual addr at execution */
-
-	Elf32_Off	sh_offset;/* Section file offset */
-
-	Elf32_Word	sh_size;/* Section size in bytes */
-
-	Elf32_Word	sh_link;/* Link to another section */
-
-	Elf32_Word	sh_info;/* Additional section information */
-
-	Elf32_Word	sh_addralign;/* Section alignment */
-
-	Elf32_Word	sh_entsize;/* Entry size if section holds table */
-
-} Elf32_Shdr;
 
 typedef struct {
 	Elf64_Word	sh_name;/* Section name (string tbl index) */
@@ -828,34 +398,14 @@ typedef struct {
 #define SHN_UNDEF 0
 /* Start of reserved indices */
 #define SHN_LORESERVE 0xff00
-/* Start of processor-specific */
-#define SHN_LOPROC 0xff00
 /* Order section before all others
 					   (Solaris).  */
-
-#define SHN_BEFORE 0xff00
 /* Order section after all others
 					   (Solaris).  */
-
-#define SHN_AFTER 0xff01
-/* End of processor-specific */
-#define SHN_HIPROC 0xff1f
-/* Start of OS-specific */
-#define SHN_LOOS 0xff20
-/* End of OS-specific */
-#define SHN_HIOS 0xff3f
 /* Associated symbol is absolute */
 #define SHN_ABS 0xfff1
 /* Associated symbol is common */
 #define SHN_COMMON 0xfff2
-/* Index is in extra table.  */
-#define SHN_XINDEX 0xffff
-/* End of reserved indices */
-#define SHN_HIRESERVE 0xffff
-/* Legal values for sh_type (section type).  */
-/* Section header table entry unused */
-
-#define SHT_NULL 0
 /* Program data */
 #define SHT_PROGBITS 1
 /* Symbol table */
@@ -874,8 +424,6 @@ typedef struct {
 #define SHT_NOBITS 8
 /* Relocation entries, no addends */
 #define SHT_REL 9
-/* Reserved */
-#define SHT_SHLIB 10
 /* Dynamic linker symbol table */
 #define SHT_DYNSYM 11
 /* Array of constructors */
@@ -884,45 +432,14 @@ typedef struct {
 #define SHT_FINI_ARRAY 15
 /* Array of pre-constructors */
 #define SHT_PREINIT_ARRAY 16
-/* Section group */
-#define SHT_GROUP 17
-/* Extended section indices */
-#define SHT_SYMTAB_SHNDX 18
-/* Number of defined types.  */
-#define SHT_NUM 19
-/* Start OS-specific.  */
-#define SHT_LOOS 0x60000000
-/* Object attributes.  */
-#define SHT_GNU_ATTRIBUTES 0x6ffffff5
 /* GNU-style hash table.  */
 #define SHT_GNU_HASH 0x6ffffff6
-/* Prelink library list */
-#define SHT_GNU_LIBLIST 0x6ffffff7
-/* Checksum for DSO content.  */
-#define SHT_CHECKSUM 0x6ffffff8
-/* Sun-specific low bound.  */
-#define SHT_LOSUNW 0x6ffffffa
-#define SHT_SUNW_move 0x6ffffffa
-#define SHT_SUNW_COMDAT 0x6ffffffb
-#define SHT_SUNW_syminfo 0x6ffffffc
 /* Version definition section.  */
 #define SHT_GNU_verdef 0x6ffffffd
 /* Version needs section.  */
 #define SHT_GNU_verneed 0x6ffffffe
 /* Version symbol table.  */
 #define SHT_GNU_versym 0x6fffffff
-/* Sun-specific high bound.  */
-#define SHT_HISUNW 0x6fffffff
-/* End OS-specific type */
-#define SHT_HIOS 0x6fffffff
-/* Start of processor-specific */
-#define SHT_LOPROC 0x70000000
-/* End of processor-specific */
-#define SHT_HIPROC 0x7fffffff
-/* Start of application-specific */
-#define SHT_LOUSER 0x80000000
-/* End of application-specific */
-#define SHT_HIUSER 0x8fffffff
 /* Legal values for sh_flags (section flags).  */
 /* Writable */
 
@@ -935,52 +452,19 @@ typedef struct {
 #define SHF_MERGE (1 << 4)
 /* Contains nul-terminated strings */
 #define SHF_STRINGS (1 << 5)
-/* `sh_info' contains SHT index */
-#define SHF_INFO_LINK (1 << 6)
-/* Preserve order after combining */
-#define SHF_LINK_ORDER (1 << 7)
 /* Non-standard OS specific handling
 					   required */
-
-#define SHF_OS_NONCONFORMING (1 << 8)
 /* Section is member of a group.  */
 #define SHF_GROUP (1 << 9)
 /* Section hold thread-local data.  */
 #define SHF_TLS (1 << 10)
 /* Section with compressed data. */
 #define SHF_COMPRESSED (1 << 11)
-/* OS-specific.  */
-#define SHF_MASKOS 0x0ff00000
-/* Processor-specific */
-#define SHF_MASKPROC 0xf0000000
 /* Special ordering requirement
 					   (Solaris).  */
-
-#define SHF_ORDERED (1 << 30)
 /* Section is excluded unless
 					   referenced or allocated (Solaris).*/
-
-#define SHF_EXCLUDE (1U << 31)
-/* Section group handling.  */
-/* Mark group as COMDAT.  */
-
-#define GRP_COMDAT 0x1
 /* Symbol table entry.  */
-
-typedef struct {
-	Elf32_Word	st_name;/* Symbol name (string tbl index) */
-
-	Elf32_Addr	st_value;/* Symbol value */
-
-	Elf32_Word	st_size;/* Symbol size */
-
-	unsigned char	st_info;/* Symbol type and binding */
-
-	unsigned char	st_other;/* Symbol visibility */
-
-	Elf32_Section	st_shndx;/* Section index */
-
-} Elf32_Sym;
 
 typedef struct {
 	Elf64_Word	st_name;/* Symbol name (string tbl index) */
@@ -999,44 +483,8 @@ typedef struct {
 /* The syminfo section if available contains additional information about
    every dynamic symbol.  */
 
-typedef struct {
-	Elf32_Half si_boundto;/* Direct bindings, symbol bound to */
-
-	Elf32_Half si_flags;/* Per symbol flags */
-
-} Elf32_Syminfo;
-
-typedef struct {
-	Elf64_Half si_boundto;/* Direct bindings, symbol bound to */
-
-	Elf64_Half si_flags;/* Per symbol flags */
-
-} Elf64_Syminfo;
-/* Possible values for si_boundto.  */
-/* Symbol bound to self */
-
-#define SYMINFO_BT_SELF 0xffff
-/* Symbol bound to parent */
-#define SYMINFO_BT_PARENT 0xfffe
-/* Beginning of reserved entries */
-#define SYMINFO_BT_LOWRESERVE 0xff00
-/* Possible bitmasks for si_flags.  */
-/* Direct bound symbol */
-
-#define SYMINFO_FLG_DIRECT 0x0001
-/* Pass-thru symbol for translator */
-#define SYMINFO_FLG_PASSTHRU 0x0002
-/* Symbol is a copy-reloc */
-#define SYMINFO_FLG_COPY 0x0004
 /* Symbol bound to object to be lazy
 					   loaded */
-
-#define SYMINFO_FLG_LAZYLOAD 0x0008
-/* Syminfo version values.  */
-
-#define SYMINFO_NONE 0
-#define SYMINFO_CURRENT 1
-#define SYMINFO_NUM 2
 /* How to extract and insert information held in the st_info field.  */
 
 #define ELF32_ST_BIND(val) (((unsigned char) (val)) >> 4)
@@ -1055,18 +503,6 @@ typedef struct {
 #define STB_GLOBAL 1
 /* Weak symbol */
 #define STB_WEAK 2
-/* Number of defined types.  */
-#define STB_NUM 3
-/* Start of OS-specific */
-#define STB_LOOS 10
-/* Unique symbol.  */
-#define STB_GNU_UNIQUE 10
-/* End of OS-specific */
-#define STB_HIOS 12
-/* Start of processor-specific */
-#define STB_LOPROC 13
-/* End of processor-specific */
-#define STB_HIPROC 15
 /* Legal values for ST_TYPE subfield of st_info (symbol type).  */
 /* Symbol type is unspecified */
 
@@ -1079,28 +515,11 @@ typedef struct {
 #define STT_SECTION 3
 /* Symbol's name is file name */
 #define STT_FILE 4
-/* Symbol is a common data object */
-#define STT_COMMON 5
 /* Symbol is thread-local data object*/
 #define STT_TLS 6
-/* Number of defined types.  */
-#define STT_NUM 7
-/* Start of OS-specific */
-#define STT_LOOS 10
-/* Symbol is indirect code object */
-#define STT_GNU_IFUNC 10
-/* End of OS-specific */
-#define STT_HIOS 12
-/* Start of processor-specific */
-#define STT_LOPROC 13
-/* End of processor-specific */
-#define STT_HIPROC 15
 /* Symbol table indices are found in the hash buckets and chain table
    of a symbol hash table section.  This special index value indicates
    the end of a chain, meaning no further symbols are found in that bucket.  */
-/* End of a chain.  */
-
-#define STN_UNDEF 0
 /* How to extract and insert information held in the st_other field.  */
 
 #define ELF32_ST_VISIBILITY(o) ((o) & 0x03)
@@ -1119,33 +538,12 @@ typedef struct {
 #define STV_PROTECTED 3
 /* Relocation table entry without addend (in section of type SHT_REL).  */
 
-typedef struct {
-	Elf32_Addr	r_offset;/* Address */
-
-	Elf32_Word	r_info;/* Relocation type and symbol index */
-
-} Elf32_Rel;
 /* I have seen two different definitions of the Elf64_Rel and
    Elf64_Rela structures, so we'll leave them out until Novell (or
    whoever) gets their act together.  */
 /* The following, at least, is used on Sparc v9, MIPS, and Alpha.  */
 
-typedef struct {
-	Elf64_Addr	r_offset;/* Address */
-
-	Elf64_Xword	r_info;/* Relocation type and symbol index */
-
-} Elf64_Rel;
 /* Relocation table entry with addend (in section of type SHT_RELA).  */
-
-typedef struct {
-	Elf32_Addr	r_offset;/* Address */
-
-	Elf32_Word	r_info;/* Relocation type and symbol index */
-
-	Elf32_Sword	r_addend;/* Addend */
-
-} Elf32_Rela;
 
 typedef struct {
 	Elf64_Addr	r_offset;/* Address */
@@ -1155,35 +553,11 @@ typedef struct {
 	Elf64_Sxword	r_addend;/* Addend */
 
 } Elf64_Rela;
-/* How to extract and insert information held in the r_info field.  */
-
-#define ELF32_R_SYM(val) ((val) >> 8)
-#define ELF32_R_TYPE(val) ((val) & 0xff)
-#define ELF32_R_INFO(sym,type) (((sym) << 8) + ((type) & 0xff))
 
 #define ELF64_R_SYM(i) ((i) >> 32)
 #define ELF64_R_TYPE(i) ((i) & 0xffffffff)
 #define ELF64_R_INFO(sym,type) ((((Elf64_Xword) (sym)) << 32) + (type))
 /* Program segment header.  */
-
-typedef struct {
-	Elf32_Word	p_type;/* Segment type */
-
-	Elf32_Off	p_offset;/* Segment file offset */
-
-	Elf32_Addr	p_vaddr;/* Segment virtual address */
-
-	Elf32_Addr	p_paddr;/* Segment physical address */
-
-	Elf32_Word	p_filesz;/* Segment size in file */
-
-	Elf32_Word	p_memsz;/* Segment size in memory */
-
-	Elf32_Word	p_flags;/* Segment flags */
-
-	Elf32_Word	p_align;/* Segment alignment */
-
-} Elf32_Phdr;
 
 typedef struct {
 	Elf64_Word	p_type;/* Segment type */
@@ -1206,561 +580,38 @@ typedef struct {
 /* Special value for e_phnum.  This indicates that the real number of
    program headers is too large to fit into e_phnum.  Instead the real
    value is in the field sh_info of section 0.  */
-
-#define PN_XNUM 0xffff
-/* Legal values for p_type (segment type).  */
-/* Program header table entry unused */
-
-#define PT_NULL 0
-/* Loadable program segment */
-#define PT_LOAD 1
-/* Dynamic linking information */
-#define PT_DYNAMIC 2
-/* Program interpreter */
-#define PT_INTERP 3
-/* Auxiliary information */
-#define PT_NOTE 4
-/* Reserved */
-#define PT_SHLIB 5
-/* Entry for header table itself */
-#define PT_PHDR 6
-/* Thread-local storage segment */
-#define PT_TLS 7
-/* Number of defined types */
-#define PT_NUM 8
-/* Start of OS-specific */
-#define PT_LOOS 0x60000000
-/* GCC .eh_frame_hdr segment */
-#define PT_GNU_EH_FRAME 0x6474e550
-/* Indicates stack executability */
-#define PT_GNU_STACK 0x6474e551
-/* Read-only after relocation */
-#define PT_GNU_RELRO 0x6474e552
-#define PT_LOSUNW 0x6ffffffa
-/* Sun Specific segment */
-#define PT_SUNWBSS 0x6ffffffa
-/* Stack segment */
-#define PT_SUNWSTACK 0x6ffffffb
-#define PT_HISUNW 0x6fffffff
-/* End of OS-specific */
-#define PT_HIOS 0x6fffffff
-/* Start of processor-specific */
-#define PT_LOPROC 0x70000000
-/* End of processor-specific */
-#define PT_HIPROC 0x7fffffff
-/* Legal values for p_flags (segment flags).  */
-/* Segment is executable */
-
-#define PF_X (1 << 0)
-/* Segment is writable */
-#define PF_W (1 << 1)
-/* Segment is readable */
-#define PF_R (1 << 2)
-/* OS-specific */
-#define PF_MASKOS 0x0ff00000
-/* Processor-specific */
-#define PF_MASKPROC 0xf0000000
-/* Legal values for note segment descriptor types for core files. */
-/* Contains copy of prstatus struct */
-
-#define NT_PRSTATUS 1
-/* Contains copy of fpregset struct */
-#define NT_FPREGSET 2
-/* Contains copy of prpsinfo struct */
-#define NT_PRPSINFO 3
-/* Contains copy of prxregset struct */
-#define NT_PRXREG 4
-/* Contains copy of task structure */
-#define NT_TASKSTRUCT 4
-/* String from sysinfo(SI_PLATFORM) */
-#define NT_PLATFORM 5
-/* Contains copy of auxv array */
-#define NT_AUXV 6
-/* Contains copy of gwindows struct */
-#define NT_GWINDOWS 7
-/* Contains copy of asrset struct */
-#define NT_ASRS 8
-/* Contains copy of pstatus struct */
-#define NT_PSTATUS 10
-/* Contains copy of psinfo struct */
-#define NT_PSINFO 13
-/* Contains copy of prcred struct */
-#define NT_PRCRED 14
-/* Contains copy of utsname struct */
-#define NT_UTSNAME 15
-/* Contains copy of lwpstatus struct */
-#define NT_LWPSTATUS 16
-/* Contains copy of lwpinfo struct */
-#define NT_LWPSINFO 17
-/* Contains copy of fprxregset struct */
-#define NT_PRFPXREG 20
-/* Contains copy of user_fxsr_struct */
-#define NT_PRXFPREG 0x46e62b7f
-/* PowerPC Altivec/VMX registers */
-#define NT_PPC_VMX 0x100
-/* PowerPC SPE/EVR registers */
-#define NT_PPC_SPE 0x101
-/* PowerPC VSX registers */
-#define NT_PPC_VSX 0x102
-/* i386 TLS slots (struct user_desc) */
-#define NT_386_TLS 0x200
-/* x86 io permission bitmap (1=deny) */
-#define NT_386_IOPERM 0x201
-/* x86 extended state using xsave */
-#define NT_X86_XSTATE 0x202
-/* s390 upper register halves */
-#define NT_S390_HIGH_GPRS 0x300
-/* s390 timer register */
-#define NT_S390_TIMER 0x301
-/* s390 TOD clock comparator register */
-#define NT_S390_TODCMP 0x302
-/* s390 TOD programmable register */
-#define NT_S390_TODPREG 0x303
-/* s390 control registers */
-#define NT_S390_CTRS 0x304
-/* s390 prefix register */
-#define NT_S390_PREFIX 0x305
-/* s390 breaking event address */
-#define NT_S390_LAST_BREAK 0x306
-/* s390 system call restart data */
-#define NT_S390_SYSTEM_CALL 0x307
-/* ARM VFP/NEON registers */
-#define NT_ARM_VFP 0x400
-/* ARM TLS register */
-#define NT_ARM_TLS 0x401
-/* ARM hardware breakpoint registers */
-#define NT_ARM_HW_BREAK 0x402
-/* ARM hardware watchpoint registers */
-#define NT_ARM_HW_WATCH 0x403
-/* Legal values for the note segment descriptor types for object files.  */
-/* Contains a version string.  */
-
-#define NT_VERSION 1
 /* Dynamic section entry.  */
 
-typedef struct {
-	Elf32_Sword	d_tag;/* Dynamic entry type */
-
-	union {
-		Elf32_Word d_val;/* Integer value */
-
-		Elf32_Addr d_ptr;/* Address value */
-
-	} d_un;
-} Elf32_Dyn;
-
-typedef struct {
-	Elf64_Sxword	d_tag;/* Dynamic entry type */
-
-	union {
-		Elf64_Xword d_val;/* Integer value */
-
-		Elf64_Addr d_ptr;/* Address value */
-
-	} d_un;
-} Elf64_Dyn;
-/* Legal values for d_tag (dynamic entry type).  */
-/* Marks end of dynamic section */
-
-#define DT_NULL 0
-/* Name of needed library */
-#define DT_NEEDED 1
-/* Size in bytes of PLT relocs */
-#define DT_PLTRELSZ 2
-/* Processor defined value */
-#define DT_PLTGOT 3
-/* Address of symbol hash table */
-#define DT_HASH 4
-/* Address of string table */
-#define DT_STRTAB 5
-/* Address of symbol table */
-#define DT_SYMTAB 6
-/* Address of Rela relocs */
-#define DT_RELA 7
-/* Total size of Rela relocs */
-#define DT_RELASZ 8
-/* Size of one Rela reloc */
-#define DT_RELAENT 9
-/* Size of string table */
-#define DT_STRSZ 10
-/* Size of one symbol table entry */
-#define DT_SYMENT 11
-/* Address of init function */
-#define DT_INIT 12
-/* Address of termination function */
-#define DT_FINI 13
-/* Name of shared object */
-#define DT_SONAME 14
-/* Library search path (deprecated) */
-#define DT_RPATH 15
-/* Start symbol search here */
-#define DT_SYMBOLIC 16
-/* Address of Rel relocs */
-#define DT_REL 17
-/* Total size of Rel relocs */
-#define DT_RELSZ 18
-/* Size of one Rel reloc */
-#define DT_RELENT 19
-/* Type of reloc in PLT */
-#define DT_PLTREL 20
-/* For debugging; unspecified */
-#define DT_DEBUG 21
-/* Reloc might modify .text */
-#define DT_TEXTREL 22
-/* Address of PLT relocs */
-#define DT_JMPREL 23
-/* Process relocations of object */
-#define DT_BIND_NOW 24
-/* Array with addresses of init fct */
-#define DT_INIT_ARRAY 25
-/* Array with addresses of fini fct */
-#define DT_FINI_ARRAY 26
-/* Size in bytes of DT_INIT_ARRAY */
-#define DT_INIT_ARRAYSZ 27
-/* Size in bytes of DT_FINI_ARRAY */
-#define DT_FINI_ARRAYSZ 28
-/* Library search path */
-#define DT_RUNPATH 29
-/* Flags for the object being loaded */
-#define DT_FLAGS 30
-/* Start of encoded range */
-#define DT_ENCODING 32
-/* Array with addresses of preinit fct*/
-#define DT_PREINIT_ARRAY 32
-/* size in bytes of DT_PREINIT_ARRAY */
-#define DT_PREINIT_ARRAYSZ 33
-/* Number used */
-#define DT_NUM 34
-/* Start of OS-specific */
-#define DT_LOOS 0x6000000d
-/* End of OS-specific */
-#define DT_HIOS 0x6ffff000
-/* Start of processor-specific */
-#define DT_LOPROC 0x70000000
-/* End of processor-specific */
-#define DT_HIPROC 0x7fffffff
-/* Most used by any processor */
-#define DT_PROCNUM DT_MIPS_NUM
 /* DT_* entries which fall between DT_VALRNGHI & DT_VALRNGLO use the
    Dyn.d_un.d_val field of the Elf*_Dyn structure.  This follows Sun's
    approach.  */
-
-#define DT_VALRNGLO 0x6ffffd00
-/* Prelinking timestamp */
-#define DT_GNU_PRELINKED 0x6ffffdf5
-/* Size of conflict section */
-#define DT_GNU_CONFLICTSZ 0x6ffffdf6
-/* Size of library list */
-#define DT_GNU_LIBLISTSZ 0x6ffffdf7
-#define DT_CHECKSUM 0x6ffffdf8
-#define DT_PLTPADSZ 0x6ffffdf9
-#define DT_MOVEENT 0x6ffffdfa
-#define DT_MOVESZ 0x6ffffdfb
-/* Feature selection (DTF_*).  */
-#define DT_FEATURE_1 0x6ffffdfc
 /* Flags for DT_* entries, effecting
 					   the following DT_* entry.  */
-
-#define DT_POSFLAG_1 0x6ffffdfd
-/* Size of syminfo table (in bytes) */
-#define DT_SYMINSZ 0x6ffffdfe
-/* Entry size of syminfo */
-#define DT_SYMINENT 0x6ffffdff
-#define DT_VALRNGHI 0x6ffffdff
-/* Reverse order! */
-#define DT_VALTAGIDX(tag) (DT_VALRNGHI - (tag))
-#define DT_VALNUM 12
 /* DT_* entries which fall between DT_ADDRRNGHI & DT_ADDRRNGLO use the
    Dyn.d_un.d_ptr field of the Elf*_Dyn structure.
 
    If any adjustment is made to the ELF object after it has been
    built these entries will need to be adjusted.  */
-
-#define DT_ADDRRNGLO 0x6ffffe00
-/* GNU-style hash table.  */
-#define DT_GNU_HASH 0x6ffffef5
-#define DT_TLSDESC_PLT 0x6ffffef6
-#define DT_TLSDESC_GOT 0x6ffffef7
-/* Start of conflict section */
-#define DT_GNU_CONFLICT 0x6ffffef8
-/* Library list */
-#define DT_GNU_LIBLIST 0x6ffffef9
-/* Configuration information.  */
-#define DT_CONFIG 0x6ffffefa
-/* Dependency auditing.  */
-#define DT_DEPAUDIT 0x6ffffefb
-/* Object auditing.  */
-#define DT_AUDIT 0x6ffffefc
-/* PLT padding.  */
-#define DT_PLTPAD 0x6ffffefd
-/* Move table.  */
-#define DT_MOVETAB 0x6ffffefe
-/* Syminfo table.  */
-#define DT_SYMINFO 0x6ffffeff
-#define DT_ADDRRNGHI 0x6ffffeff
-/* Reverse order! */
-#define DT_ADDRTAGIDX(tag) (DT_ADDRRNGHI - (tag))
-#define DT_ADDRNUM 11
 /* The versioning entry types.  The next are defined as part of the
    GNU extension.  */
-
-#define DT_VERSYM 0x6ffffff0
-
-#define DT_RELACOUNT 0x6ffffff9
-#define DT_RELCOUNT 0x6ffffffa
-/* These were chosen by Sun.  */
-/* State flags, see DF_1_* below.  */
-
-#define DT_FLAGS_1 0x6ffffffb
 /* Address of version definition
 					   table */
-
-#define DT_VERDEF 0x6ffffffc
-/* Number of version definitions */
-#define DT_VERDEFNUM 0x6ffffffd
 /* Address of table with needed
 					   versions */
-
-#define DT_VERNEED 0x6ffffffe
-/* Number of needed versions */
-#define DT_VERNEEDNUM 0x6fffffff
-/* Reverse order! */
-#define DT_VERSIONTAGIDX(tag) (DT_VERNEEDNUM - (tag))
-#define DT_VERSIONTAGNUM 16
 /* Sun added these machine-independent extensions in the "processor-specific"
    range.  Be compatible.  */
-/* Shared object to load before self */
-
-#define DT_AUXILIARY 0x7ffffffd
-/* Shared object to get values from */
-#define DT_FILTER 0x7fffffff
-#define DT_EXTRATAGIDX(tag) ((Elf32_Word)-((Elf32_Sword) (tag) <<1>>1)-1)
-#define DT_EXTRANUM 3
-/* Values of `d_un.d_val' in the DT_FLAGS entry.  */
-/* Object may use DF_ORIGIN */
-
-#define DF_ORIGIN 0x00000001
-/* Symbol resolutions starts here */
-#define DF_SYMBOLIC 0x00000002
-/* Object contains text relocations */
-#define DF_TEXTREL 0x00000004
-/* No lazy binding for this object */
-#define DF_BIND_NOW 0x00000008
-/* Module uses the static TLS model */
-#define DF_STATIC_TLS 0x00000010
 /* State flags selectable in the `d_un.d_val' element of the DT_FLAGS_1
    entry in the dynamic section.  */
-/* Set RTLD_NOW for this object.  */
-
-#define DF_1_NOW 0x00000001
-/* Set RTLD_GLOBAL for this object.  */
-#define DF_1_GLOBAL 0x00000002
-/* Set RTLD_GROUP for this object.  */
-#define DF_1_GROUP 0x00000004
-/* Set RTLD_NODELETE for this object.*/
-#define DF_1_NODELETE 0x00000008
-/* Trigger filtee loading at runtime.*/
-#define DF_1_LOADFLTR 0x00000010
-/* Set RTLD_INITFIRST for this object*/
-#define DF_1_INITFIRST 0x00000020
-/* Set RTLD_NOOPEN for this object.  */
-#define DF_1_NOOPEN 0x00000040
-/* $ORIGIN must be handled.  */
-#define DF_1_ORIGIN 0x00000080
-/* Direct binding enabled.  */
-#define DF_1_DIRECT 0x00000100
-#define DF_1_TRANS 0x00000200
-/* Object is used to interpose.  */
-#define DF_1_INTERPOSE 0x00000400
-/* Ignore default lib search path.  */
-#define DF_1_NODEFLIB 0x00000800
-/* Object can't be dldump'ed.  */
-#define DF_1_NODUMP 0x00001000
-/* Configuration alternative created.*/
-#define DF_1_CONFALT 0x00002000
-/* Filtee terminates filters search. */
-#define DF_1_ENDFILTEE 0x00004000
-/* Disp reloc applied at build time. */
-#define DF_1_DISPRELDNE 0x00008000
-/* Disp reloc applied at run-time.  */
-#define DF_1_DISPRELPND 0x00010000
-/* Object has no-direct binding. */
-#define DF_1_NODIRECT 0x00020000
-#define DF_1_IGNMULDEF 0x00040000
-#define DF_1_NOKSYMS 0x00080000
-#define DF_1_NOHDR 0x00100000
-/* Object is modified after built.  */
-#define DF_1_EDITED 0x00200000
-#define DF_1_NORELOC 0x00400000
-/* Object has individual interposers.  */
-#define DF_1_SYMINTPOSE 0x00800000
-/* Global auditing required.  */
-#define DF_1_GLOBAUDIT 0x01000000
-/* Singleton symbols are used.  */
-#define DF_1_SINGLETON 0x02000000
-#define DF_1_PIE 0x08000000
-/* Flags for the feature selection in DT_FEATURE_1.  */
-
-#define DTF_1_PARINIT 0x00000001
-#define DTF_1_CONFEXP 0x00000002
-/* Flags in the DT_POSFLAG_1 entry effecting only the next DT_* entry.  */
-/* Lazyload following object.  */
-
-#define DF_P1_LAZYLOAD 0x00000001
 /* Symbols from next object are not
 					   generally available.  */
-
-#define DF_P1_GROUPPERM 0x00000002
 /* Version definition sections.  */
 
-typedef struct {
-	Elf32_Half	vd_version;/* Version revision */
-
-	Elf32_Half	vd_flags;/* Version information */
-
-	Elf32_Half	vd_ndx;/* Version Index */
-
-	Elf32_Half	vd_cnt;/* Number of associated aux entries */
-
-	Elf32_Word	vd_hash;/* Version name hash value */
-
-	Elf32_Word	vd_aux;/* Offset in bytes to verdaux array */
-
-	Elf32_Word	vd_next;/* Offset in bytes to next verdef
-					   entry */
-
-} Elf32_Verdef;
-
-typedef struct {
-	Elf64_Half	vd_version;/* Version revision */
-
-	Elf64_Half	vd_flags;/* Version information */
-
-	Elf64_Half	vd_ndx;/* Version Index */
-
-	Elf64_Half	vd_cnt;/* Number of associated aux entries */
-
-	Elf64_Word	vd_hash;/* Version name hash value */
-
-	Elf64_Word	vd_aux;/* Offset in bytes to verdaux array */
-
-	Elf64_Word	vd_next;/* Offset in bytes to next verdef
-					   entry */
-
-} Elf64_Verdef;
-/* Legal values for vd_version (version revision).  */
-/* No version */
-
-#define VER_DEF_NONE 0
-/* Current version */
-#define VER_DEF_CURRENT 1
-/* Given version number */
-#define VER_DEF_NUM 2
-/* Legal values for vd_flags (version information flags).  */
-/* Version definition of file itself */
-
-#define VER_FLG_BASE 0x1
-/* Weak version identifier */
-#define VER_FLG_WEAK 0x2
-/* Versym symbol index values.  */
-/* Symbol is local.  */
-
-#define VER_NDX_LOCAL 0
-/* Symbol is global.  */
-#define VER_NDX_GLOBAL 1
-/* Beginning of reserved entries.  */
-#define VER_NDX_LORESERVE 0xff00
-/* Symbol is to be eliminated.  */
-#define VER_NDX_ELIMINATE 0xff01
 /* Auxiliary version information.  */
 
-typedef struct {
-	Elf32_Word	vda_name;/* Version or dependency names */
-
-	Elf32_Word	vda_next;/* Offset in bytes to next verdaux
-					   entry */
-
-} Elf32_Verdaux;
-
-typedef struct {
-	Elf64_Word	vda_name;/* Version or dependency names */
-
-	Elf64_Word	vda_next;/* Offset in bytes to next verdaux
-					   entry */
-
-} Elf64_Verdaux;
 /* Version dependency section.  */
 
-typedef struct {
-	Elf32_Half	vn_version;/* Version of structure */
-
-	Elf32_Half	vn_cnt;/* Number of associated aux entries */
-
-	Elf32_Word	vn_file;/* Offset of filename for this
-					   dependency */
-
-	Elf32_Word	vn_aux;/* Offset in bytes to vernaux array */
-
-	Elf32_Word	vn_next;/* Offset in bytes to next verneed
-					   entry */
-
-} Elf32_Verneed;
-
-typedef struct {
-	Elf64_Half	vn_version;/* Version of structure */
-
-	Elf64_Half	vn_cnt;/* Number of associated aux entries */
-
-	Elf64_Word	vn_file;/* Offset of filename for this
-					   dependency */
-
-	Elf64_Word	vn_aux;/* Offset in bytes to vernaux array */
-
-	Elf64_Word	vn_next;/* Offset in bytes to next verneed
-					   entry */
-
-} Elf64_Verneed;
-/* Legal values for vn_version (version revision).  */
-/* No version */
-
-#define VER_NEED_NONE 0
-/* Current version */
-#define VER_NEED_CURRENT 1
-/* Given version number */
-#define VER_NEED_NUM 2
 /* Auxiliary needed version information.  */
 
-typedef struct {
-	Elf32_Word	vna_hash;/* Hash value of dependency name */
-
-	Elf32_Half	vna_flags;/* Dependency specific information */
-
-	Elf32_Half	vna_other;/* Unused */
-
-	Elf32_Word	vna_name;/* Dependency name string offset */
-
-	Elf32_Word	vna_next;/* Offset in bytes to next vernaux
-					   entry */
-
-} Elf32_Vernaux;
-
-typedef struct {
-	Elf64_Word	vna_hash;/* Hash value of dependency name */
-
-	Elf64_Half	vna_flags;/* Dependency specific information */
-
-	Elf64_Half	vna_other;/* Unused */
-
-	Elf64_Word	vna_name;/* Dependency name string offset */
-
-	Elf64_Word	vna_next;/* Offset in bytes to next vernaux
-					   entry */
-
-} Elf64_Vernaux;
-/* Legal values for vna_flags.  */
-/* Weak version identifier */
-
-#define VER_FLG_WEAK 0x2
 /* Auxiliary vector.  */
 /* This vector is normally only used by the program interpreter.  The
    usual definition in an ABI supplement uses the name auxv_t.  The
@@ -1768,147 +619,20 @@ typedef struct {
    can't hurt.  We rename it to avoid conflicts.  The sizes of these
    types are an arrangement between the exec server and the program
    interpreter, so we don't fully specify them here.  */
-// 964 "elf.h"
-typedef struct {
-	uint32_t a_type;/* Entry type */
 
-	union {
-		uint32_t a_val;/* Integer value */
-
-		/* We use to have pointer elements added here.  We cannot do that,
-			 though, since it does not work when using 32-bit definitions
-			 on 64-bit platforms and vice versa.  */
-
-	} a_un;
-} Elf32_auxv_t;
-
-typedef struct {
-	uint64_t a_type;/* Entry type */
-
-	union {
-		uint64_t a_val;/* Integer value */
-
-		/* We use to have pointer elements added here.  We cannot do that,
-			 though, since it does not work when using 32-bit definitions
-			 on 64-bit platforms and vice versa.  */
-
-	} a_un;
-} Elf64_auxv_t;
-/* Legal values for a_type (entry type).  */
-/* End of vector */
-
-#define AT_NULL 0
-/* Entry should be ignored */
-#define AT_IGNORE 1
-/* File descriptor of program */
-#define AT_EXECFD 2
-/* Program headers for program */
-#define AT_PHDR 3
-/* Size of program header entry */
-#define AT_PHENT 4
-/* Number of program headers */
-#define AT_PHNUM 5
-/* System page size */
-#define AT_PAGESZ 6
-/* Base address of interpreter */
-#define AT_BASE 7
-/* Flags */
-#define AT_FLAGS 8
-/* Entry point of program */
-#define AT_ENTRY 9
-/* Program is not ELF */
-#define AT_NOTELF 10
-/* Real uid */
-#define AT_UID 11
-/* Effective uid */
-#define AT_EUID 12
-/* Real gid */
-#define AT_GID 13
-/* Effective gid */
-#define AT_EGID 14
-/* Frequency of times() */
-#define AT_CLKTCK 17
-/* Some more special a_type values describing the hardware.  */
-/* String identifying platform.  */
-
-#define AT_PLATFORM 15
 /* Machine dependent hints about
 					   processor capabilities.  */
-
-#define AT_HWCAP 16
 /* This entry gives some i\nformation about the FPU initialization
    performed by the kernel.  */
-/* Used FPU control word.  */
-
-#define AT_FPUCW 18
-/* Cache block sizes.  */
-/* Data cache block size.  */
-
-#define AT_DCACHEBSIZE 19
-/* Instruction cache block size.  */
-#define AT_ICACHEBSIZE 20
-/* Unified cache block size.  */
-#define AT_UCACHEBSIZE 21
 /* A special ignored value for PPC, used by the kernel to control the
    interpretation of the AUXV. Must be > 16.  */
-/* Entry should be ignored.  */
-
-#define AT_IGNOREPPC 22
-/* Boolean, was exec setuid-like?  */
-
-#define AT_SECURE 23
-/* String identifying real platforms.*/
-
-#define AT_BASE_PLATFORM 24
-/* Address of 16 random bytes.  */
-
-#define AT_RANDOM 25
-/* Filename of executable.  */
-
-#define AT_EXECFN 31
 /* Pointer to the global system page used for system calls and other
    nice things.  */
-
-#define AT_SYSINFO 32
-#define AT_SYSINFO_EHDR 33
 /* Shapes of the caches.  Bits 0-3 contains associativity; bits 4-7 contains
    log2 of line size; mask those to get cache size.  */
-
-#define AT_L1I_CACHESHAPE 34
-#define AT_L1D_CACHESHAPE 35
-#define AT_L2_CACHESHAPE 36
-#define AT_L3_CACHESHAPE 37
 /* Note section contents.  Each entry in the note section begins with
    a header of a fixed form.  */
 
-typedef struct {
-	Elf32_Word n_namesz;/* Length of the note's name.  */
-
-	Elf32_Word n_descsz;/* Length of the note's descriptor.  */
-
-	Elf32_Word n_type;/* Type of the note.  */
-
-} Elf32_Nhdr;
-
-typedef struct {
-	Elf64_Word n_namesz;/* Length of the note's name.  */
-
-	Elf64_Word n_descsz;/* Length of the note's descriptor.  */
-
-	Elf64_Word n_type;/* Type of the note.  */
-
-} Elf64_Nhdr;
-/* Known names of notes.  */
-/* Solaris entries in the note section have this name.  */
-
-#define ELF_NOTE_SOLARIS "SUNW Solaris"
-/* Note entries for GNU systems have this name.  */
-
-#define ELF_NOTE_GNU "GNU"
-/* Defined types of notes for Solaris.  */
-/* Value of descriptor (one word) is desired pagesize for the binary.  */
-
-#define ELF_NOTE_PAGESIZE_HINT 1
 /* Defined note types for GNU systems.  */
 /* ABI information.  The descriptor consists of words:
    word 0: OS descriptor
@@ -1916,2680 +640,150 @@ typedef struct {
    word 2: minor version of the ABI
    word 3: subminor version of the ABI
 */
-// 1085 "elf.h"
-#define NT_GNU_ABI_TAG 1
-/* Old name.  */
-#define ELF_NOTE_ABI NT_GNU_ABI_TAG
 /* Known OSes.  These values can appear in word 0 of an
    NT_GNU_ABI_TAG note section entry.  */
-
-#define ELF_NOTE_OS_LINUX 0
-#define ELF_NOTE_OS_GNU 1
-#define ELF_NOTE_OS_SOLARIS2 2
-#define ELF_NOTE_OS_FREEBSD 3
 /* Synthetic hwcap information.  The descriptor begins with two words:
    word 0: number of entries
    word 1: bitmask of enabled entries
    Then follow variable-length entries, one byte followed by a
    '\0'-terminated hwcap name string.  The byte gives the bit
    number to test if enabled, (1U << bit) & bitmask.  */
-
-#define NT_GNU_HWCAP 2
 /* Build ID bits as generated by ld --build-id.
    The descriptor consists of any nonzero number of bytes.  */
-
-#define NT_GNU_BUILD_ID 3
-/* Version note generated by GNU gold containing a version string.  */
-
-#define NT_GNU_GOLD_VERSION 4
 /* Move records.  */
 
-typedef struct {
-	Elf32_Xword m_value;/* Symbol value.  */
-
-	Elf32_Word m_info;/* Size and index.  */
-
-	Elf32_Word m_poffset;/* Symbol offset.  */
-
-	Elf32_Half m_repeat;/* Repeat count.  */
-
-	Elf32_Half m_stride;/* Stride info.  */
-
-} Elf32_Move;
-
-typedef struct {
-	Elf64_Xword m_value;/* Symbol value.  */
-
-	Elf64_Xword m_info;/* Size and index.  */
-
-	Elf64_Xword m_poffset;/* Symbol offset.  */
-
-	Elf64_Half m_repeat;/* Repeat count.  */
-
-	Elf64_Half m_stride;/* Stride info.  */
-
-} Elf64_Move;
-/* Macro to construct move records.  */
-
-#define ELF32_M_SYM(info) ((info) >> 8)
-#define ELF32_M_SIZE(info) ((unsigned char) (info))
-#define ELF32_M_INFO(sym,size) (((sym) << 8) + (unsigned char) (size))
-
-#define ELF64_M_SYM(info) ELF32_M_SYM (info)
-#define ELF64_M_SIZE(info) ELF32_M_SIZE (info)
-#define ELF64_M_INFO(sym,size) ELF32_M_INFO (sym, size)
-/* Motorola 68k specific definitions.  */
-/* Values for Elf32_Ehdr.e_flags.  */
-
-#define EF_CPU32 0x00810000
-/* m68k relocs.  */
-/* No reloc */
-
-#define R_68K_NONE 0
-/* Direct 32 bit  */
-#define R_68K_32 1
-/* Direct 16 bit  */
-#define R_68K_16 2
-/* Direct 8 bit  */
-#define R_68K_8 3
-/* PC relative 32 bit */
-#define R_68K_PC32 4
-/* PC relative 16 bit */
-#define R_68K_PC16 5
-/* PC relative 8 bit */
-#define R_68K_PC8 6
-/* 32 bit PC relative GOT entry */
-#define R_68K_GOT32 7
-/* 16 bit PC relative GOT entry */
-#define R_68K_GOT16 8
-/* 8 bit PC relative GOT entry */
-#define R_68K_GOT8 9
-/* 32 bit GOT offset */
-#define R_68K_GOT32O 10
-/* 16 bit GOT offset */
-#define R_68K_GOT16O 11
-/* 8 bit GOT offset */
-#define R_68K_GOT8O 12
-/* 32 bit PC relative PLT address */
-#define R_68K_PLT32 13
-/* 16 bit PC relative PLT address */
-#define R_68K_PLT16 14
-/* 8 bit PC relative PLT address */
-#define R_68K_PLT8 15
-/* 32 bit PLT offset */
-#define R_68K_PLT32O 16
-/* 16 bit PLT offset */
-#define R_68K_PLT16O 17
-/* 8 bit PLT offset */
-#define R_68K_PLT8O 18
-/* Copy symbol at runtime */
-#define R_68K_COPY 19
-/* Create GOT entry */
-#define R_68K_GLOB_DAT 20
-/* Create PLT entry */
-#define R_68K_JMP_SLOT 21
-/* Adjust by program base */
-#define R_68K_RELATIVE 22
-/* 32 bit GOT offset for GD */
-#define R_68K_TLS_GD32 25
-/* 16 bit GOT offset for GD */
-#define R_68K_TLS_GD16 26
-/* 8 bit GOT offset for GD */
-#define R_68K_TLS_GD8 27
-/* 32 bit GOT offset for LDM */
-#define R_68K_TLS_LDM32 28
-/* 16 bit GOT offset for LDM */
-#define R_68K_TLS_LDM16 29
-/* 8 bit GOT offset for LDM */
-#define R_68K_TLS_LDM8 30
-/* 32 bit module-relative offset */
-#define R_68K_TLS_LDO32 31
-/* 16 bit module-relative offset */
-#define R_68K_TLS_LDO16 32
-/* 8 bit module-relative offset */
-#define R_68K_TLS_LDO8 33
-/* 32 bit GOT offset for IE */
-#define R_68K_TLS_IE32 34
-/* 16 bit GOT offset for IE */
-#define R_68K_TLS_IE16 35
-/* 8 bit GOT offset for IE */
-#define R_68K_TLS_IE8 36
 /* 32 bit offset relative to
 					   static TLS block */
-
-#define R_68K_TLS_LE32 37
 /* 16 bit offset relative to
 					   static TLS block */
-
-#define R_68K_TLS_LE16 38
 /* 8 bit offset relative to
 					   static TLS block */
-
-#define R_68K_TLS_LE8 39
-/* 32 bit module number */
-#define R_68K_TLS_DTPMOD32 40
-/* 32 bit module-relative offset */
-#define R_68K_TLS_DTPREL32 41
-/* 32 bit TP-relative offset */
-#define R_68K_TLS_TPREL32 42
-/* Keep this the last entry.  */
-
-#define R_68K_NUM 43
-/* Intel 80386 specific definitions.  */
-/* i386 relocs.  */
-/* No reloc */
-
-#define R_386_NONE 0
-/* Direct 32 bit  */
-#define R_386_32 1
-/* PC relative 32 bit */
-#define R_386_PC32 2
-/* 32 bit GOT entry */
-#define R_386_GOT32 3
-/* 32 bit PLT address */
-#define R_386_PLT32 4
-/* Copy symbol at runtime */
-#define R_386_COPY 5
-/* Create GOT entry */
-#define R_386_GLOB_DAT 6
-/* Create PLT entry */
-#define R_386_JMP_SLOT 7
-/* Adjust by program base */
-#define R_386_RELATIVE 8
-/* 32 bit offset to GOT */
-#define R_386_GOTOFF 9
-/* 32 bit PC relative offset to GOT */
-#define R_386_GOTPC 10
-#define R_386_32PLT 11
-/* Offset in static TLS block */
-#define R_386_TLS_TPOFF 14
 /* Address of GOT entry for static TLS
 					   block offset */
-
-#define R_386_TLS_IE 15
 /* GOT entry for static TLS block
 					   offset */
-
-#define R_386_TLS_GOTIE 16
 /* Offset relative to static TLS
 					   block */
-
-#define R_386_TLS_LE 17
 /* Direct 32 bit for GNU version of
 					   general dynamic thread local data */
-
-#define R_386_TLS_GD 18
 /* Direct 32 bit for GNU version of
 					   local dynamic thread local data
 					   in LE code */
-
-#define R_386_TLS_LDM 19
-#define R_386_16 20
-#define R_386_PC16 21
-#define R_386_8 22
-#define R_386_PC8 23
 /* Direct 32 bit for general dynamic
 					   thread local data */
-
-#define R_386_TLS_GD_32 24
-/* Tag for pushl in GD TL\S code */
-#define R_386_TLS_GD_PUSH 25
 /* Relocation for call to
 					   __tls_get_addr() */
-
-#define R_386_TLS_GD_CALL 26
-/* Tag for popl in GD TLS code */
-#define R_386_TLS_GD_POP 27
 /* Direct 32 bit for local dynamic
 					   thread local data in LE code */
-
-#define R_386_TLS_LDM_32 28
-/* Tag for pushl in LDM TLS code */
-#define R_386_TLS_LDM_PUSH 29
 /* Relocation for call to
 					   __tls_get_addr() in LDM code */
-
-#define R_386_TLS_LDM_CALL 30
-/* Tag for popl in LDM TLS code */
-#define R_386_TLS_LDM_POP 31
-/* Offset relative to TLS block */
-#define R_386_TLS_LDO_32 32
 /* GOT entry for negated static TLS
 					   block offset */
-
-#define R_386_TLS_IE_32 33
 /* Negated offset relative to static
 					   TLS block */
-
-#define R_386_TLS_LE_32 34
-/* ID of module containing symbol */
-#define R_386_TLS_DTPMOD32 35
-/* Offset in TLS block */
-#define R_386_TLS_DTPOFF32 36
-/* Negated offset in static TLS block */
-#define R_386_TLS_TPOFF32 37
-/* 38? */
-/* GOT offset for TLS descriptor.  */
-
-#define R_386_TLS_GOTDESC 39
 /* Marker of call through TLS
 					   descriptor for
 					   relaxation.  */
-
-#define R_386_TLS_DESC_CALL 40
 /* TLS descriptor containing
 					   pointer to code and to
 					   argument, returning the TLS
 					   offset for the symbol.  */
-
-#define R_386_TLS_DESC 41
-/* Adjust indirectly by program base */
-#define R_386_IRELATIVE 42
-/* 32 bit GOT entry, relaxable */
-#define R_386_GOT32X 43
-/* Keep this the last entry.  */
-
-#define R_386_NUM 44
-/* SUN SPARC specific definitions.  */
-/* Legal values for ST_TYPE subfield of st_info (symbol type).  */
-/* Global register reserved to app. */
-
-#define STT_SPARC_REGISTER 13
-/* Values for Elf64_Ehdr.e_flags.  */
-
-#define EF_SPARCV9_MM 3
-#define EF_SPARCV9_TSO 0
-#define EF_SPARCV9_PSO 1
-#define EF_SPARCV9_RMO 2
-/* little endian data */
-#define EF_SPARC_LEDATA 0x800000
-#define EF_SPARC_EXT_MASK 0xFFFF00
-/* generic V8+ features */
-#define EF_SPARC_32PLUS 0x000100
-/* Sun UltraSPARC1 extensions */
-#define EF_SPARC_SUN_US1 0x000200
-/* HAL R1 extensions */
-#define EF_SPARC_HAL_R1 0x000400
-/* Sun UltraSPARCIII extensions */
-#define EF_SPARC_SUN_US3 0x000800
-/* SPARC relocs.  */
-/* No reloc */
-
-#define R_SPARC_NONE 0
-/* Direct 8 bit */
-#define R_SPARC_8 1
-/* Direct 16 bit */
-#define R_SPARC_16 2
-/* Direct 32 bit */
-#define R_SPARC_32 3
-/* PC relative 8 bit */
-#define R_SPARC_DISP8 4
-/* PC relative 16 bit */
-#define R_SPARC_DISP16 5
-/* PC relative 32 bit */
-#define R_SPARC_DISP32 6
-/* PC relative 30 bit shifted */
-#define R_SPARC_WDISP30 7
-/* PC relative 22 bit shifted */
-#define R_SPARC_WDISP22 8
-/* High 22 bit */
-#define R_SPARC_HI22 9
-/* Direct 22 bit */
-#define R_SPARC_22 10
-/* Direct 13 bit */
-#define R_SPARC_13 11
-/* Truncated 10 bit */
-#define R_SPARC_LO10 12
-/* Truncated 10 bit GOT entry */
-#define R_SPARC_GOT10 13
-/* 13 bit GOT entry */
-#define R_SPARC_GOT13 14
-/* 22 bit GOT entry shifted */
-#define R_SPARC_GOT22 15
-/* PC relative 10 bit truncated */
-#define R_SPARC_PC10 16
-/* PC relative 22 bit shifted */
-#define R_SPARC_PC22 17
-/* 30 bit PC relative PLT address */
-#define R_SPARC_WPLT30 18
-/* Copy symbol at runtime */
-#define R_SPARC_COPY 19
-/* Create GOT entry */
-#define R_SPARC_GLOB_DAT 20
-/* Create PLT entry */
-#define R_SPARC_JMP_SLOT 21
-/* Adjust by program base */
-#define R_SPARC_RELATIVE 22
-/* Direct 32 bit unaligned */
-#define R_SPARC_UA32 23
-/* Additional Sparc64 relocs.  */
-/* Direct 32 bit ref to PLT entry */
-
-#define R_SPARC_PLT32 24
-/* High 22 bit PLT entry */
-#define R_SPARC_HIPLT22 25
-/* Truncated 10 bit PLT entry */
-#define R_SPARC_LOPLT10 26
-/* PC rel 32 bit ref to PLT entry */
-#define R_SPARC_PCPLT32 27
-/* PC rel high 22 bit PLT entry */
-#define R_SPARC_PCPLT22 28
-/* PC rel trunc 10 bit PLT entry */
-#define R_SPARC_PCPLT10 29
-/* Direct 10 bit */
-#define R_SPARC_10 30
-/* Direct 11 bit */
-#define R_SPARC_11 31
-/* Direct 64 bit */
-#define R_SPARC_64 32
-/* 10bit with secondary 13bit addend */
-#define R_SPARC_OLO10 33
-/* Top 22 bits of direct 64 bit */
-#define R_SPARC_HH22 34
-/* High middle 10 bits of ... */
-#define R_SPARC_HM10 35
-/* Low middle 22 bits of ... */
-#define R_SPARC_LM22 36
-/* Top 22 bits of pc rel 64 bit */
-#define R_SPARC_PC_HH22 37
-/* High middle 10 bit of ... */
-#define R_SPARC_PC_HM10 38
-/* Low middle 22 bits of ... */
-#define R_SPARC_PC_LM22 39
-/* PC relative 16 bit shifted */
-#define R_SPARC_WDISP16 40
-/* PC relative 19 bit shifted */
-#define R_SPARC_WDISP19 41
-/* was part of v9 ABI but was removed */
-#define R_SPARC_GLOB_JMP 42
-/* Direct 7 bit */
-#define R_SPARC_7 43
-/* Direct 5 bit */
-#define R_SPARC_5 44
-/* Direct 6 bit */
-#define R_SPARC_6 45
-/* PC relative 64 bit */
-#define R_SPARC_DISP64 46
-/* Direct 64 bit ref to PLT entry */
-#define R_SPARC_PLT64 47
-/* High 22 bit complemented */
-#define R_SPARC_HIX22 48
-/* Truncated 11 bit complemented */
-#define R_SPARC_LOX10 49
-/* Direct high 12 of 44 bit */
-#define R_SPARC_H44 50
-/* Direct mid 22 of 44 bit */
-#define R_SPARC_M44 51
-/* Direct low 10 of 44 bit */
-#define R_SPARC_L44 52
-/* Global register usage */
-#define R_SPARC_REGISTER 53
-/* Direct 64 bit unaligned */
-#define R_SPARC_UA64 54
-/* Direct 16 bit unaligned */
-#define R_SPARC_UA16 55
-#define R_SPARC_TLS_GD_HI22 56
-#define R_SPARC_TLS_GD_LO10 57
-#define R_SPARC_TLS_GD_ADD 58
-#define R_SPARC_TLS_GD_CALL 59
-#define R_SPARC_TLS_LDM_HI22 60
-#define R_SPARC_TLS_LDM_LO10 61
-#define R_SPARC_TLS_LDM_ADD 62
-#define R_SPARC_TLS_LDM_CALL 63
-#define R_SPARC_TLS_LDO_HIX22 64
-#define R_SPARC_TLS_LDO_LOX10 65
-#define R_SPARC_TLS_LDO_ADD 66
-#define R_SPARC_TLS_IE_HI22 67
-#define R_SPARC_TLS_IE_LO10 68
-#define R_SPARC_TLS_IE_LD 69
-#define R_SPARC_TLS_IE_LDX 70
-#define R_SPARC_TLS_IE_ADD 71
-#define R_SPARC_TLS_LE_HIX22 72
-#define R_SPARC_TLS_LE_LOX10 73
-#define R_SPARC_TLS_DTPMOD32 74
-#define R_SPARC_TLS_DTPMOD64 75
-#define R_SPARC_TLS_DTPOFF32 76
-#define R_SPARC_TLS_DTPOFF64 77
-#define R_SPARC_TLS_TPOFF32 78
-#define R_SPARC_TLS_TPOFF64 79
-#define R_SPARC_GOTDATA_HIX22 80
-#define R_SPARC_GOTDATA_LOX10 81
-#define R_SPARC_GOTDATA_OP_HIX22 82
-#define R_SPARC_GOTDATA_OP_LOX10 83
-#define R_SPARC_GOTDATA_OP 84
-#define R_SPARC_H34 85
-#define R_SPARC_SIZE32 86
-#define R_SPARC_SIZE64 87
-#define R_SPARC_WDISP10 88
-#define R_SPARC_JMP_IREL 248
-#define R_SPARC_IRELATIVE 249
-#define R_SPARC_GNU_VTINHERIT 250
-#define R_SPARC_GNU_VTENTRY 251
-#define R_SPARC_REV32 252
-/* Keep this the last entry.  */
-
-#define R_SPARC_NUM 253
-/* For Sparc64, legal values for d_tag of Elf64_Dyn.  */
-
-#define DT_SPARC_REGISTER 0x70000001
-#define DT_SPARC_NUM 2
-/* MIPS R3000 specific definitions.  */
-/* Legal values for e_flags field of Elf32_Ehdr.  */
-/* A .noreorder directive was used */
-
-#define EF_MIPS_NOREORDER 1
-/* Contains PIC code */
-#define EF_MIPS_PIC 2
-/* Uses PIC calling sequence */
-#define EF_MIPS_CPIC 4
-#define EF_MIPS_XGOT 8
-#define EF_MIPS_64BIT_WHIRL 16
-#define EF_MIPS_ABI2 32
-#define EF_MIPS_ABI_ON32 64
-/* MIPS architecture level */
-#define EF_MIPS_ARCH 0xf0000000
-/* Legal values for MIPS architecture level.  */
-/* -mips1 code.  */
-
-#define EF_MIPS_ARCH_1 0x00000000
-/* -mips2 code.  */
-#define EF_MIPS_ARCH_2 0x10000000
-/* -mips3 code.  */
-#define EF_MIPS_ARCH_3 0x20000000
-/* -mips4 code.  */
-#define EF_MIPS_ARCH_4 0x30000000
-/* -mips5 code.  */
-#define EF_MIPS_ARCH_5 0x40000000
-/* MIPS32 code.  */
-#define EF_MIPS_ARCH_32 0x60000000
-/* MIPS64 code.  */
-#define EF_MIPS_ARCH_64 0x70000000
-/* The following are non-official names and should not be used.  */
-/* -mips1 code.  */
-
-#define E_MIPS_ARCH_1 0x00000000
-/* -mips2 code.  */
-#define E_MIPS_ARCH_2 0x10000000
-/* -mips3 code.  */
-#define E_MIPS_ARCH_3 0x20000000
-/* -mips4 code.  */
-#define E_MIPS_ARCH_4 0x30000000
-/* -mips5 code.  */
-#define E_MIPS_ARCH_5 0x40000000
-/* MIPS32 code.  */
-#define E_MIPS_ARCH_32 0x60000000
-/* MIPS64 code.  */
-#define E_MIPS_ARCH_64 0x70000000
-/* Special section indices.  */
-/* Allocated common symbols */
-
-#define SHN_MIPS_ACOMMON 0xff00
-/* Allocated test symbols.  */
-#define SHN_MIPS_TEXT 0xff01
-/* Allocated data symbols. \ */
-#define SHN_MIPS_DATA 0xff02
-/* Small common symbols */
-#define SHN_MIPS_SCOMMON 0xff03
-/* Small undefined symbols */
-#define SHN_MIPS_SUNDEFINED 0xff04
-/* Legal values for sh_type field of Elf32_Shdr.  */
-/* Shared objects used in link */
-
-#define SHT_MIPS_LIBLIST 0x70000000
-#define SHT_MIPS_MSYM 0x70000001
-/* Conflicting symbols */
-#define SHT_MIPS_CONFLICT 0x70000002
-/* Global data area sizes */
-#define SHT_MIPS_GPTAB 0x70000003
-/* Reserved for SGI/MIPS compilers */
-#define SHT_MIPS_UCODE 0x70000004
-/* MIPS ECOFF debugging information*/
-#define SHT_MIPS_DEBUG 0x70000005
-/* Register usage information */
-#define SHT_MIPS_REGINFO 0x70000006
-#define SHT_MIPS_PACKAGE 0x70000007
-#define SHT_MIPS_PACKSYM 0x70000008
-#define SHT_MIPS_RELD 0x70000009
-#define SHT_MIPS_IFACE 0x7000000b
-#define SHT_MIPS_CONTENT 0x7000000c
-/* Miscellaneous options.  */
-#define SHT_MIPS_OPTIONS 0x7000000d
-#define SHT_MIPS_SHDR 0x70000010
-#define SHT_MIPS_FDESC 0x70000011
-#define SHT_MIPS_EXTSYM 0x70000012
-#define SHT_MIPS_DENSE 0x70000013
-#define SHT_MIPS_PDESC 0x70000014
-#define SHT_MIPS_LOCSYM 0x70000015
-#define SHT_MIPS_AUXSYM 0x70000016
-#define SHT_MIPS_OPTSYM 0x70000017
-#define SHT_MIPS_LOCSTR 0x70000018
-#define SHT_MIPS_LINE 0x70000019
-#define SHT_MIPS_RFDESC 0x7000001a
-#define SHT_MIPS_DELTASYM 0x7000001b
-#define SHT_MIPS_DELTAINST 0x7000001c
-#define SHT_MIPS_DELTACLASS 0x7000001d
-/* DWARF debugging information.  */
-#define SHT_MIPS_DWARF 0x7000001e
-#define SHT_MIPS_DELTADECL 0x7000001f
-#define SHT_MIPS_SYMBOL_LIB 0x70000020
-/* Event section.  */
-#define SHT_MIPS_EVENTS 0x70000021
-#define SHT_MIPS_TRANSLATE 0x70000022
-#define SHT_MIPS_PIXIE 0x70000023
-#define SHT_MIPS_XLATE 0x70000024
-#define SHT_MIPS_XLATE_DEBUG 0x70000025
-#define SHT_MIPS_WHIRL 0x70000026
-#define SHT_MIPS_EH_REGION 0x70000027
-#define SHT_MIPS_XLATE_OLD 0x70000028
-#define SHT_MIPS_PDR_EXCEPTION 0x70000029
-/* Legal values for sh_flags field of Elf32_Shdr.  */
-/* Must be part of global data area */
-
-#define SHF_MIPS_GPREL 0x10000000
-#define SHF_MIPS_MERGE 0x20000000
-#define SHF_MIPS_ADDR 0x40000000
-#define SHF_MIPS_STRINGS 0x80000000
-#define SHF_MIPS_NOSTRIP 0x08000000
-#define SHF_MIPS_LOCAL 0x04000000
-#define SHF_MIPS_NAMES 0x02000000
-#define SHF_MIPS_NODUPE 0x01000000
-/* Symbol tables.  */
-/* MIPS specific values for `st_other'.  */
-
-#define STO_MIPS_DEFAULT 0x0
-#define STO_MIPS_INTERNAL 0x1
-#define STO_MIPS_HIDDEN 0x2
-#define STO_MIPS_PROTECTED 0x3
-#define STO_MIPS_PLT 0x8
-#define STO_MIPS_SC_ALIGN_UNUSED 0xff
-/* MIPS specific values for `st_info'.  */
-
-#define STB_MIPS_SPLIT_COMMON 13
 /* Entries found in sections of type SHT_MIPS_GPTAB.  */
 
-typedef union {
-	struct {
-		Elf32_Word gt_current_g_value;/* -G value used for compilation */
-
-		Elf32_Word gt_unused;/* Not used */
-
-	} gt_header;/* First entry in section */
-
-	struct {
-		Elf32_Word gt_g_value;/* If this value were used for -G */
-
-		Elf32_Word gt_bytes;/* This many bytes would be used */
-
-	} gt_entry;/* Subsequent entries in section */
-
-} Elf32_gptab;
 /* Entry found in sections of type SHT_MIPS_REGINFO.  */
 
-typedef struct {
-	Elf32_Word	ri_gprmask;/* General registers used */
-
-	Elf32_Word	ri_cprmask[4];/* Coprocessor registers used */
-
-	Elf32_Sword	ri_gp_value;/* $gp register value */
-
-} Elf32_RegInfo;
 /* Entries found in sections of type SHT_MIPS_OPTIONS.  */
 
-typedef struct {
-	unsigned char kind;/* Determines interpretation of the
-				   variable part of descriptor.  */
-
-	unsigned char size;/* Size of descriptor, including header.  */
-
-	Elf32_Section section;/* Section header index of section affected,
-				   0 for global options.  */
-
-	Elf32_Word info;/* Kind-specific information.  */
-
-} Elf_Options;
-/* Values for `kind' field in Elf_Options.  */
-/* Undefined.  */
-
-#define ODK_NULL 0
-/* Register usage information.  */
-#define ODK_REGINFO 1
-/* Exception processing options.  */
-#define ODK_EXCEPTIONS 2
-/* Section padding options.  */
-#define ODK_PAD 3
-/* Hardware workarounds performed */
-#define ODK_HWPATCH 4
-/* record the fill value used by the linker. */
-#define ODK_FILL 5
-/* reserve space for desktop tools to write. */
-#define ODK_TAGS 6
-/* HW workarounds.  'AND' bits when merging. */
-#define ODK_HWAND 7
-/* HW workarounds.  'OR' bits when merging.  */
-#define ODK_HWOR 8
-/* Values for `info' in Elf_Options for ODK_EXCEPTIONS entries.  */
-/* FPE's which MUST be enabled.  */
-
-#define OEX_FPU_MIN 0x1f
-/* FPE's which MAY be enabled.  */
-#define OEX_FPU_MAX 0x1f00
-/* page zero must be mapped.  */
-#define OEX_PAGE0 0x10000
-/* Force sequential memory mode?  */
-#define OEX_SMM 0x20000
-/* Force floating point debug mode?  */
-#define OEX_FPDBUG 0x40000
-#define OEX_PRECISEFP OEX_FPDBUG
-/* Dismiss invalid address faults?  */
-#define OEX_DISMISS 0x80000
-
-#define OEX_FPU_INVAL 0x10
-#define OEX_FPU_DIV0 0x08
-#define OEX_FPU_OFLO 0x04
-#define OEX_FPU_UFLO 0x02
-#define OEX_FPU_INEX 0x01
-/* Masks for `info' in Elf_Options for an ODK_HWPATCH entry.  */
-/* R4000 end-of-page patch.  */
-
-#define OHW_R4KEOP 0x1
-/* may need R8000 prefetch patch.  */
-#define OHW_R8KPFETCH 0x2
-/* R5000 end-of-page patch.  */
-#define OHW_R5KEOP 0x4
-/* R5000 cvt.[ds].l bug.  clean=1.  */
-#define OHW_R5KCVTL 0x8
-
-#define OPAD_PREFIX 0x1
-#define OPAD_POSTFIX 0x2
-#define OPAD_SYMBOL 0x4
 /* Entry found in `.options' section.  */
 
-typedef struct {
-	Elf32_Word hwp_flags1;/* Extra flags.  */
-
-	Elf32_Word hwp_flags2;/* Extra flags.  */
-
-} Elf_Options_Hw;
-/* Masks for `info' in ElfOptions for ODK_HWAND and ODK_HWOR entries.  */
-
-#define OHWA0_R4KEOP_CHECKED 0x00000001
-#define OHWA1_R4KEOP_CLEAN 0x00000002
-/* MIPS relocs.  */
-/* No reloc */
-
-#define R_MIPS_NONE 0
-/* Direct 16 bit */
-#define R_MIPS_16 1
-/* Direct 32 bit */
-#define R_MIPS_32 2
-/* PC relative 32 bit */
-#define R_MIPS_REL32 3
-/* Direct 26 bit shifted */
-#define R_MIPS_26 4
-/* High 16 bit */
-#define R_MIPS_HI16 5
-/* Low 16 bit */
-#define R_MIPS_LO16 6
-/* GP relative 16 bit */
-#define R_MIPS_GPREL16 7
-/* 16 bit literal entry */
-#define R_MIPS_LITERAL 8
-/* 16 bit GOT entry */
-#define R_MIPS_GOT16 9
-/* PC relative 16 bit */
-#define R_MIPS_PC16 10
-/* 16 bit GOT entry for function */
-#define R_MIPS_CALL16 11
-/* GP relative 32 bit */
-#define R_MIPS_GPREL32 12
-
-#define R_MIPS_SHIFT5 16
-#define R_MIPS_SHIFT6 17
-#define R_MIPS_64 18
-#define R_MIPS_GOT_DISP 19
-#define R_MIPS_GOT_PAGE 20
-#define R_MIPS_GOT_OFST 21
-#define R_MIPS_GOT_HI16 22
-#define R_MIPS_GOT_LO16 23
-#define R_MIPS_SUB 24
-#define R_MIPS_INSERT_A 25
-#define R_MIPS_INSERT_B 26
-#define R_MIPS_DELETE 27
-#define R_MIPS_HIGHER 28
-#define R_MIPS_HIGHEST 29
-#define R_MIPS_CALL_HI16 30
-#define R_MIPS_CALL_LO16 31
-#define R_MIPS_SCN_DISP 32
-#define R_MIPS_REL16 33
-#define R_MIPS_ADD_IMMEDIATE 34
-#define R_MIPS_PJUMP 35
-#define R_MIPS_RELGOT 36
-#define R_MIPS_JALR 37
-/* Module number 32 bit */
-#define R_MIPS_TLS_DTPMOD32 38
-/* Module-relative offset 32 bit */
-#define R_MIPS_TLS_DTPREL32 39
-/* Module number 64 bit */
-#define R_MIPS_TLS_DTPMOD64 40
-/* Module-relative offset 64 bit */
-#define R_MIPS_TLS_DTPREL64 41
-/* 16 bit GOT offset for GD */
-#define R_MIPS_TLS_GD 42
-/* 16 bit GOT offset for LDM */
-#define R_MIPS_TLS_LDM 43
-/* Module-relative offset, high 16 bits */
-#define R_MIPS_TLS_DTPREL_HI16 44
-/* Module-relative offset, low 16 bits */
-#define R_MIPS_TLS_DTPREL_LO16 45
-/* 16 bit GOT offset for IE */
-#define R_MIPS_TLS_GOTTPREL 46
-/* TP-relative offset, 32 bit */
-#define R_MIPS_TLS_TPREL32 47
-/* TP-relative offset, 64 bit */
-#define R_MIPS_TLS_TPREL64 48
-/* TP-relative offset, high 16 bits */
-#define R_MIPS_TLS_TPREL_HI16 49
-/* TP-relative offset, low 16 bits */
-#define R_MIPS_TLS_TPREL_LO16 50
-#define R_MIPS_GLOB_DAT 51
-#define R_MIPS_COPY 126
-#define R_MIPS_JUMP_SLOT 127
-/* Keep this the last entry.  */
-
-#define R_MIPS_NUM 128
-/* Legal values for p_type field of Elf32_Phdr.  */
-/* Register usage information\ */
-
-#define PT_MIPS_REGINFO 0x70000000
-/* Runtime procedure table. */
-#define PT_MIPS_RTPROC 0x70000001
-#define PT_MIPS_OPTIONS 0x70000002
-/* Special program header types.  */
-
-#define PF_MIPS_LOCAL 0x10000000
-/* Legal values for d_tag field of Elf32_Dyn.  */
-/* Runtime linker interface version */
-
-#define DT_MIPS_RLD_VERSION 0x70000001
-/* Timestamp */
-#define DT_MIPS_TIME_STAMP 0x70000002
-/* Checksum */
-#define DT_MIPS_ICHECKSUM 0x70000003
-/* Version string (string tbl index) */
-#define DT_MIPS_IVERSION 0x70000004
-/* Flags */
-#define DT_MIPS_FLAGS 0x70000005
-/* Base address */
-#define DT_MIPS_BASE_ADDRESS 0x70000006
-#define DT_MIPS_MSYM 0x70000007
-/* Address of CONFLICT section */
-#define DT_MIPS_CONFLICT 0x70000008
-/* Address of LIBLIST section */
-#define DT_MIPS_LIBLIST 0x70000009
-/* Number of local GOT entries */
-#define DT_MIPS_LOCAL_GOTNO 0x7000000a
-/* Number of CONFLICT entries */
-#define DT_MIPS_CONFLICTNO 0x7000000b
-/* Number of LIBLIST entries */
-#define DT_MIPS_LIBLISTNO 0x70000010
-/* Number of DYNSYM entries */
-#define DT_MIPS_SYMTABNO 0x70000011
-/* First external DYNSYM */
-#define DT_MIPS_UNREFEXTNO 0x70000012
-/* First GOT entry in DYNSYM */
-#define DT_MIPS_GOTSYM 0x70000013
-/* Number of GOT page table entries */
-#define DT_MIPS_HIPAGENO 0x70000014
-/* Address of run time loader map.  */
-#define DT_MIPS_RLD_MAP 0x70000016
-/* Delta C++ class definition.  */
-#define DT_MIPS_DELTA_CLASS 0x70000017
 /* Number of entries in
 						DT_MIPS_DELTA_CLASS.  */
-
-#define DT_MIPS_DELTA_CLASS_NO 0x70000018
-/* Delta C++ class instances.  */
-#define DT_MIPS_DELTA_INSTANCE 0x70000019
 /* Number of entries in
 						DT_MIPS_DELTA_INSTANCE.  */
-
-#define DT_MIPS_DELTA_INSTANCE_NO 0x7000001a
-/* Delta relocations.  */
-#define DT_MIPS_DELTA_RELOC 0x7000001b
 /* Number of entries in
 					     DT_MIPS_DELTA_RELOC.  */
-
-#define DT_MIPS_DELTA_RELOC_NO 0x7000001c
 /* Delta symbols that Delta
 					   relocations refer to.  */
-
-#define DT_MIPS_DELTA_SYM 0x7000001d
 /* Number of entries in
 					   DT_MIPS_DELTA_SYM.  */
-
-#define DT_MIPS_DELTA_SYM_NO 0x7000001e
 /* Delta symbols that hold the
 					     class declaration.  */
-
-#define DT_MIPS_DELTA_CLASSSYM 0x70000020
 /* Number of entries in
 						DT_MIPS_DELTA_CLASSSYM.  */
-
-#define DT_MIPS_DELTA_CLASSSYM_NO 0x70000021
-/* Flags indicating for C++ flavor.  */
-#define DT_MIPS_CXX_FLAGS 0x70000022
-#define DT_MIPS_PIXIE_INIT 0x70000023
-#define DT_MIPS_SYMBOL_LIB 0x70000024
-#define DT_MIPS_LOCALPAGE_GOTIDX 0x70000025
-#define DT_MIPS_LOCAL_GOTIDX 0x70000026
-#define DT_MIPS_HIDDEN_GOTIDX 0x70000027
-#define DT_MIPS_PROTECTED_GOTIDX 0x70000028
-/* Address of .options.  */
-#define DT_MIPS_OPTIONS 0x70000029
-/* Address of .interface.  */
-#define DT_MIPS_INTERFACE 0x7000002a
-#define DT_MIPS_DYNSTR_ALIGN 0x7000002b
-/* Size of the .interface section. */
-#define DT_MIPS_INTERFACE_SIZE 0x7000002c
 /* Address of rld_text_rsolve
 						    function stored in GOT.  */
-
-#define DT_MIPS_RLD_TEXT_RESOLVE_ADDR 0x7000002d
 /* Default suffix of dso to be added
 					   by rld on dlopen() calls.  */
-
-#define DT_MIPS_PERF_SUFFIX 0x7000002e
-/* (O32)Size of compact rel section. */
-#define DT_MIPS_COMPACT_SIZE 0x7000002f
-/* GP value for aux GOTs.  */
-#define DT_MIPS_GP_VALUE 0x70000030
-/* Address of aux .dynamic.  */
-#define DT_MIPS_AUX_DYNAMIC 0x70000031
-/* The address of .got.plt in an executable using the new non-PIC ABI.  */
-
-#define DT_MIPS_PLTGOT 0x70000032
 /* The base of the PLT in an executable using the new non-PIC ABI if that
    PLT is writable.  For a non-writable PLT, this is omitted or has a zero
    value.  */
-
-#define DT_MIPS_RWPLT 0x70000034
-#define DT_MIPS_NUM 0x35
-/* Legal values for DT_MIPS_FLAGS Elf32_Dyn entry.  */
-/* No flags */
-
-#define RHF_NONE 0
-/* Use quickstart */
-#define RHF_QUICKSTART (1 << 0)
-/* Hash size not power of 2 */
-#define RHF_NOTPOT (1 << 1)
-/* Ignore LD_LIBRARY_PATH */
-#define RHF_NO_LIBRARY_REPLACEMENT (1 << 2)
-#define RHF_NO_MOVE (1 << 3)
-#define RHF_SGI_ONLY (1 << 4)
-#define RHF_GUARANTEE_INIT (1 << 5)
-#define RHF_DELTA_C_PLUS_PLUS (1 << 6)
-#define RHF_GUARANTEE_START_INIT (1 << 7)
-#define RHF_PIXIE (1 << 8)
-#define RHF_DEFAULT_DELAY_LOAD (1 << 9)
-#define RHF_REQUICKSTART (1 << 10)
-#define RHF_REQUICKSTARTED (1 << 11)
-#define RHF_CORD (1 << 12)
-#define RHF_NO_UNRES_UNDEF (1 << 13)
-#define RHF_RLD_ORDER_SAFE (1 << 14)
 /* Entries found in sections of type SHT_MIPS_LIBLIST.  */
 
-typedef struct {
-	Elf32_Word l_name;/* Name (string table index) */
-
-	Elf32_Word l_time_stamp;/* Timestamp */
-
-	Elf32_Word l_checksum;/* Checksum */
-
-	Elf32_Word l_version;/* Interface version */
-
-	Elf32_Word l_flags;/* Flags */
-
-} Elf32_Lib;
-
-typedef struct {
-	Elf64_Word l_name;/* Name (string table index) */
-
-	Elf64_Word l_time_stamp;/* Timestamp */
-
-	Elf64_Word l_checksum;/* Checksum */
-
-	Elf64_Word l_version;/* Interface version */
-
-	Elf64_Word l_flags;/* Flags */
-
-} Elf64_Lib;
-/* Legal values for l_flags.  */
-
-#define LL_NONE 0
-/* Require exact match */
-#define LL_EXACT_MATCH (1 << 0)
-/* Ignore interface version */
-#define LL_IGNORE_INT_VER (1 << 1)
-#define LL_REQUIRE_MINOR (1 << 2)
-#define LL_EXPORTS (1 << 3)
-#define LL_DELAY_LOAD (1 << 4)
-#define LL_DELTA (1 << 5)
 /* Entries found in sections of type SHT_MIPS_CONFLICT.  */
 
 typedef Elf32_Addr Elf32_Conflict;
-/* HPPA specific definitions.  */
-/* Legal values for e_flags field of Elf32_Ehdr.  */
-/* Trap nil pointer dereference.  */
-
-#define EF_PARISC_TRAPNIL 0x00010000
-/* Program uses arch. extensions. */
-#define EF_PARISC_EXT 0x00020000
-/* Program expects little endian. */
-#define EF_PARISC_LSB 0x00040000
-/* Program expects wide mode.  */
-#define EF_PARISC_WIDE 0x00080000
 /* No kernel assisted branch
 					      prediction.  */
-
-#define EF_PARISC_NO_KABP 0x00100000
-/* Allow lazy swapping.  */
-#define EF_PARISC_LAZYSWAP 0x00400000
-/* Architecture version.  */
-#define EF_PARISC_ARCH 0x0000ffff
-/* Defined values for `e_flags & EF_PARISC_ARCH' are:  */
-/* PA-RISC 1.0 big-endian.  */
-
-#define EFA_PARISC_1_0 0x020b
-/* PA-RISC 1.1 big-endian.  */
-#define EFA_PARISC_1_1 0x0210
-/* PA-RISC 2.0 big-endian.  */
-#define EFA_PARISC_2_0 0x0214
 /* Additional section indices.  */
 /* Section for tentatively declared
 					      symbols in ANSI C.  */
-
-#define SHN_PARISC_ANSI_COMMON 0xff00
-/* Common blocks in huge model.  */
-#define SHN_PARISC_HUGE_COMMON 0xff01
-/* Legal values for sh_type field of Elf32_Shdr.  */
-/* Contains product specific ext. */
-
-#define SHT_PARISC_EXT 0x70000000
-/* Unwind information.  */
-#define SHT_PARISC_UNWIND 0x70000001
-/* Debug info for optimized code. */
-#define SHT_PARISC_DOC 0x70000002
-/* Legal values for sh_flags field of Elf32_Shdr.  */
-/* Section with short addressing. */
-
-#define SHF_PARISC_SHORT 0x20000000
-/* Section far from gp.  */
-#define SHF_PARISC_HUGE 0x40000000
-/* Static branch prediction code. */
-#define SHF_PARISC_SBP 0x80000000
-/* Legal values for ST_TYPE subfield of st_info (symbol type).  */
-/* Millicode function entry point.  */
-
-#define STT_PARISC_MILLICODE 13
-
-#define STT_HP_OPAQUE (STT_LOOS + 0x1)
-#define STT_HP_STUB (STT_LOOS + 0x2)
-/* HPPA relocs.  */
-/* No reloc.  */
-
-#define R_PARISC_NONE 0
-/* Direct 32-bit reference.  */
-#define R_PARISC_DIR32 1
-/* Left 21 bits of eff. address.  */
-#define R_PARISC_DIR21L 2
-/* Right 17 bits of eff. address.  */
-#define R_PARISC_DIR17R 3
-/* 17 bits of eff. address.  */
-#define R_PARISC_DIR17F 4
-/* Right 14 bits of eff. address.  */
-#define R_PARISC_DIR14R 6
-/* 32-bit rel. address.  */
-#define R_PARISC_PCREL32 9
-/* Left 21 bits of rel. address.  */
-#define R_PARISC_PCREL21L 10
-/* Right 17 bits of rel. address.  */
-#define R_PARISC_PCREL17R 11
-/* 17 bits of rel. address.  */
-#define R_PARISC_PCREL17F 12
-/* Right 14 bits of rel. address.  */
-#define R_PARISC_PCREL14R 14
-/* Left 21 bits of rel. address.  */
-#define R_PARISC_DPREL21L 18
-/* Right 14 bits of rel. address.  */
-#define R_PARISC_DPREL14R 22
-/* GP-relative, left 21 bits.  */
-#define R_PARISC_GPREL21L 26
-/* GP-relative, right 14 bits.  */
-#define R_PARISC_GPREL14R 30
-/* LT-relative, left 21 bits.  */
-#define R_PARISC_LTOFF21L 34
-/* LT-relative, right 14 bits.  */
-#define R_PARISC_LTOFF14R 38
-/* 32 bits section rel. address.  */
-#define R_PARISC_SECREL32 41
-/* No relocation, set segment base.  */
-#define R_PARISC_SEGBASE 48
-/* 32 bits segment rel. address.  */
-#define R_PARISC_SEGREL32 49
-/* PLT rel. address, left 21 bits.  */
-#define R_PARISC_PLTOFF21L 50
-/* PLT rel. address, right 14 bits.  */
-#define R_PARISC_PLTOFF14R 54
-/* 32 bits LT-rel. function pointer. */
-#define R_PARISC_LTOFF_FPTR32 57
-/* LT-rel. fct ptr, left 21 bits. */
-#define R_PARISC_LTOFF_FPTR21L 58
-/* LT-rel. fct ptr, right 14 bits. */
-#define R_PARISC_LTOFF_FPTR14R 62
-/* 64 bits function address.  */
-#define R_PARISC_FPTR64 64
-/* 32 bits function address.  */
-#define R_PARISC_PLABEL32 65
-/* Left 21 bits of fdesc address.  */
-#define R_PARISC_PLABEL21L 66
-/* Right 14 bits of fdesc address.  */
-#define R_PARISC_PLABEL14R 70
-/* 64 bits PC-rel. address.  */
-#define R_PARISC_PCREL64 72
-/* 22 bits PC-rel. address.  */
-#define R_PARISC_PCREL22F 74
-/* PC-rel. address, right 14 bits.  */
-#define R_PARISC_PCREL14WR 75
-/* PC rel. address, right 14 bits.  */
-#define R_PARISC_PCREL14DR 76
-/* 16 bits PC-rel. address.  */
-#define R_PARISC_PCREL16F 77
-/* 16 bits PC-rel. address.  */
-#define R_PARISC_PCREL16WF 78
-/* 16 bits PC-rel. address.  */
-#define R_PARISC_PCREL16DF 79
-/* 64 bits of eff. address.  */
-#define R_PARISC_DIR64 80
-/* 14 bits of eff. address.  */
-#define R_PARISC_DIR14WR 83
-/* 14 bits of eff. address.  */
-#define R_PARISC_DIR14DR 84
-/* 16 bits of eff. address.  */
-#define R_PARISC_DIR16F 85
-/* 16 bits of eff. address.  */
-#define R_PARISC_DIR16WF 86
-/* 16 bits of eff. address.  */
-#define R_PARISC_DIR16DF 87
-/* 64 bits of GP-rel. address.  */
-#define R_PARISC_GPREL64 88
-/* GP-rel. address, right 14 bits.  */
-#define R_PARISC_GPREL14WR 91
-/* GP-rel. address, right 14 bits.  */
-#define R_PARISC_GPREL14DR 92
-/* 16 bits GP-rel. address.  */
-#define R_PARISC_GPREL16F 93
-/* 16 bits GP-rel. address.  */
-#define R_PARISC_GPREL16WF 94
-/* 16 bits GP-rel. address.  */
-#define R_PARISC_GPREL16DF 95
-/* 64 bits LT-rel. address.  */
-#define R_PARISC_LTOFF64 96
-/* LT-rel. address, right 14 bits.  */
-#define R_PARISC_LTOFF14WR 99
-/* LT-rel. address, right 14 bits.  */
-#define R_PARISC_LTOFF14DR 100
-/* 16 bits LT-rel. address.  */
-#define R_PARISC_LTOFF16F 101
-/* 16 bits LT-rel. address.  */
-#define R_PARISC_LTOFF16WF 102
-/* 16 bits LT-rel. address.  */
-#define R_PARISC_LTOFF16DF 103
-/* 64 bits section rel. address.  */
-#define R_PARISC_SECREL64 104
-/* 64 bits segment rel. address.  */
-#define R_PARISC_SEGREL64 112
-/* PLT-rel. address, right 14 bits.  */
-#define R_PARISC_PLTOFF14WR 115
-/* PLT-rel. address, right 14 bits.  */
-#define R_PARISC_PLTOFF14DR 116
-/* 16 bits LT-rel. address.  */
-#define R_PARISC_PLTOFF16F 117
-/* 16 bits PLT-rel. address.  */
-#define R_PARISC_PLTOFF16WF 118
-/* 16 bits PLT-rel. address.  */
-#define R_PARISC_PLTOFF16DF 119
-/* 64 bits LT-rel. function ptr.  */
-#define R_PARISC_LTOFF_FPTR64 120
-/* LT-rel. fct. ptr., right 14 bits. */
-#define R_PARISC_LTOFF_FPTR14WR 123
-/* LT-rel. fct. ptr., right 14 bits. */
-#define R_PARISC_LTOFF_FPTR14DR 124
-/* 16 bits LT-rel. function ptr.  */
-#define R_PARISC_LTOFF_FPTR16F 125
-/* 16 bits LT-rel. function ptr.  */
-#define R_PARISC_LTOFF_FPTR16WF 126
-/* 16 bits LT-rel. function ptr.  */
-#define R_PARISC_LTOFF_FPTR16DF 127
-#define R_PARISC_LORESERVE 128
-/* Copy relocation.  */
-#define R_PARISC_COPY 128
-/* Dynamic reloc, imported PLT */
-#define R_PARISC_IPLT 129
-/* Dynamic reloc, exported PLT */
-#define R_PARISC_EPLT 130
-/* 32 bits TP-rel. address.  */
-#define R_PARISC_TPREL32 153
-/* TP-rel. address, left 21 bits.  */
-#define R_PARISC_TPREL21L 154
-/* TP-rel. address, right 14 bits.  */
-#define R_PARISC_TPREL14R 158
-/* LT-TP-rel. address, left 21 bits. */
-#define R_PARISC_LTOFF_TP21L 162
-/* LT-TP-rel. address, right 14 bits.*/
-#define R_PARISC_LTOFF_TP14R 166
-/* 14 bits LT-TP-rel. address.  */
-#define R_PARISC_LTOFF_TP14F 167
-/* 64 bits TP-rel. address.  */
-#define R_PARISC_TPREL64 216
-/* TP-rel. address, right 14 bits.  */
-#define R_PARISC_TPREL14WR 219
-/* TP-rel. address, right 14 bits.  */
-#define R_PARISC_TPREL14DR 220
-/* 16 bits TP-rel. address.  */
-#define R_PARISC_TPREL16F 221
-/* 16 bits TP-rel. address.  */
-#define R_PARISC_TPREL16WF 222
-/* 16 bits TP-rel. address.  */
-#define R_PARISC_TPREL16DF 223
-/* 64 bits LT-TP-rel. address.  */
-#define R_PARISC_LTOFF_TP64 224
-/* LT-TP-rel. address, right 14 bits.*/
-#define R_PARISC_LTOFF_TP14WR 227
-/* LT-TP-rel. address, right 14 bits.*/
-#define R_PARISC_LTOFF_TP14DR 228
-/* 16 bits LT-TP-rel. address.  */
-#define R_PARISC_LTOFF_TP16F 229
-/* 16 bits LT-TP-rel. address.  */
-#define R_PARISC_LTOFF_TP16WF 230
-/* 16 bits LT-TP-rel. address.  */
-#define R_PARISC_LTOFF_TP16DF 231
-#define R_PARISC_GNU_VTENTRY 232
-#define R_PARISC_GNU_VTINHERIT 233
-/* GD 21-bit left.  */
-#define R_PARISC_TLS_GD21L 234
-/* GD 14-bit right.  */
-#define R_PARISC_TLS_GD14R 235
-/* GD call to __t_g_a.  */
-#define R_PARISC_TLS_GDCALL 236
-/* LD module 21-bit left.  */
-#define R_PARISC_TLS_LDM21L 237
-/* LD module 14-bit right.  */
-#define R_PARISC_TLS_LDM14R 238
-/* LD module call to __t_g_a.  */
-#define R_PARISC_TLS_LDMCALL 239
-/* LD offset 21-bit left.  */
-#define R_PARISC_TLS_LDO21L 240
-/* LD offset 14-bit right.  */
-#define R_PARISC_TLS_LDO14R 241
-/* DTP module 32-bit.  */
-#define R_PARISC_TLS_DTPMOD32 242
-/* DTP module 64-bit.  */
-#define R_PARISC_TLS_DTPMOD64 243
-/* DTP offset 32-bit.  */
-#define R_PARISC_TLS_DTPOFF32 244
-/* DTP offset 32-bit.  */
-#define R_PARISC_TLS_DTPOFF64 245
-#define R_PARISC_TLS_LE21L R_PARISC_TPREL21L
-#define R_PARISC_TLS_LE14R R_PARISC_TPREL14R
-#define R_PARISC_TLS_IE21L R_PARISC_LTOFF_TP21L
-#define R_PARISC_TLS_IE14R R_PARISC_LTOFF_TP14R
-#define R_PARISC_TLS_TPREL32 R_PARISC_TPREL32
-#define R_PARISC_TLS_TPREL64 R_PARISC_TPREL64
-#define R_PARISC_HIRESERVE 255
-/* Legal values for p_type field of Elf32_Phdr/Elf64_Phdr.  */
-
-#define PT_HP_TLS (PT_LOOS + 0x0)
-#define PT_HP_CORE_NONE (PT_LOOS + 0x1)
-#define PT_HP_CORE_VERSION (PT_LOOS + 0x2)
-#define PT_HP_CORE_KERNEL (PT_LOOS + 0x3)
-#define PT_HP_CORE_COMM (PT_LOOS + 0x4)
-#define PT_HP_CORE_PROC (PT_LOOS + 0x5)
-#define PT_HP_CORE_LOADABLE (PT_LOOS + 0x6)
-#define PT_HP_CORE_STACK (PT_LOOS + 0x7)
-#define PT_HP_CORE_SHM (PT_LOOS + 0x8)
-#define PT_HP_CORE_MMF (PT_LOOS + 0x9)
-#define PT_HP_PARALLEL (PT_LOOS + 0x10)
-#define PT_HP_FASTBIND (PT_LOOS + 0x11)
-#define PT_HP_OPT_ANNOT (PT_LOOS + 0x12)
-#define PT_HP_HSL_ANNOT (PT_LOOS + 0x13)
-#define PT_HP_STACK (PT_LOOS + 0x14)
-
-#define PT_PARISC_ARCHEXT 0x70000000
-#define PT_PARISC_UNWIND 0x70000001
-/* Legal values for p_flags field of Elf32_Phdr/Elf64_Phdr.  */
-
-#define PF_PARISC_SBP 0x08000000
-
-#define PF_HP_PAGE_SIZE 0x00100000
-#define PF_HP_FAR_SHARED 0x00200000
-#define PF_HP_NEAR_SHARED 0x00400000
-#define PF_HP_CODE 0x01000000
-#define PF_HP_MODIFY 0x02000000
-#define PF_HP_LAZYSWAP 0x04000000
-#define PF_HP_SBP 0x08000000
-/* Alpha specific definitions.  */
-/* Legal values for e_flags field of Elf64_Ehdr.  */
-/* All addresses must be < 2GB.  */
-
-#define EF_ALPHA_32BIT 1
-/* Relocations for relaxing exist.  */
-#define EF_ALPHA_CANRELAX 2
-/* Legal values for sh_type field of Elf64_Shdr.  */
-/* These two are primarily concerned with ECOFF debugging info.  */
-
-#define SHT_ALPHA_DEBUG 0x70000001
-#define SHT_ALPHA_REGINFO 0x70000002
-/* Legal values for sh_flags field of Elf64_Shdr.  */
-
-#define SHF_ALPHA_GPREL 0x10000000
-/* Legal values for st_other field of Elf64_Sym.  */
-/* No PV required.  */
-
-#define STO_ALPHA_NOPV 0x80
-/* PV only used for initial ldgp.  */
-#define STO_ALPHA_STD_GPLOAD 0x88
-/* Alpha relocs.  */
-/* No reloc */
-
-#define R_ALPHA_NONE 0
-/* Direct 32 bit */
-#define R_ALPHA_REFLONG 1
-/* Direct 64 bit */
-#define R_ALPHA_REFQUAD 2
-/* GP relative 32 bit */
-#define R_ALPHA_GPREL32 3
-/* GP relative 16 bit w/optimization */
-#define R_ALPHA_LITERAL 4
-/* Optimization hint for LITERAL */
-#define R_ALPHA_LITUSE 5
-/* Add displacement to GP */
-#define R_ALPHA_GPDISP 6
-/* PC+4 relative 23 bit shifted */
-#define R_ALPHA_BRADDR 7
-/* PC+4 relative 16 bit shifted */
-#define R_ALPHA_HINT 8
-/* PC relative 16 bit */
-#define R_ALPHA_SREL16 9
-/* PC relative 32 bit */
-#define R_ALPHA_SREL32 10
-/* PC relative 64 bit */
-#define R_ALPHA_SREL64 11
-/* GP relative 32 bit, high 16 bits */
-#define R_ALPHA_GPRELHIGH 17
-/* GP relative 32 bit, low 16 bits */
-#define R_ALPHA_GPRELLOW 18
-/* GP relative 16 bit */
-#define R_ALPHA_GPREL16 19
-/* Copy symbol at runtime */
-#define R_ALPHA_COPY 24
-/* Create GOT entry */
-#define R_ALPHA_GLOB_DAT 25
-/* Create PLT entry */
-#define R_ALPHA_JMP_SLOT 26
-/* Adjust by program base */
-#define R_ALPHA_RELATIVE 27
-#define R_ALPHA_TLS_GD_HI 28
-#define R_ALPHA_TLSGD 29
-#define R_ALPHA_TLS_LDM 30
-#define R_ALPHA_DTPMOD64 31
-#define R_ALPHA_GOTDTPREL 32
-#define R_ALPHA_DTPREL64 33
-#define R_ALPHA_DTPRELHI 34
-#define R_ALPHA_DTPRELLO 35
-#define R_ALPHA_DTPREL16 36
-#define R_ALPHA_GOTTPREL 37
-#define R_ALPHA_TPREL64 38
-#define R_ALPHA_TPRELHI 39
-#define R_ALPHA_TPRELLO 40
-#define R_ALPHA_TPREL16 41
-/* Keep this the last entry.  */
-
-#define R_ALPHA_NUM 46
-/* Magic values of the LITUSE relocation addend.  */
-
-#define LITUSE_ALPHA_ADDR 0
-#define LITUSE_ALPHA_BASE 1
-#define LITUSE_ALPHA_BYTOFF 2
-#define LITUSE_ALPHA_JSR 3
-#define LITUSE_ALPHA_TLS_GD 4
-#define LITUSE_ALPHA_TLS_LDM 5
-/* Legal values for d_tag of Elf64_Dyn.  */
-
-#define DT_ALPHA_PLTRO (DT_LOPROC + 0)
-#define DT_ALPHA_NUM 1
-/* PowerPC specific declarations */
-/* Values for Elf32/64_Ehdr.e_flags.  */
-/* PowerPC embedded flag */
-
-#define EF_PPC_EMB 0x80000000
-/* Cygnus local bits below */
-/* PowerPC -mrelocatable flag*/
-
-#define EF_PPC_RELOCATABLE 0x00010000
 /* PowerPC -mrelocatable-lib
 						   flag */
-
-#define EF_PPC_RELOCATABLE_LIB 0x00008000
-/* PowerPC relocations defined by the ABIs */
-
-#define R_PPC_NONE 0
-/* 32bit absolute address */
-#define R_PPC_ADDR32 1
-/* 26bit address, 2 bits ignored.  */
-#define R_PPC_ADDR24 2
-/* 16bit absolute address */
-#define R_PPC_ADDR16 3
-/* lower 16bit of absolute address */
-#define R_PPC_ADDR16_LO 4
-/* high 16bit of absolute address */
-#define R_PPC_ADDR16_HI 5
-/* adjusted high 16bit */
-#define R_PPC_ADDR16_HA 6
-/* 16bit address, 2 bits ignored */
-#define R_PPC_ADDR14 7
-#define R_PPC_ADDR14_BRTAKEN 8
-#define R_PPC_ADDR14_BRNTAKEN 9
-/* PC relative 26 bit */
-#define R_PPC_REL24 10
-/* PC relative 16 bit */
-#define R_PPC_REL14 11
-#define R_PPC_REL14_BRTAKEN 12
-#define R_PPC_REL14_BRNTAKEN 13
-#define R_PPC_GOT16 14
-#define R_PPC_GOT16_LO 15
-#define R_PPC_GOT16_HI 16
-#define R_PPC_GOT16_HA 17
-#define R_PPC_PLTREL24 18
-#define R_PPC_COPY 19
-#define R_PPC_GLOB_DAT 20
-#define R_PPC_JMP_SLOT 21
-#define R_PPC_RELATIVE 22
-#define R_PPC_LOCAL24PC 23
-#define R_PPC_UADDR32 24
-#define R_PPC_UADDR16 25
-#define R_PPC_REL32 26
-#define R_PPC_PLT32 27
-#define R_PPC_PLTREL32 28
-#define R_PPC_PLT16_LO 29
-#define R_PPC_PLT16_HI 30
-#define R_PPC_PLT16_HA 31
-#define R_PPC_SDAREL16 32
-#define R_PPC_SECTOFF 33
-#define R_PPC_SECTOFF_LO 34
-#define R_PPC_SECTOFF_HI 35
-#define R_PPC_SECTOFF_HA 36
-/* PowerPC relocations defined for the TLS access ABI.  */
-/* none	(sym+add)@tls */
-
-#define R_PPC_TLS 67
-/* word32	(sym+add)@dtpmod */
-#define R_PPC_DTPMOD32 68
-/* half16*	(sym+add)@tprel */
-#define R_PPC_TPREL16 69
-/* half16	(sym+add)@tprel@l */
-#define R_PPC_TPREL16_LO 70
-/* half16	(sym+add)@tprel@h */
-#define R_PPC_TPREL16_HI 71
-/* half16	(sym+add)@tprel@ha */
-#define R_PPC_TPREL16_HA 72
-/* word32	(sym+add)@tprel */
-#define R_PPC_TPREL32 73
-/* half16*	(sym+add)@dtprel */
-#define R_PPC_DTPREL16 74
-/* half16	(sym+add)@dtprel@l */
-#define R_PPC_DTPREL16_LO 75
-/* half16	(sym+add)@dtprel@h */
-#define R_PPC_DTPREL16_HI 76
-/* half16	(sym+add)@dtprel@ha */
-#define R_PPC_DTPREL16_HA 77
-/* word32	(sym+add)@dtprel */
-#define R_PPC_DTPREL32 78
-/* half16*	(sym+add)@got@tlsgd */
-#define R_PPC_GOT_TLSGD16 79
-/* half16	(sym+add)@got@tlsgd@l */
-#define R_PPC_GOT_TLSGD16_LO 80
-/* half16	(sym+add)@got@tlsgd@h */
-#define R_PPC_GOT_TLSGD16_HI 81
-/* half16	(sym+add)@got@tlsgd@ha */
-#define R_PPC_GOT_TLSGD16_HA 82
-/* half16*	(sym+add)@got@tlsld */
-#define R_PPC_GOT_TLSLD16 83
-/* half16	(sym+add)@got@tlsld@l */
-#define R_PPC_GOT_TLSLD16_LO 84
-/* half16	(sym+add)@got@tlsld@h */
-#define R_PPC_GOT_TLSLD16_HI 85
-/* half16	(sym+add)@got@tlsld@ha */
-#define R_PPC_GOT_TLSLD16_HA 86
-/* half16*	(sym+add)@got@tprel */
-#define R_PPC_GOT_TPREL16 87
-/* half16	(sym+add)@got@tprel@l */
-#define R_PPC_GOT_TPREL16_LO 88
-/* half16	(sym+add)@got@tprel@h */
-#define R_PPC_GOT_TPREL16_HI 89
-/* half16	(sym+add)@got@tprel@ha */
-#define R_PPC_GOT_TPREL16_HA 90
-/* half16*	(sym+add)@got@dtprel */
-#define R_PPC_GOT_DTPREL16 91
-/* half16*	(sym+add)@got@dtprel@l */
-#define R_PPC_GOT_DTPREL16_LO 92
-/* half16*	(sym+add)@got@dtprel@h */
-#define R_PPC_GOT_DTPREL16_HI 93
-/* half16*	(sym+add)@got@dtprel@ha */
-#define R_PPC_GOT_DTPREL16_HA 94
 /* The remaining relocs are from the Embedded ELF ABI, and are not
    in the SVR4 ELF ABI.  */
-
-#define R_PPC_EMB_NADDR32 101
-#define R_PPC_EMB_NADDR16 102
-#define R_PPC_EMB_NADDR16_LO 103
-#define R_PPC_EMB_NADDR16_HI 104
-#define R_PPC_EMB_NADDR16_HA 105
-#define R_PPC_EMB_SDAI16 106
-#define R_PPC_EMB_SDA2I16 107
-#define R_PPC_EMB_SDA2REL 108
-/* 16 bit offset in SDA */
-#define R_PPC_EMB_SDA21 109
-#define R_PPC_EMB_MRKREF 110
-#define R_PPC_EMB_RELSEC16 111
-#define R_PPC_EMB_RELST_LO 112
-#define R_PPC_EMB_RELST_HI 113
-#define R_PPC_EMB_RELST_HA 114
-#define R_PPC_EMB_BIT_FLD 115
-/* 16 bit relative offset in SDA */
-#define R_PPC_EMB_RELSDA 116
-/* Diab tool relocations.  */
-/* like EMB_SDA21, but lower 16 bit */
-
-#define R_PPC_DIAB_SDA21_LO 180
-/* like EMB_SDA21, but high 16 bit */
-#define R_PPC_DIAB_SDA21_HI 181
-/* like EMB_SDA21, adjusted high 16 */
-#define R_PPC_DIAB_SDA21_HA 182
-/* like EMB_RELSDA, but lower 16 bit */
-#define R_PPC_DIAB_RELSDA_LO 183
-/* like EMB_RELSDA, but high 16 bit */
-#define R_PPC_DIAB_RELSDA_HI 184
-/* like EMB_RELSDA, adjusted high 16 */
-#define R_PPC_DIAB_RELSDA_HA 185
-/* GNU extension to support local ifunc.  */
-
-#define R_PPC_IRELATIVE 248
-/* GNU relocs used in PIC code sequences.  */
-/* half16   (sym+add-.) */
-
-#define R_PPC_REL16 249
-/* half16   (sym+add-.)@l */
-#define R_PPC_REL16_LO 250
-/* half16   (sym+add-.)@h */
-#define R_PPC_REL16_HI 251
-/* half16   (sym+add-.)@ha */
-#define R_PPC_REL16_HA 252
 /* This is a phony reloc to handle any old fashioned TOC16 references
    that may still be in object files.  */
-
-#define R_PPC_TOC16 255
-/* PowerPC specific values for the Dyn d_tag field.  */
-
-#define DT_PPC_GOT (DT_LOPROC + 0)
-#define DT_PPC_NUM 1
-/* PowerPC64 relocations defined by the ABIs */
-
-#define R_PPC64_NONE R_PPC_NONE
-/* 32bit absolute address */
-#define R_PPC64_ADDR32 R_PPC_ADDR32
-/* 26bit address, word aligned */
-#define R_PPC64_ADDR24 R_PPC_ADDR24
-/* 16bit absolute address */
-#define R_PPC64_ADDR16 R_PPC_ADDR16
-/* lower 16bits of address */
-#define R_PPC64_ADDR16_LO R_PPC_ADDR16_LO
-/* high 16bits of address. */
-#define R_PPC64_ADDR16_HI R_PPC_ADDR16_HI
-/* adjusted high 16bits.  */
-#define R_PPC64_ADDR16_HA R_PPC_ADDR16_HA
-/* 16bit address, word aligned */
-#define R_PPC64_ADDR14 R_PPC_ADDR14
-#define R_PPC64_ADDR14_BRTAKEN R_PPC_ADDR14_BRTAKEN
-#define R_PPC64_ADDR14_BRNTAKEN R_PPC_ADDR14_BRNTAKEN
-/* PC-rel. 26 bit, word aligned */
-#define R_PPC64_REL24 R_PPC_REL24
-/* PC relative 16 bit */
-#define R_PPC64_REL14 R_PPC_REL14
-#define R_PPC64_REL14_BRTAKEN R_PPC_REL14_BRTAKEN
-#define R_PPC64_REL14_BRNTAKEN R_PPC_REL14_BRNTAKEN
-#define R_PPC64_GOT16 R_PPC_GOT16
-#define R_PPC64_GOT16_LO R_PPC_GOT16_LO
-#define R_PPC64_GOT16_HI R_PPC_GOT16_HI
-#define R_PPC64_GOT16_HA R_PPC_GOT16_HA
-
-#define R_PPC64_COPY R_PPC_COPY
-#define R_PPC64_GLOB_DAT R_PPC_GLOB_DAT
-#define R_PPC64_JMP_SLOT R_PPC_JMP_SLOT
-#define R_PPC64_RELATIVE R_PPC_RELATIVE
-
-#define R_PPC64_UADDR32 R_PPC_UADDR32
-#define R_PPC64_UADDR16 R_PPC_UADDR16
-#define R_PPC64_REL32 R_PPC_REL32
-#define R_PPC64_PLT32 R_PPC_PLT32
-#define R_PPC64_PLTREL32 R_PPC_PLTREL32
-#define R_PPC64_PLT16_LO R_PPC_PLT16_LO
-#define R_PPC64_PLT16_HI R_PPC_PLT16_HI
-#define R_PPC64_PLT16_HA R_PPC_PLT16_HA
-
-#define R_PPC64_SECTOFF R_PPC_SECTOFF
-#define R_PPC64_SECTOFF_LO R_PPC_SECTOFF_LO
-#define R_PPC64_SECTOFF_HI R_PPC_SECTOFF_HI
-#define R_PPC64_SECTOFF_HA R_PPC_SECTOFF_HA
-/* word30 (S + A - P) >> 2 */
-#define R_PPC64_ADDR30 37
-/* doubleword64 S + A */
-#define R_PPC64_ADDR64 38
-/* half16 #higher(S + A) */
-#define R_PPC64_ADDR16_HIGHER 39
-/* half16 #highera(S + A) */
-#define R_PPC64_ADDR16_HIGHERA 40
-/* half16 #highest(S + A) */
-#define R_PPC64_ADDR16_HIGHEST 41
-/* half16 #highesta(S + A) */
-#define R_PPC64_ADDR16_HIGHESTA 42
-/* doubleword64 S + A */
-#define R_PPC64_UADDR64 43
-/* doubleword64 S + A - P */
-#define R_PPC64_REL64 44
-/* doubleword64 L + A */
-#define R_PPC64_PLT64 45
-/* doubleword64 L + A - P */
-#define R_PPC64_PLTREL64 46
-/* half16* S + A - .TOC */
-#define R_PPC64_TOC16 47
-/* half16 #lo(S + A - .TOC.) */
-#define R_PPC64_TOC16_LO 48
-/* half16 #hi(S + A - .TOC.) */
-#define R_PPC64_TOC16_HI 49
-/* half16 #ha(S + A - .TOC.) */
-#define R_PPC64_TOC16_HA 50
-/* doubleword64 .TOC */
-#define R_PPC64_TOC 51
-/* half16* M + A */
-#define R_PPC64_PLTGOT16 52
-/* half16 #lo(M + A) */
-#define R_PPC64_PLTGOT16_LO 53
-/* half16 #hi(M + A) */
-#define R_PPC64_PLTGOT16_HI 54
-/* half16 #ha(M + A) */
-#define R_PPC64_PLTGOT16_HA 55
-/* half16ds* (S + A) >> 2 */
-
-#define R_PPC64_ADDR16_DS 56
-/* half16ds  #lo(S + A) >> 2 */
-#define R_PPC64_ADDR16_LO_DS 57
-/* half16ds* (G + A) >> 2 */
-#define R_PPC64_GOT16_DS 58
-/* half16ds  #lo(G + A) >> 2 */
-#define R_PPC64_GOT16_LO_DS 59
-/* half16ds  #lo(L + A) >> 2 */
-#define R_PPC64_PLT16_LO_DS 60
-/* half16ds* (R + A) >> 2 */
-#define R_PPC64_SECTOFF_DS 61
-/* half16ds  #lo(R + A) >> 2 */
-#define R_PPC64_SECTOFF_LO_DS 62
-/* half16ds* (S + A - .TOC.) >> 2 */
-#define R_PPC64_TOC16_DS 63
-/* half16ds  #lo(S + A - .TOC.) >> 2 */
-#define R_PPC64_TOC16_LO_DS 64
-/* half16ds* (M + A) >> 2 */
-#define R_PPC64_PLTGOT16_DS 65
-/* half16ds  #lo(M + A) >> 2 */
-#define R_PPC64_PLTGOT16_LO_DS 66
-/* PowerPC64 relocations defined for the TLS access ABI.  */
-/* none	(sym+add)@tls */
-
-#define R_PPC64_TLS 67
-/* doubleword64 (sym+add)@dtpmod */
-#define R_PPC64_DTPMOD64 68
-/* half16*	(sym+add)@tprel */
-#define R_PPC64_TPREL16 69
-/* half16	(sym+add)@tprel@l */
-#define R_PPC64_TPREL16_LO 70
-/* half16	(sym+add)@tprel@h */
-#define R_PPC64_TPREL16_HI 71
-/* half16	(sym+add)@tprel@ha */
-#define R_PPC64_TPREL16_HA 72
-/* doubleword64 (sym+add)@tprel */
-#define R_PPC64_TPREL64 73
-/* half16*	(sym+add)@dtprel */
-#define R_PPC64_DTPREL16 74
-/* half16	(sym+add)@dtprel@l */
-#define R_PPC64_DTPREL16_LO 75
-/* half16	(sym+add)@dtprel@h */
-#define R_PPC64_DTPREL16_HI 76
-/* half16	(sym+add)@dtprel@ha */
-#define R_PPC64_DTPREL16_HA 77
-/* doubleword64 (sym+add)@dtprel */
-#define R_PPC64_DTPREL64 78
-/* half16*	(sym+add)@got@tlsgd */
-#define R_PPC64_GOT_TLSGD16 79
-/* half16	(sym+add)@got@tlsgd@l */
-#define R_PPC64_GOT_TLSGD16_LO 80
-/* half16	(sym+add)@got@tlsgd@h */
-#define R_PPC64_GOT_TLSGD16_HI 81
-/* half16	(sym+add)@got@tlsgd@ha */
-#define R_PPC64_GOT_TLSGD16_HA 82
-/* half16*	(sym+add)@got@tlsld */
-#define R_PPC64_GOT_TLSLD16 83
-/* half16	(sym+add)@got@tlsld@l */
-#define R_PPC64_GOT_TLSLD16_LO 84
-/* half16	(sym+add)@got@tlsld@h */
-#define R_PPC64_GOT_TLSLD16_HI 85
-/* half16	(sym+add)@got@tlsld@ha */
-#define R_PPC64_GOT_TLSLD16_HA 86
-/* half16ds*	(sym+add)@got@tprel */
-#define R_PPC64_GOT_TPREL16_DS 87
-/* half16ds (sym+add)@got@tprel@l */
-#define R_PPC64_GOT_TPREL16_LO_DS 88
-/* half16	(sym+add)@got@tprel@h */
-#define R_PPC64_GOT_TPREL16_HI 89
-/* half16	(sym+add)@got@tprel@ha */
-#define R_PPC64_GOT_TPREL16_HA 90
-/* half16ds*	(sym+add)@got@dtprel */
-#define R_PPC64_GOT_DTPREL16_DS 91
-/* half16ds (sym+add)@got@dtprel@l */
-#define R_PPC64_GOT_DTPREL16_LO_DS 92
-/* half16	(sym+add)@got@dtprel@h */
-#define R_PPC64_GOT_DTPREL16_HI 93
-/* half16	(sym+add)@got@dtprel@ha */
-#define R_PPC64_GOT_DTPREL16_HA 94
-/* half16ds*	(sym+add)@tprel */
-#define R_PPC64_TPREL16_DS 95
-/* half16ds	(sym+add)@tprel@l */
-#define R_PPC64_TPREL16_LO_DS 96
-/* half16	(sym+add)@tprel@higher */
-#define R_PPC64_TPREL16_HIGHER 97
-/* half16	(sym+add)@tprel@highera */
-#define R_PPC64_TPREL16_HIGHERA 98
-/* half16	(sym+add)@tprel@highest */
-#define R_PPC64_TPREL16_HIGHEST 99
-/* half16	(sym+add)@tprel@highesta */
-#define R_PPC64_TPREL16_HIGHESTA 100
-/* half16ds* (sym+add)@dtprel */
-#define R_PPC64_DTPREL16_DS 101
-/* half16ds	(sym+add)@dtprel@l */
-#define R_PPC64_DTPREL16_LO_DS 102
-/* half16	(sym+add)@dtprel@higher */
-#define R_PPC64_DTPREL16_HIGHER 103
-/* half16	(sym+add)@dtprel@highera */
-#define R_PPC64_DTPREL16_HIGHERA 104
-/* half16	(sym+add)@dtprel@highest */
-#define R_PPC64_DTPREL16_HIGHEST 105
-/* half16	(sym+add)@dtprel@highesta */
-#define R_PPC64_DTPREL16_HIGHESTA 106
-/* GNU extension to support local ifunc.  */
-
-#define R_PPC64_JMP_IREL 247
-#define R_PPC64_IRELATIVE 248
-/* half16   (sym+add-.) */
-#define R_PPC64_REL16 249
-/* half16   (sym+add-.)@l */
-#define R_PPC64_REL16_LO 250
-/* half16   (sym+add-.)@h */
-#define R_PPC64_REL16_HI 251
-/* half16   (sym+add-.)@ha */
-#define R_PPC64_REL16_HA 252
-/* PowerPC64 specific values for the Dyn d_tag field.  */
-
-#define DT_PPC64_GLINK (DT_LOPROC + 0)
-#define DT_PPC64_OPD (DT_LOPROC + 1)
-#define DT_PPC64_OPDSZ (DT_LOPROC + 2)
-#define DT_PPC64_NUM 3
-/* ARM specific declarations */
-/* Processor specific flags for the ELF header e_flags field.  */
-
-#define EF_ARM_RELEXEC 0x01
-#define EF_ARM_HASENTRY 0x02
-#define EF_ARM_INTERWORK 0x04
-#define EF_ARM_APCS_26 0x08
-#define EF_ARM_APCS_FLOAT 0x10
-#define EF_ARM_PIC 0x20
-/* 8-bit structure alignment is in use */
-#define EF_ARM_ALIGN8 0x40
-#define EF_ARM_NEW_ABI 0x80
-#define EF_ARM_OLD_ABI 0x100
-#define EF_ARM_SOFT_FLOAT 0x200
-#define EF_ARM_VFP_FLOAT 0x400
-#define EF_ARM_MAVERICK_FLOAT 0x800
-/* NB conflicts with EF_ARM_SOFT_FLOAT */
-
-#define EF_ARM_ABI_FLOAT_SOFT 0x200
-/* NB conflicts with EF_ARM_VFP_FLOAT */
-#define EF_ARM_ABI_FLOAT_HARD 0x400
-/* Other constants defined in the ARM ELF spec. version B-01.  */
-/* NB. These conflict with values defined above.  */
-
-#define EF_ARM_SYMSARESORTED 0x04
-#define EF_ARM_DYNSYMSUSESEGIDX 0x08
-#define EF_ARM_MAPSYMSFIRST 0x10
-#define EF_ARM_EABIMASK 0XFF000000
-/* Constants defined in AAELF.  */
-
-#define EF_ARM_BE8 0x00800000
-#define EF_ARM_LE8 0x00400000
-
-#define EF_ARM_EABI_VERSION(flags) ((flags) & EF_ARM_EABIMASK)
-#define EF_ARM_EABI_UNKNOWN 0x00000000
-#define EF_ARM_EABI_VER1 0x01000000
-#define EF_ARM_EABI_VER2 0x02000000
-#define EF_ARM_EABI_VER3 0x03000000
-#define EF_ARM_EABI_VER4 0x04000000
-#define EF_ARM_EABI_VER5 0x05000000
-/* Additional symbol types for Thumb.  */
-/* A Thumb function.  */
-
-#define STT_ARM_TFUNC STT_LOPROC
-/* A Thumb label.  */
-#define STT_ARM_16BIT STT_HIPROC
-/* ARM-specific values for sh_flags */
-/* Section contains an entry point */
-
-#define SHF_ARM_ENTRYSECT 0x10000000
 /* Section may be multiply defined
 					      in the input to a link step.  */
-
-#define SHF_ARM_COMDEF 0x80000000
 /* ARM-specific program header flags */
 /* Segment contains the location
 					      addressed by the static base. */
-
-#define PF_ARM_SB 0x10000000
-/* Position-independent segment.  */
-#define PF_ARM_PI 0x20000000
-/* Absolute segment.  */
-#define PF_ARM_ABS 0x40000000
-/* Processor specific values for the Phdr p_type field.  */
-/* ARM unwind segment.  */
-
-#define PT_ARM_EXIDX (PT_LOPROC + 1)
-/* Processor specific values for the Shdr sh_type field.  */
-/* ARM unwind section.  */
-
-#define SHT_ARM_EXIDX (SHT_LOPROC + 1)
-/* Preemption details.  */
-#define SHT_ARM_PREEMPTMAP (SHT_LOPROC + 2)
-/* ARM attributes section.  */
-#define SHT_ARM_ATTRIBUTES (SHT_LOPROC + 3)
-/* AArch64 relocs.  */
-/* No relocation.  */
-
-#define R_AARCH64_NONE 0
-/* Direct 64 bit. */
-#define R_AARCH64_ABS64 257
-/* Direct 32 bit.  */
-#define R_AARCH64_ABS32 258
-/* Direct 16-bit.  */
-#define R_AARCH64_ABS16 259
-/* PC-relative 64-bit.  */
-#define R_AARCH64_PREL64 260
-/* PC-relative 32-bit.  */
-#define R_AARCH64_PREL32 261
-/* PC-relative 16-bit.  */
-#define R_AARCH64_PREL16 262
-/* Dir. MOVZ imm. from bits 15:0.  */
-#define R_AARCH64_MOVW_UABS_G0 263
-/* Likewise for MOVK; no check.  */
-#define R_AARCH64_MOVW_UABS_G0_NC 264
-/* Dir. MOVZ imm. from bits 31:16.  */
-#define R_AARCH64_MOVW_UABS_G1 265
-/* Likewise for MOVK; no check.  */
-#define R_AARCH64_MOVW_UABS_G1_NC 266
-/* Dir. MOVZ imm. from bits 47:32.  */
-#define R_AARCH64_MOVW_UABS_G2 267
-/* Likewise for MOVK; no check.  */
-#define R_AARCH64_MOVW_UABS_G2_NC 268
-/* Dir. MOV{K,Z} imm. from 63:48.  */
-#define R_AARCH64_MOVW_UABS_G3 269
-/* Dir. MOV{N,Z} imm. from 15:0.  */
-#define R_AARCH64_MOVW_SABS_G0 270
-/* Dir. MOV{N,Z} imm. from 31:16.  */
-#define R_AARCH64_MOVW_SABS_G1 271
-/* Dir. MOV{N,Z} imm. from 47:32.  */
-#define R_AARCH64_MOVW_SABS_G2 272
-/* PC-rel. LD imm. from bits 20:2.  */
-#define R_AARCH64_LD_PREL_LO19 273
-/* PC-rel. ADR imm. from bits 20:0.  */
-#define R_AARCH64_ADR_PREL_LO21 274
-/* Page-rel. ADRP imm. from 32:12.  */
-#define R_AARCH64_ADR_PREL_PG_HI21 275
-/* Likewise; no overflow check.  */
-#define R_AARCH64_ADR_PREL_PG_HI21_NC 276
-/* Dir. ADD imm. from bits 11:0.  */
-#define R_AARCH64_ADD_ABS_LO12_NC 277
-/* Likewise for LD/ST; no check. */
-#define R_AARCH64_LDST8_ABS_LO12_NC 278
-/* PC-rel. TBZ/TBNZ imm. from 15:2.  */
-#define R_AARCH64_TSTBR14 279
-/* PC-rel. cond. br. imm. from 20:2. */
-#define R_AARCH64_CONDBR19 280
-/* PC-rel. B imm. from bits 27:2.  */
-#define R_AARCH64_JUMP26 282
-/* Likewise for CALL.  */
-#define R_AARCH64_CALL26 283
-/* Dir. ADD imm. from bits 11:1.  */
-#define R_AARCH64_LDST16_ABS_LO12_NC 284
-/* Likewise for bits 11:2.  */
-#define R_AARCH64_LDST32_ABS_LO12_NC 285
-/* Likewise for bits 11:3.  */
-#define R_AARCH64_LDST64_ABS_LO12_NC 286
-/* PC-rel. MOV{N,Z} imm. from 15:0.  */
-#define R_AARCH64_MOVW_PREL_G0 287
-/* Likewise for MOVK; no check.  */
-#define R_AARCH64_MOVW_PREL_G0_NC 288
-/* PC-rel. MOV{N,Z} imm. from 31:16. */
-#define R_AARCH64_MOVW_PREL_G1 289
-/* Likewise for MOVK; no check.  */
-#define R_AARCH64_MOVW_PREL_G1_NC 290
-/* PC-rel. MOV{N,Z} imm. from 47:32. */
-#define R_AARCH64_MOVW_PREL_G2 291
-/* Likewise for MOVK; no check.  */
-#define R_AARCH64_MOVW_PREL_G2_NC 292
-/* PC-rel. MOV{N,Z} imm. from 63:48. */
-#define R_AARCH64_MOVW_PREL_G3 293
-/* Dir. ADD imm. from bits 11:4.  */
-#define R_AARCH64_LDST128_ABS_LO12_NC 299
-/* GOT-rel. off. MOV{N,Z} imm. 15:0. */
-#define R_AARCH64_MOVW_GOTOFF_G0 300
-/* Likewise for MOVK; no check.  */
-#define R_AARCH64_MOVW_GOTOFF_G0_NC 301
-/* GOT-rel. o. MOV{N,Z} imm. 31:16.  */
-#define R_AARCH64_MOVW_GOTOFF_G1 302
-/* Likewise for MOVK; no check.  */
-#define R_AARCH64_MOVW_GOTOFF_G1_NC 303
-/* GOT-rel. o. MOV{N,Z} imm. 47:32.  */
-#define R_AARCH64_MOVW_GOTOFF_G2 304
-/* Likewise for MOVK; no check.  */
-#define R_AARCH64_MOVW_GOTOFF_G2_NC 305
-/* GOT-rel. o. MOV{N,Z} imm. 63:48.  */
-#define R_AARCH64_MOVW_GOTOFF_G3 306
-/* GOT-relative 64-bit.  */
-#define R_AARCH64_GOTREL64 307
-/* GOT-relative 32-bit.  */
-#define R_AARCH64_GOTREL32 308
-/* PC-rel. GOT off. load imm. 20:2.  */
-#define R_AARCH64_GOT_LD_PREL19 309
-/* GOT-rel. off. LD/ST imm. 14:3.  */
-#define R_AARCH64_LD64_GOTOFF_LO15 310
-/* P-page-rel. GOT off. ADRP 32:12.  */
-#define R_AARCH64_ADR_GOT_PAGE 311
-/* Dir. GOT off. LD/ST imm. 11:3.  */
-#define R_AARCH64_LD64_GOT_LO12_NC 312
-/* GOT-page-rel. GOT off. LD/ST 14:3 */
-#define R_AARCH64_LD64_GOTPAGE_LO15 313
-/* PC-relative ADR imm. 20:0.  */
-#define R_AARCH64_TLSGD_ADR_PREL21 512
-/* page-rel. ADRP imm. 32:12.  */
-#define R_AARCH64_TLSGD_ADR_PAGE21 513
-/* direct ADD imm. from 11:0.  */
-#define R_AARCH64_TLSGD_ADD_LO12_NC 514
-/* GOT-rel. MOV{N,Z} 31:16.  */
-#define R_AARCH64_TLSGD_MOVW_G1 515
-/* GOT-rel. MOVK imm. 15:0.  */
-#define R_AARCH64_TLSGD_MOVW_G0_NC 516
-/* Like 512; local dynamic model.  */
-#define R_AARCH64_TLSLD_ADR_PREL21 517
-/* Like 513; local dynamic model.  */
-#define R_AARCH64_TLSLD_ADR_PAGE21 518
-/* Like 514; local dynamic model.  */
-#define R_AARCH64_TLSLD_ADD_LO12_NC 519
-/* Like 515; local dynamic model.  */
-#define R_AARCH64_TLSLD_MOVW_G1 520
-/* Like 516; local dynamic model.  */
-#define R_AARCH64_TLSLD_MOVW_G0_NC 521
-/* TLS PC-rel. load imm. 20:2.  */
-#define R_AARCH64_TLSLD_LD_PREL19 522
-/* TLS DTP-rel. MOV{N,Z} 47:32.  */
-#define R_AARCH64_TLSLD_MOVW_DTPREL_G2 523
-/* TLS DTP-rel. MOV{N,Z} 31:16.  */
-#define R_AARCH64_TLSLD_MOVW_DTPREL_G1 524
-/* Likewise; MOVK; no check.  */
-#define R_AARCH64_TLSLD_MOVW_DTPREL_G1_NC 525
-/* TLS DTP-rel. MOV{N,Z} 15:0.  */
-#define R_AARCH64_TLSLD_MOVW_DTPREL_G0 526
-/* Likewise; MOVK; no check.  */
-#define R_AARCH64_TLSLD_MOVW_DTPREL_G0_NC 527
-/* DTP-rel. ADD imm. from 23:12. */
-#define R_AARCH64_TLSLD_ADD_DTPREL_HI12 528
-/* DTP-rel. ADD imm. from 11:0.  */
-#define R_AARCH64_TLSLD_ADD_DTPREL_LO12 529
-/* Likewise; no ovfl. check.  */
-#define R_AARCH64_TLSLD_ADD_DTPREL_LO12_NC 530
-/* DTP-rel. LD/ST imm. 11:0.  */
-#define R_AARCH64_TLSLD_LDST8_DTPREL_LO12 531
-/* Likewise; no check.  */
-#define R_AARCH64_TLSLD_LDST8_DTPREL_LO12_NC 532
-/* DTP-rel. LD/ST imm. 11:1.  */
-#define R_AARCH64_TLSLD_LDST16_DTPREL_LO12 533
-/* Likewise; no check.  */
-#define R_AARCH64_TLSLD_LDST16_DTPREL_LO12_NC 534
-/* DTP-rel. LD/ST imm. 11:2.  */
-#define R_AARCH64_TLSLD_LDST32_DTPREL_LO12 535
-/* Likewise; no check.  */
-#define R_AARCH64_TLSLD_LDST32_DTPREL_LO12_NC 536
-/* DTP-rel. LD/ST imm. 11:3.  */
-#define R_AARCH64_TLSLD_LDST64_DTPREL_LO12 537
-/* Likewise; no check.  */
-#define R_AARCH64_TLSLD_LDST64_DTPREL_LO12_NC 538
-/* GOT-rel. MOV{N,Z} 31:16.  */
-#define R_AARCH64_TLSIE_MOVW_GOTTPREL_G1 539
-/* GOT-rel. MOVK 15:0.  */
-#define R_AARCH64_TLSIE_MOVW_GOTTPREL_G0_NC 540
-/* Page-rel. ADRP 32:12.  */
-#define R_AARCH64_TLSIE_ADR_GOTTPREL_PAGE21 541
-/* Direct LD off. 11:3.  */
-#define R_AARCH64_TLSIE_LD64_GOTTPREL_LO12_NC 542
-/* PC-rel. load imm. 20:2.  */
-#define R_AARCH64_TLSIE_LD_GOTTPREL_PREL19 543
-/* TLS TP-rel. MOV{N,Z} 47:32.  */
-#define R_AARCH64_TLSLE_MOVW_TPREL_G2 544
-/* TLS TP-rel. MOV{N,Z} 31:16.  */
-#define R_AARCH64_TLSLE_MOVW_TPREL_G1 545
-/* Likewise; MOVK; no check.  */
-#define R_AARCH64_TLSLE_MOVW_TPREL_G1_NC 546
-/* TLS TP-rel. MOV{N,Z} 15:0.  */
-#define R_AARCH64_TLSLE_MOVW_TPREL_G0 547
-/* Likewise; MOVK; no check.  */
-#define R_AARCH64_TLSLE_MOVW_TPREL_G0_NC 548
-/* TP-rel. ADD imm. 23:12.  */
-#define R_AARCH64_TLSLE_ADD_TPREL_HI12 549
-/* TP-rel. ADD imm. 11:0.  */
-#define R_AARCH64_TLSLE_ADD_TPREL_LO12 550
-/* Likewise; no ovfl. check.  */
-#define R_AARCH64_TLSLE_ADD_TPREL_LO12_NC 551
-/* TP-rel. LD/ST off. 11:0.  */
-#define R_AARCH64_TLSLE_LDST8_TPREL_LO12 552
-/* Likewise; no ovfl. check. */
-#define R_AARCH64_TLSLE_LDST8_TPREL_LO12_NC 553
-/* TP-rel. LD/ST off. 11:1.  */
-#define R_AARCH64_TLSLE_LDST16_TPREL_LO12 554
-/* Likewise; no check.  */
-#define R_AARCH64_TLSLE_LDST16_TPREL_LO12_NC 555
-/* TP-rel. LD/ST off. 11:2.  */
-#define R_AARCH64_TLSLE_LDST32_TPREL_LO12 556
-/* Likewise; no check.  */
-#define R_AARCH64_TLSLE_LDST32_TPREL_LO12_NC 557
-/* TP-rel. LD/ST off. 11:3.  */
-#define R_AARCH64_TLSLE_LDST64_TPREL_LO12 558
-/* Likewise; no check.  */
-#define R_AARCH64_TLSLE_LDST64_TPREL_LO12_NC 559
-/* PC-rel. load immediate 20:2.  */
-#define R_AARCH64_TLSDESC_LD_PREL19 560
-/* PC-rel. ADR immediate 20:0.  */
-#define R_AARCH64_TLSDESC_ADR_PREL21 561
-/* Page-rel. ADRP imm. 32:12.  */
-#define R_AARCH64_TLSDESC_ADR_PAGE21 562
-/* Direct LD off. from 11:3.  */
-#define R_AARCH64_TLSDESC_LD64_LO12 563
-/* Direct ADD imm. from 11:0.  */
-#define R_AARCH64_TLSDESC_ADD_LO12 564
-/* GOT-rel. MOV{N,Z} imm. 31:16.  */
-#define R_AARCH64_TLSDESC_OFF_G1 565
-/* GOT-rel. MOVK imm. 15:0; no ck.  */
-#define R_AARCH64_TLSDESC_OFF_G0_NC 566
-/* Relax LDR.  */
-#define R_AARCH64_TLSDESC_LDR 567
-/* Relax ADD.  */
-#define R_AARCH64_TLSDESC_ADD 568
-/* Relax BLR.  */
-#define R_AARCH64_TLSDESC_CALL 569
-/* TP-rel. LD/ST off. 11:4.  */
-#define R_AARCH64_TLSLE_LDST128_TPREL_LO12 570
-/* Likewise; no check.  */
-#define R_AARCH64_TLSLE_LDST128_TPREL_LO12_NC 571
-/* DTP-rel. LD/ST imm. 11:4. */
-#define R_AARCH64_TLSLD_LDST128_DTPREL_LO12 572
-/* Likewise; no check.  */
-#define R_AARCH64_TLSLD_LDST128_DTPREL_LO12_NC 573
-/* Copy symbol at runtime.  */
-#define R_AARCH64_COPY 1024
-/* Create GOT entry.  */
-#define R_AARCH64_GLOB_DAT 1025
-/* Create PLT entry.  */
-#define R_AARCH64_JUMP_SLOT 1026
-/* Adjust by program base.  */
-#define R_AARCH64_RELATIVE 1027
-/* Module number, 64 bit.  */
-#define R_AARCH64_TLS_DTPMOD64 1028
-/* Module-relative \offset, 64 bit.  */
-#define R_AARCH64_TLS_DTPREL64 1029
-/* TP-relative offset, 64 bit.  */
-#define R_AARCH64_TLS_TPREL64 1030
-/* TLS Descriptor.  */
-#define R_AARCH64_TLSDESC 1031
-/* STT_GNU_IFUNC relocation.  */
-#define R_AARCH64_IRELATIVE 1032
-/* Keep this the last entry.  */
-
-#define R_AARCH64_NUM 1033
-/* ARM relocs.  */
-/* No reloc */
-
-#define R_ARM_NONE 0
-/* PC relative 26 bit branch */
-#define R_ARM_PC24 1
-/* Direct 32 bit  */
-#define R_ARM_ABS32 2
-/* PC relative 32 bit */
-#define R_ARM_REL32 3
-#define R_ARM_PC13 4
-/* Direct 16 bit */
-#define R_ARM_ABS16 5
-/* Direct 12 bit */
-#define R_ARM_ABS12 6
-#define R_ARM_THM_ABS5 7
-/* Direct 8 bit */
-#define R_ARM_ABS8 8
-#define R_ARM_SBREL32 9
-#define R_ARM_THM_PC22 10
-#define R_ARM_THM_PC8 11
-#define R_ARM_AMP_VCALL9 12
-/* Obsolete static relocation.  */
-#define R_ARM_SWI24 13
-/* Dynamic relocation.  */
-#define R_ARM_TLS_DESC 13
-#define R_ARM_THM_SWI8 14
-#define R_ARM_XPC25 15
-#define R_ARM_THM_XPC22 16
-/* ID of module containing symbol */
-#define R_ARM_TLS_DTPMOD32 17
-/* Offset in TLS block */
-#define R_ARM_TLS_DTPOFF32 18
-/* Offset in static TLS block */
-#define R_ARM_TLS_TPOFF32 19
-/* Copy symbol at runtime */
-#define R_ARM_COPY 20
-/* Create GOT entry */
-#define R_ARM_GLOB_DAT 21
-/* Create PLT entry */
-#define R_ARM_JUMP_SLOT 22
-/* Adjust by program base */
-#define R_ARM_RELATIVE 23
-/* 32 bit offset to GOT */
-#define R_ARM_GOTOFF 24
-/* 32 bit PC relative offset to GOT */
-#define R_ARM_GOTPC 25
-/* 32 bit GOT entry */
-#define R_ARM_GOT32 26
-/* 32 bit PLT address */
-#define R_ARM_PLT32 27
-#define R_ARM_CALL 28
-#define R_ARM_JUMP24 29
-#define R_ARM_THM_JUMP24 30
-/* Adjust by program base.  */
-#define R_ARM_BASE_ABS 31
-#define R_ARM_ALU_PCREL_7_0 32
-#define R_ARM_ALU_PCREL_15_8 33
-#define R_ARM_ALU_PCREL_23_15 34
-#define R_ARM_LDR_SBREL_11_0 35
-#define R_ARM_ALU_SBREL_19_12 36
-#define R_ARM_ALU_SBREL_27_20 37
-#define R_ARM_TARGET1 38
-/* Program base relative.  */
-#define R_ARM_SBREL31 39
-#define R_ARM_V4BX 40
-#define R_ARM_TARGET2 41
-#define R_ARM_PREL31 42
-#define R_ARM_MOVW_ABS_NC 43
-#define R_ARM_MOVT_ABS 44
-/* PC relative 16-bit (MOVW).  */
-#define R_ARM_MOVW_PREL_NC 45
-/* PC relative (MOVT).  */
-#define R_ARM_MOVT_PREL 46
-#define R_ARM_THM_MOVW_ABS_NC 47
-#define R_ARM_THM_MOVT_ABS 48
-/* Values from 49 to 89 are not yet used/handled by tcc. */
-
-#define R_ARM_TLS_GOTDESC 90
-#define R_ARM_TLS_CALL 91
-#define R_ARM_TLS_DESCSEQ 92
-#define R_ARM_THM_TLS_CALL 93
-#define R_ARM_GOT_PREL 96
-#define R_ARM_GNU_VTENTRY 100
-#define R_ARM_GNU_VTINHERIT 101
-/* thumb unconditional branch */
-#define R_ARM_THM_PC11 102
-/* thumb conditional branch */
-#define R_ARM_THM_PC9 103
 /* PC-rel 32 bit for global dynamic
 					   thread local data */
-
-#define R_ARM_TLS_GD32 104
 /* PC-rel 32 bit for local dynamic
 					   thread local data */
-
-#define R_ARM_TLS_LDM32 105
 /* 32 bit offset relative to TLS
 					   block */
-
-#define R_ARM_TLS_LDO32 106
 /* PC-rel 32 bit for GOT entry of
 					   static TLS block offset */
-
-#define R_ARM_TLS_IE32 107
 /* 32 bit offset relative to static
 					   TLS block */
-
-#define R_ARM_TLS_LE32 108
-#define R_ARM_THM_TLS_DESCSEQ 129
-#define R_ARM_IRELATIVE 160
-#define R_ARM_RXPC25 249
-#define R_ARM_RSBREL32 250
-#define R_ARM_THM_RPC22 251
-#define R_ARM_RREL32 252
-#define R_ARM_RABS22 253
-#define R_ARM_RPC24 254
-#define R_ARM_RBASE 255
-/* Keep this the last entry.  */
-
-#define R_ARM_NUM 256
-/* TMS320C67xx specific declarations */
-/* XXX: no ELF standard yet*/
-/* TMS320C67xx relocs. */
-
-#define R_C60_32 1
-/* 32 bit GOT entry */
-#define R_C60_GOT32 3
-/* 32 bit PLT address */
-#define R_C60_PLT32 4
-/* Copy symbol at runtime */
-#define R_C60_COPY 5
-/* Create GOT entry */
-#define R_C60_GLOB_DAT 6
-/* Create PLT entry */
-#define R_C60_JMP_SLOT 7
-/* Adjust by program base */
-#define R_C60_RELATIVE 8
-/* 32 bit offset to GOT */
-#define R_C60_GOTOFF 9
-/* 32 bit PC relative offset to GOT */
-#define R_C60_GOTPC 10
-/* low 16 bit MVKL embedded */
-
-#define R_C60LO16 0x54
-/* high 16 bit MVKH embedded */
-#define R_C60HI16 0x55
-/* Keep this the last entry.  */
-
-#define R_C60_NUM 0x56
-/* IA-64 specific declarations.  */
-/* Processor specific flags for the Ehdr e_flags field.  */
-/* os-specific flags */
-
-#define EF_IA_64_MASKOS 0x0000000f
-/* 64-bit ABI */
-#define EF_IA_64_ABI64 0x00000010
-/* arch. version mask */
-#define EF_IA_64_ARCH 0xff000000
-/* Processor specific values for the Phdr p_type field.  */
-/* arch extension bits */
-
-#define PT_IA_64_ARCHEXT (PT_LOPROC + 0)
-/* ia64 unwind bits */
-#define PT_IA_64_UNWIND (PT_LOPROC + 1)
-#define PT_IA_64_HP_OPT_ANOT (PT_LOOS + 0x12)
-#define PT_IA_64_HP_HSL_ANOT (PT_LOOS + 0x13)
-#define PT_IA_64_HP_STACK (PT_LOOS + 0x14)
-/* Processor specific flags for the Phdr p_flags field.  */
-/* spec insns w/o recovery */
-
-#define PF_IA_64_NORECOV 0x80000000
-/* Processor specific values for the Shdr sh_type field.  */
-/* extension bits */
-
-#define SHT_IA_64_EXT (SHT_LOPROC + 0)
-/* unwind bits */
-#define SHT_IA_64_UNWIND (SHT_LOPROC + 1)
-/* Processor specific flags for the Shdr sh_flags field.  */
-/* section near gp */
-
-#define SHF_IA_64_SHORT 0x10000000
-/* spec insns w/o recovery */
-#define SHF_IA_64_NORECOV 0x20000000
-/* Processor specific values for the Dyn d_tag field.  */
-
-#define DT_IA_64_PLT_RESERVE (DT_LOPROC + 0)
-#define DT_IA_64_NUM 1
-/* IA-64 relocations.  */
-/* none */
-
-#define R_IA64_NONE 0x00
-/* symbol + addend, add imm14 */
-#define R_IA64_IMM14 0x21
-/* symbol + addend, add imm22 */
-#define R_IA64_IMM22 0x22
-/* symbol + addend, mov imm64 */
-#define R_IA64_IMM64 0x23
-/* symbol + addend, data4 MSB */
-#define R_IA64_DIR32MSB 0x24
-/* symbol + addend, data4 LSB */
-#define R_IA64_DIR32LSB 0x25
-/* symbol + addend, data8 MSB */
-#define R_IA64_DIR64MSB 0x26
-/* symbol + addend, data8 LSB */
-#define R_IA64_DIR64LSB 0x27
-/* @gprel(sym + add), add imm22 */
-#define R_IA64_GPREL22 0x2a
-/* @gprel(sym + add), mov imm64 */
-#define R_IA64_GPREL64I 0x2b
-/* @gprel(sym + add), data4 MSB */
-#define R_IA64_GPREL32MSB 0x2c
-/* @gprel(sym + add), data4 LSB */
-#define R_IA64_GPREL32LSB 0x2d
-/* @gprel(sym + add), data8 MSB */
-#define R_IA64_GPREL64MSB 0x2e
-/* @gprel(sym + add), data8 LSB */
-#define R_IA64_GPREL64LSB 0x2f
-/* @ltoff(sym + add), add imm22 */
-#define R_IA64_LTOFF22 0x32
-/* @ltoff(sym + add), mov imm64 */
-#define R_IA64_LTOFF64I 0x33
-/* @pltoff(sym + add), add imm22 */
-#define R_IA64_PLTOFF22 0x3a
-/* @pltoff(sym + add), mov imm64 */
-#define R_IA64_PLTOFF64I 0x3b
-/* @pltoff(sym + add), data8 MSB */
-#define R_IA64_PLTOFF64MSB 0x3e
-/* @pltoff(sym + add), data8 LSB */
-#define R_IA64_PLTOFF64LSB 0x3f
-/* @fptr(sym + add), mov imm64 */
-#define R_IA64_FPTR64I 0x43
-/* @fptr(sym + add), data4 MSB */
-#define R_IA64_FPTR32MSB 0x44
-/* @fptr(sym + add), data4 LSB */
-#define R_IA64_FPTR32LSB 0x45
-/* @fptr(sym + add), data8 MSB */
-#define R_IA64_FPTR64MSB 0x46
-/* @fptr(sym + add), data8 LSB */
-#define R_IA64_FPTR64LSB 0x47
-/* @pcrel(sym + add), brl */
-#define R_IA64_PCREL60B 0x48
-/* @pcrel(sym + add), ptb, call */
-#define R_IA64_PCREL21B 0x49
-/* @pcrel(sym + add), chk.s */
-#define R_IA64_PCREL21M 0x4a
-/* @pcrel(sym + add), fchkf */
-#define R_IA64_PCREL21F 0x4b
-/* @pcrel(sym + add), data4 MSB */
-#define R_IA64_PCREL32MSB 0x4c
-/* @pcrel(sym + add), data4 LSB */
-#define R_IA64_PCREL32LSB 0x4d
-/* @pcrel(sym + add), data8 MSB */
-#define R_IA64_PCREL64MSB 0x4e
-/* @pcrel(sym + add), data8 LSB */
-#define R_IA64_PCREL64LSB 0x4f
-/* @ltoff(@fptr(s+a)), imm22 */
-#define R_IA64_LTOFF_FPTR22 0x52
-/* @ltoff(@fptr(s+a)), imm64 */
-#define R_IA64_LTOFF_FPTR64I 0x53
-/* @ltoff(@fptr(s+a)), data4 MSB */
-#define R_IA64_LTOFF_FPTR32MSB 0x54
-/* @ltoff(@fptr(s+a)), data4 LSB */
-#define R_IA64_LTOFF_FPTR32LSB 0x55
-/* @ltoff(@fptr(s+a)), data8 MSB */
-#define R_IA64_LTOFF_FPTR64MSB 0x56
-/* @ltoff(@fptr(s+a)), data8 LSB */
-#define R_IA64_LTOFF_FPTR64LSB 0x57
-/* @segrel(sym + add), data4 MSB */
-#define R_IA64_SEGREL32MSB 0x5c
-/* @segrel(sym + add), data4 LSB */
-#define R_IA64_SEGREL32LSB 0x5d
-/* @segrel(sym + add), data8 MSB */
-#define R_IA64_SEGREL64MSB 0x5e
-/* @segrel(sym + add), data8 LSB */
-#define R_IA64_SEGREL64LSB 0x5f
-/* @secrel(sym + add), data4 MSB */
-#define R_IA64_SECREL32MSB 0x64
-/* @secrel(sym + add), data4 LSB */
-#define R_IA64_SECREL32LSB 0x65
-/* @secrel(sym + add), data8 MSB */
-#define R_IA64_SECREL64MSB 0x66
-/* @secrel(sym + add), data8 LSB */
-#define R_IA64_SECREL64LSB 0x67
-/* data 4 + REL */
-#define R_IA64_REL32MSB 0x6c
-/* data 4 + REL */
-#define R_IA64_REL32LSB 0x6d
-/* data 8 + REL */
-#define R_IA64_REL64MSB 0x6e
-/* data 8 + REL */
-#define R_IA64_REL64LSB 0x6f
-/* symbol + addend, data4 MSB */
-#define R_IA64_LTV32MSB 0x74
-/* symbol + addend, data4 LSB */
-#define R_IA64_LTV32LSB 0x75
-/* symbol + addend, data8 MSB */
-#define R_IA64_LTV64MSB 0x76
-/* symbol + addend, data8 LSB */
-#define R_IA64_LTV64LSB 0x77
-/* @pcrel(sym + add), 21bit inst */
-#define R_IA64_PCREL21BI 0x79
-/* @pcrel(sym + add), 22bit inst */
-#define R_IA64_PCREL22 0x7a
-/* @pcrel(sym + add), 64bit inst */
-#define R_IA64_PCREL64I 0x7b
-/* dynamic reloc, imported PLT, MSB */
-#define R_IA64_IPLTMSB 0x80
-/* dynamic reloc, imported PLT, LSB */
-#define R_IA64_IPLTLSB 0x81
-/* copy relocation */
-#define R_IA64_COPY 0x84
-/* Addend and symbol difference */
-#define R_IA64_SUB 0x85
-/* LTOFF22, relaxable.  */
-#define R_IA64_LTOFF22X 0x86
-/* Use of LTOFF22X.  */
-#define R_IA64_LDXMOV 0x87
-/* @tprel(sym + add), imm14 */
-#define R_IA64_TPREL14 0x91
-/* @tprel(sym + add), imm22 */
-#define R_IA64_TPREL22 0x92
-/* @tprel(sym + add), imm64 */
-#define R_IA64_TPREL64I 0x93
-/* @tprel(sym + add), data8 MSB */
-#define R_IA64_TPREL64MSB 0x96
-/* @tprel(sym + add), data8 LSB */
-#define R_IA64_TPREL64LSB 0x97
-/* @ltoff(@tprel(s+a)), imm2 */
-#define R_IA64_LTOFF_TPREL22 0x9a
-/* @dtpmod(sym + add), data8 MSB */
-#define R_IA64_DTPMOD64MSB 0xa6
-/* @dtpmod(sym + add), data8 LSB */
-#define R_IA64_DTPMOD64LSB 0xa7
-/* @ltoff(@dtpmod(sym + add)), imm22 */
-#define R_IA64_LTOFF_DTPMOD22 0xaa
-/* @dtprel(sym + add), imm14 */
-#define R_IA64_DTPREL14 0xb1
-/* @dtprel(sym + add), imm22 */
-#define R_IA64_DTPREL22 0xb2
-/* @dtprel(sym + add), imm64 */
-#define R_IA64_DTPREL64I 0xb3
-/* @dtprel(sym + add), data4 MSB */
-#define R_IA64_DTPREL32MSB 0xb4
-/* @dtprel(sym + add), data4 LSB */
-#define R_IA64_DTPREL32LSB 0xb5
-/* @dtprel(sym + add), data8 MSB */
-#define R_IA64_DTPREL64MSB 0xb6
-/* @dtprel(sym + add), data8 LSB */
-#define R_IA64_DTPREL64LSB 0xb7
-/* @ltoff(@dtprel(s+a)), imm22 */
-#define R_IA64_LTOFF_DTPREL22 0xba
-/* SH specific declarations */
-/* Processor specific flags for the ELF header e_flags field.  */
-
-#define EF_SH_MACH_MASK 0x1f
-#define EF_SH_UNKNOWN 0x0
-#define EF_SH1 0x1
-#define EF_SH2 0x2
-#define EF_SH3 0x3
-#define EF_SH_DSP 0x4
-#define EF_SH3_DSP 0x5
-#define EF_SH4AL_DSP 0x6
-#define EF_SH3E 0x8
-#define EF_SH4 0x9
-#define EF_SH2E 0xb
-#define EF_SH4A 0xc
-#define EF_SH2A 0xd
-#define EF_SH4_NOFPU 0x10
-#define EF_SH4A_NOFPU 0x11
-#define EF_SH4_NOMMU_NOFPU 0x12
-#define EF_SH2A_NOFPU 0x13
-#define EF_SH3_NOMMU 0x14
-#define EF_SH2A_SH4_NOFPU 0x15
-#define EF_SH2A_SH3_NOFPU 0x16
-#define EF_SH2A_SH4 0x17
-#define EF_SH2A_SH3E 0x18
-/* SH relocs.  */
-
-#define R_SH_NONE 0
-#define R_SH_DIR32 1
-#define R_SH_REL32 2
-#define R_SH_DIR8WPN 3
-#define R_SH_IND12W 4
-#define R_SH_DIR8WPL 5
-#define R_SH_DIR8WPZ 6
-#define R_SH_DIR8BP 7
-#define R_SH_DIR8W 8
-#define R_SH_DIR8L 9
-#define R_SH_SWITCH16 25
-#define R_SH_SWITCH32 26
-#define R_SH_USES 27
-#define R_SH_COUNT 28
-#define R_SH_ALIGN 29
-#define R_SH_CODE 30
-#define R_SH_DATA 31
-#define R_SH_LABEL 32
-#define R_SH_SWITCH8 33
-#define R_SH_GNU_VTINHERIT 34
-#define R_SH_GNU_VTENTRY 35
-#define R_SH_TLS_GD_32 144
-#define R_SH_TLS_LD_32 145
-#define R_SH_TLS_LDO_32 146
-#define R_SH_TLS_IE_32 147
-#define R_SH_TLS_LE_32 148
-#define R_SH_TLS_DTPMOD32 149
-#define R_SH_TLS_DTPOFF32 150
-#define R_SH_TLS_TPOFF32 151
-#define R_SH_GOT32 160
-#define R_SH_PLT32 161
-#define R_SH_COPY 162
-#define R_SH_GLOB_DAT 163
-#define R_SH_JMP_SLOT 164
-#define R_SH_RELATIVE 165
-#define R_SH_GOTOFF 166
-#define R_SH_GOTPC 167
-/* Keep this the last entry.  */
-
-#define R_SH_NUM 256
-/* S/390 specific definitions.  */
-/* Valid values for the e_flags field.  */
-/* High GPRs kernel facility needed.  */
-
-#define EF_S390_HIGH_GPRS 0x00000001
-/* Additional s390 relocs */
-/* No reloc.  */
-
-#define R_390_NONE 0
-/* Direct 8 bit.  */
-#define R_390_8 1
-/* Direct 12 bit.  */
-#define R_390_12 2
-/* Direct 16 bit.  */
-#define R_390_16 3
-/* Direct 32 bit.  */
-#define R_390_32 4
-/* PC relative 32 bit.	*/
-#define R_390_PC32 5
-/* 12 bit GOT offset.  */
-#define R_390_GOT12 6
-/* 32 bit GOT offset.  */
-#define R_390_GOT32 7
-/* 32 bit PC relative PLT address.  */
-#define R_390_PLT32 8
-/* Copy symbol at runtime.  */
-#define R_390_COPY 9
-/* Create GOT entry.  */
-#define R_390_GLOB_DAT 10
-/* Create PLT entry.  */
-#define R_390_JMP_SLOT 11
-/* Adjust by program base.  */
-#define R_390_RELATIVE 12
-/* 32 bit offset to GOT.	 */
-#define R_390_GOTOFF32 13
-/* 32 bit PC relative offset to GOT.  */
-#define R_390_GOTPC 14
-/* 16 bit GOT offset.  */
-#define R_390_GOT16 15
-/* PC relative 16 bit.	*/
-#define R_390_PC16 16
-/* PC relative 16 bit shifted by 1.  */
-#define R_390_PC16DBL 17
-/* 16 bit PC rel. PLT shifted by 1.  */
-#define R_390_PLT16DBL 18
-/* PC relative 32 bit shifted by 1.  */
-#define R_390_PC32DBL 19
-/* 32 bit PC rel. PLT shifted by 1.  */
-#define R_390_PLT32DBL 20
-/* 32 bit PC rel. GOT shifted by 1.  */
-#define R_390_GOTPCDBL 21
-/* Direct 64 bit.  */
-#define R_390_64 22
-/* PC relative 64 bit.	*/
-#define R_390_PC64 23
-/* 64 bit GOT offset.  */
-#define R_390_GOT64 24
-/* 64 bit PC relative PLT address.  */
-#define R_390_PLT64 25
-/* 32 bit PC rel. to GOT entry >> 1. */
-#define R_390_GOTENT 26
-/* 16 bit offset to GOT. */
-#define R_390_GOTOFF16 27
-/* 64 bit offset to GOT. */
-#define R_390_GOTOFF64 28
-/* 12 bit offset to jump slot.	*/
-#define R_390_GOTPLT12 29
-/* 16 bit offset to jump slot.	*/
-#define R_390_GOTPLT16 30
-/* 32 bit offset to jump slot.	*/
-#define R_390_GOTPLT32 31
-/* 64 bit offset to jump slot.	*/
-#define R_390_GOTPLT64 32
-/* 32 bit rel. offset to jump slot.  */
-#define R_390_GOTPLTENT 33
-/* 16 bit offset from GOT to PLT. */
-#define R_390_PLTOFF16 34
-/* 32 bit offset from GOT to PLT. */
-#define R_390_PLTOFF32 35
-/* 16 bit offset from GOT to PLT. */
-#define R_390_PLTOFF64 36
-/* Tag for load insn in TLS code.  */
-#define R_390_TLS_LOAD 37
 /* Tag for function call in general
 					   dynamic TLS code. */
-
-#define R_390_TLS_GDCALL 38
 /* Tag for function call in local
 					   dynamic TLS code. */
-
-#define R_390_TLS_LDCALL 39
 /* Direct 32 bit for general dynamic
 					   thread local data.  */
-
-#define R_390_TLS_GD32 40
 /* Direct 64 bit for general dynamic
 					  thread local data.  */
-
-#define R_390_TLS_GD64 41
 /* 12 bit GOT offset for static TLS
 					   block offset.  */
-
-#define R_390_TLS_GOTIE12 42
 /* 32 bit GOT offset for static TLS
 					   block offset.  */
-
-#define R_390_TLS_GOTIE32 43
 /* 64 bit GOT offset for static TLS
 					   block offset. */
-
-#define R_390_TLS_GOTIE64 44
 /* Direct 32 bit for local dynamic
 					   thread local data in LE code.  */
-
-#define R_390_TLS_LDM32 45
 /* Direct 64 bit for local dynamic
 					   thread local data in LE code.  */
-
-#define R_390_TLS_LDM64 46
 /* 32 bit address of GOT entry for
 					   negated static TLS block offset.  */
-
-#define R_390_TLS_IE32 47
 /* 64 bit address of GOT entry for
 					   negated static TLS block offset.  */
-
-#define R_390_TLS_IE64 48
 /* 32 bit rel. offset to GOT entry for
 					   negated static TLS block offset.  */
-
-#define R_390_TLS_IEENT 49
 /* 32 bit negated offset relative to
 					   static TLS block.  */
-
-#define R_390_TLS_LE32 50
 /* 64 bit negated offset relative to
 					   static TLS block.  */
-
-#define R_390_TLS_LE64 51
 /* 32 bit offset relative to TLS
 					   block.  */
-
-#define R_390_TLS_LDO32 52
 /* 64 bit offset relative to TLS
 					   block.  */
-
-#define R_390_TLS_LDO64 53
-/* ID of module containing symbol.  */
-#define R_390_TLS_DTPMOD 54
-/* Offset in TLS block.	 */
-#define R_390_TLS_DTPOFF 55
-/* Negated offse\t in static TLS
+/* Negated offset in static TLS
 					   block.  */
-
-#define R_390_TLS_TPOFF 56
-/* Direct 20 bit.  */
-#define R_390_20 57
-/* 20 bit GOT offset.  */
-#define R_390_GOT20 58
-/* 20 bit offset to jump slot.  */
-#define R_390_GOTPLT20 59
 /* 20 bit GOT offset for static TLS
 					   block offset.  */
-
-#define R_390_TLS_GOTIE20 60
-/* STT_GNU_IFUNC relocation.  */
-#define R_390_IRELATIVE 61
-/* Keep this the last entry.  */
-
-#define R_390_NUM 62
-/* CRIS relocations.  */
-
-#define R_CRIS_NONE 0
-#define R_CRIS_8 1
-#define R_CRIS_16 2
-#define R_CRIS_32 3
-#define R_CRIS_8_PCREL 4
-#define R_CRIS_16_PCREL 5
-#define R_CRIS_32_PCREL 6
-#define R_CRIS_GNU_VTINHERIT 7
-#define R_CRIS_GNU_VTENTRY 8
-#define R_CRIS_COPY 9
-#define R_CRIS_GLOB_DAT 10
-#define R_CRIS_JUMP_SLOT 11
-#define R_CRIS_RELATIVE 12
-#define R_CRIS_16_GOT 13
-#define R_CRIS_32_GOT 14
-#define R_CRIS_16_GOTPLT 15
-#define R_CRIS_32_GOTPLT 16
-#define R_CRIS_32_GOTREL 17
-#define R_CRIS_32_PLT_GOTREL 18
-#define R_CRIS_32_PLT_PCREL 19
-
-#define R_CRIS_NUM 20
 /* AMD x86-64 relocations.  */
 /* No reloc */
 
@@ -4618,16 +812,6 @@ typedef Elf32_Addr Elf32_Conflict;
 #define R_X86_64_32 10
 /* Direct 32 bit sign extended */
 #define R_X86_64_32S 11
-/* Direct 16 bit zero extended */
-#define R_X86_64_16 12
-/* 16 bit sign extended pc relative */
-#define R_X86_64_PC16 13
-/* Direct 8 bit sign extended  */
-#define R_X86_64_8 14
-/* 8 bit sign extended pc relative */
-#define R_X86_64_PC8 15
-/* ID of module containing symbol */
-#define R_X86_64_DTPMOD64 16
 /* Offset in module's TLS block */
 #define R_X86_64_DTPOFF64 17
 /* Offset in initial TLS block */
@@ -4660,32 +844,14 @@ typedef Elf32_Addr Elf32_Conflict;
 #define R_X86_64_GOT64 27
 /* 64-bit PC relative offset
 					   to GOT entry */
-
-#define R_X86_64_GOTPCREL64 28
 /* 64-bit PC relative offset to GOT */
 #define R_X86_64_GOTPC64 29
-/* like GOT64, says PLT entry needed */
-#define R_X86_64_GOTPLT64 30
 /* 64-bit GOT relative offset
 					   to PLT entry */
 
 #define R_X86_64_PLTOFF64 31
-/* Size of symbol plus 32-bit addend */
-#define R_X86_64_SIZE32 32
-/* Size of symbol plus 64-bit addend */
-#define R_X86_64_SIZE64 33
-/* GOT offset for TLS descriptor.  */
-#define R_X86_64_GOTPC32_TLSDESC 34
 /* Marker for call through TLS
 					   descriptor.  */
-
-#define R_X86_64_TLSDESC_CALL 35
-/* TLS descriptor.  */
-#define R_X86_64_TLSDESC 36
-/* Adjust indirectly by program base */
-#define R_X86_64_IRELATIVE 37
-/* 64-bit adjust by program base */
-#define R_X86_64_RELATIVE64 38
 /* like GOTPCREL, but optionally with
 					   linker optimizations */
 
@@ -4694,737 +860,41 @@ typedef Elf32_Addr Elf32_Conflict;
 					   is present */
 
 #define R_X86_64_REX_GOTPCRELX 42
-
-#define R_X86_64_NUM 43
-/* x86-64 sh_type values.  */
-/* Unwind information.  */
-
-#define SHT_X86_64_UNWIND 0x70000001
-/* AM33 relocations.  */
-/* No reloc.  */
-
-#define R_MN10300_NONE 0
-/* Direct 32 bit.  */
-#define R_MN10300_32 1
-/* Direct 16 bit.  */
-#define R_MN10300_16 2
-/* Direct 8 bit.  */
-#define R_MN10300_8 3
-/* PC-relative 32-bit.  */
-#define R_MN10300_PCREL32 4
-/* PC-relative 16-bit signed.  */
-#define R_MN10300_PCREL16 5
-/* PC-relative 8-bit signed.  */
-#define R_MN10300_PCREL8 6
-/* Ancient C++ vtable garbage... */
-#define R_MN10300_GNU_VTINHERIT 7
-/* ... collection annotation.  */
-#define R_MN10300_GNU_VTENTRY 8
-/* Direct 24 bit.  */
-#define R_MN10300_24 9
-/* 32-bit PCrel offset to GOT.  */
-#define R_MN10300_GOTPC32 10
-/* 16-bit PCrel offset to GOT.  */
-#define R_MN10300_GOTPC16 11
-/* 32-bit offset from GOT.  */
-#define R_MN10300_GOTOFF32 12
-/* 24-bit offset from GOT.  */
-#define R_MN10300_GOTOFF24 13
-/* 16-bit offset from GOT.  */
-#define R_MN10300_GOTOFF16 14
-/* 32-bit PCrel to PLT entry.  */
-#define R_MN10300_PLT32 15
-/* 16-bit PCrel to PLT entry.  */
-#define R_MN10300_PLT16 16
-/* 32-bit offset to GOT entry.  */
-#define R_MN10300_GOT32 17
-/* 24-bit offset to GOT entry.  */
-#define R_MN10300_GOT24 18
-/* 16-bit offset to GOT entry.  */
-#define R_MN10300_GOT16 19
-/* Copy symbol at runtime.  */
-#define R_MN10300_COPY 20
-/* Create GOT entry.  */
-#define R_MN10300_GLOB_DAT 21
-/* Create PLT entry.  */
-#define R_MN10300_JMP_SLOT 22
-/* Adjust by program base.  */
-#define R_MN10300_RELATIVE 23
-/* 32-bit offset for global dynamic.  */
-#define R_MN10300_TLS_GD 24
-/* 32-bit offset for local dynamic.  */
-#define R_MN10300_TLS_LD 25
-/* Module-relative offset.  */
-#define R_MN10300_TLS_LDO 26
 /* GOT offset for static TLS block
 					   offset.  */
-
-#define R_MN10300_TLS_GOTIE 27
 /* GOT address for static TLS block
 					   offset.  */
-
-#define R_MN10300_TLS_IE 28
 /* Offset relative to static TLS
 					   block.  */
-
-#define R_MN10300_TLS_LE 29
-/* ID of module containing symbol.  */
-#define R_MN10300_TLS_DTPMOD 30
-/* Offset in module TLS block.  */
-#define R_MN10300_TLS_DTPOFF 31
-/* Offset in static TLS block.  */
-#define R_MN10300_TLS_TPOFF 32
 /* Adjustment for next reloc as needed
 					   by linker relaxation.  */
-
-#define R_MN10300_SYM_DIFF 33
 /* Alignment requirement for linker
 					   relaxation.  */
-
-#define R_MN10300_ALIGN 34
-#define R_MN10300_NUM 35
-/* M32R relocs.  */
-/* No reloc. */
-
-#define R_M32R_NONE 0
-/* Direct 16 bit. */
-#define R_M32R_16 1
-/* Direct 32 bit. */
-#define R_M32R_32 2
-/* Direct 24 bit. */
-#define R_M32R_24 3
-/* PC relative 10 bit shifted. */
-#define R_M32R_10_PCREL 4
-/* PC relative 18 bit shifted. */
-#define R_M32R_18_PCREL 5
-/* PC relative 26 bit shifted. */
-#define R_M32R_26_PCREL 6
-/* High 16 bit with unsigned low. */
-#define R_M32R_HI16_ULO 7
-/* High 16 bit with signed low. */
-#define R_M32R_HI16_SLO 8
-/* Low 16 bit. */
-#define R_M32R_LO16 9
-/* 16 bit offset in SDA. */
-#define R_M32R_SDA16 10
-#define R_M32R_GNU_VTINHERIT 11
-#define R_M32R_GNU_VTENTRY 12
-/* M32R relocs use SHT_RELA.  */
-/* Direct 16 bit. */
-
-#define R_M32R_16_RELA 33
-/* Direct 32 bit. */
-#define R_M32R_32_RELA 34
-/* Direct 24 bit. */
-#define R_M32R_24_RELA 35
-/* PC relative 10 bit shifted. */
-#define R_M32R_10_PCREL_RELA 36
-/* PC relative 18 bit shifted. */
-#define R_M32R_18_PCREL_RELA 37
-/* PC relative 26 bit shifted. */
-#define R_M32R_26_PCREL_RELA 38
-/* High 16 bit with unsigned low */
-#define R_M32R_HI16_ULO_RELA 39
-/* High 16 bit with signed low */
-#define R_M32R_HI16_SLO_RELA 40
-/* Low 16 bit */
-#define R_M32R_LO16_RELA 41
-/* 16 bit offset in SDA */
-#define R_M32R_SDA16_RELA 42
-#define R_M32R_RELA_GNU_VTINHERIT 43
-#define R_M32R_RELA_GNU_VTENTRY 44
-/* PC relative 32 bit.  */
-#define R_M32R_REL32 45
-/* 24 bit GOT entry */
-
-#define R_M32R_GOT24 48
-/* 26 bit PC relative to PLT shifted */
-#define R_M32R_26_PLTREL 49
-/* Copy symbol at runtime */
-#define R_M32R_COPY 50
-/* Create GOT entry */
-#define R_M32R_GLOB_DAT 51
-/* Create PLT entry */
-#define R_M32R_JMP_SLOT 52
-/* Adjust by program base */
-#define R_M32R_RELATIVE 53
-/* 24 bit offset to GOT */
-#define R_M32R_GOTOFF 54
-/* 24 bit PC relative offset to GOT */
-#define R_M32R_GOTPC24 55
 /* High 16 bit GOT entry with unsigned
 					   low */
-
-#define R_M32R_GOT16_HI_ULO 56
 /* High 16 bit GOT entry with signed
-				\	   low */
-
-#define R_M32R_GOT16_HI_SLO 57
-/* Low 16 bit GOT entry */
-#define R_M32R_GOT16_LO 58
+					   low */
 /* High 16 bit PC relative offset to
 					   GOT with unsigned low */
-
-#define R_M32R_GOTPC_HI_ULO 59
 /* High 16 bit PC relative offset to
 					   GOT with signed low */
-
-#define R_M32R_GOTPC_HI_SLO 60
 /* Low 16 bit PC relative offset to
 					   GOT */
-
-#define R_M32R_GOTPC_LO 61
 /* High 16 bit offset to GOT
 					   with unsigned low */
-
-#define R_M32R_GOTOFF_HI_ULO 62
 /* High 16 bit offset to GOT
 					   with signed low */
-
-#define R_M32R_GOTOFF_HI_SLO 63
-/* Low 16 bit offset to GOT */
-#define R_M32R_GOTOFF_LO 64
-/* Keep this the last entry. */
-#define R_M32R_NUM 256
-/* TILEPro relocations.  */
-/* No reloc */
-
-#define R_TILEPRO_NONE 0
-/* Direct 32 bit */
-#define R_TILEPRO_32 1
-/* Direct 16 bit */
-#define R_TILEPRO_16 2
-/* Direct 8 bit */
-#define R_TILEPRO_8 3
-/* PC relative 32 bit */
-#define R_TILEPRO_32_PCREL 4
-/* PC relative 16 bit */
-#define R_TILEPRO_16_PCREL 5
-/* PC relative 8 bit */
-#define R_TILEPRO_8_PCREL 6
-/* Low 16 bit */
-#define R_TILEPRO_LO16 7
-/* High 16 bit */
-#define R_TILEPRO_HI16 8
-/* High 16 bit, adjusted */
-#define R_TILEPRO_HA16 9
-/* Copy relocation */
-#define R_TILEPRO_COPY 10
-/* Create GOT entry */
-#define R_TILEPRO_GLOB_DAT 11
-/* Create PLT entry */
-#define R_TILEPRO_JMP_SLOT 12
-/* Adjust by program base */
-#define R_TILEPRO_RELATIVE 13
-/* X1 pipe branch offset */
-#define R_TILEPRO_BROFF_X1 14
-/* X1 pipe jump offset */
-#define R_TILEPRO_JOFFLONG_X1 15
-/* X1 pipe jump offset to PLT */
-#define R_TILEPRO_JOFFLONG_X1_PLT 16
-/* X0 pipe 8-bit */
-#define R_TILEPRO_IMM8_X0 17
-/* Y0 pipe 8-bit */
-#define R_TILEPRO_IMM8_Y0 18
-/* X1 pipe 8-bit */
-#define R_TILEPRO_IMM8_X1 19
-/* Y1 pipe 8-bit */
-#define R_TILEPRO_IMM8_Y1 20
-/* X1 pipe mtspr */
-#define R_TILEPRO_MT_IMM15_X1 21
-/* X1 pipe mfspr */
-#define R_TILEPRO_MF_IMM15_X1 22
-/* X0 pipe 16-bit */
-#define R_TILEPRO_IMM16_X0 23
-/* X1 pipe 16-bit */
-#define R_TILEPRO_IMM16_X1 24
-/* X0 pipe low 16-bit */
-#define R_TILEPRO_IMM16_X0_LO 25
-/* X1 pipe low 16-bit */
-#define R_TILEPRO_IMM16_X1_LO 26
-/* X0 pipe high 16-bit */
-#define R_TILEPRO_IMM16_X0_HI 27
-/* X1 pipe high 16-bit */
-#define R_TILEPRO_IMM16_X1_HI 28
-/* X0 pipe high 16-bit, adjusted */
-#define R_TILEPRO_IMM16_X0_HA 29
-/* X1 pipe high 16-bit, adjusted */
-#define R_TILEPRO_IMM16_X1_HA 30
-/* X0 pipe PC relative 16 bit */
-#define R_TILEPRO_IMM16_X0_PCREL 31
-/* X1 pipe PC relative 16 bit */
-#define R_TILEPRO_IMM16_X1_PCREL 32
-/* X0 pipe PC relative low 16 bit */
-#define R_TILEPRO_IMM16_X0_LO_PCREL 33
-/* X1 pipe PC relative low 16 bit */
-#define R_TILEPRO_IMM16_X1_LO_PCREL 34
-/* X0 pipe PC relative high 16 bit */
-#define R_TILEPRO_IMM16_X0_HI_PCREL 35
-/* X1 pipe PC relative high 16 bit */
-#define R_TILEPRO_IMM16_X1_HI_PCREL 36
-/* X0 pipe PC relative ha() 16 bit */
-#define R_TILEPRO_IMM16_X0_HA_PCREL 37
-/* X1 pipe PC relative ha() 16 bit */
-#define R_TILEPRO_IMM16_X1_HA_PCREL 38
-/* X0 pipe 16-bit GOT offset */
-#define R_TILEPRO_IMM16_X0_GOT 39
-/* X1 pipe 16-bit GOT offset */
-#define R_TILEPRO_IMM16_X1_GOT 40
-/* X0 pipe low 16-bit GOT offset */
-#define R_TILEPRO_IMM16_X0_GOT_LO 41
-/* X1 pipe low 16-bit GOT offset */
-#define R_TILEPRO_IMM16_X1_GOT_LO 42
-/* X0 pipe high 16-bit GOT offset */
-#define R_TILEPRO_IMM16_X0_GOT_HI 43
-/* X1 pipe high 16-bit GOT offset */
-#define R_TILEPRO_IMM16_X1_GOT_HI 44
-/* X0 pipe ha() 16-bit GOT offset */
-#define R_TILEPRO_IMM16_X0_GOT_HA 45
-/* X1 pipe ha() 16-bit GOT offset */
-#define R_TILEPRO_IMM16_X1_GOT_HA 46
-/* X0 pipe mm "start" */
-#define R_TILEPRO_MMSTART_X0 47
-/* X0 pipe mm "end" */
-#define R_TILEPRO_MMEND_X0 48
-/* X1 pipe mm "start" */
-#define R_TILEPRO_MMSTART_X1 49
-/* X1 pipe mm "end" */
-#define R_TILEPRO_MMEND_X1 50
-/* X0 pipe shift amount */
-#define R_TILEPRO_SHAMT_X0 51
-/* X1 pipe shift amount */
-#define R_TILEPRO_SHAMT_X1 52
-/* Y0 pipe shift amount */
-#define R_TILEPRO_SHAMT_Y0 53
-/* Y1 pipe shift amount */
-#define R_TILEPRO_SHAMT_Y1 54
-/* X1 pipe destination 8-bit */
-#define R_TILEPRO_DEST_IMM8_X1 55
-/* Relocs 56-59 are currently not defined.  */
-/* "jal" for TLS GD */
-
-#define R_TILEPRO_TLS_GD_CALL 60
-/* X0 pipe "addi" for TLS GD */
-#define R_TILEPRO_IMM8_X0_TLS_GD_ADD 61
-/* X1 pipe "addi" for TLS GD */
-#define R_TILEPRO_IMM8_X1_TLS_GD_ADD 62
-/* Y0 pipe "addi" for TLS GD */
-#define R_TILEPRO_IMM8_Y0_TLS_GD_ADD 63
-/* Y1 pipe "addi" for TLS GD */
-#define R_TILEPRO_IMM8_Y1_TLS_GD_ADD 64
-/* "lw_tls" for TLS IE */
-#define R_TILEPRO_TLS_IE_LOAD 65
-/* X0 pipe 16-bit TLS GD offset */
-#define R_TILEPRO_IMM16_X0_TLS_GD 66
-/* X1 pipe 16-bit TLS GD offset */
-#define R_TILEPRO_IMM16_X1_TLS_GD 67
-/* X0 pipe low 16-bit TLS GD offset */
-#define R_TILEPRO_IMM16_X0_TLS_GD_LO 68
-/* X1 pipe low 16-bit TLS GD offset */
-#define R_TILEPRO_IMM16_X1_TLS_GD_LO 69
-/* X0 pipe high 16-bit TLS GD offset */
-#define R_TILEPRO_IMM16_X0_TLS_GD_HI 70
-/* X1 pipe high 16-bit TLS GD offset */
-#define R_TILEPRO_IMM16_X1_TLS_GD_HI 71
-/* X0 pipe ha() 16-bit TLS GD offset */
-#define R_TILEPRO_IMM16_X0_TLS_GD_HA 72
-/* X1 pipe ha() 16-bit TLS GD offset */
-#define R_TILEPRO_IMM16_X1_TLS_GD_HA 73
-/* X0 pipe 16-bit TLS IE offset */
-#define R_TILEPRO_IMM16_X0_TLS_IE 74
-/* X1 pipe 16-bit TLS IE offset */
-#define R_TILEPRO_IMM16_X1_TLS_IE 75
-/* X0 pipe low 16-bit TLS IE offset */
-#define R_TILEPRO_IMM16_X0_TLS_IE_LO 76
-/* X1 pipe low 16-bit TLS IE offset */
-#define R_TILEPRO_IMM16_X1_TLS_IE_LO 77
-/* X0 pipe high 16-bit TLS IE offset */
-#define R_TILEPRO_IMM16_X0_TLS_IE_HI 78
-/* X1 pipe high 16-bit TLS IE offset */
-#define R_TILEPRO_IMM16_X1_TLS_IE_HI 79
-/* X0 pipe ha() 16-bit TLS IE offset */
-#define R_TILEPRO_IMM16_X0_TLS_IE_HA 80
-/* X1 pipe ha() 16-bit TLS IE offset */
-#define R_TILEPRO_IMM16_X1_TLS_IE_HA 81
-/* ID of module containing symbol */
-#define R_TILEPRO_TLS_DTPMOD32 82
-/* Offset in TLS block */
-#define R_TILEPRO_TLS_DTPOFF32 83
-/* Offset in static TLS block */
-#define R_TILEPRO_TLS_TPOFF32 84
-/* X0 pipe 16-bit TLS LE offset */
-#define R_TILEPRO_IMM16_X0_TLS_LE 85
-/* X1 pipe 16-bit TLS LE offset */
-#define R_TILEPRO_IMM16_X1_TLS_LE 86
-/* X0 pipe low 16-bit TLS LE offset */
-#define R_TILEPRO_IMM16_X0_TLS_LE_LO 87
-/* X1 pipe low 16-bit TLS LE offset */
-#define R_TILEPRO_IMM16_X1_TLS_LE_LO 88
-/* X0 pipe high 16-bit TLS LE offset */
-#define R_TILEPRO_IMM16_X0_TLS_LE_HI 89
-/* X1 pipe high 16-bit TLS LE offset */
-#define R_TILEPRO_IMM16_X1_TLS_LE_HI 90
-/* X0 pipe ha() 16-bit TLS LE offset */
-#define R_TILEPRO_IMM16_X0_TLS_LE_HA 91
-/* X1 pipe ha() 16-bit TLS LE offset */
-#define R_TILEPRO_IMM16_X1_TLS_LE_HA 92
-/* GNU C++ vtable hierarchy */
-
-#define R_TILEPRO_GNU_VTINHERIT 128
-/* GNU C++ vtable member usage */
-#define R_TILEPRO_GNU_VTENTRY 129
-
-#define R_TILEPRO_NUM 130
-/* TILE-Gx relocations.  */
-/* No reloc */
-
-#define R_TILEGX_NONE 0
-/* Direct 64 bit */
-#define R_TILEGX_64 1
-/* Direct 32 bit */
-#define R_TILEGX_32 2
-/* Direct 16 bit */
-#define R_TILEGX_16 3
-/* Direct 8 bit */
-#define R_TILEGX_8 4
-/* PC relative 64 bit */
-#define R_TILEGX_64_PCREL 5
-/* PC relative 32 bit */
-#define R_TILEGX_32_PCREL 6
-/* PC relative 16 bit */
-#define R_TILEGX_16_PCREL 7
-/* PC relative 8 bit */
-#define R_TILEGX_8_PCREL 8
-/* hword 0 16-bit */
-#define R_TILEGX_HW0 9
-/* hword 1 16-bit */
-#define R_TILEGX_HW1 10
-/* hword 2 16-bit */
-#define R_TILEGX_HW2 11
-/* hword 3 16-bit */
-#define R_TILEGX_HW3 12
-/* last hword 0 16-bit */
-#define R_TILEGX_HW0_LAST 13
-/* last hword 1 16-bit */
-#define R_TILEGX_HW1_LAST 14
-/* last hword 2 16-bit */
-#define R_TILEGX_HW2_LAST 15
-/* Copy relocation */
-#define R_TILEGX_COPY 16
-/* Create GOT entry */
-#define R_TILEGX_GLOB_DAT 17
-/* Create PLT entry */
-#define R_TILEGX_JMP_SLOT 18
-/* Adjust by program base */
-#define R_TILEGX_RELATIVE 19
-/* X1 pipe branch offset */
-#define R_TILEGX_BROFF_X1 20
-/* X1 pipe jump offset */
-#define R_TILEGX_JUMPOFF_X1 21
-/* X1 pipe jump offset to PLT */
-#define R_TILEGX_JUMPOFF_X1_PLT 22
-/* X0 pipe 8-bit */
-#define R_TILEGX_IMM8_X0 23
-/* Y0 pipe 8-bit */
-#define R_TILEGX_IMM8_Y0 24
-/* X1 pipe 8-bit */
-#define R_TILEGX_IMM8_X1 25
-/* Y1 pipe 8-bit */
-#define R_TILEGX_IMM8_Y1 26
-/* X1 pipe destination 8-bit */
-#define R_TILEGX_DEST_IMM8_X1 27
-/* X1 pipe mtspr */
-#define R_TILEGX_MT_IMM14_X1 28
-/* X1 pipe mfspr */
-#define R_TILEGX_MF_IMM14_X1 29
-/* X0 pipe mm "start" */
-#define R_TILEGX_MMSTART_X0 30
-/* X0 pipe mm "end" */
-#define R_TILEGX_MMEND_X0 31
-/* X0 pipe shift amount */
-#define R_TILEGX_SHAMT_X0 32
-/* X1 pipe shift amount */
-#define R_TILEGX_SHAMT_X1 33
-/* Y0 pipe shift amount */
-#define R_TILEGX_SHAMT_Y0 34
-/* Y1 pipe shift amount */
-#define R_TILEGX_SHAMT_Y1 35
-/* X0 pipe hword 0 */
-#define R_TILEGX_IMM16_X0_HW0 36
-/* X1 pipe hword 0 */
-#define R_TILEGX_IMM16_X1_HW0 37
-/* X0 pipe hword 1 */
-#define R_TILEGX_IMM16_X0_HW1 38
-/* X1 pipe hword 1 */
-#define R_TILEGX_IMM16_X1_HW1 39
-/* X0 pipe hword 2 */
-#define R_TILEGX_IMM16_X0_HW2 40
-/* X1 pipe hword 2 */
-#define R_TILEGX_IMM16_X1_HW2 41
-/* X0 pipe hword 3 */
-#define R_TILEGX_IMM16_X0_HW3 42
-/* X1 pipe hword 3 */
-#define R_TILEGX_IMM16_X1_HW3 43
-/* X0 pipe last hword 0 */
-#define R_TILEGX_IMM16_X0_HW0_LAST 44
-/* X1 pipe last hword 0 */
-#define R_TILEGX_IMM16_X1_HW0_LAST 45
-/* X0 pipe last hword 1 */
-#define R_TILEGX_IMM16_X0_HW1_LAST 46
-/* X1 pipe last hword 1 */
-#define R_TILEGX_IMM16_X1_HW1_LAST 47
-/* X0 pipe last hword 2 */
-#define R_TILEGX_IMM16_X0_HW2_LAST 48
-/* X1 pipe last hword 2 */
-#define R_TILEGX_IMM16_X1_HW2_LAST 49
-/* X0 pipe PC relative hword 0 */
-#define R_TILEGX_IMM16_X0_HW0_PCREL 50
-/* X1 pipe PC relative hword 0 */
-#define R_TILEGX_IMM16_X1_HW0_PCREL 51
-/* X0 pipe PC relative hword 1 */
-#define R_TILEGX_IMM16_X0_HW1_PCREL 52
-/* X1 pipe PC relative hword 1 */
-#define R_TILEGX_IMM16_X1_HW1_PCREL 53
-/* X0 pipe PC relative hword 2 */
-#define R_TILEGX_IMM16_X0_HW2_PCREL 54
-/* X1 pipe PC relative hword 2 */
-#define R_TILEGX_IMM16_X1_HW2_PCREL 55
-/* X0 pipe PC relative hword 3 */
-#define R_TILEGX_IMM16_X0_HW3_PCREL 56
-/* X1 pipe PC relative hword 3 */
-#define R_TILEGX_IMM16_X1_HW3_PCREL 57
-/* X0 pipe PC-rel last hword 0 */
-#define R_TILEGX_IMM16_X0_HW0_LAST_PCREL 58
-/* X1 pipe PC-rel last hword 0 */
-#define R_TILEGX_IMM16_X1_HW0_LAST_PCREL 59
-/* X0 pipe PC-rel last hword 1 */
-#define R_TILEGX_IMM16_X0_HW1_LAST_PCREL 60
-/* X1 pipe PC-rel last hword 1 */
-#define R_TILEGX_IMM16_X1_HW1_LAST_PCREL 61
-/* X0 pipe PC-rel last hword 2 */
-#define R_TILEGX_IMM16_X0_HW2_LAST_PCREL 62
-/* X1 pipe PC-rel last hword 2 */
-#define R_TILEGX_IMM16_X1_HW2_LAST_PCREL 63
-/* X0 pipe hword 0 GOT offset */
-#define R_TILEGX_IMM16_X0_HW0_GOT 64
-/* X1 pipe hword 0 GOT offset */
-#define R_TILEGX_IMM16_X1_HW0_GOT 65
-/* X0 pipe PC-rel PLT hword 0 */
-#define R_TILEGX_IMM16_X0_HW0_PLT_PCREL 66
-/* X1 pipe PC-rel PLT hword 0 */
-#define R_TILEGX_IMM16_X1_HW0_PLT_PCREL 67
-/* X0 pipe PC-rel PLT hword 1 */
-#define R_TILEGX_IMM16_X0_HW1_PLT_PCREL 68
-/* X1 pipe PC-rel PLT hword 1 */
-#define R_TILEGX_IMM16_X1_HW1_PLT_PCREL 69
-/* X0 pipe PC-rel PLT hword 2 */
-#define R_TILEGX_IMM16_X0_HW2_PLT_PCREL 70
-/* X1 pipe PC-rel PLT hword 2 */
-#define R_TILEGX_IMM16_X1_HW2_PLT_PCREL 71
-/* X0 pipe last hword 0 GOT offset */
-#define R_TILEGX_IMM16_X0_HW0_LAST_GOT 72
-/* X1 pipe last hword 0 GOT offset */
-#define R_TILEGX_IMM16_X1_HW0_LAST_GOT 73
-/* X0 pipe last hword 1 GOT offset */
-#define R_TILEGX_IMM16_X0_HW1_LAST_GOT 74
-/* X1 pipe last hword 1 GOT offset */
-#define R_TILEGX_IMM16_X1_HW1_LAST_GOT 75
-/* X0 pipe PC-rel PLT hword 3 */
-#define R_TILEGX_IMM16_X0_HW3_PLT_PCREL 76
-/* X1 pipe PC-rel PLT hword 3 */
-#define R_TILEGX_IMM16_X1_HW3_PLT_PCREL 77
-/* X0 pipe hword 0 TLS GD offset */
-#define R_TILEGX_IMM16_X0_HW0_TLS_GD 78
-/* X1 pipe hword 0 TLS GD offset */
-#define R_TILEGX_IMM16_X1_HW0_TLS_GD 79
-/* X0 pipe hword 0 TLS LE offset */
-#define R_TILEGX_IMM16_X0_HW0_TLS_LE 80
-/* X1 pipe hword 0 TLS LE offset */
-#define R_TILEGX_IMM16_X1_HW0_TLS_LE 81
-/* X0 pipe last hword 0 LE off */
-#define R_TILEGX_IMM16_X0_HW0_LAST_TLS_LE 82
-/* X1 pipe last hword 0 LE off */
-#define R_TILEGX_IMM16_X1_HW0_LAST_TLS_LE 83
-/* X0 pipe last hword 1 LE off */
-#define R_TILEGX_IMM16_X0_HW1_LAST_TLS_LE 84
-/* X1 pipe last hword 1 LE off */
-#define R_TILEGX_IMM16_X1_HW1_LAST_TLS_LE 85
-/* X0 pipe last hword 0 GD off */
-#define R_TILEGX_IMM16_X0_HW0_LAST_TLS_GD 86
-/* X1 pipe last hword 0 GD off */
-#define R_TILEGX_IMM16_X1_HW0_LAST_TLS_GD 87
-/* X0 pipe last hword 1 GD off */
-#define R_TILEGX_IMM16_X0_HW1_LAST_TLS_GD 88
-/* X1 pipe last hword 1 GD off */
-#define R_TILEGX_IMM16_X1_HW1_LAST_TLS_GD 89
-/* Relocs 90-91 are currently not defined.  */
-/* X0 pipe hword 0 TLS IE offset */
-
-#define R_TILEGX_IMM16_X0_HW0_TLS_IE 92
-/* X1 pipe hword 0 TLS IE offset */
-#define R_TILEGX_IMM16_X1_HW0_TLS_IE 93
-/* X0 pipe PC-rel PLT last hword 0 */
-#define R_TILEGX_IMM16_X0_HW0_LAST_PLT_PCREL 94
-/* X1 pipe PC-rel PLT last hword 0 */
-#define R_TILEGX_IMM16_X1_HW0_LAST_PLT_PCREL 95
-/* X0 pipe PC-rel PLT last hword 1 */
-#define R_TILEGX_IMM16_X0_HW1_LAST_PLT_PCREL 96
-/* X1 pipe PC-rel PLT last hword 1 */
-#define R_TILEGX_IMM16_X1_HW1_LAST_PLT_PCREL 97
-/* X0 pipe PC-rel PLT last hword 2 */
-#define R_TILEGX_IMM16_X0_HW2_LAST_PLT_PCREL 98
-/* X1 pipe PC-rel PLT last hword 2 */
-#define R_TILEGX_IMM16_X1_HW2_LAST_PLT_PCREL 99
-/* X0 pipe last hword 0 IE off */
-#define R_TILEGX_IMM16_X0_HW0_LAST_TLS_IE 100
-/* X1 pipe last hword 0 IE off */
-#define R_TILEGX_IMM16_X1_HW0_LAST_TLS_IE 101
-/* X0 pipe last hword 1 IE off */
-#define R_TILEGX_IMM16_X0_HW1_LAST_TLS_IE 102
-/* X1 pipe last hword 1 IE off */
-#define R_TILEGX_IMM16_X1_HW1_LAST_TLS_IE 103
-/* Relocs 104-105 are currently not defined.  */
-/* 64-bit ID of symbol's module */
-
-#define R_TILEGX_TLS_DTPMOD64 106
-/* 64-bit offset in TLS block */
-#define R_TILEGX_TLS_DTPOFF64 107
-/* 64-bit offset in static TLS block */
-#define R_TILEGX_TLS_TPOFF64 108
-/* 32-bit ID of symbol's module */
-#define R_TILEGX_TLS_DTPMOD32 109
-/* 32-bit offset in TLS block */
-#define R_TILEGX_TLS_DTPOFF32 110
-/* 32-bit offset in static TLS block */
-#define R_TILEGX_TLS_TPOFF32 111
-/* "jal" for TLS GD */
-#define R_TILEGX_TLS_GD_CALL 112
-/* X0 pipe "addi" for TLS GD */
-#define R_TILEGX_IMM8_X0_TLS_GD_ADD 113
-/* X1 pipe "addi" for TLS GD */
-#define R_TILEGX_IMM8_X1_TLS_GD_ADD 114
-/* Y0 pipe "addi" for TLS GD */
-#define R_TILEGX_IMM8_Y0_TLS_GD_ADD 115
-/* Y1 pipe "addi" for TLS GD */
-#define R_TILEGX_IMM8_Y1_TLS_GD_ADD 116
-/* "ld_tls" for TLS IE */
-#define R_TILEGX_TLS_IE_LOAD 117
-/* X0 pipe "addi" for TLS GD/IE */
-#define R_TILEGX_IMM8_X0_TLS_ADD 118
-/* X1 pipe "addi" for TLS GD/IE */
-#define R_TILEGX_IMM8_X1_TLS_ADD 119
-/* Y0 pipe "addi" for TLS GD/IE */
-#define R_TILEGX_IMM8_Y0_TLS_ADD 120
-/* Y1 pipe "addi" for TLS GD/IE */
-#define R_TILEGX_IMM8_Y1_TLS_ADD 121
-/* GNU C++ vtable hierarchy */
-
-#define R_TILEGX_GNU_VTINHERIT 128
-/* GNU C++ vtable member usage */
-#define R_TILEGX_GNU_VTENTRY 129
-
-#define R_TILEGX_NUM 130
-/* RISC-V ELF Flags */
-
-#define EF_RISCV_RVC 0x0001
-#define EF_RISCV_FLOAT_ABI 0x0006
-#define EF_RISCV_FLOAT_ABI_SOFT 0x0000
-#define EF_RISCV_FLOAT_ABI_SINGLE 0x0002
-#define EF_RISCV_FLOAT_ABI_DOUBLE 0x0004
-#define EF_RISCV_FLOAT_ABI_QUAD 0x0006
-/* RISC-V relocations.  */
-
-#define R_RISCV_NONE 0
-#define R_RISCV_32 1
-#define R_RISCV_64 2
-#define R_RISCV_RELATIVE 3
-#define R_RISCV_COPY 4
-#define R_RISCV_JUMP_SLOT 5
-#define R_RISCV_TLS_DTPMOD32 6
-#define R_RISCV_TLS_DTPMOD64 7
-#define R_RISCV_TLS_DTPREL32 8
-#define R_RISCV_TLS_DTPREL64 9
-#define R_RISCV_TLS_TPREL32 10
-#define R_RISCV_TLS_TPREL64 11
-#define R_RISCV_BRANCH 16
-#define R_RISCV_JAL 17
-#define R_RISCV_CALL 18
-#define R_RISCV_CALL_PLT 19
-#define R_RISCV_GOT_HI20 20
-#define R_RISCV_TLS_GOT_HI20 21
-#define R_RISCV_TLS_GD_HI20 22
-#define R_RISCV_PCREL_HI20 23
-#define R_RISCV_PCREL_LO12_I 24
-#define R_RISCV_PCREL_LO12_S 25
-#define R_RISCV_HI20 26
-#define R_RISCV_LO12_I 27
-#define R_RISCV_LO12_S 28
-#define R_RISCV_TPREL_HI20 29
-#define R_RISCV_TPREL_LO12_I 30
-#define R_RISCV_TPREL_LO12_S 31
-#define R_RISCV_TPREL_ADD 32
-#define R_RISCV_ADD8 33
-#define R_RISCV_ADD16 34
-#define R_RISCV_ADD32 35
-#define R_RISCV_ADD64 36
-#define R_RISCV_SUB8 37
-#define R_RISCV_SUB16 38
-#define R_RISCV_SUB32 39
-#define R_RISCV_SUB64 40
-#define R_RISCV_GNU_VTINHERIT 41
-#define R_RISCV_GNU_VTENTRY 42
-#define R_RISCV_ALIGN 43
-#define R_RISCV_RVC_BRANCH 44
-#define R_RISCV_RVC_JUMP 45
-#define R_RISCV_RVC_LUI 46
-#define R_RISCV_GPREL_I 47
-#define R_RISCV_GPREL_S 48
-#define R_RISCV_TPREL_I 49
-#define R_RISCV_TPREL_S 50
-#define R_RISCV_RELAX 51
-#define R_RISCV_SUB6 52
-#define R_RISCV_SET6 53
-#define R_RISCV_SET8 54
-#define R_RISCV_SET16 55
-#define R_RISCV_SET32 56
-#define R_RISCV_32_PCREL 57
-
-#define R_RISCV_NUM 58
 /* elf.h */
-#endif /* _ELF_H */
-// 339 "tcc.h" 2
-// 1 "stab.h" 1
-#ifndef __GNU_STAB__
-/* Indicate the GNU stab.h is in use.  */
-
-#define __GNU_STAB__
+/* ==================== stab.h ==================== */
 
 #define __define_stab(NAME,CODE,STRING) NAME=CODE,
 
 enum __stab_debug_code {
-// 1 "stab.def" 1
-	/* Table of DBX symbol codes for the GNU system.
-	   Copyright (C) 1988, 1997 Free Software Foundation, Inc.
-	   This file is part of the GNU C Library.
+	/* ==================== stab.def ==================== */
 
-	   The GNU C Library is free software; you can redistribute it and/or
-	   modify it under the terms of the GNU Library General Public License as
-	   published by the Free Software Foundation; either version 2 of the
-	   License, or (at your option) any later version.
-
-	   The GNU C Library is distributed in the hope that it will be useful,
-	   but WITHOUT ANY WARRANTY; without even the implied warranty of
-	   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	   Library General Public License for more details.
-
-	   You should have received a copy of the GNU Library General Public
-	   License along with the GNU C Library; see the file COPYING.LIB.  If not,
-	   write to the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
-	   Boston, MA 02111-1307, USA.  */
 	/* This contains contribution from Cygnus Support.  */
 	/* Global variable.  Only the name is significant.
 	   To find the address, look in the corresponding external symbol.  */
-// 24 "stab.def"
 	__define_stab (N_GSYM, 0x20, "GSYM")
 	/* Function name for BSD Fortran.  Only the name is significant.
 	   To find the address, look in the corresponding external symbol.  */
@@ -5636,73 +1106,24 @@ enum __stab_debug_code {
 	 * 50 EHDECL is also MOD2.
 	 * 48 BSLINE is also BROWS.
 	 */
-// 12 "stab.h" 2
 	LAST_UNUSED_STAB_CODE
 };
 
 #undef __define_stab
 /* __GNU_STAB_ */
-#endif /* __GNU_STAB__ */
-// 340 "tcc.h" 2
-// 1 "dwarf.h" 1
-/* This file defines standard DWARF types, structures, and macros.
-   Copyright (C) 2000-2011, 2014, 2016, 2017, 2018 Red Hat, Inc.
-   This file is part of elfutils.
+/* ==================== dwarf.h ==================== */
 
-   This file is free software; you can redistribute it and/or modify
-   it under the terms of either
-
-     * the GNU Lesser General Public License as published by the Free
-       Software Foundation; either version 3 of the License, or (at
-       your option) any later version
-
-   or
-
-     * the GNU General Public License as published by the Free
-       Software Foundation; either version 2 of the License, or (at
-       your option) any later version
-
-   or both in parallel, as here.
-
-   elfutils is distributed in the hope that it will be useful, but
-   WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   General Public License for more details.
-
-   You should have received copies of the GNU General Public License and
-   the GNU Lesser General Public License along with this program.  If
-   not, see <http://www.gnu.org/licenses/>.  */
-#ifndef _DWARF_H
-// 30 "dwarf.h"
-#define _DWARF_H 1
 /* DWARF Unit Header Types.  */
 
 enum {
-	DW_UT_compile = 0x01,
-	DW_UT_type = 0x02,
-	DW_UT_partial = 0x03,
-	DW_UT_skeleton = 0x04,
-	DW_UT_split_compile = 0x05,
-	DW_UT_split_type = 0x06,
-
-	DW_UT_lo_user = 0x80,
-	DW_UT_hi_user = 0xff
+	DW_UT_compile = 0x01
 };
 /* DWARF tags.  */
 
 enum {
 	DW_TAG_array_type = 0x01,
-	DW_TAG_class_type = 0x02,
-	DW_TAG_entry_point = 0x03,
 	DW_TAG_enumeration_type = 0x04,
 	DW_TAG_formal_parameter = 0x05,
-	/* 0x06 reserved.  */
-	/* 0x07 reserved.  */
-
-	DW_TAG_imported_declaration = 0x08,
-	/* 0x09 reserved.  */
-
-	DW_TAG_label = 0x0a,
 	DW_TAG_lexical_block = 0x0b,
 	/* 0x0c reserved.  */
 
@@ -5710,92 +1131,18 @@ enum {
 	/* 0x0e reserved.  */
 
 	DW_TAG_pointer_type = 0x0f,
-	DW_TAG_reference_type = 0x10,
 	DW_TAG_compile_unit = 0x11,
-	DW_TAG_string_type = 0x12,
 	DW_TAG_structure_type = 0x13,
 	/* 0x14 reserved.  */
 
 	DW_TAG_subroutine_type = 0x15,
 	DW_TAG_typedef = 0x16,
 	DW_TAG_union_type = 0x17,
-	DW_TAG_unspecified_parameters = 0x18,
-	DW_TAG_variant = 0x19,
-	DW_TAG_common_block = 0x1a,
-	DW_TAG_common_inclusion = 0x1b,
-	DW_TAG_inheritance = 0x1c,
-	DW_TAG_inlined_subroutine = 0x1d,
-	DW_TAG_module = 0x1e,
-	DW_TAG_ptr_to_member_type = 0x1f,
-	DW_TAG_set_type = 0x20,
 	DW_TAG_subrange_type = 0x21,
-	DW_TAG_with_stmt = 0x22,
-	DW_TAG_access_declaration = 0x23,
 	DW_TAG_base_type = 0x24,
-	DW_TAG_catch_block = 0x25,
-	DW_TAG_const_type = 0x26,
-	DW_TAG_constant = 0x27,
 	DW_TAG_enumerator = 0x28,
-	DW_TAG_file_type = 0x29,
-	DW_TAG_friend = 0x2a,
-	DW_TAG_namelist = 0x2b,
-	DW_TAG_namelist_item = 0x2c,
-	DW_TAG_packed_type = 0x2d,
 	DW_TAG_subprogram = 0x2e,
-	DW_TAG_template_type_parameter = 0x2f,
-	DW_TAG_template_value_parameter = 0x30,
-	DW_TAG_thrown_type = 0x31,
-	DW_TAG_try_block = 0x32,
-	DW_TAG_variant_part = 0x33,
-	DW_TAG_variable = 0x34,
-	DW_TAG_volatile_type = 0x35,
-	DW_TAG_dwarf_procedure = 0x36,
-	DW_TAG_restrict_type = 0x37,
-	DW_TAG_interface_type = 0x38,
-	DW_TAG_namespace = 0x39,
-	DW_TAG_imported_module = 0x3a,
-	DW_TAG_unspecified_type = 0x3b,
-	DW_TAG_partial_unit = 0x3c,
-	DW_TAG_imported_unit = 0x3d,
-	/* 0x3e reserved.  Was DW_TAG_mutable_type.  */
-
-	DW_TAG_condition = 0x3f,
-	DW_TAG_shared_type = 0x40,
-	DW_TAG_type_unit = 0x41,
-	DW_TAG_rvalue_reference_type = 0x42,
-	DW_TAG_template_alias = 0x43,
-	DW_TAG_coarray_type = 0x44,
-	DW_TAG_generic_subrange = 0x45,
-	DW_TAG_dynamic_type = 0x46,
-	DW_TAG_atomic_type = 0x47,
-	DW_TAG_call_site = 0x48,
-	DW_TAG_call_site_parameter = 0x49,
-	DW_TAG_skeleton_unit = 0x4a,
-	DW_TAG_immutable_type = 0x4b,
-
-	DW_TAG_lo_user = 0x4080,
-
-	DW_TAG_MIPS_loop = 0x4081,
-	DW_TAG_format_label = 0x4101,
-	DW_TAG_function_template = 0x4102,
-	DW_TAG_class_template = 0x4103,
-
-	DW_TAG_GNU_BINCL = 0x4104,
-	DW_TAG_GNU_EINCL = 0x4105,
-
-	DW_TAG_GNU_template_template_param = 0x4106,
-	DW_TAG_GNU_template_parameter_pack = 0x4107,
-	DW_TAG_GNU_formal_parameter_pack = 0x4108,
-	DW_TAG_GNU_call_site = 0x4109,
-	DW_TAG_GNU_call_site_parameter = 0x410a,
-
-	DW_TAG_hi_user = 0xffff
-};
-/* Children determination encodings.  */
-
-enum {
-	DW_CHILDREN_no = 0,
-	DW_CHILDREN_yes = 1
+	DW_TAG_variable = 0x34
 };
 /* DWARF attributes encodings.  */
 
@@ -5803,17 +1150,9 @@ enum {
 	DW_AT_sibling = 0x01,
 	DW_AT_location = 0x02,
 	DW_AT_name = 0x03,
-	/* 0x04 reserved.  */
-	/* 0x05 reserved.  */
-	/* 0x06 reserved.  */
-	/* 0x07 reserved.  */
-	/* 0x08 reserved.  */
-
-	DW_AT_ordering = 0x09,
 	/* 0x0a reserved.  */
 
 	DW_AT_byte_size = 0x0b,
-	DW_AT_bit_offset = 0x0c,/* Deprecated in DWARF4.  */
 
 	DW_AT_bit_size = 0x0d,
 	/* 0x0e reserved.  */
@@ -5823,270 +1162,40 @@ enum {
 	DW_AT_low_pc = 0x11,
 	DW_AT_high_pc = 0x12,
 	DW_AT_language = 0x13,
-	/* 0x14 reserved.  */
-
-	DW_AT_discr = 0x15,
-	DW_AT_discr_value = 0x16,
-	DW_AT_visibility = 0x17,
-	DW_AT_import = 0x18,
-	DW_AT_string_length = 0x19,
-	DW_AT_common_reference = 0x1a,
 	DW_AT_comp_dir = 0x1b,
 	DW_AT_const_value = 0x1c,
-	DW_AT_containing_type = 0x1d,
-	DW_AT_default_value = 0x1e,
-	/* 0x1f reserved.  */
-
-	DW_AT_inline = 0x20,
-	DW_AT_is_optional = 0x21,
-	DW_AT_lower_bound = 0x22,
 	/* 0x23 reserved.  */
 	/* 0x24 reserved.  */
 
 	DW_AT_producer = 0x25,
-	/* 0x26 reserved.  */
-
-	DW_AT_prototyped = 0x27,
-	/* 0x28 reserved.  */
-	/* 0x29 reserved.  */
-
-	DW_AT_return_addr = 0x2a,
-	/* 0x2b reserved.  */
-
-	DW_AT_start_scope = 0x2c,
-	/* 0x2d reserved.  */
-
-	DW_AT_bit_stride = 0x2e,
 	DW_AT_upper_bound = 0x2f,
-	/* 0x30 reserved.  */
-
-	DW_AT_abstract_origin = 0x31,
-	DW_AT_accessibility = 0x32,
-	DW_AT_address_class = 0x33,
-	DW_AT_artificial = 0x34,
-	DW_AT_base_types = 0x35,
-	DW_AT_calling_convention = 0x36,
-	DW_AT_count = 0x37,
 	DW_AT_data_member_location = 0x38,
-	DW_AT_decl_column = 0x39,
 	DW_AT_decl_file = 0x3a,
 	DW_AT_decl_line = 0x3b,
-	DW_AT_declaration = 0x3c,
-	DW_AT_discr_list = 0x3d,
 	DW_AT_encoding = 0x3e,
 	DW_AT_external = 0x3f,
 	DW_AT_frame_base = 0x40,
-	DW_AT_friend = 0x41,
-	DW_AT_identifier_case = 0x42,
-	DW_AT_macro_info = 0x43,/* Deprecated in DWARF5.  */
-
-	DW_AT_namelist_item = 0x44,
-	DW_AT_priority = 0x45,
-	DW_AT_segment = 0x46,
-	DW_AT_specification = 0x47,
-	DW_AT_static_link = 0x48,
 	DW_AT_type = 0x49,
-	DW_AT_use_location = 0x4a,
-	DW_AT_variable_parameter = 0x4b,
-	DW_AT_virtuality = 0x4c,
-	DW_AT_vtable_elem_location = 0x4d,
-	DW_AT_allocated = 0x4e,
-	DW_AT_associated = 0x4f,
-	DW_AT_data_location = 0x50,
-	DW_AT_byte_stride = 0x51,
-	DW_AT_entry_pc = 0x52,
-	DW_AT_use_UTF8 = 0x53,
-	DW_AT_extension = 0x54,
-	DW_AT_ranges = 0x55,
-	DW_AT_trampoline = 0x56,
-	DW_AT_call_column = 0x57,
-	DW_AT_call_file = 0x58,
-	DW_AT_call_line = 0x59,
-	DW_AT_description = 0x5a,
-	DW_AT_binary_scale = 0x5b,
-	DW_AT_decimal_scale = 0x5c,
-	DW_AT_small = 0x5d,
-	DW_AT_decimal_sign = 0x5e,
-	DW_AT_digit_count = 0x5f,
-	DW_AT_picture_string = 0x60,
-	DW_AT_mutable = 0x61,
-	DW_AT_threads_scaled = 0x62,
-	DW_AT_explicit = 0x63,
-	DW_AT_object_pointer = 0x64,
-	DW_AT_endianity = 0x65,
-	DW_AT_elemental = 0x66,
-	DW_AT_pure = 0x67,
-	DW_AT_recursive = 0x68,
-	DW_AT_signature = 0x69,
-	DW_AT_main_subprogram = 0x6a,
-	DW_AT_data_bit_offset = 0x6b,
-	DW_AT_const_expr = 0x6c,
-	DW_AT_enum_class = 0x6d,
-	DW_AT_linkage_name = 0x6e,
-	DW_AT_string_length_bit_size = 0x6f,
-	DW_AT_string_length_byte_size = 0x70,
-	DW_AT_rank = 0x71,
-	DW_AT_str_offsets_base = 0x72,
-	DW_AT_addr_base = 0x73,
-	DW_AT_rnglists_base = 0x74,
-	/* 0x75 reserved.  */
-
-	DW_AT_dwo_name = 0x76,
-	DW_AT_reference = 0x77,
-	DW_AT_rvalue_reference = 0x78,
-	DW_AT_macros = 0x79,
-	DW_AT_call_all_calls = 0x7a,
-	DW_AT_call_all_source_calls = 0x7b,
-	DW_AT_call_all_tail_calls = 0x7c,
-	DW_AT_call_return_pc = 0x7d,
-	DW_AT_call_value = 0x7e,
-	DW_AT_call_origin = 0x7f,
-	DW_AT_call_parameter = 0x80,
-	DW_AT_call_pc = 0x81,
-	DW_AT_call_tail_call = 0x82,
-	DW_AT_call_target = 0x83,
-	DW_AT_call_target_clobbered = 0x84,
-	DW_AT_call_data_location = 0x85,
-	DW_AT_call_data_value = 0x86,
-	DW_AT_noreturn = 0x87,
-	DW_AT_alignment = 0x88,
-	DW_AT_export_symbols = 0x89,
-	DW_AT_deleted = 0x8a,
-	DW_AT_defaulted = 0x8b,
-	DW_AT_loclists_base = 0x8c,
-
-	DW_AT_lo_user = 0x2000,
-
-	DW_AT_MIPS_fde = 0x2001,
-	DW_AT_MIPS_loop_begin = 0x2002,
-	DW_AT_MIPS_tail_loop_begin = 0x2003,
-	DW_AT_MIPS_epilog_begin = 0x2004,
-	DW_AT_MIPS_loop_unroll_factor = 0x2005,
-	DW_AT_MIPS_software_pipeline_depth = 0x2006,
-	DW_AT_MIPS_linkage_name = 0x2007,
-	DW_AT_MIPS_stride = 0x2008,
-	DW_AT_MIPS_abstract_name = 0x2009,
-	DW_AT_MIPS_clone_origin = 0x200a,
-	DW_AT_MIPS_has_inlines = 0x200b,
-	DW_AT_MIPS_stride_byte = 0x200c,
-	DW_AT_MIPS_stride_elem = 0x200d,
-	DW_AT_MIPS_ptr_dopetype = 0x200e,
-	DW_AT_MIPS_allocatable_dopetype = 0x200f,
-	DW_AT_MIPS_assumed_shape_dopetype = 0x2010,
-	DW_AT_MIPS_assumed_size = 0x2011,
-	/* GNU extensions.  */
-
-	DW_AT_sf_names = 0x2101,
-	DW_AT_src_info = 0x2102,
-	DW_AT_mac_info = 0x2103,
-	DW_AT_src_coords = 0x2104,
-	DW_AT_body_begin = 0x2105,
-	DW_AT_body_end = 0x2106,
-	DW_AT_GNU_vector = 0x2107,
-	DW_AT_GNU_guarded_by = 0x2108,
-	DW_AT_GNU_pt_guarded_by = 0x2109,
-	DW_AT_GNU_guarded = 0x210a,
-	DW_AT_GNU_pt_guarded = 0x210b,
-	DW_AT_GNU_locks_excluded = 0x210c,
-	DW_AT_GNU_exclusive_locks_required = 0x210d,
-	DW_AT_GNU_shared_locks_required = 0x210e,
-	DW_AT_GNU_odr_signature = 0x210f,
-	DW_AT_GNU_template_name = 0x2110,
-	DW_AT_GNU_call_site_value = 0x2111,
-	DW_AT_GNU_call_site_data_value = 0x2112,
-	DW_AT_GNU_call_site_target = 0x2113,
-	DW_AT_GNU_call_site_target_clobbered = 0x2114,
-	DW_AT_GNU_tail_call = 0x2115,
-	DW_AT_GNU_all_tail_call_sites = 0x2116,
-	DW_AT_GNU_all_call_sites = 0x2117,
-	DW_AT_GNU_all_source_call_sites = 0x2118,
-	DW_AT_GNU_locviews = 0x2137,
-	DW_AT_GNU_entry_view = 0x2138,
-	DW_AT_GNU_macros = 0x2119,
-	DW_AT_GNU_deleted = 0x211a,
-	/* GNU Debug Fission extensions.  */
-
-	DW_AT_GNU_dwo_name = 0x2130,
-	DW_AT_GNU_dwo_id = 0x2131,
-	DW_AT_GNU_ranges_base = 0x2132,
-	DW_AT_GNU_addr_base = 0x2133,
-	DW_AT_GNU_pubnames = 0x2134,
-	DW_AT_GNU_pubtypes = 0x2135,
-	/* https://gcc.gnu.org/wiki/DW_AT_GNU_numerator_denominator  */
-
-	DW_AT_GNU_numerator = 0x2303,
-	DW_AT_GNU_denominator = 0x2304,
-	/* https://gcc.gnu.org/wiki/DW_AT_GNU_bias  */
-
-	DW_AT_GNU_bias = 0x2305,
-
-	DW_AT_hi_user = 0x3fff
+	DW_AT_data_bit_offset = 0x6b
 };
 /* Old unofficially attribute names.  Should not be used.
    Will not appear in known-dwarf.h  */
-/* DWARF1 array subscripts and element data types.  */
-
-#define DW_AT_subscr_data 0x0a
-/* DWARF1 enumeration literals.  */
-
-#define DW_AT_element_list 0x0f
-/* DWARF1 reference for variable to member structure, class or union.  */
-
-#define DW_AT_member 0x14
 /* DWARF form encodings.  */
 
 enum {
 	DW_FORM_addr = 0x01,
-	DW_FORM_block2 = 0x03,
-	DW_FORM_block4 = 0x04,
-	DW_FORM_data2 = 0x05,
 	DW_FORM_data4 = 0x06,
 	DW_FORM_data8 = 0x07,
-	DW_FORM_string = 0x08,
-	DW_FORM_block = 0x09,
 	DW_FORM_block1 = 0x0a,
 	DW_FORM_data1 = 0x0b,
 	DW_FORM_flag = 0x0c,
 	DW_FORM_sdata = 0x0d,
 	DW_FORM_strp = 0x0e,
 	DW_FORM_udata = 0x0f,
-	DW_FORM_ref_addr = 0x10,
-	DW_FORM_ref1 = 0x11,
-	DW_FORM_ref2 = 0x12,
 	DW_FORM_ref4 = 0x13,
-	DW_FORM_ref8 = 0x14,
-	DW_FORM_ref_udata = 0x15,
-	DW_FORM_indirect = 0x16,
 	DW_FORM_sec_offset = 0x17,
 	DW_FORM_exprloc = 0x18,
-	DW_FORM_flag_present = 0x19,
-	DW_FORM_strx = 0x1a,
-	DW_FORM_addrx = 0x1b,
-	DW_FORM_ref_sup4 = 0x1c,
-	DW_FORM_strp_sup = 0x1d,
-	DW_FORM_data16 = 0x1e,
 	DW_FORM_line_strp = 0x1f,
-	DW_FORM_ref_sig8 = 0x20,
-	DW_FORM_implicit_const = 0x21,
-	DW_FORM_loclistx = 0x22,
-	DW_FORM_rnglistx = 0x23,
-	DW_FORM_ref_sup8 = 0x24,
-	DW_FORM_strx1 = 0x25,
-	DW_FORM_strx2 = 0x26,
-	DW_FORM_strx3 = 0x27,
-	DW_FORM_strx4 = 0x28,
-	DW_FORM_addrx1 = 0x29,
-	DW_FORM_addrx2 = 0x2a,
-	DW_FORM_addrx3 = 0x2b,
-	DW_FORM_addrx4 = 0x2c,
-	/* GNU Debug Fission extensions.  */
-
-	DW_FORM_GNU_addr_index = 0x1f01,
-	DW_FORM_GNU_str_index = 0x1f02,
-
-	DW_FORM_GNU_ref_alt = 0x1f20,/* offset in alternate .debuginfo.  */
-
-	DW_FORM_GNU_strp_alt = 0x1f21/* offset in alternate .debug_str. */
 
 };
 /* DWARF location operation encodings.  */
@@ -6094,720 +1203,59 @@ enum {
 enum {
 	DW_OP_addr = 0x03,/* Constant address.  */
 
-	DW_OP_deref = 0x06,
-	DW_OP_const1u = 0x08,/* Unsigned 1-byte constant.  */
-
-	DW_OP_const1s = 0x09,/* Signed 1-byte constant.  */
-
-	DW_OP_const2u = 0x0a,/* Unsigned 2-byte constant.  */
-
-	DW_OP_const2s = 0x0b,/* Signed 2-byte constant.  */
-
-	DW_OP_const4u = 0x0c,/* Unsigned 4-byte constant.  */
-
-	DW_OP_const4s = 0x0d,/* Signed 4-byte constant.  */
-
-	DW_OP_const8u = 0x0e,/* Unsigned 8-byte constant.  */
-
-	DW_OP_const8s = 0x0f,/* Signed 8-byte constant.  */
-
-	DW_OP_constu = 0x10,/* Unsigned LEB128 constant.  */
-
-	DW_OP_consts = 0x11,/* Signed LEB128 constant.  */
-
-	DW_OP_dup = 0x12,
-	DW_OP_drop = 0x13,
-	DW_OP_over = 0x14,
-	DW_OP_pick = 0x15,/* 1-byte stack index.  */
-
-	DW_OP_swap = 0x16,
-	DW_OP_rot = 0x17,
-	DW_OP_xderef = 0x18,
-	DW_OP_abs = 0x19,
-	DW_OP_and = 0x1a,
-	DW_OP_div = 0x1b,
-	DW_OP_minus = 0x1c,
-	DW_OP_mod = 0x1d,
-	DW_OP_mul = 0x1e,
-	DW_OP_neg = 0x1f,
-	DW_OP_not = 0x20,
-	DW_OP_or = 0x21,
-	DW_OP_plus = 0x22,
-	DW_OP_plus_uconst = 0x23,/* Unsigned LEB128 addend.  */
-
-	DW_OP_shl = 0x24,
-	DW_OP_shr = 0x25,
-	DW_OP_shra = 0x26,
-	DW_OP_xor = 0x27,
-	DW_OP_bra = 0x28,/* Signed 2-byte constant.  */
-
-	DW_OP_eq = 0x29,
-	DW_OP_ge = 0x2a,
-	DW_OP_gt = 0x2b,
-	DW_OP_le = 0x2c,
-	DW_OP_lt = 0x2d,
-	DW_OP_ne = 0x2e,
-	DW_OP_skip = 0x2f,/* Signed 2-byte constant.  */
-
-	DW_OP_lit0 = 0x30,/* Literal 0.  */
-
-	DW_OP_lit1 = 0x31,/* Literal 1.  */
-
-	DW_OP_lit2 = 0x32,/* Literal 2.  */
-
-	DW_OP_lit3 = 0x33,/* Literal 3.  */
-
-	DW_OP_lit4 = 0x34,/* Literal 4.  */
-
-	DW_OP_lit5 = 0x35,/* Literal 5.  */
-
-	DW_OP_lit6 = 0x36,/* Literal 6.  */
-
-	DW_OP_lit7 = 0x37,/* Literal 7.  */
-
-	DW_OP_lit8 = 0x38,/* Literal 8.  */
-
-	DW_OP_lit9 = 0x39,/* Literal 9.  */
-
-	DW_OP_lit10 = 0x3a,/* Literal 10.  */
-
-	DW_OP_lit11 = 0x3b,/* Literal 11.  */
-
-	DW_OP_lit12 = 0x3c,/* Literal 12.  */
-
-	DW_OP_lit13 = 0x3d,/* Literal 13.  */
-
-	DW_OP_lit14 = 0x3e,/* Literal 14.  */
-
-	DW_OP_lit15 = 0x3f,/* Literal 15.  */
-
-	DW_OP_lit16 = 0x40,/* Literal 16.  */
-
-	DW_OP_lit17 = 0x41,/* Literal 17.  */
-
-	DW_OP_lit18 = 0x42,/* Literal 18.  */
-
-	DW_OP_lit19 = 0x43,/* Literal 19.  */
-
-	DW_OP_lit20 = 0x44,/* Literal 20.  */
-
-	DW_OP_lit21 = 0x45,/* Literal 21.  */
-
-	DW_OP_lit22 = 0x46,/* Literal 22.  */
-
-	DW_OP_lit23 = 0x47,/* Literal 23.  */
-
-	DW_OP_lit24 = 0x48,/* Literal 24.  */
-
-	DW_OP_lit25 = 0x49,/* Literal 25.  */
-
-	DW_OP_lit26 = 0x4a,/* Literal 26.  */
-
-	DW_OP_lit27 = 0x4b,/* Literal 27.  */
-
-	DW_OP_lit28 = 0x4c,/* Literal 28.  */
-
-	DW_OP_lit29 = 0x4d,/* Literal 29.  */
-
-	DW_OP_lit30 = 0x4e,/* Literal 30.  */
-
-	DW_OP_lit31 = 0x4f,/* Literal 31.  */
-
-	DW_OP_reg0 = 0x50,/* Register 0.  */
-
-	DW_OP_reg1 = 0x51,/* Register 1.  */
-
-	DW_OP_reg2 = 0x52,/* Register 2.  */
-
-	DW_OP_reg3 = 0x53,/* Register 3.  */
-
-	DW_OP_reg4 = 0x54,/* Register 4.  */
-
-	DW_OP_reg5 = 0x55,/* Register 5.  */
-
 	DW_OP_reg6 = 0x56,/* Register 6.  */
 
-	DW_OP_reg7 = 0x57,/* Register 7.  */
-
-	DW_OP_reg8 = 0x58,/* Register 8.  */
-
-	DW_OP_reg9 = 0x59,/* Register 9.  */
-
-	DW_OP_reg10 = 0x5a,/* Register 10.  */
-
-	DW_OP_reg11 = 0x5b,/* Register 11.  */
-
-	DW_OP_reg12 = 0x5c,/* Register 12.  */
-
-	DW_OP_reg13 = 0x5d,/* Register 13.  */
-
-	DW_OP_reg14 = 0x5e,/* Register 14.  */
-
-	DW_OP_reg15 = 0x5f,/* Register 15.  */
-
-	DW_OP_reg16 = 0x60,/* Register 16.  */
-
-	DW_OP_reg17 = 0x61,/* Register 17.  */
-
-	DW_OP_reg18 = 0x62,/* Register 18.  */
-
-	DW_OP_reg19 = 0x63,/* Register 19.  */
-
-	DW_OP_reg20 = 0x64,/* Register 20.  */
-
-	DW_OP_reg21 = 0x65,/* Register 21.  */
-
-	DW_OP_reg22 = 0x66,/* Register 22.  */
-
-	DW_OP_reg23 = 0x67,/* Register 24.  */
-
-	DW_OP_reg24 = 0x68,/* Register 24.  */
-
-	DW_OP_reg25 = 0x69,/* Register 25.  */
-
-	DW_OP_reg26 = 0x6a,/* Register 26.  */
-
-	DW_OP_reg27 = 0x6b,/* Register 27.  */
-
-	DW_OP_reg28 = 0x6c,/* Register 28.  */
-
-	DW_OP_reg29 = 0x6d,/* Register 29.  */
-
-	DW_OP_reg30 = 0x6e,/* Register 30.  */
-
-	DW_OP_reg31 = 0x6f,/* Register 31.  */
-
-	DW_OP_breg0 = 0x70,/* Base register 0.  */
-
-	DW_OP_breg1 = 0x71,/* Base register 1.  */
-
-	DW_OP_breg2 = 0x72,/* Base register 2.  */
-
-	DW_OP_breg3 = 0x73,/* Base register 3.  */
-
-	DW_OP_breg4 = 0x74,/* Base register 4.  */
-
-	DW_OP_breg5 = 0x75,/* Base register 5.  */
-
-	DW_OP_breg6 = 0x76,/* Base register 6.  */
-
-	DW_OP_breg7 = 0x77,/* Base register 7.  */
-
-	DW_OP_breg8 = 0x78,/* Base register 8.  */
-
-	DW_OP_breg9 = 0x79,/* Base register 9.  */
-
-	DW_OP_breg10 = 0x7a,/* Base register 10.  */
-
-	DW_OP_breg11 = 0x7b,/* Base register 11.  */
-
-	DW_OP_breg12 = 0x7c,/* Base register 12.  */
-
-	DW_OP_breg13 = 0x7d,/* Base register 13.  */
-
-	DW_OP_breg14 = 0x7e,/* Base register 14.  */
-
-	DW_OP_breg15 = 0x7f,/* Base register 15.  */
-
-	DW_OP_breg16 = 0x80,/* Base register 16.  */
-
-	DW_OP_breg17 = 0x81,/* Base register 17.  */
-
-	DW_OP_breg18 = 0x82,/* Base register 18.  */
-
-	DW_OP_breg19 = 0x83,/* Base register 19.  */
-
-	DW_OP_breg20 = 0x84,/* Base register 20.  */
-
-	DW_OP_breg21 = 0x85,/* Base register 21.  */
-
-	DW_OP_breg22 = 0x86,/* Base register 22.  */
-
-	DW_OP_breg23 = 0x87,/* Base register 23.  */
-
-	DW_OP_breg24 = 0x88,/* Base register 24.  */
-
-	DW_OP_breg25 = 0x89,/* Base register 25.  */
-
-	DW_OP_breg26 = 0x8a,/* Base register 26.  */
-
-	DW_OP_breg27 = 0x8b,/* Base register 27.  */
-
-	DW_OP_breg28 = 0x8c,/* Base register 28.  */
-
-	DW_OP_breg29 = 0x8d,/* Base register 29.  */
-
-	DW_OP_breg30 = 0x8e,/* Base register 30.  */
-
-	DW_OP_breg31 = 0x8f,/* Base register 31.  */
-
-	DW_OP_regx = 0x90,/* Unsigned LEB128 register.  */
-
 	DW_OP_fbreg = 0x91,/* Signed LEB128 offset.  */
-
-	DW_OP_bregx = 0x92,/* ULEB128 register followed by SLEB128 off. */
-
-	DW_OP_piece = 0x93,/* ULEB128 size of piece addressed. */
-
-	DW_OP_deref_size = 0x94,/* 1-byte size of data retrieved.  */
-
-	DW_OP_xderef_size = 0x95,/* 1-byte size of data retrieved.  */
-
-	DW_OP_nop = 0x96,
-	DW_OP_push_object_address = 0x97,
-	DW_OP_call2 = 0x98,
-	DW_OP_call4 = 0x99,
-	DW_OP_call_ref = 0x9a,
-	DW_OP_form_tls_address = 0x9b,/* TLS offset to address in current thread */
-
-	DW_OP_call_frame_cfa = 0x9c,/* CFA as determined by CFI.  */
-
-	DW_OP_bit_piece = 0x9d,/* ULEB128 size and ULEB128 offset in bits.  */
-
-	DW_OP_implicit_value = 0x9e,/* DW_FORM_block follows opcode.  */
-
-	DW_OP_stack_value = 0x9f,/* No operands, special like DW_OP_piece.  */
-
-	DW_OP_implicit_pointer = 0xa0,
-	DW_OP_addrx = 0xa1,
-	DW_OP_constx = 0xa2,
-	DW_OP_entry_value = 0xa3,
-	DW_OP_const_type = 0xa4,
-	DW_OP_regval_type = 0xa5,
-	DW_OP_deref_type = 0xa6,
-	DW_OP_xderef_type = 0xa7,
-	DW_OP_convert = 0xa8,
-	DW_OP_reinterpret = 0xa9,
-	/* GNU extensions.  */
-
-	DW_OP_GNU_push_tls_address = 0xe0,
-	DW_OP_GNU_uninit = 0xf0,
-	DW_OP_GNU_encoded_addr = 0xf1,
-	DW_OP_GNU_implicit_pointer = 0xf2,
-	DW_OP_GNU_entry_value = 0xf3,
-	DW_OP_GNU_const_type = 0xf4,
-	DW_OP_GNU_regval_type = 0xf5,
-	DW_OP_GNU_deref_type = 0xf6,
-	DW_OP_GNU_convert = 0xf7,
-	DW_OP_GNU_reinterpret = 0xf9,
-	DW_OP_GNU_parameter_ref = 0xfa,
-	/* GNU Debug Fission extensions.  */
-
-	DW_OP_GNU_addr_index = 0xfb,
-	DW_OP_GNU_const_index = 0xfc,
-
-	DW_OP_GNU_variable_value = 0xfd,
-
-	DW_OP_lo_user = 0xe0,/* Implementation-defined range start.  */
-
-	DW_OP_hi_user = 0xff/* Implementation-defined range end.  */
 
 };
 /* DWARF base type encodings.  */
 
 enum {
-	DW_ATE_void = 0x0,
-	DW_ATE_address = 0x1,
 	DW_ATE_boolean = 0x2,
-	DW_ATE_complex_float = 0x3,
 	DW_ATE_float = 0x4,
 	DW_ATE_signed = 0x5,
 	DW_ATE_signed_char = 0x6,
 	DW_ATE_unsigned = 0x7,
-	DW_ATE_unsigned_char = 0x8,
-	DW_ATE_imaginary_float = 0x9,
-	DW_ATE_packed_decimal = 0xa,
-	DW_ATE_numeric_string = 0xb,
-	DW_ATE_edited = 0xc,
-	DW_ATE_signed_fixed = 0xd,
-	DW_ATE_unsigned_fixed = 0xe,
-	DW_ATE_decimal_float = 0xf,
-	DW_ATE_UTF = 0x10,
-	DW_ATE_UCS = 0x11,
-	DW_ATE_ASCII = 0x12,
-
-	DW_ATE_lo_user = 0x80,
-	DW_ATE_hi_user = 0xff
-};
-/* DWARF decimal sign encodings.  */
-
-enum {
-	DW_DS_unsigned = 1,
-	DW_DS_leading_overpunch = 2,
-	DW_DS_trailing_overpunch = 3,
-	DW_DS_leading_separate = 4,
-	DW_DS_trailing_separate = 5,
-};
-/* DWARF endianity encodings.  */
-
-enum {
-	DW_END_default = 0,
-	DW_END_big = 1,
-	DW_END_little = 2,
-
-	DW_END_lo_user = 0x40,
-	DW_END_hi_user = 0xff
-};
-/* DWARF accessibility encodings.  */
-
-enum {
-	DW_ACCESS_public = 1,
-	DW_ACCESS_protected = 2,
-	DW_ACCESS_private = 3
-};
-/* DWARF visibility encodings.  */
-
-enum {
-	DW_VIS_local = 1,
-	DW_VIS_exported = 2,
-	DW_VIS_qualified = 3
-};
-/* DWARF virtuality encodings.  */
-
-enum {
-	DW_VIRTUALITY_none = 0,
-	DW_VIRTUALITY_virtual = 1,
-	DW_VIRTUALITY_pure_virtual = 2
+	DW_ATE_unsigned_char = 0x8
 };
 /* DWARF language encodings.  */
 
 enum {
-	DW_LANG_C89 = 0x0001,/* ISO C:1989 */
-
-	DW_LANG_C = 0x0002,/* C */
-
-	DW_LANG_Ada83 = 0x0003,/* ISO Ada:1983 */
-
-	DW_LANG_C_plus_plus	= 0x0004,/* ISO C++:1998 */
-
-	DW_LANG_Cobol74 = 0x0005,/* ISO Cobol:1974 */
-
-	DW_LANG_Cobol85 = 0x0006,/* ISO Cobol:1985 */
-
-	DW_LANG_Fortran77 = 0x0007,/* ISO FORTRAN 77 */
-
-	DW_LANG_Fortran90 = 0x0008,/* ISO Fortran 90 */
-
-	DW_LANG_Pascal83 = 0x0009,/* ISO Pascal:1983 */
-
-	DW_LANG_Modula2 = 0x000a,/* ISO Modula-2:1996 */
-
-	DW_LANG_Java = 0x000b,/* Java */
 
 	DW_LANG_C99 = 0x000c,/* ISO C:1999 */
 
-	DW_LANG_Ada95 = 0x000d,/* ISO Ada:1995 */
-
-	DW_LANG_Fortran95 = 0x000e,/* ISO Fortran 95 */
-
-	DW_LANG_PLI = 0x000f,/* ISO PL/1:1976 */
-
-	DW_LANG_ObjC = 0x0010,/* Objective-C */
-
-	DW_LANG_ObjC_plus_plus = 0x0011,/* Objective-C++ */
-
-	DW_LANG_UPC = 0x0012,/* Unified Parallel C */
-
-	DW_LANG_D = 0x0013,/* D */
-
-	DW_LANG_Python = 0x0014,/* Python */
-
-	DW_LANG_OpenCL = 0x0015,/* OpenCL */
-
-	DW_LANG_Go = 0x0016,/* Go */
-
-	DW_LANG_Modula3 = 0x0017,/* Modula-3 */
-
-	DW_LANG_Haskell = 0x0018,/* Haskell */
-
-	DW_LANG_C_plus_plus_03 = 0x0019,/* ISO C++:2003 */
-
-	DW_LANG_C_plus_plus_11 = 0x001a,/* ISO C++:2011 */
-
-	DW_LANG_OCaml = 0x001b,/* OCaml */
-
-	DW_LANG_Rust = 0x001c,/* Rust */
-
 	DW_LANG_C11 = 0x001d,/* ISO C:2011 */
-
-	DW_LANG_Swift = 0x001e,/* Swift */
-
-	DW_LANG_Julia = 0x001f,/* Julia */
-
-	DW_LANG_Dylan = 0x0020,/* Dylan */
-
-	DW_LANG_C_plus_plus_14 = 0x0021,/* ISO C++:2014 */
-
-	DW_LANG_Fortran03 = 0x0022,/* ISO/IEC 1539-1:2004 */
-
-	DW_LANG_Fortran08 = 0x0023,/* ISO/IEC 1539-1:2010 */
-
-	DW_LANG_RenderScript = 0x0024,/* RenderScript Kernal Language */
-
-	DW_LANG_BLISS = 0x0025,/* BLISS */
-
-	DW_LANG_lo_user = 0x8000,
-	DW_LANG_Mips_Assembler = 0x8001,/* Assembler */
-
-	DW_LANG_hi_user = 0xffff
-};
-/* Old (typo) '1' != 'I'.  */
-
-#define DW_LANG_PL1 DW_LANG_PLI
-/* DWARF identifier case encodings.  */
-
-enum {
-	DW_ID_case_sensitive = 0,
-	DW_ID_up_case = 1,
-	DW_ID_down_case = 2,
-	DW_ID_case_insensitive = 3
 };
 /* DWARF calling conventions encodings.
    Used as values of DW_AT_calling_convention for subroutines
    (normal, program or nocall) or structures, unions and class types
    (normal, reference or value).  */
-
-enum {
-	DW_CC_normal = 0x1,
-	DW_CC_program = 0x2,
-	DW_CC_nocall = 0x3,
-	DW_CC_pass_by_reference = 0x4,
-	DW_CC_pass_by_value = 0x5,
-	DW_CC_lo_user = 0x40,
-	DW_CC_hi_user = 0xff
-};
-/* DWARF inline encodings.  */
-
-enum {
-	DW_INL_not_inlined = 0,
-	DW_INL_inlined = 1,
-	DW_INL_declared_not_inlined = 2,
-	DW_INL_declared_inlined = 3
-};
-/* DWARF ordering encodings.  */
-
-enum {
-	DW_ORD_row_major = 0,
-	DW_ORD_col_major = 1
-};
-/* DWARF discriminant descriptor encodings.  */
-
-enum {
-	DW_DSC_label = 0,
-	DW_DSC_range = 1
-};
-/* DWARF defaulted member function encodings.  */
-
-enum {
-	DW_DEFAULTED_no = 0,
-	DW_DEFAULTED_in_class = 1,
-	DW_DEFAULTED_out_of_class = 2
-};
 /* DWARF line content descriptions.  */
 
 enum {
 	DW_LNCT_path = 0x1,
-	DW_LNCT_directory_index = 0x2,
-	DW_LNCT_timestamp = 0x3,
-	DW_LNCT_size = 0x4,
-	DW_LNCT_MD5 = 0x5,
-	DW_LNCT_lo_user = 0x2000,
-	DW_LNCT_hi_user = 0x3fff
+	DW_LNCT_directory_index = 0x2
 };
 /* DWARF standard opcode encodings.  */
 
 enum {
-	DW_LNS_copy = 1,
 	DW_LNS_advance_pc = 2,
 	DW_LNS_advance_line = 3,
 	DW_LNS_set_file = 4,
-	DW_LNS_set_column = 5,
-	DW_LNS_negate_stmt = 6,
-	DW_LNS_set_basic_block = 7,
-	DW_LNS_const_add_pc = 8,
-	DW_LNS_fixed_advance_pc = 9,
 	DW_LNS_set_prologue_end = 10,
-	DW_LNS_set_epilogue_begin = 11,
-	DW_LNS_set_isa = 12
+	DW_LNS_set_epilogue_begin = 11
 };
 /* DWARF extended opcode encodings.  */
 
 enum {
 	DW_LNE_end_sequence = 1,
 	DW_LNE_set_address = 2,
-	DW_LNE_define_file = 3,
-	DW_LNE_set_discriminator = 4,
-
-	DW_LNE_lo_user = 128,
-
-	DW_LNE_NVIDIA_inlined_call = 144,
-	DW_LNE_NVIDIA_set_function_name = 145,
 
 	DW_LNE_hi_user = 255
-};
-/* DWARF macinfo type encodings.  */
-
-enum {
-	DW_MACINFO_define = 1,
-	DW_MACINFO_undef = 2,
-	DW_MACINFO_start_file = 3,
-	DW_MACINFO_end_file = 4,
-	DW_MACINFO_vendor_ext = 255
-};
-/* DWARF debug_macro type encodings.  */
-
-enum {
-	DW_MACRO_define = 0x01,
-	DW_MACRO_undef = 0x02,
-	DW_MACRO_start_file = 0x03,
-	DW_MACRO_end_file = 0x04,
-	DW_MACRO_define_strp = 0x05,
-	DW_MACRO_undef_strp = 0x06,
-	DW_MACRO_import = 0x07,
-	DW_MACRO_define_sup = 0x08,
-	DW_MACRO_undef_sup = 0x09,
-	DW_MACRO_import_sup = 0x0a,
-	DW_MACRO_define_strx = 0x0b,
-	DW_MACRO_undef_strx = 0x0c,
-	DW_MACRO_lo_user = 0xe0,
-	DW_MACRO_hi_user = 0xff
 };
 /* Old GNU extension names for DWARF5 debug_macro type encodings.
    There are no equivalents for the supplementary object file (sup)
    and indirect string references (strx).  */
-
-#define DW_MACRO_GNU_define DW_MACRO_define
-#define DW_MACRO_GNU_undef DW_MACRO_undef
-#define DW_MACRO_GNU_start_file DW_MACRO_start_file
-#define DW_MACRO_GNU_end_file DW_MACRO_end_file
-#define DW_MACRO_GNU_define_indirect DW_MACRO_define_strp
-#define DW_MACRO_GNU_undef_indirect DW_MACRO_undef_strp
-#define DW_MACRO_GNU_transparent_include DW_MACRO_import
-#define DW_MACRO_GNU_lo_user DW_MACRO_lo_user
-#define DW_MACRO_GNU_hi_user DW_MACRO_hi_user
-/* Range list entry encoding.  */
-
-enum {
-	DW_RLE_end_of_list = 0x0,
-	DW_RLE_base_addressx = 0x1,
-	DW_RLE_startx_endx = 0x2,
-	DW_RLE_startx_length = 0x3,
-	DW_RLE_offset_pair = 0x4,
-	DW_RLE_base_address = 0x5,
-	DW_RLE_start_end = 0x6,
-	DW_RLE_start_length = 0x7
-};
-/* Location list entry encoding.  */
-
-enum {
-	DW_LLE_end_of_list = 0x0,
-	DW_LLE_base_addressx = 0x1,
-	DW_LLE_startx_endx = 0x2,
-	DW_LLE_startx_length = 0x3,
-	DW_LLE_offset_pair = 0x4,
-	DW_LLE_default_location = 0x5,
-	DW_LLE_base_address = 0x6,
-	DW_LLE_start_end = 0x7,
-	DW_LLE_start_length = 0x8
-};
-/* GNU DebugFission list entry encodings (.debug_loc.dwo).  */
-
-enum {
-	DW_LLE_GNU_end_of_list_entry = 0x0,
-	DW_LLE_GNU_base_address_selection_entry = 0x1,
-	DW_LLE_GNU_start_end_entry = 0x2,
-	DW_LLE_GNU_start_length_entry = 0x3
-};
-/* DWARF5 package file section identifiers.  */
-
-enum {
-	DW_SECT_INFO = 1,
-	/* Reserved = 2, */
-
-	DW_SECT_ABBREV = 3,
-	DW_SECT_LINE = 4,
-	DW_SECT_LOCLISTS = 5,
-	DW_SECT_STR_OFFSETS = 6,
-	DW_SECT_MACRO = 7,
-	DW_SECT_RNGLISTS = 8,
-};
-/* DWARF call frame instruction encodings.  */
-
-enum {
-	DW_CFA_advance_loc = 0x40,
-	DW_CFA_offset = 0x80,
-	DW_CFA_restore = 0xc0,
-	DW_CFA_extended = 0,
-
-	DW_CFA_nop = 0x00,
-	DW_CFA_set_loc = 0x01,
-	DW_CFA_advance_loc1 = 0x02,
-	DW_CFA_advance_loc2 = 0x03,
-	DW_CFA_advance_loc4 = 0x04,
-	DW_CFA_offset_extended = 0x05,
-	DW_CFA_restore_extended = 0x06,
-	DW_CFA_undefined = 0x07,
-	DW_CFA_same_value = 0x08,
-	DW_CFA_register = 0x09,
-	DW_CFA_remember_state = 0x0a,
-	DW_CFA_restore_state = 0x0b,
-	DW_CFA_def_cfa = 0x0c,
-	DW_CFA_def_cfa_register = 0x0d,
-	DW_CFA_def_cfa_offset = 0x0e,
-	DW_CFA_def_cfa_expression = 0x0f,
-	DW_CFA_expression = 0x10,
-	DW_CFA_offset_extended_sf = 0x11,
-	DW_CFA_def_cfa_sf = 0x12,
-	DW_CFA_def_cfa_offset_sf = 0x13,
-	DW_CFA_val_offset = 0x14,
-	DW_CFA_val_offset_sf = 0x15,
-	DW_CFA_val_expression = 0x16,
-
-	DW_CFA_low_user = 0x1c,
-	DW_CFA_MIPS_advance_loc8 = 0x1d,
-	DW_CFA_GNU_window_save = 0x2d,
-	DW_CFA_AARCH64_negate_ra_state = 0x2d,
-	DW_CFA_GNU_args_size = 0x2e,
-	DW_CFA_GNU_negative_offset_extended = 0x2f,
-	DW_CFA_high_user = 0x3f
-};
-/* ID indicating CIE as opposed to FDE in .debug_frame.  */
-
-enum {
-	DW_CIE_ID_32 = 0xffffffffU,/* In 32-bit format CIE header.  */
-
-	DW_CIE_ID_64 = 0xffffffffffffffffULL/* In 64-bit format CIE header.  */
-
-};
-/* Information for GNU unwind information.  */
-
-enum {
-	DW_EH_PE_absptr = 0x00,
-	DW_EH_PE_omit = 0xff,
-	/* FDE data encoding.  */
-
-	DW_EH_PE_uleb128 = 0x01,
-	DW_EH_PE_udata2 = 0x02,
-	DW_EH_PE_udata4 = 0x03,
-	DW_EH_PE_udata8 = 0x04,
-	DW_EH_PE_sleb128 = 0x09,
-	DW_EH_PE_sdata2 = 0x0a,
-	DW_EH_PE_sdata4 = 0x0b,
-	DW_EH_PE_sdata8 = 0x0c,
-	DW_EH_PE_signed = 0x08,
-	/* FDE flags.  */
-
-	DW_EH_PE_pcrel = 0x10,
-	DW_EH_PE_textrel = 0x20,
-	DW_EH_PE_datarel = 0x30,
-	DW_EH_PE_funcrel = 0x40,
-	DW_EH_PE_aligned = 0x50,
-
-	DW_EH_PE_indirect = 0x80
-};
-/* DWARF XXX.  */
-
-#define DW_ADDR_none 0
 /* Section 7.2.2 of the DWARF3 specification defines a range of escape
    codes that can appear in the length field of certain DWARF structures.
 
@@ -6819,62 +1267,23 @@ enum {
    Note: There is a typo in DWARF3 spec (published Dec 20, 2005).  In
    sections 7.4, 7.5.1, 7.19, 7.20 the minimum escape code is referred to
    as 0xffffff00 whereas in fact it should be 0xfffffff0.  */
-// 1042 "dwarf.h"
-#define DWARF3_LENGTH_MIN_ESCAPE_CODE 0xfffffff0u
-#define DWARF3_LENGTH_MAX_ESCAPE_CODE 0xffffffffu
-#define DWARF3_LENGTH_64_BIT DWARF3_LENGTH_MAX_ESCAPE_CODE
 /* dwarf.h */
-#endif /* _DWARF_H */
-// 341 "tcc.h" 2
 /* -------------------------------------------- */
-#ifndef PUB_FUNC
 /* functions used by tcc.c but not in libtcc.h */
 
 #define PUB_FUNC
-#endif
 
 #define ST_INLN static inline
 #define ST_FUNC static
 #define ST_DATA static
-#ifdef TCC_PROFILE
-/* profile all functions */
-
-#define static
-#define inline
-#endif
 /* -------------------------------------------- */
 /* include the target specific definitions */
-// 370 "tcc.h"
-#define TARGET_DEFS_ONLY
 
-// 1 "x86_64-gen.c" 1
-/*
- *  x86-64 code generator for TCC
- *
- *  Copyright (c) 2008 Shinichiro Hamaji
- *
- *  Based on i386-gen.c by Fabrice Bellard
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- */
-#ifdef TARGET_DEFS_ONLY
+/* ==================== x86_64-gen.c ==================== */
+
 /* number of available registers */
-// 26 "x86_64-gen.c"
 #define NB_REGS 25
 #define NB_ASM_REGS 16
-#define CONFIG_TCC_ASM
 /* a register can belong to several classes. The classes must be
    sorted from more general to more precise (see gv2() code which does
    assumptions on it). */
@@ -6917,21 +1326,13 @@ enum {
 	TREG_RCX = 1,
 	TREG_RDX = 2,
 	TREG_RSP = 4,
-	TREG_RSI = 6,
-	TREG_RDI = 7,
 
 	TREG_R8 = 8,
 	TREG_R9 = 9,
-	TREG_R10 = 10,
 	TREG_R11 = 11,
 
 	TREG_XMM0 = 16,
 	TREG_XMM1 = 17,
-	TREG_XMM2 = 18,
-	TREG_XMM3 = 19,
-	TREG_XMM4 = 20,
-	TREG_XMM5 = 21,
-	TREG_XMM6 = 22,
 	TREG_XMM7 = 23,
 
 	TREG_ST0 = 24,
@@ -6951,9 +1352,6 @@ enum {
 #define REG_FRET TREG_XMM0
 /* second float return register */
 #define REG_FRE2 TREG_XMM1
-/* defined if function parameters must be evaluated in reverse order */
-
-#define INVERT_FUNC_PARAMS
 /* pointer size, in bytes */
 
 #define PTR_SIZE 8
@@ -6966,1798 +1364,10 @@ enum {
 #define MAX_ALIGN 16
 /* define if return values need to be extended explicitely
    at caller side (for interfacing with non-TCC compilers) */
-
-#define PROMOTE_RET
-
-#define TCC_TARGET_NATIVE_STRUCT_COPY
 ST_FUNC void gen_struct_copy(int size);
 /**/
-#else
-/* ! TARGET_DEFS_ONLY */
-
 /**/
-
-#define USING_GLOBALS
-
-// 1 "tcc.h" 1
-#ifndef _TCC_H
-/* _TCC_H */
-#endif /* _TCC_H */
-// 1990 "tcc.h"
-#undef TCC_STATE_VAR
-#undef TCC_SET_STATE
-#ifdef USING_GLOBALS
-
-#define TCC_STATE_VAR(sym) tcc_state->sym
-#define TCC_SET_STATE(fn) fn
-#undef USING_GLOBALS
-#undef _tcc_error
-#else
-
-#define TCC_STATE_VAR(sym) s1->sym
-#define TCC_SET_STATE(fn) (tcc_enter_state(s1),fn)
-#define _tcc_error use_tcc_error_noabort
-#endif
-// 119 "x86_64-gen.c" 2
-#include <assert.h>
-
-ST_DATA const char *const target_machine_defs =
-	"__x86_64__\0"
-	"__amd64__\0"
-	;
-
-ST_DATA const int reg_classes[NB_REGS] = {
-	/* eax */
-	RC_INT | RC_RAX,
-	/* ecx */
-	RC_INT | RC_RCX,
-	/* edx */
-	RC_INT | RC_RDX,
-	0,
-	0,
-	0,
-	RC_RSI,
-	RC_RDI,
-	RC_R8,
-	RC_R9,
-	RC_R10,
-	RC_R11,
-	0,
-	0,
-	0,
-	0,
-	/* xmm0 */
-	RC_FLOAT | RC_XMM0,
-	/* xmm1 */
-	RC_FLOAT | RC_XMM1,
-	/* xmm2 */
-	RC_FLOAT | RC_XMM2,
-	/* xmm3 */
-	RC_FLOAT | RC_XMM3,
-	/* xmm4 */
-	RC_FLOAT | RC_XMM4,
-	/* xmm5 */
-	RC_FLOAT | RC_XMM5,
-	/* xmm6 an xmm7 are included so gv() can be used on them,
-	       but they are not tagged with RC_FLOAT because they are
-	       callee saved on Windows */
-
-	RC_XMM6,
-	RC_XMM7,
-	/* st0 */
-	RC_ST0
-};
-
-static unsigned long func_sub_sp_offset;
-static int func_ret_sub;
-#if defined(CONFIG_TCC_BCHECK)
-
-static addr_t func_bound_offset;
-static unsigned long func_bound_ind;
-ST_DATA int func_bound_add_epilog;
-#endif
-
-static int func_scratch, func_alloca;
-/* XXX: make it faster ? */
-
-ST_FUNC void g(int c)
-{
-	int ind1;
-	if (nocode_wanted)
-		return;
-	ind1 = ind + 1;
-	if (ind1 > cur_text_section->data_allocated)
-		section_realloc(cur_text_section, ind1);
-	cur_text_section->data[ind] = c;
-	ind = ind1;
-}
-
-ST_FUNC void o(unsigned int c)
-{
-	while (c) {
-		g(c);
-		c = c >> 8;
-	}
-}
-
-ST_FUNC void gen_le16(int v)
-{
-	g(v);
-	g(v >> 8);
-}
-
-ST_FUNC void gen_le32(int c)
-{
-	g(c);
-	g(c >> 8);
-	g(c >> 16);
-	g(c >> 24);
-}
-
-ST_FUNC void gen_le64(int64_t c)
-{
-	g(c);
-	g(c >> 8);
-	g(c >> 16);
-	g(c >> 24);
-	g(c >> 32);
-	g(c >> 40);
-	g(c >> 48);
-	g(c >> 56);
-}
-
-static void orex(int ll, int r, int r2, int b)
-{
-	if ((r & VT_VALMASK) >= VT_CONST)
-		r = 0;
-	if ((r2 & VT_VALMASK) >= VT_CONST)
-		r2 = 0;
-	if (ll || REX_BASE(r) || REX_BASE(r2))
-		o(0x40 | REX_BASE(r) | (REX_BASE(r2) << 2) | (ll << 3));
-	o(b);
-}
-/* output a symbol and patch all calls to it */
-
-ST_FUNC void gsym_addr(int t, int a)
-{
-	while (t) {
-		unsigned char *ptr = cur_text_section->data + t;
-		uint32_t n = read32le(ptr);/* next value */
-
-		write32le(ptr, a < 0 ? -a : a - t - 4);
-		t = n;
-	}
-}
-
-static int is64_type(int t)
-{
-	return ((t & VT_BTYPE) == VT_PTR ||
-		(t & VT_BTYPE) == VT_FUNC ||
-		(t & VT_BTYPE) == VT_LLONG);
-}
-/* instruction + 4 bytes data. Return the address of the data */
-
-static int oad(int c, int s)
-{
-	int t;
-	if (nocode_wanted)
-		return s;
-	o(c);
-	t = ind;
-	gen_le32(s);
-	return t;
-}
-/* generate jmp to a label */
-
-#define gjmp2(instr,lbl) oad(instr,lbl)
-
-ST_FUNC void gen_addr32(int r, Sym *sym, int c)
-{
-	if (r & VT_SYM)
-		greloca(cur_text_section, sym, ind, R_X86_64_32S, c), c=0;
-	gen_le32(c);
-}
-/* output constant with relocation if 'r & VT_SYM' is true */
-
-ST_FUNC void gen_addr64(int r, Sym *sym, int64_t c)
-{
-	if (r & VT_SYM)
-		greloca(cur_text_section, sym, ind, R_X86_64_64, c), c=0;
-	gen_le64(c);
-}
-/* output constant with relocation if 'r & VT_SYM' is true */
-
-ST_FUNC void gen_addrpc32(int r, Sym *sym, int c)
-{
-	if (r & VT_SYM)
-		greloca(cur_text_section, sym, ind, R_X86_64_PC32, c-4), c=4;
-	gen_le32(c-4);
-}
-/* output got address with relocation */
-
-static void gen_gotpcrel(int r, Sym *sym, int c)
-{
-
-	tcc_error("internal error: no GOT on PE: %s %x %x | %02x %02x %02x\n",
-		  get_tok_str(sym->v, NULL), c, r,
-		  cur_text_section->data[ind-3],
-		  cur_text_section->data[ind-2],
-		  cur_text_section->data[ind-1]
-		 );
-
-	greloca(cur_text_section, sym, ind, R_X86_64_GOTPCREL, -4);
-	gen_le32(0);
-	if (c) {
-		/* we use add c, %xxx for displacement */
-
-		orex(1, r, 0, 0x81);
-		o(0xc0 + REG_VALUE(r));
-		gen_le32(c);
-	}
-}
-
-static void gen_modrm_impl(int op_reg, int r, Sym *sym, int c, int is_got)
-{
-	op_reg = REG_VALUE(op_reg) << 3;
-	if ((r & VT_VALMASK) == VT_CONST) {
-		/* constant memory reference */
-
-		if (!(r & VT_SYM)) {
-			/* Absolute memory reference */
-
-			o(0x04 | op_reg);/* [sib] | destreg */
-
-			oad(0x25, c);/* disp32 */
-
-		} else {
-			o(0x05 | op_reg);/* (%rip)+disp32 | destreg */
-
-			if (is_got) {
-				gen_gotpcrel(r, sym, c);
-			} else {
-				gen_addrpc32(r, sym, c);
-			}
-		}
-	} else if ((r & VT_VALMASK) == VT_LOCAL) {
-		/* currently, we use only ebp as base */
-
-		if (c == (char)c) {
-			/* short reference */
-
-			o(0x45 | op_reg);
-			g(c);
-		} else {
-			oad(0x85 | op_reg, c);
-		}
-	} else if ((r & VT_VALMASK) >= TREG_MEM) {
-		if (c) {
-			g(0x80 | op_reg | REG_VALUE(r));
-			gen_le32(c);
-		} else {
-			g(0x00 | op_reg | REG_VALUE(r));
-		}
-	} else {
-		g(0x00 | op_reg | REG_VALUE(r));
-	}
-}
-/* generate a modrm reference. 'op_reg' contains the additional 3
-   opcode bits */
-
-static void gen_modrm(int op_reg, int r, Sym *sym, int c)
-{
-	gen_modrm_impl(op_reg, r, sym, c, 0);
-}
-/* generate a modrm reference. 'op_reg' contains the additional 3
-   opcode bits */
-
-static void gen_modrm64(int opcode, int op_reg, int r, Sym *sym, int c)
-{
-	int is_got;
-	is_got = (op_reg & TREG_MEM) && !(sym->type.t & VT_STATIC);
-	orex(1, r, op_reg, opcode);
-	gen_modrm_impl(op_reg, r, sym, c, is_got);
-}
-/* load 'r' from value 'sv' */
-
-void load(int r, SValue *sv)
-{
-	int v, t, ft, fc, fr;
-	SValue v1;
-
-	fr = sv->r;
-	ft = sv->type.t & ~VT_DEFSIGN;
-	fc = sv->c.i;
-	if (fc != sv->c.i && (fr & VT_SYM))
-		tcc_error("64 bit addend in load");
-
-	ft &= ~(VT_VOLATILE | VT_CONSTANT);
-// 392 "x86_64-gen.c"
-	v = fr & VT_VALMASK;
-	if (fr & VT_LVAL) {
-		int b, ll;
-		if (v == VT_LLOCAL) {
-			v1.type.t = VT_PTR;
-			v1.r = VT_LOCAL | VT_LVAL;
-			v1.c.i = fc;
-			fr = r;
-			if (!(reg_classes[fr] & (RC_INT|RC_R11)))
-				fr = get_reg(RC_INT);
-			load(fr, &v1);
-		}
-		if (fc != sv->c.i) {
-			/* If the addends doesn't fit into a 32bit signed
-				       we must use a 64bit move.  We've checked above
-				       that this doesn't have a sym associated.  */
-
-			v1.type.t = VT_LLONG;
-			v1.r = VT_CONST;
-			v1.c.i = sv->c.i;
-			fr = r;
-			if (!(reg_classes[fr] & (RC_INT|RC_R11)))
-				fr = get_reg(RC_INT);
-			load(fr, &v1);
-			fc = 0;
-		}
-		ll = 0;
-		/* Like GCC we can load from small enough properly sized
-			   structs and unions as well.
-			   XXX maybe move to generic operand handling, but should
-			   occur only with asm, so tccasm.c might also be a better place */
-
-		if ((ft & VT_BTYPE) == VT_STRUCT) {
-			int align;
-			switch (type_size(&sv->type, &align)) {
-			case 1:
-				ft = VT_BYTE;
-				break;
-			case 2:
-				ft = VT_SHORT;
-				break;
-			case 4:
-				ft = VT_INT;
-				break;
-			case 8:
-				ft = VT_LLONG;
-				break;
-			default:
-				tcc_error("invalid aggregate type for register load");
-				break;
-			}
-		}
-		if ((ft & VT_BTYPE) == VT_FLOAT) {
-			b = 0x6e0f66;
-			r = REG_VALUE(r);/* movd */
-
-		} else if ((ft & VT_BTYPE) == VT_DOUBLE) {
-			b = 0x7e0ff3;/* movq */
-
-			r = REG_VALUE(r);
-		} else if ((ft & VT_BTYPE) == VT_LDOUBLE) {
-			b = 0xdb, r = 5;/* fldt */
-
-		} else if ((ft & VT_TYPE) == VT_BYTE || (ft & VT_TYPE) == VT_BOOL) {
-			b = 0xbe0f;/* movsbl */
-
-		} else if ((ft & VT_TYPE) == (VT_BYTE | VT_UNSIGNED)) {
-			b = 0xb60f;/* movzbl */
-
-		} else if ((ft & VT_TYPE) == VT_SHORT) {
-			b = 0xbf0f;/* movswl */
-
-		} else if ((ft & VT_TYPE) == (VT_SHORT | VT_UNSIGNED)) {
-			b = 0xb70f;/* movzwl */
-
-		} else if ((ft & VT_TYPE) == (VT_VOID)) {
-			/* Can happen with zero size structs */
-
-			return;
-		} else {
-			assert(((ft & VT_BTYPE) == VT_INT)
-			       || ((ft & VT_BTYPE) == VT_LLONG)
-			       || ((ft & VT_BTYPE) == VT_PTR)
-			       || ((ft & VT_BTYPE) == VT_FUNC)
-			      );
-			ll = is64_type(ft);
-			b = 0x8b;
-		}
-		if (ll) {
-			gen_modrm64(b, r, fr, sv->sym, fc);
-		} else {
-			orex(ll, fr, r, b);
-			gen_modrm(r, fr, sv->sym, fc);
-		}
-	} else {
-		if (v == VT_CONST) {
-			if (fr & VT_SYM) {
-
-				orex(1,0,r,0x8d);
-				o(0x05 + REG_VALUE(r) * 8);/* lea xx(%rip), r */
-
-				gen_addrpc32(fr, sv->sym, fc);
-// 486 "x86_64-gen.c"
-			} else if (is64_type(ft)) {
-				if (sv->c.i >> 32) {
-					orex(1,r,0, 0xb8 + REG_VALUE(r));/* movabs $xx, r */
-
-					gen_le64(sv->c.i);
-				} else if (sv->c.i > 0) {
-					orex(0,r,0, 0xb8 + REG_VALUE(r));/* mov $xx, r */
-
-					gen_le32(sv->c.i);
-				} else {
-					o(0xc031 + REG_VALUE(r) * 0x900);/* xor r, r */
-
-				}
-			} else {
-				orex(0,r,0, 0xb8 + REG_VALUE(r));/* mov $xx, r */
-
-				gen_le32(fc);
-			}
-		} else if (v == VT_LOCAL) {
-			orex(1,0,r,0x8d);/* lea xxx(%ebp), r */
-
-			gen_modrm(r, VT_LOCAL, sv->sym, fc);
-		} else if (v == VT_CMP) {
-			if (fc & 0x100) {
-				v = vtop->cmp_r;
-				fc &= ~0x100;
-				/* This was a float compare.  If the parity bit is
-						   set the result was unordered, meaning false for everything
-						   except TOK_NE, and true for TOK_NE.  */
-
-				orex(0, r, 0, 0xb0 + REG_VALUE(r));/* mov $0/1,%al */
-
-				g(v ^ fc ^ (v == TOK_NE));
-				o(0x037a + (REX_BASE(r) << 8));
-			}
-			orex(0,r,0, 0x0f);/* setxx %br */
-
-			o(fc);
-			o(0xc0 + REG_VALUE(r));
-			orex(0,r,0, 0x0f);
-			o(0xc0b6 + REG_VALUE(r) * 0x900);/* movzbl %al, %eax */
-
-		} else if (v == VT_JMP || v == VT_JMPI) {
-			t = v & 1;
-			orex(0,r,0,0);
-			oad(0xb8 + REG_VALUE(r), t);/* mov $1, r */
-
-			o(0x05eb + (REX_BASE(r) << 8));/* jmp after */
-
-			gsym(fc);
-			orex(0,r,0,0);
-			oad(0xb8 + REG_VALUE(r), t ^ 1);/* mov $0, r */
-
-		} else if (v != r) {
-			if ((r >= TREG_XMM0) && (r <= TREG_XMM7)) {
-				if (v == TREG_ST0) {
-					/* gen_cvt_ftof(VT_DOUBLE); */
-
-					o(0xf0245cdd);/* fstpl -0x10(%rsp) */
-
-					/* movsd -0x10(%rsp),%xmmN */
-
-					o(0x100ff2);
-					o(0x44 + REG_VALUE(r)*8);/* %xmmN */
-
-					o(0xf024);
-				} else {
-					assert((v >= TREG_XMM0) && (v <= TREG_XMM7));
-					if ((ft & VT_BTYPE) == VT_FLOAT) {
-						o(0x100ff3);
-					} else {
-						assert((ft & VT_BTYPE) == VT_DOUBLE);
-						o(0x100ff2);
-					}
-					o(0xc0 + REG_VALUE(v) + REG_VALUE(r)*8);
-				}
-			} else if (r == TREG_ST0) {
-				assert((v >= TREG_XMM0) && (v <= TREG_XMM7));
-				/* gen_cvt_ftof(VT_LDOUBLE); */
-				/* movsd %xmmN,-0x10(%rsp) */
-
-				o(0x110ff2);
-				o(0x44 + REG_VALUE(r)*8);/* %xmmN */
-
-				o(0xf024);
-				o(0xf02444dd);/* fldl -0x10(%rsp) */
-
-			} else {
-				orex(is64_type(ft), r, v, 0x89);
-				o(0xc0 + REG_VALUE(r) + REG_VALUE(v) * 8);/* mov v, r */
-
-			}
-		}
-	}
-}
-/* store register 'r' in lvalue 'v' */
-
-void store(int r, SValue *v)
-{
-	int fr, bt, ft, fc;
-	int op64 = 0;
-	/* store the REX prefix in this variable when PIC is enabled */
-
-	int pic = 0;
-
-	fr = v->r & VT_VALMASK;
-	ft = v->type.t;
-	fc = v->c.i;
-	if (fc != v->c.i && (fr & VT_SYM))
-		tcc_error("64 bit addend in store");
-	ft &= ~(VT_VOLATILE | VT_CONSTANT);
-	bt = ft & VT_BTYPE;
-	/* XXX: incorrect if float reg to reg */
-// 592 "x86_64-gen.c"
-	if (bt == VT_FLOAT) {
-		o(0x66);
-		o(pic);
-		o(0x7e0f);/* movd */
-
-		r = REG_VALUE(r);
-	} else if (bt == VT_DOUBLE) {
-		o(0x66);
-		o(pic);
-		o(0xd60f);/* movq */
-
-		r = REG_VALUE(r);
-	} else if (bt == VT_LDOUBLE) {
-		o(0xc0d9);/* fld %st(0) */
-
-		o(pic);
-		o(0xdb);/* fstpt */
-
-		r = 7;
-	} else {
-		if (bt == VT_SHORT)
-			o(0x66);
-		o(pic);
-		if (bt == VT_BYTE || bt == VT_BOOL)
-			orex(0, 0, r, 0x88);
-		else if (is64_type(bt))
-			op64 = 0x89;
-		else
-			orex(0, 0, r, 0x89);
-	}
-	if (pic) {
-		/* xxx r, (%r11) where xxx is mov, movq, fld, or etc */
-
-		if (op64)
-			o(op64);
-		o(3 + (r << 3));
-	} else if (op64) {
-		if (fr == VT_CONST || fr == VT_LOCAL || (v->r & VT_LVAL)) {
-			gen_modrm64(op64, r, v->r, v->sym, fc);
-		} else if (fr != r) {
-			orex(1, fr, r, op64);
-			o(0xc0 + fr + r * 8);/* mov r, fr */
-
-		}
-	} else {
-		if (fr == VT_CONST || fr == VT_LOCAL || (v->r & VT_LVAL)) {
-			gen_modrm(r, v->r, v->sym, fc);
-		} else if (fr != r) {
-			o(0xc0 + fr + r * 8);/* mov r, fr */
-
-		}
-	}
-}
-/* 'is_jmp' is '1' if it is a jump */
-
-static void gcall_or_jmp(int is_jmp)
-{
-	int r;
-	if ((vtop->r & (VT_VALMASK | VT_LVAL)) == VT_CONST &&
-	    ((vtop->r & VT_SYM) && (vtop->c.i-4) == (int)(vtop->c.i-4))) {
-		/* constant symbolic case -> simple relocation */
-
-		greloca(cur_text_section, vtop->sym, ind + 1, R_X86_64_PLT32,
-			(int)(vtop->c.i-4));
-		oad(0xe8 + is_jmp, 0);/* call/jmp im */
-
-	} else {
-		/* otherwise, indirect call */
-
-		r = TREG_R11;
-		load(r, vtop);
-		o(0x41);/* REX */
-
-		o(0xff);/* call/jmp *r */
-
-		o(0xd0 + REG_VALUE(r) + (is_jmp << 4));
-	}
-}
-#if defined(CONFIG_TCC_BCHECK)
-
-static void gen_bounds_call(int v)
-{
-	Sym *sym = external_helper_sym(v);
-	oad(0xe8, 0);
-	greloca(cur_text_section, sym, ind-4, R_X86_64_PLT32, -4);
-}
-
-#define TREG_FASTCALL_1 TREG_RCX
-
-static void gen_bounds_prolog(void)
-{
-	/* leave some room for bound checking code */
-
-	func_bound_offset = lbounds_section->data_offset;
-	func_bound_ind = ind;
-	func_bound_add_epilog = 0;
-	o(0x0d8d48 + ((TREG_FASTCALL_1 == TREG_RDI) *
-		      0x300000));/*lbound section pointer */
-
-	gen_le32 (0);
-	oad(0xb8, 0);/* call to function */
-
-}
-
-static void gen_bounds_epilog(void)
-{
-	addr_t saved_ind;
-	addr_t *bounds_ptr;
-	Sym *sym_data;
-	int offset_modified = func_bound_offset != lbounds_section->data_offset;
-
-	if (!offset_modified && !func_bound_add_epilog)
-		return;
-	/* add end of table info */
-
-	bounds_ptr = section_ptr_add(lbounds_section, sizeof(addr_t));
-	*bounds_ptr = 0;
-
-	sym_data = get_sym_ref(&char_pointer_type, lbounds_section,
-			       func_bound_offset, PTR_SIZE);
-	/* generate bound local allocation */
-
-	if (offset_modified) {
-		saved_ind = ind;
-		ind = func_bound_ind;
-		greloca(cur_text_section, sym_data, ind + 3, R_X86_64_PC32, -4);
-		ind = ind + 7;
-		gen_bounds_call(TOK___bound_local_new);
-		ind = saved_ind;
-	}
-	/* generate bound check local freeing */
-
-	o(0x5250);/* save returned value, if any */
-
-	o(0x20ec8348);/* sub $32,%rsp */
-
-	o(0x290f);/* movaps %xmm0,0x10(%rsp) */
-
-	o(0x102444);
-	o(0x240c290f);/* movaps %xmm1,(%rsp) */
-
-	greloca(cur_text_section, sym_data, ind + 3, R_X86_64_PC32, -4);
-	o(0x0d8d48 + ((TREG_FASTCALL_1 == TREG_RDI) *
-		      0x300000));/* lea xxx(%rip), %rcx/rdi */
-
-	gen_le32 (0);
-	gen_bounds_call(TOK___bound_local_delete);
-	o(0x280f);/* movaps 0x10(%rsp),%xmm0 */
-
-	o(0x102444);
-	o(0x240c280f);/* movaps (%rsp),%xmm1 */
-
-	o(0x20c48348);/* add $32,%rsp */
-
-	o(0x585a);/* restore returned value, if any */
-
-}
-#endif
-
-#define REGN 4
-static const uint8_t arg_regs[REGN] = {
-	TREG_RCX, TREG_RDX, TREG_R8, TREG_R9
-};
-/* Prepare arguments in R10 and R11 rather than RCX and RDX
-   because gv() will not ever use these */
-
-static int arg_prepare_reg(int idx)
-{
-	if (idx == 0 || idx == 1)
-		/* idx=0: r10, idx=1: r11 */
-
-		return idx + 10;
-	else
-		return idx >= 0 && idx < REGN ? arg_regs[idx] : 0;
-}
-/* Generate function call. The function address is pushed first, then
-   all the parameters in call order. This functions pops all the
-   parameters and the function address. */
-
-static void gen_offs_sp(int b, int r, int d)
-{
-	orex(1,0,r & 0x100 ? 0 : r, b);
-	if (d == (char)d) {
-		o(0x2444 | (REG_VALUE(r) << 3));
-		g(d);
-	} else {
-		o(0x2484 | (REG_VALUE(r) << 3));
-		gen_le32(d);
-	}
-}
-
-static int using_regs(int size)
-{
-	return !(size > 8 || (size & (size - 1)));
-}
-/* Return the number of registers needed to return the struct, or 0 if
-   returning via struct pointer. */
-
-ST_FUNC int gfunc_sret(CType *vt, int variadic, CType *ret, int *ret_align,
-		       int *regsize)
-{
-	int size, align;
-	*ret_align = 1;// Never have to re-align return values for x86-64
-
-	*regsize = 8;
-	size = type_size(vt, &align);
-	if (!using_regs(size))
-		return 0;
-	if (size == 8)
-		ret->t = VT_LLONG;
-	else if (size == 4)
-		ret->t = VT_INT;
-	else if (size == 2)
-		ret->t = VT_SHORT;
-	else
-		ret->t = VT_BYTE;
-	ret->ref = NULL;
-	return 1;
-}
-
-static int is_sse_float(int t)
-{
-	int bt;
-	bt = t & VT_BTYPE;
-	return bt == VT_DOUBLE || bt == VT_FLOAT;
-}
-
-static int gfunc_arg_size(CType *type)
-{
-	int align;
-	if (type->t & (VT_ARRAY|VT_BITFIELD))
-		return 8;
-	return type_size(type, &align);
-}
-
-void gfunc_call(int nb_args)
-{
-	int size, r, args_size, i, d, bt, struct_size;
-	int arg;
-#ifdef CONFIG_TCC_BCHECK
-
-	if (tcc_state->do_bounds_check)
-		gbound_args(nb_args);
-#endif
-
-	args_size = (nb_args < REGN ? REGN : nb_args) * PTR_SIZE;
-	arg = nb_args;
-	/* for struct arguments, we need to call memcpy and the function
-	       call breaks register passing arguments we are preparing.
-	       So, we process arguments which will be passed by stack first. */
-
-	struct_size = args_size;
-	for (i = 0; i < nb_args; i++) {
-		SValue *sv;
-
-		--arg;
-		sv = &vtop[-i];
-		bt = (sv->type.t & VT_BTYPE);
-		size = gfunc_arg_size(&sv->type);
-
-		if (using_regs(size))
-			continue;/* arguments smaller than 8 bytes passed in registers or on stack */
-
-		if (bt == VT_STRUCT) {
-			/* align to stack align size */
-
-			size = (size + 15) & ~15;
-			/* generate structure store */
-
-			r = get_reg(RC_INT);
-			gen_offs_sp(0x8d, r, struct_size);
-			struct_size += size;
-			/* generate memcpy call */
-
-			vset(&sv->type, r | VT_LVAL, 0);
-			vpushv(sv);
-			vstore();
-			--vtop;
-		} else if (bt == VT_LDOUBLE) {
-			gv(RC_ST0);
-			gen_offs_sp(0xdb, 0x107, struct_size);
-			struct_size += 16;
-		}
-	}
-
-	if (func_scratch < struct_size)
-		func_scratch = struct_size;
-
-	arg = nb_args;
-	struct_size = args_size;
-
-	for (i = 0; i < nb_args; i++) {
-		--arg;
-		bt = (vtop->type.t & VT_BTYPE);
-
-		size = gfunc_arg_size(&vtop->type);
-		if (!using_regs(size)) {
-			/* align to stack align size */
-
-			size = (size + 15) & ~15;
-			if (arg >= REGN) {
-				d = get_reg(RC_INT);
-				gen_offs_sp(0x8d, d, struct_size);
-				gen_offs_sp(0x89, d, arg*8);
-			} else {
-				d = arg_prepare_reg(arg);
-				gen_offs_sp(0x8d, d, struct_size);
-			}
-			struct_size += size;
-		} else {
-			if (is_sse_float(vtop->type.t)) {
-				if (tcc_state->nosse)
-					tcc_error("SSE disabled");
-				if (arg >= REGN) {
-					gv(RC_XMM0);
-					/* movq %xmm0, j*8(%rsp) */
-
-					gen_offs_sp(0xd60f66, 0x100, arg*8);
-				} else {
-					/* Load directly to xmmN register */
-
-					gv(RC_XMM0 << arg);
-					d = arg_prepare_reg(arg);
-					/* mov %xmmN, %rxx */
-
-					o(0x66);
-					orex(1,d,0, 0x7e0f);
-					o(0xc0 + arg*8 + REG_VALUE(d));
-				}
-			} else {
-				if (bt == VT_STRUCT) {
-					vtop->type.ref = NULL;
-					vtop->type.t = size > 4 ? VT_LLONG : size > 2 ? VT_INT
-						       : size > 1 ? VT_SHORT : VT_BYTE;
-				}
-
-				r = gv(RC_INT);
-				if (arg >= REGN) {
-					gen_offs_sp(0x89, r, arg*8);
-				} else {
-					d = arg_prepare_reg(arg);
-					orex(1,d,r,0x89);/* mov */
-
-					o(0xc0 + REG_VALUE(r) * 8 + REG_VALUE(d));
-				}
-			}
-		}
-		vtop--;
-	}
-	save_regs(0);
-	/* Copy R10 and R11 into RCX and RDX, respectively */
-
-	if (nb_args > 0) {
-		o(0xd1894c);/* mov %r10, %rcx */
-
-		if (nb_args > 1) {
-			o(0xda894c);/* mov %r11, %rdx */
-
-		}
-	}
-
-	gcall_or_jmp(0);
-
-	if ((vtop->r & VT_SYM) && vtop->sym->v == TOK_alloca) {
-		/* need to add the "func_scratch" area after alloca */
-
-		o(0x48);
-		func_alloca = oad(0x05, func_alloca);/* add $NN, %rax */
-
-#ifdef CONFIG_TCC_BCHECK
-
-		if (tcc_state->do_bounds_check)
-			gen_bounds_call(TOK___bound_alloca_nr);/* new region */
-
-#endif
-
-	}
-	vtop--;
-}
-
-#define FUNC_PROLOG_SIZE 11
-/* generate function prolog of type 't' */
-
-void gfunc_prolog(Sym *func_sym)
-{
-	CType *func_type = &func_sym->type;
-	int addr, reg_param_index, bt, size;
-	Sym *sym;
-	CType *type;
-
-	func_ret_sub = 0;
-	func_scratch = 32;
-	func_alloca = 0;
-	loc = 0;
-
-	addr = PTR_SIZE * 2;
-	ind += FUNC_PROLOG_SIZE;
-	func_sub_sp_offset = ind;
-	reg_param_index = 0;
-
-	sym = func_type->ref;
-	/* if the function returns a structure, then add an
-	       implicit pointer parameter */
-
-	size = gfunc_arg_size(&func_vt);
-	if (!using_regs(size)) {
-		gen_modrm64(0x89, arg_regs[reg_param_index], VT_LOCAL, NULL, addr);
-		func_vc = addr;
-		reg_param_index++;
-		addr += 8;
-	}
-	/* define parameters */
-
-	while ((sym = sym->next) != NULL) {
-		type = &sym->type;
-		bt = type->t & VT_BTYPE;
-		size = gfunc_arg_size(type);
-		if (!using_regs(size)) {
-			if (reg_param_index < REGN) {
-				gen_modrm64(0x89, arg_regs[reg_param_index], VT_LOCAL, NULL, addr);
-			}
-			sym_push(sym->v & ~SYM_FIELD, type,
-				 VT_LLOCAL | VT_LVAL, addr);
-		} else {
-			if (reg_param_index < REGN) {
-				/* save arguments passed by register */
-
-				if ((bt == VT_FLOAT) || (bt == VT_DOUBLE)) {
-					if (tcc_state->nosse)
-						tcc_error("SSE disabled");
-					o(0xd60f66);/* movq */
-
-					gen_modrm(reg_param_index, VT_LOCAL, NULL, addr);
-				} else {
-					gen_modrm64(0x89, arg_regs[reg_param_index], VT_LOCAL, NULL, addr);
-				}
-			}
-			sym_push(sym->v & ~SYM_FIELD, type,
-				 VT_LOCAL | VT_LVAL, addr);
-		}
-		addr += 8;
-		reg_param_index++;
-	}
-
-	while (reg_param_index < REGN) {
-		if (func_var) {
-			gen_modrm64(0x89, arg_regs[reg_param_index], VT_LOCAL, NULL, addr);
-			addr += 8;
-		}
-		reg_param_index++;
-	}
-#ifdef CONFIG_TCC_BCHECK
-
-	if (tcc_state->do_bounds_check)
-		gen_bounds_prolog();
-#endif
-
-}
-/* generate function epilog */
-
-void gfunc_epilog(void)
-{
-	int v, start;
-	/* align local size to word & save local variables */
-
-	func_scratch = (func_scratch + 15) & -16;
-	loc = (loc & -16) - func_scratch;
-#ifdef CONFIG_TCC_BCHECK
-
-	if (tcc_state->do_bounds_check)
-		gen_bounds_epilog();
-#endif
-
-	o(0xc9);/* leave */
-
-	if (func_ret_sub == 0) {
-		o(0xc3);/* ret */
-
-	} else {
-		o(0xc2);/* ret n */
-
-		g(func_ret_sub);
-		g(func_ret_sub >> 8);
-	}
-
-	v = -loc;
-	start = func_sub_sp_offset - FUNC_PROLOG_SIZE;
-	cur_text_section->data_offset = ind;
-	pe_add_unwind_data(start, ind, v);
-
-	ind = start;
-	if (v >= 4096) {
-		Sym *sym = external_helper_sym(TOK___chkstk);
-		oad(0xb8, v);/* mov stacksize, %eax */
-
-		oad(0xe8, 0);/* call __chkstk, (does the stackframe too) */
-
-		greloca(cur_text_section, sym, ind-4, R_X86_64_PLT32, -4);
-		o(0x90);/* fill for FUNC_PROLOG_SIZE = 11 bytes */
-
-	} else {
-		o(0xe5894855);/* push %rbp, mov %rsp, %rbp */
-
-		o(0xec8148);/* sub rsp, stacksize */
-
-		gen_le32(v);
-	}
-	ind = cur_text_section->data_offset;
-	/* add the "func_scratch" area after each alloca seen */
-
-	gsym_addr(func_alloca, -func_scratch);
-}
-/* not PE */
-// 1631 "x86_64-gen.c"
-ST_FUNC void gen_fill_nops(int bytes)
-{
-	while (bytes--)
-		g(0x90);
-}
-/* generate a jump to a label */
-
-int gjmp(int t)
-{
-	return gjmp2(0xe9, t);
-}
-/* generate a jump to a fixed address */
-
-void gjmp_addr(int a)
-{
-	int r;
-	r = a - ind - 2;
-	if (r == (char)r) {
-		g(0xeb);
-		g(r);
-	} else {
-		oad(0xe9, a - ind - 5);
-	}
-}
-
-ST_FUNC int gjmp_append(int n, int t)
-{
-	void *p;
-	/* insert vtop->c jump list in t */
-
-	if (n) {
-		uint32_t n1 = n, n2;
-		while ((n2 = read32le(p = cur_text_section->data + n1)))
-			n1 = n2;
-		write32le(p, t);
-		t = n;
-	}
-	return t;
-}
-
-ST_FUNC int gjmp_cond(int op, int t)
-{
-	if (op & 0x100) {
-		/* This was a float compare.  If the parity flag is set
-			       the result was unordered.  For anything except != this
-			       means false and we don't jump (anding both conditions).
-			       For != this means true (oring both).
-			       Take care about inverting the test.  We need to jump
-			       to our target if the result was unordered and test wasn't NE,
-			       otherwise if unordered we don't want to jump.  */
-
-		int v = vtop->cmp_r;
-		op &= ~0x100;
-		if (op ^ v ^ (v != TOK_NE))
-			o(0x067a);/* jp +6 */
-
-		else {
-			g(0x0f);
-			t = gjmp2(0x8a, t);/* jp t */
-
-		}
-	}
-	g(0x0f);
-	t = gjmp2(op - 16, t);
-	return t;
-}
-/* generate an integer binary operation */
-
-void gen_opi(int op)
-{
-	int r, fr, opc, c;
-	int ll, uu, cc;
-
-	ll = is64_type(vtop[-1].type.t);
-	uu = (vtop[-1].type.t & VT_UNSIGNED) != 0;
-	cc = (vtop->r & (VT_VALMASK | VT_LVAL | VT_SYM)) == VT_CONST;
-
-	switch (op) {
-	case '+':
-	case TOK_ADDC1:/* add with carry generation */
-
-		opc = 0;
-gen_op8:
-		if (cc && (!ll || (int)vtop->c.i == vtop->c.i)) {
-			/* constant case */
-
-			vswap();
-			r = gv(RC_INT);
-			vswap();
-			c = vtop->c.i;
-			if (c == (char)c) {
-				/* XXX: generate inc and dec for smaller code ? */
-
-				orex(ll, r, 0, 0x83);
-				o(0xc0 | (opc << 3) | REG_VALUE(r));
-				g(c);
-			} else {
-				orex(ll, r, 0, 0x81);
-				oad(0xc0 | (opc << 3) | REG_VALUE(r), c);
-			}
-		} else {
-			gv2(RC_INT, RC_INT);
-			r = vtop[-1].r;
-			fr = vtop[0].r;
-			orex(ll, r, fr, (opc << 3) | 0x01);
-			o(0xc0 + REG_VALUE(r) + REG_VALUE(fr) * 8);
-		}
-		vtop--;
-		if (op >= TOK_ULT && op <= TOK_GT)
-			vset_VT_CMP(op);
-		break;
-	case '-':
-	case TOK_SUBC1:/* sub with carry generation */
-
-		opc = 5;
-		goto gen_op8;
-	case TOK_ADDC2:/* add with carry use */
-
-		opc = 2;
-		goto gen_op8;
-	case TOK_SUBC2:/* sub with carry use */
-
-		opc = 3;
-		goto gen_op8;
-	case '&':
-		opc = 4;
-		goto gen_op8;
-	case '^':
-		opc = 6;
-		goto gen_op8;
-	case '|':
-		opc = 1;
-		goto gen_op8;
-	case '*':
-		gv2(RC_INT, RC_INT);
-		r = vtop[-1].r;
-		fr = vtop[0].r;
-		orex(ll, fr, r, 0xaf0f);/* imul fr, r */
-
-		o(0xc0 + REG_VALUE(fr) + REG_VALUE(r) * 8);
-		vtop--;
-		break;
-	case TOK_SHL:
-		opc = 4;
-		goto gen_shift;
-	case TOK_SHR:
-		opc = 5;
-		goto gen_shift;
-	case TOK_SAR:
-		opc = 7;
-gen_shift:
-		opc = 0xc0 | (opc << 3);
-		if (cc) {
-			/* constant case */
-
-			vswap();
-			r = gv(RC_INT);
-			vswap();
-			orex(ll, r, 0, 0xc1);/* shl/shr/sar $xxx, r */
-
-			o(opc | REG_VALUE(r));
-			g(vtop->c.i & (ll ? 63 : 31));
-		} else {
-			/* we generate the shift in ecx */
-
-			gv2(RC_INT, RC_RCX);
-			r = vtop[-1].r;
-			orex(ll, r, 0, 0xd3);/* shl/shr/sar %cl, r */
-
-			o(opc | REG_VALUE(r));
-		}
-		vtop--;
-		break;
-	case TOK_UDIV:
-	case TOK_UMOD:
-		uu = 1;
-		goto divmod;
-	case '/':
-	case '%':
-	case TOK_PDIV:
-		uu = 0;
-divmod:
-		/* first operand must be in eax */
-		/* XXX: need better constraint for second operand */
-
-		gv2(RC_RAX, RC_RCX);
-		r = vtop[-1].r;
-		fr = vtop[0].r;
-		vtop--;
-		save_reg(TREG_RDX);
-		orex(ll, 0, 0, uu ? 0xd231 : 0x99);/* xor %edx,%edx : cqto */
-
-		orex(ll, fr, 0, 0xf7);/* div fr, %eax */
-
-		o((uu ? 0xf0 : 0xf8) + REG_VALUE(fr));
-		if (op == '%' || op == TOK_UMOD)
-			r = TREG_RDX;
-		else
-			r = TREG_RAX;
-		vtop->r = r;
-		break;
-	default:
-		opc = 7;
-		goto gen_op8;
-	}
-}
-
-void gen_opl(int op)
-{
-	gen_opi(op);
-}
-/* generate a floating point operation 'v = t1 op t2' instruction. The
-   two operands are guaranteed to have the same floating point type */
-/* XXX: need to use ST1 too */
-
-void gen_opf(int op)
-{
-	int a, ft, fc, swapped, r;
-	int bt = vtop->type.t & VT_BTYPE;
-	int float_type = bt == VT_LDOUBLE ? RC_ST0 : RC_FLOAT;
-
-	if (op == TOK_NEG) {/* unary minus */
-
-		gv(float_type);
-		if (float_type == RC_ST0) {
-			o(0xe0d9);/* fchs */
-
-		} else {
-			save_reg(vtop->r);
-			o(0x80);/* xor $0x80, $n(rbp) */
-
-			gen_modrm(6, vtop->r, NULL, vtop->c.i + (bt == VT_DOUBLE ? 7 : 3));
-			o(0x80);
-		}
-		return;
-	}
-	/* convert constants to memory references */
-
-	if ((vtop[-1].r & (VT_VALMASK | VT_LVAL)) == VT_CONST) {
-		vswap();
-		gv(float_type);
-		vswap();
-	}
-	if ((vtop[0].r & (VT_VALMASK | VT_LVAL)) == VT_CONST)
-		gv(float_type);
-	/* must put at least one value in the floating point register */
-
-	if ((vtop[-1].r & VT_LVAL) &&
-	    (vtop[0].r & VT_LVAL)) {
-		vswap();
-		gv(float_type);
-		vswap();
-	}
-	swapped = 0;
-	/* swap the stack if needed so that t1 is the register and t2 is
-	       the memory reference */
-
-	if (vtop[-1].r & VT_LVAL) {
-		vswap();
-		swapped = 1;
-	}
-	if ((vtop->type.t & VT_BTYPE) == VT_LDOUBLE) {
-		if (op >= TOK_ULT && op <= TOK_GT) {
-			/* load on stack second operand */
-
-			load(TREG_ST0, vtop);
-			save_reg(TREG_RAX);/* eax is used by FP comparison code */
-
-			if (op == TOK_GE || op == TOK_GT)
-				swapped = !swapped;
-			else if (op == TOK_EQ || op == TOK_NE)
-				swapped = 0;
-			if (swapped)
-				o(0xc9d9);/* fxch %st(1) */
-
-			if (op == TOK_EQ || op == TOK_NE)
-				o(0xe9da);/* fucompp */
-
-			else
-				o(0xd9de);/* fcompp */
-
-			o(0xe0df);/* fnstsw %ax */
-
-			if (op == TOK_EQ) {
-				o(0x45e480);/* and $0x45, %ah */
-
-				o(0x40fC80);/* cmp $0x40, %ah */
-
-			} else if (op == TOK_NE) {
-				o(0x45e480);/* and $0x45, %ah */
-
-				o(0x40f480);/* xor $0x40, %ah */
-
-				op = TOK_NE;
-			} else if (op == TOK_GE || op == TOK_LE) {
-				o(0x05c4f6);/* test $0x05, %ah */
-
-				op = TOK_EQ;
-			} else {
-				o(0x45c4f6);/* test $0x45, %ah */
-
-				op = TOK_EQ;
-			}
-			vtop--;
-			vset_VT_CMP(op);
-		} else {
-			/* no memory reference possible for long double operations */
-
-			load(TREG_ST0, vtop);
-			swapped = !swapped;
-
-			switch (op) {
-			default:
-			case '+':
-				a = 0;
-				break;
-			case '-':
-				a = 4;
-				if (swapped)
-					a++;
-				break;
-			case '*':
-				a = 1;
-				break;
-			case '/':
-				a = 6;
-				if (swapped)
-					a++;
-				break;
-			}
-			ft = vtop->type.t;
-			fc = vtop->c.i;
-			o(0xde);/* fxxxp %st, %st(1) */
-
-			o(0xc1 + (a << 3));
-			vtop--;
-		}
-	} else {
-		if (op >= TOK_ULT && op <= TOK_GT) {
-			/* if saved lvalue, then we must reload it */
-
-			r = vtop->r;
-			fc = vtop->c.i;
-			if ((r & VT_VALMASK) == VT_LLOCAL) {
-				SValue v1;
-				r = get_reg(RC_INT);
-				v1.type.t = VT_PTR;
-				v1.r = VT_LOCAL | VT_LVAL;
-				v1.c.i = fc;
-				load(r, &v1);
-				fc = 0;
-				vtop->r = r = r | VT_LVAL;
-			}
-
-			if (op == TOK_EQ || op == TOK_NE) {
-				swapped = 0;
-			} else {
-				if (op == TOK_LE || op == TOK_LT)
-					swapped = !swapped;
-				if (op == TOK_LE || op == TOK_GE) {
-					op = 0x93;/* setae */
-
-				} else {
-					op = 0x97;/* seta */
-
-				}
-			}
-
-			if (swapped) {
-				gv(RC_FLOAT);
-				vswap();
-			}
-			assert(!(vtop[-1].r & VT_LVAL));
-
-			if ((vtop->type.t & VT_BTYPE) == VT_DOUBLE)
-				o(0x66);
-			if (op == TOK_EQ || op == TOK_NE)
-				o(0x2e0f);/* ucomisd */
-
-			else
-				o(0x2f0f);/* comisd */
-
-			if (vtop->r & VT_LVAL) {
-				gen_modrm(vtop[-1].r, r, vtop->sym, fc);
-			} else {
-				o(0xc0 + REG_VALUE(vtop[0].r) + REG_VALUE(vtop[-1].r)*8);
-			}
-
-			vtop--;
-			vset_VT_CMP(op | 0x100);
-			vtop->cmp_r = op;
-		} else {
-			assert((vtop->type.t & VT_BTYPE) != VT_LDOUBLE);
-			switch (op) {
-			default:
-			case '+':
-				a = 0;
-				break;
-			case '-':
-				a = 4;
-				break;
-			case '*':
-				a = 1;
-				break;
-			case '/':
-				a = 6;
-				break;
-			}
-			ft = vtop->type.t;
-			fc = vtop->c.i;
-			assert((ft & VT_BTYPE) != VT_LDOUBLE);
-
-			r = vtop->r;
-			/* if saved lvalue, then we must reload it */
-
-			if ((vtop->r & VT_VALMASK) == VT_LLOCAL) {
-				SValue v1;
-				r = get_reg(RC_INT);
-				v1.type.t = VT_PTR;
-				v1.r = VT_LOCAL | VT_LVAL;
-				v1.c.i = fc;
-				load(r, &v1);
-				fc = 0;
-				vtop->r = r = r | VT_LVAL;
-			}
-
-			assert(!(vtop[-1].r & VT_LVAL));
-			if (swapped) {
-				assert(vtop->r & VT_LVAL);
-				gv(RC_FLOAT);
-				vswap();
-				fc = vtop->c.i;/* bcheck may have saved previous vtop[-1] */
-
-			}
-
-			if ((ft & VT_BTYPE) == VT_DOUBLE) {
-				o(0xf2);
-			} else {
-				o(0xf3);
-			}
-			o(0x0f);
-			o(0x58 + a);
-
-			if (vtop->r & VT_LVAL) {
-				gen_modrm(vtop[-1].r, r, vtop->sym, fc);
-			} else {
-				o(0xc0 + REG_VALUE(vtop[0].r) + REG_VALUE(vtop[-1].r)*8);
-			}
-
-			vtop--;
-		}
-	}
-}
-/* convert integers to fp 't' type. Must handle 'int', 'unsigned int'
-   and 'long long' cases. */
-
-void gen_cvt_itof(int t)
-{
-	if ((t & VT_BTYPE) == VT_LDOUBLE) {
-		save_reg(TREG_ST0);
-		gv(RC_INT);
-		if ((vtop->type.t & VT_BTYPE) == VT_LLONG) {
-			/* signed long long to float/double/long double (unsigned case
-			               is handled generically) */
-
-			o(0x50 + (vtop->r & VT_VALMASK));/* push r */
-
-			o(0x242cdf);/* fildll (%rsp) */
-
-			o(0x08c48348);/* add $8, %rsp */
-
-		} else if ((vtop->type.t & (VT_BTYPE | VT_UNSIGNED)) ==
-			   (VT_INT | VT_UNSIGNED)) {
-			/* unsigned int to float/double/long double */
-
-			o(0x6a);/* push $0 */
-
-			g(0x00);
-			o(0x50 + (vtop->r & VT_VALMASK));/* push r */
-
-			o(0x242cdf);/* fildll (%rsp) */
-
-			o(0x10c48348);/* add $16, %rsp */
-
-		} else {
-			/* int to float/double/long double */
-
-			o(0x50 + (vtop->r & VT_VALMASK));/* push r */
-
-			o(0x2404db);/* fildl (%rsp) */
-
-			o(0x08c48348);/* add $8, %rsp */
-
-		}
-		vtop->r = TREG_ST0;
-	} else {
-		int r = get_reg(RC_FLOAT);
-		gv(RC_INT);
-		o(0xf2 + ((t & VT_BTYPE) == VT_FLOAT?1:0));
-		if ((vtop->type.t & (VT_BTYPE | VT_UNSIGNED)) ==
-		    (VT_INT | VT_UNSIGNED) ||
-		    (vtop->type.t & VT_BTYPE) == VT_LLONG) {
-			o(0x48);/* REX */
-
-		}
-		o(0x2a0f);
-		o(0xc0 + (vtop->r & VT_VALMASK) + REG_VALUE(r)*8);/* cvtsi2sd */
-
-		vtop->r = r;
-	}
-}
-/* convert from one floating point type to another */
-
-void gen_cvt_ftof(int t)
-{
-	int ft, bt, tbt;
-
-	ft = vtop->type.t;
-	bt = ft & VT_BTYPE;
-	tbt = t & VT_BTYPE;
-
-	if (bt == VT_FLOAT) {
-		gv(RC_FLOAT);
-		if (tbt == VT_DOUBLE) {
-			o(0x140f);/* unpcklps */
-
-			o(0xc0 + REG_VALUE(vtop->r)*9);
-			o(0x5a0f);/* cvtps2pd */
-
-			o(0xc0 + REG_VALUE(vtop->r)*9);
-		} else if (tbt == VT_LDOUBLE) {
-			save_reg(RC_ST0);
-			/* movss %xmm0,-0x10(%rsp) */
-
-			o(0x110ff3);
-			o(0x44 + REG_VALUE(vtop->r)*8);
-			o(0xf024);
-			o(0xf02444d9);/* flds -0x10(%rsp) */
-
-			vtop->r = TREG_ST0;
-		}
-	} else if (bt == VT_DOUBLE) {
-		gv(RC_FLOAT);
-		if (tbt == VT_FLOAT) {
-			o(0x140f66);/* unpcklpd */
-
-			o(0xc0 + REG_VALUE(vtop->r)*9);
-			o(0x5a0f66);/* cvtpd2ps */
-
-			o(0xc0 + REG_VALUE(vtop->r)*9);
-		} else if (tbt == VT_LDOUBLE) {
-			save_reg(RC_ST0);
-			/* movsd %xmm0,-0x10(%rsp) */
-
-			o(0x110ff2);
-			o(0x44 + REG_VALUE(vtop->r)*8);
-			o(0xf024);
-			o(0xf02444dd);/* fldl -0x10(%rsp) */
-
-			vtop->r = TREG_ST0;
-		}
-	} else {
-		int r;
-		gv(RC_ST0);
-		r = get_reg(RC_FLOAT);
-		if (tbt == VT_DOUBLE) {
-			o(0xf0245cdd);/* fstpl -0x10(%rsp) */
-
-			/* movsd -0x10(%rsp),%xmm0 */
-
-			o(0x100ff2);
-			o(0x44 + REG_VALUE(r)*8);
-			o(0xf024);
-			vtop->r = r;
-		} else if (tbt == VT_FLOAT) {
-			o(0xf0245cd9);/* fstps -0x10(%rsp) */
-
-			/* movss -0x10(%rsp),%xmm0 */
-
-			o(0x100ff3);
-			o(0x44 + REG_VALUE(r)*8);
-			o(0xf024);
-			vtop->r = r;
-		}
-	}
-}
-/* convert fp to int 't' type */
-
-void gen_cvt_ftoi(int t)
-{
-	int ft, bt, size, r;
-	ft = vtop->type.t;
-	bt = ft & VT_BTYPE;
-	if (bt == VT_LDOUBLE) {
-		gen_cvt_ftof(VT_DOUBLE);
-		bt = VT_DOUBLE;
-	}
-
-	gv(RC_FLOAT);
-	if (t != VT_INT)
-		size = 8;
-	else
-		size = 4;
-
-	r = get_reg(RC_INT);
-	if (bt == VT_FLOAT) {
-		o(0xf3);
-	} else if (bt == VT_DOUBLE) {
-		o(0xf2);
-	} else {
-		assert(0);
-	}
-	orex(size == 8, r, 0, 0x2c0f);/* cvttss2si or cvttsd2si */
-
-	o(0xc0 + REG_VALUE(vtop->r) + REG_VALUE(r)*8);
-	vtop->r = r;
-}
-// Generate sign extension from 32 to 64 bits:
-
-ST_FUNC void gen_cvt_sxtw(void)
-{
-	int r = gv(RC_INT);
-	/* x86_64 specific: movslq */
-
-	o(0x6348);
-	o(0xc0 + (REG_VALUE(r) << 3) + REG_VALUE(r));
-}
-/* char/short to int conversion */
-
-ST_FUNC void gen_cvt_csti(int t)
-{
-	int r, sz, xl, ll;
-	r = gv(RC_INT);
-	sz = !(t & VT_UNSIGNED);
-	xl = (t & VT_BTYPE) == VT_SHORT;
-	ll = (vtop->type.t & VT_BTYPE) == VT_LLONG;
-	orex(ll, r, 0, 0xc0b60f/* mov[sz] %a[xl], %eax */
-
-	     | (sz << 3 | xl) << 8
-	     | (REG_VALUE(r) << 3 | REG_VALUE(r)) << 16
-	    );
-}
-/* increment tcov counter */
-
-ST_FUNC void gen_increment_tcov (SValue *sv)
-{
-	o(0x058348);/* addq $1, xxx(%rip) */
-
-	greloca(cur_text_section, sv->sym, ind, R_X86_64_PC32, -5);
-	gen_le32(0);
-	o(1);
-}
-/* computed goto support */
-
-ST_FUNC void ggoto(void)
-{
-	gcall_or_jmp(1);
-	vtop--;
-}
-/* Save the stack pointer onto the stack and return the location of its address */
-
-ST_FUNC void gen_vla_sp_save(int addr)
-{
-	/* mov %rsp,addr(%rbp)*/
-
-	gen_modrm64(0x89, TREG_RSP, VT_LOCAL, NULL, addr);
-}
-/* Restore the SP from a location on the stack */
-
-ST_FUNC void gen_vla_sp_restore(int addr)
-{
-	gen_modrm64(0x8b, TREG_RSP, VT_LOCAL, NULL, addr);
-}
-/* Save result of gen_vla_alloc onto the stack */
-
-ST_FUNC void gen_vla_result(int addr)
-{
-	/* mov %rax,addr(%rbp)*/
-
-	gen_modrm64(0x89, TREG_RAX, VT_LOCAL, NULL, addr);
-}
-/* Subtract from the stack pointer, and push the resulting value onto the stack */
-
-ST_FUNC void gen_vla_alloc(CType *type, int align)
-{
-	int use_call = 0;
-#if defined(CONFIG_TCC_BCHECK)
-
-	use_call = tcc_state->do_bounds_check;
-#endif
-	/* alloca does more than just adjust %rsp on Windows */
-
-	use_call = 1;
-
-	if (use_call) {
-		vpush_helper_func(TOK_alloca);
-		vswap();/* Move alloca ref past allocation size */
-
-		gfunc_call(1);
-	} else {
-		int r;
-		r = gv(RC_INT);/* allocation size */
-
-		/* sub r,%rsp */
-
-		o(0x2b48);
-		o(0xe0 | REG_VALUE(r));
-		/* We align to 16 bytes rather than align */
-		/* and ~15, %rsp */
-
-		o(0xf0e48348);
-		vpop();
-	}
-}
-/*
- * Assmuing the top part of the stack looks like below,
- *  src dest src
- */
-
-ST_FUNC void gen_struct_copy(int size)
-{
-	int n = size / PTR_SIZE;
-
-	o(0x5756);/* push rsi, rdi */
-
-	gv2(RC_RDI, RC_RSI);
-	if (n <= 4) {
-		while (n)
-			o(0xa548), --n;
-	} else {
-		vpushi(n);
-		gv(RC_RCX);
-		o(0xa548f3);
-		vpop();
-	}
-	if (size & 0x04)
-		o(0xa5);
-	if (size & 0x02)
-		o(0xa566);
-	if (size & 0x01)
-		o(0xa4);
-
-	o(0x5e5f);/* pop rdi, rsi */
-
-	vpop();
-	vpop();
-}
-/* end of x86-64 code generator */
-/**/
-#endif
-/* ! TARGET_DEFS_ONLY */
-/**/
-// 376 "tcc.h" 2
-// 1 "x86_64-link.c" 1
-#ifdef TARGET_DEFS_ONLY
+/* ==================== x86_64-link.c ==================== */
 
 #define EM_TCC_TARGET EM_X86_64
 /* relocation type for 32 bit data relocation */
@@ -8766,451 +1376,11 @@ ST_FUNC void gen_struct_copy(int size)
 #define R_DATA_PTR R_X86_64_64
 #define R_JMP_SLOT R_X86_64_JUMP_SLOT
 #define R_GLOB_DAT R_X86_64_GLOB_DAT
-#define R_COPY R_X86_64_COPY
 #define R_RELATIVE R_X86_64_RELATIVE
 
-#define R_NUM R_X86_64_NUM
-
-#define ELF_START_ADDR 0x400000
-#define ELF_PAGE_SIZE 0x200000
-
 #define PCRELATIVE_DLLPLT 1
-#define RELOCATE_DLLPLT 1
-#else
-/* !TARGET_DEFS_ONLY */
 
-// 1 "tcc.h" 1
-#ifndef _TCC_H
-/* _TCC_H */
-#endif /* _TCC_H */
-// 1990 "tcc.h"
-#undef TCC_STATE_VAR
-#undef TCC_SET_STATE
-#ifdef USING_GLOBALS
-
-#define TCC_STATE_VAR(sym) tcc_state->sym
-#define TCC_SET_STATE(fn) fn
-#undef USING_GLOBALS
-#undef _tcc_error
-#else
-
-#define TCC_STATE_VAR(sym) s1->sym
-#define TCC_SET_STATE(fn) (tcc_enter_state(s1),fn)
-#define _tcc_error use_tcc_error_noabort
-#endif
-// 24 "x86_64-link.c" 2
-#ifdef NEED_RELOC_TYPE
-
-/* Returns 1 for a code relocation, 0 for a data relocation. For unknown
-   relocations, returns -1. */
-
-ST_FUNC int code_reloc (int reloc_type)
-{
-	switch (reloc_type) {
-	case R_X86_64_32:
-	case R_X86_64_32S:
-	case R_X86_64_64:
-	case R_X86_64_GOTPC32:
-	case R_X86_64_GOTPC64:
-	case R_X86_64_GOTPCREL:
-	case R_X86_64_GOTPCRELX:
-	case R_X86_64_REX_GOTPCRELX:
-	case R_X86_64_GOTTPOFF:
-	case R_X86_64_GOT32:
-	case R_X86_64_GOT64:
-	case R_X86_64_GLOB_DAT:
-	case R_X86_64_COPY:
-	case R_X86_64_RELATIVE:
-	case R_X86_64_GOTOFF64:
-	case R_X86_64_TLSGD:
-	case R_X86_64_TLSLD:
-	case R_X86_64_DTPOFF32:
-	case R_X86_64_TPOFF32:
-	case R_X86_64_DTPOFF64:
-	case R_X86_64_TPOFF64:
-		return 0;
-
-	case R_X86_64_PC32:
-	case R_X86_64_PC64:
-	case R_X86_64_PLT32:
-	case R_X86_64_PLTOFF64:
-	case R_X86_64_JUMP_SLOT:
-		return 1;
-	}
-	return -1;
-}
-
-/* Returns an enumerator to describe whether and when the relocation needs a
-   GOT and/or PLT entry to be created. See tcc.h for a description of the
-   different values. */
-
-ST_FUNC int gotplt_entry_type (int reloc_type)
-{
-	switch (reloc_type) {
-	case R_X86_64_GLOB_DAT:
-	case R_X86_64_JUMP_SLOT:
-	case R_X86_64_COPY:
-	case R_X86_64_RELATIVE:
-		return NO_GOTPLT_ENTRY;
-
-	/* The following relocs wouldn't normally need GOT or PLT
-	   slots, but we need them for simplicity in the link
-	   editor part.  See our caller for comments.  */
-
-	case R_X86_64_32:
-	case R_X86_64_32S:
-	case R_X86_64_64:
-	case R_X86_64_PC32:
-	case R_X86_64_PC64:
-		return AUTO_GOTPLT_ENTRY;
-
-	case R_X86_64_GOTTPOFF:
-		return BUILD_GOT_ONLY;
-
-	case R_X86_64_GOT32:
-	case R_X86_64_GOT64:
-	case R_X86_64_GOTPC32:
-	case R_X86_64_GOTPC64:
-	case R_X86_64_GOTOFF64:
-	case R_X86_64_GOTPCREL:
-	case R_X86_64_GOTPCRELX:
-	case R_X86_64_TLSGD:
-	case R_X86_64_TLSLD:
-	case R_X86_64_DTPOFF32:
-	case R_X86_64_TPOFF32:
-	case R_X86_64_DTPOFF64:
-	case R_X86_64_TPOFF64:
-	case R_X86_64_REX_GOTPCRELX:
-	case R_X86_64_PLT32:
-	case R_X86_64_PLTOFF64:
-		return ALWAYS_GOTPLT_ENTRY;
-	}
-
-	return -1;
-}
-
-#ifdef NEED_BUILD_GOT
-ST_FUNC unsigned create_plt_entry(TCCState *s1, unsigned got_offset,
-				  struct sym_attr *attr)
-{
-	Section *plt = s1->plt;
-	uint8_t *p;
-	int modrm;
-	unsigned plt_offset, relofs;
-
-	modrm = 0x25;
-
-	/* empty PLT: create PLT0 entry that pushes the library identifier
-	   (GOT + PTR_SIZE) and jumps to ld.so resolution routine
-	   (GOT + 2 * PTR_SIZE) */
-
-	if (plt->data_offset == 0) {
-		p = section_ptr_add(plt, 16);
-		p[0] = 0xff; /* pushl got + PTR_SIZE */
-
-		p[1] = modrm + 0x10;
-		write32le(p + 2, PTR_SIZE);
-		p[6] = 0xff; /* jmp *(got + PTR_SIZE * 2) */
-
-		p[7] = modrm;
-		write32le(p + 8, PTR_SIZE * 2);
-	}
-	plt_offset = plt->data_offset;
-
-	/* The PLT slot refers to the relocation entry it needs via offset.
-	   The reloc entry is created below, so its offset is the current
-	   data_offset */
-
-	relofs = s1->plt->reloc ? s1->plt->reloc->data_offset : 0;
-
-	/* Jump to GOT entry where ld.so initially put the address of ip + 4 */
-
-	p = section_ptr_add(plt, 16);
-	p[0] = 0xff; /* jmp *(got + x) */
-
-	p[1] = modrm;
-	write32le(p + 2, got_offset);
-	p[6] = 0x68; /* push $xxx */
-
-	/* On x86-64, the relocation is referred to by _index_ */
-
-	write32le(p + 7, relofs sizeof (ElfW_Rel) - 1);
-	p[11] = 0xe9; /* jmp plt_start */
-
-	write32le(p + 12, -(plt->data_offset));
-	return plt_offset;
-}
-
-/* relocate the PLT: compute addresses and offsets in the PLT now that final
-   address for PLT and GOT are known (see fill_program_header) */
-
-ST_FUNC void relocate_plt(TCCState *s1)
-{
-	uint8_t *p, *p_end;
-
-	if (!s1->plt)
-		return;
-
-	p = s1->plt->data;
-	p_end = p + s1->plt->data_offset;
-
-	if (p < p_end) {
-		int x = s1->got->sh_addr - s1->plt->sh_addr - 6;
-		add32le(p + 2, x);
-		add32le(p + 8, x - 6);
-		p += 16;
-		while (p < p_end) {
-			add32le(p + 2, x + (s1->plt->data - p));
-			p += 16;
-		}
-	}
-
-	if (s1->plt->reloc) {
-		ElfW_Rel *rel;
-		int x = s1->plt->sh_addr + 16 + 6;
-		p = s1->got->data;
-		for_each_elem(s1->plt->reloc, 0, rel, ElfW_Rel) {
-			write64le(p + rel->r_offset, x);
-			x += 16;
-		}
-	}
-}
-#endif
-#endif
-// 189 "x86_64-link.c"
-ST_FUNC void relocate(TCCState *s1, ElfW_Rel *rel, int type, unsigned char *ptr,
-		      addr_t addr, addr_t val)
-{
-	int sym_index, esym_index;
-
-	sym_index = ELFW(R_SYM)(rel->r_info);
-
-	switch (type) {
-	case R_X86_64_64:
-		if (s1->output_type & TCC_OUTPUT_DYN) {
-			esym_index = get_sym_attr(s1, sym_index, 0)->dyn_index;
-			qrel->r_offset = rel->r_offset;
-			if (esym_index) {
-				qrel->r_info = ELFW(R_INFO)(esym_index, R_X86_64_64);
-				qrel->r_addend = rel->r_addend;
-				qrel++;
-				break;
-			} else {
-				qrel->r_info = ELFW(R_INFO)(0, R_X86_64_RELATIVE);
-				qrel->r_addend = read64le(ptr) + val;
-				qrel++;
-			}
-		}
-		add64le(ptr, val);
-		break;
-	case R_X86_64_32:
-	case R_X86_64_32S:
-		if (s1->output_type & TCC_OUTPUT_DYN) {
-			/* XXX: this logic may depend on TCC's codegen
-			                   now TCC uses R_X86_64_32 even for a 64bit pointer */
-
-			qrel->r_offset = rel->r_offset;
-			qrel->r_info = ELFW(R_INFO)(0, R_X86_64_RELATIVE);
-			/* Use sign extension! */
-
-			qrel->r_addend = (int)read32le(ptr) + val;
-			qrel++;
-		}
-		add32le(ptr, val);
-		break;
-
-	case R_X86_64_PC32:
-		if (s1->output_type == TCC_OUTPUT_DLL) {
-			/* DLL relocation */
-
-			esym_index = get_sym_attr(s1, sym_index, 0)->dyn_index;
-			if (esym_index) {
-				qrel->r_offset = rel->r_offset;
-				qrel->r_info = ELFW(R_INFO)(esym_index, R_X86_64_PC32);
-				/* Use sign extension! */
-
-				qrel->r_addend = (int)read32le(ptr) + rel->r_addend;
-				qrel++;
-				break;
-			}
-		}
-		goto plt32pc32;
-
-	case R_X86_64_PLT32:
-		/* fallthrough: val already holds the PLT slot address */
-
-plt32pc32: {
-			long long diff;
-			diff = (long long)val - addr;
-			if (diff < -2147483648LL || diff > 2147483647LL) {
-				/* ignore overflow with undefined weak symbols */
-
-				if (((ElfW(Sym)*)symtab_section->data)[sym_index].st_shndx != SHN_UNDEF)
-
-					tcc_error_noabort("internal error: relocation failed");
-			}
-			add32le(ptr, diff);
-		}
-		break;
-
-	case R_X86_64_COPY:
-		break;
-
-	case R_X86_64_PLTOFF64:
-		add64le(ptr, val - s1->got->sh_addr + rel->r_addend);
-		break;
-
-	case R_X86_64_PC64:
-		if (s1->output_type == TCC_OUTPUT_DLL) {
-			/* DLL relocation */
-
-			esym_index = get_sym_attr(s1, sym_index, 0)->dyn_index;
-			if (esym_index) {
-				qrel->r_offset = rel->r_offset;
-				qrel->r_info = ELFW(R_INFO)(esym_index, R_X86_64_PC64);
-				qrel->r_addend = read64le(ptr) + rel->r_addend;
-				qrel++;
-				break;
-			}
-		}
-		add64le(ptr, val - addr);
-		break;
-
-	case R_X86_64_GLOB_DAT:
-	case R_X86_64_JUMP_SLOT:
-		/* They don't need addend */
-
-		write64le(ptr, val - rel->r_addend);
-		break;
-	case R_X86_64_GOTPCREL:
-	case R_X86_64_GOTPCRELX:
-	case R_X86_64_REX_GOTPCRELX:
-		add32le(ptr, s1->got->sh_addr - addr +
-			get_sym_attr(s1, sym_index, 0)->got_offset - 4);
-		break;
-	case R_X86_64_GOTPC32:
-		add32le(ptr, s1->got->sh_addr - addr + rel->r_addend);
-		break;
-	case R_X86_64_GOTPC64:
-		add64le(ptr, s1->got->sh_addr - addr + rel->r_addend);
-		break;
-	case R_X86_64_GOTTPOFF:
-		add32le(ptr, val - s1->got->sh_addr);
-		break;
-	case R_X86_64_GOT32:
-		/* we load the got offset */
-
-		add32le(ptr, get_sym_attr(s1, sym_index, 0)->got_offset);
-		break;
-	case R_X86_64_GOT64:
-		/* we load the got offset */
-
-		add64le(ptr, get_sym_attr(s1, sym_index, 0)->got_offset);
-		break;
-	case R_X86_64_GOTOFF64:
-		add64le(ptr, val - s1->got->sh_addr);
-		break;
-	case R_X86_64_TLSGD: {
-		static const unsigned char expect[] = {
-			/* .byte 0x66; lea 0(%rip),%rdi */
-
-			0x66, 0x48, 0x8d, 0x3d, 0x00, 0x00, 0x00, 0x00,
-			/* .word 0x6666; rex64; call __tls_get_addr@PLT */
-
-			0x66, 0x66, 0x48, 0xe8, 0x00, 0x00, 0x00, 0x00
-		};
-		static const unsigned char replace[] = {
-			/* mov %fs:0,%rax */
-
-			0x64, 0x48, 0x8b, 0x04, 0x25, 0x00, 0x00, 0x00, 0x00,
-			/* lea -4(%rax),%rax */
-
-			0x48, 0x8d, 0x80, 0x00, 0x00, 0x00, 0x00
-		};
-
-		if (memcmp (ptr-4, expect, sizeof(expect)) == 0) {
-			ElfW(Sym) *sym;
-			Section *sec;
-			int32_t x;
-
-			memcpy(ptr-4, replace, sizeof(replace));
-			rel[1].r_info = ELFW(R_INFO)(0, R_X86_64_NONE);
-			sym = &((ElfW(Sym) *)symtab_section->data)[sym_index];
-			sec = s1->sections[sym->st_shndx];
-			x = sym->st_value - sec->sh_addr - sec->data_offset;
-			add32le(ptr + 8, x);
-		} else
-			tcc_error_noabort("unexpected R_X86_64_TLSGD pattern");
-	}
-	break;
-	case R_X86_64_TLSLD: {
-		static const unsigned char expect[] = {
-			/* lea 0(%rip),%rdi */
-
-			0x48, 0x8d, 0x3d, 0x00, 0x00, 0x00, 0x00,
-			/* call __tls_get_addr@PLT */
-
-			0xe8, 0x00, 0x00, 0x00, 0x00
-		};
-		static const unsigned char replace[] = {
-			/* data16 data16 data16 mov %fs:0,%rax */
-
-			0x66, 0x66, 0x66, 0x64, 0x48, 0x8b, 0x04, 0x25,
-			0x00, 0x00, 0x00, 0x00
-		};
-
-		if (memcmp (ptr-3, expect, sizeof(expect)) == 0) {
-			memcpy(ptr-3, replace, sizeof(replace));
-			rel[1].r_info = ELFW(R_INFO)(0, R_X86_64_NONE);
-		} else
-			tcc_error_noabort("unexpected R_X86_64_TLSLD pattern");
-	}
-	break;
-	case R_X86_64_DTPOFF32:
-	case R_X86_64_TPOFF32: {
-		ElfW(Sym) *sym;
-		Section *sec;
-		int32_t x;
-
-		sym = &((ElfW(Sym) *)symtab_section->data)[sym_index];
-		sec = s1->sections[sym->st_shndx];
-		x = val - sec->sh_addr - sec->data_offset;
-		add32le(ptr, x);
-	}
-	break;
-	case R_X86_64_DTPOFF64:
-	case R_X86_64_TPOFF64: {
-		ElfW(Sym) *sym;
-		Section *sec;
-		int32_t x;
-
-		sym = &((ElfW(Sym) *)symtab_section->data)[sym_index];
-		sec = s1->sections[sym->st_shndx];
-		x = val - sec->sh_addr - sec->data_offset;
-		add64le(ptr, x);
-	}
-	break;
-	case R_X86_64_NONE:
-		break;
-	case R_X86_64_RELATIVE:
-
-		add32le(ptr, val - s1->pe_imagebase);
-		/* do nothing */
-
-		break;
-	default:
-		fprintf(stderr,"FIXME: handle reloc type %d at %x [%p] to %x\n",
-			type, (unsigned)addr, ptr, (unsigned)val);
-		break;
-	}
-}
-#endif
-/* !TARGET_DEFS_ONLY */
-// 377 "tcc.h" 2
-
-#undef TARGET_DEFS_ONLY
 /* -------------------------------------------- */
-#if PTR_SIZE == 8
 
 #define ELFCLASSW ELFCLASS64
 #define ElfW(type) Elf ## 64 ## _ ## type
@@ -9218,17 +1388,7 @@ plt32pc32: {
 #define ElfW_Rel ElfW(Rela)
 #define SHT_RELX SHT_RELA
 #define REL_SECTION_FMT ".rela%s"
-#else
-
-#define ELFCLASSW ELFCLASS32
-#define ElfW(type) Elf##32##_##type
-#define ELFW(type) ELF##32##_##type
-#define ElfW_Rel ElfW(Rel)
-#define SHT_RELX SHT_REL
-#define REL_SECTION_FMT ".rel%s"
-#endif
 /* target address type */
-// 417 "tcc.h"
 #define addr_t ElfW(Addr)
 #define ElfSym ElfW(Sym)
 
@@ -9281,6 +1441,9 @@ typedef struct CType {
 	int t;
 	struct Sym *ref;
 } CType;
+/* long double words on host(!) platform */
+
+#define LDOUBLE_WORDS ((sizeof(long double)+3)/4)
 /* constant value */
 
 typedef union CValue {
@@ -9292,7 +1455,7 @@ typedef union CValue {
 		char *data;
 		int size;
 	} str;
-	int tab[LDOUBLE_SIZE/4];
+	int tab[LDOUBLE_WORDS];
 } CValue;
 /* value on stack */
 
@@ -9397,7 +1560,7 @@ typedef struct Sym {
 	union {
 		struct Sym *next;/* next related symbol (for fields and anoms) */
 
-		int *e;/* expanded token stream */
+		int *e;/* expanded token stream with preprocessor macros */
 
 		int asm_label;/* associated asm label */
 
@@ -9408,8 +1571,14 @@ typedef struct Sym {
 	};
 	struct Sym *prev;/* prev symbol in stack */
 
-	struct Sym *prev_tok;/* previous symbol for this token */
+	union {
+		struct Sym *prev_tok;/* previous symbol for this token */
 
+		struct Sym *cleanup_sym;/* symbol from __attribute__((cleanup())) */
+
+		struct Sym *cleanup_label;/* label in 'pending_gotos' chain */
+
+	};
 } Sym;
 /* section definition */
 
@@ -9435,7 +1604,7 @@ typedef struct Section {
 
 	int sh_entsize;/* elf entry size */
 
-	unsigned long sh_size;/* section size (only used during output) */
+	unsigned long sh_size;/* section size (only used d\uring output) */
 
 	addr_t sh_addr;/* address at which the section is relocated */
 
@@ -9483,16 +1652,6 @@ typedef struct DLLReference {
 #define FUNC_CDECL 0
 /* pascal c call */
 #define FUNC_STDCALL 1
-/* first param in %eax */
-#define FUNC_FASTCALL1 2
-/* first parameters in %eax, %edx */
-#define FUNC_FASTCALL2 3
-/* first parameter in %eax, %edx, %ecx */
-#define FUNC_FASTCALL3 4
-/* first parameter in %ecx, %edx */
-#define FUNC_FASTCALLW 5
-/* first param in %ecx */
-#define FUNC_THISCALL 6
 /* field 'Sym.t' for macros */
 /* object like macro */
 
@@ -9586,6 +1745,8 @@ typedef struct AttributeDef {
 
 	char attr_mode;/* __attribute__((__mode__(...))) */
 
+	char new_section;/* section is new */
+
 } AttributeDef;
 /* inline functions */
 
@@ -9607,7 +1768,6 @@ typedef struct CachedInclude {
 } CachedInclude;
 
 #define CACHED_INCLUDES_HASH_SIZE 32
-#ifdef CONFIG_TCC_ASM
 
 typedef struct ExprValue {
 	uint64_t v;
@@ -9641,7 +1801,6 @@ typedef struct ASMOperand {
 	int is_label;/* for asm goto */
 
 } ASMOperand;
-#endif
 /* extra symbol attributes (not in symbol table) */
 
 struct sym_attr {
@@ -9649,6 +1808,7 @@ struct sym_attr {
 	unsigned plt_offset;
 	int plt_sym;
 	int dyn_index;
+	unsigned char linker_sym:1;
 
 };
 
@@ -9670,6 +1830,8 @@ struct TCCState {
 
 	unsigned char
 	symbolic;/* if true, resolve symbols in the current module first */
+
+	unsigned char znodelete;/* Set DF_1_NODELETE in dynamic section */
 
 	unsigned char filetype;/* file type for compilation (NONE,C,ASM) */
 
@@ -9730,14 +1892,8 @@ struct TCCState {
 	unsigned char do_debug;
 	unsigned char dwarf;
 	unsigned char do_backtrace;
-#ifdef CONFIG_TCC_BCHECK
 
-	/* compile with built-in memory and bounds checker */
-
-	unsigned char do_bounds_check;
-#endif
-
-	unsigned char test_coverage;/* generate test coverage code */
+	unsigned char test_coverage;/* generate\ test coverage code */
 
 	/* use GNU C extensions */
 
@@ -9748,7 +1904,7 @@ struct TCCState {
 
 	unsigned char dflag;/* -dX value */
 
-	unsigned char Pflag;/* -P switch (LINE_MACRO_OUTPUT_FORM\AT) */
+	unsigned char Pflag;/* -P switch (LINE_MACRO_OUTPUT_FORMAT) */
 
 	unsigned char nosse;/* For -mno-sse support. */
 
@@ -9858,15 +2014,6 @@ struct TCCState {
 	Section *common_section;
 	Section *cur_text_section;/* current section where function code is generated */
 
-#ifdef CONFIG_TCC_BCHECK
-
-	/* bound check related sections */
-
-	Section *bounds_section; /* contains global data bound description */
-
-	Section *lbounds_section; /* contains local data bound description */
-
-#endif
 	/* symbol section */
 
 	union {
@@ -9912,35 +2059,31 @@ struct TCCState {
 
 	ElfW_Rel *qrel;
 #define qrel s1->qrel
+
+	addr_t tls_start, tls_end;
+
 	/* PE info */
-// 938 "tcc.h"
+
 	int pe_subsystem;
 	unsigned pe_characteristics;
+	unsigned pe_dll_characteristics;
 	unsigned pe_file_align;
 	unsigned pe_stack_size;
 	addr_t pe_imagebase;
-
 	Section *uw_pdata;
 	int uw_sym;
+	int uw_xsym;
 	unsigned uw_offs;
-#ifndef ELF_OBJ_ONLY
 
-	int nb_sym_versions;
-	struct sym_version *sym_versions;
-	int nb_sym_to_version;
-	int *sym_to_version;
-	int dt_verneednum;
-	Section *versym_section;
-	Section *verneed_section;
-#endif
-// 967 "tcc.h"
 	const char *run_main;/* entry for tcc_run() */
 
 	void *run_ptr;/* runtime_memory */
 
 	unsigned run_size;/* size of runtime_memory  */
 
-	void *run_function_table;/* unwind data */
+	const char *run_stdin;/* custom stdin file for run_main */
+
+	void *run_function_table; /* unwind data */
 
 	struct TCCState *next;
 	struct rt_context *rc;/* pointer to backtrace info block */
@@ -9949,10 +2092,6 @@ struct TCCState {
 
 	TCCBtFunc *bt_func;
 	void *bt_data;
-#ifdef CONFIG_TCC_BACKTRACE
-
-	int rt_num_callers;
-#endif
 	/* benchmark info */
 
 	int total_idents;
@@ -10020,8 +2159,6 @@ struct filespec {
 #define VT_NONCONST 0x1000
 /* bound checking must be done before
                                 dereferencing value */
-
-#define VT_MUSTBOUND 0x4000
 /* value is bounded. The address of the
                                 bounding function call point is in vc */
 
@@ -10085,7 +2222,9 @@ struct filespec {
 #define VT_TYPEDEF 0x00004000
 /* inline definition */
 #define VT_INLINE 0x00008000
-/* currently unused: 0x000[1248]0000  */
+/* thread-local storage */
+#define VT_TLS 0x00010000
+/* currently unused: 0x000[248]0000  */
 /* shift for bitfield shift values (32 - 2*6) */
 
 #define VT_STRUCT_SHIFT 20
@@ -10106,18 +2245,22 @@ struct filespec {
 #define VT_ATOMIC VT_VOLATILE
 /* type mask (except storage) */
 
-#define VT_STORAGE (VT_EXTERN | VT_STATIC | VT_TYPEDEF | VT_INLINE)
+#define VT_STORAGE (VT_EXTERN | VT_STATIC | VT_TYPEDEF | VT_INLINE | VT_TLS)
 #define VT_TYPE (~(VT_STORAGE|VT_STRUCT_MASK))
 /* symbol was created by tccasm.c first */
 
-#define VT_ASM (VT_VOID | 1 << VT_STRUCT_SHIFT)
-#define VT_ASM_FUNC (VT_ASM | 2 << VT_STRUCT_SHIFT)
-#define IS_ASM_SYM(sym) (((sym)->type.t & (VT_BTYPE | VT_ASM)) == VT_ASM)
+#define VT_ASM (VT_VOID | 4 << VT_STRUCT_SHIFT)
+#define VT_ASM_FUNC (VT_VOID | 5 << VT_STRUCT_SHIFT)
+#define IS_ASM_SYM(sym) (((sym)->type.t & ((VT_BTYPE|VT_STRUCT_MASK) & ~(1<<VT_STRUCT_SHIFT))) == VT_ASM)
+#define IS_ASM_FUNC(t) ((t & (VT_BTYPE|VT_STRUCT_MASK)) == VT_ASM_FUNC)
+/* base type is array (from typedef/typeof) */
+
+#define VT_BT_ARRAY (6 << VT_STRUCT_SHIFT)
+#define IS_BT_ARRAY(t) ((t & VT_STRUCT_MASK) == VT_BT_ARRAY)
 /* general: set/get the pseudo-bitfield value for bit-mask M */
 
 #define BFVAL(M,N) ((unsigned)((M) & ~((M) << 1)) * (N))
 #define BFGET(X,M) (((X) & (M)) / BFVAL(M,1))
-#define BFSET(X,M,N) ((X) = ((X) & ~(M)) | BFVAL(M,N))
 /* token values */
 /* conditional ops */
 
@@ -10131,8 +2274,6 @@ struct filespec {
 #define TOK_NE 0x95
 #define TOK_ULE 0x96
 #define TOK_UGT 0x97
-#define TOK_Nset 0x98
-#define TOK_Nclear 0x99
 #define TOK_LT 0x9c
 #define TOK_GE 0x9d
 #define TOK_LE 0x9e
@@ -10152,8 +2293,6 @@ struct filespec {
 #define TOK_UMOD 0x84
 /* fast division with undefined rounding for pointers */
 #define TOK_PDIV 0x85
-/* unsigned 32x32 -> 64 mul */
-#define TOK_UMULL 0x86
 /* add with carry generation */
 #define TOK_ADDC1 0x87
 /* add with carry use */
@@ -10246,7 +2385,7 @@ struct filespec {
 enum tcc_token {
 	TOK_LAST = TOK_IDENT - 1
 #define DEF(id,str) ,id
-// 1 "tcctok.h" 1
+		   /* ==================== tcctok.h ==================== */
 		   /**/
 		   /* keywords */
 
@@ -10298,6 +2437,8 @@ enum tcc_token {
 		   DEF(TOK_EXTENSION, "__extension__")/* gcc keyword */
 
 		   DEF(TOK_THREAD_LOCAL, "_Thread_local")/* C11 thread-local storage */
+
+		   DEF(TOK___thread, "__thread")/* GCC thread-local storage extension */
 
 		   DEF(TOK_GENERIC, "_Generic")
 		   DEF(TOK_STATIC_ASSERT, "_Static_assert")
@@ -10373,8 +2514,12 @@ enum tcc_token {
 		   DEF(TOK_WEAK2, "__weak__")
 		   DEF(TOK_ALIAS1, "alias")
 		   DEF(TOK_ALIAS2, "__alias__")
+		   DEF(TOK_USED1, "used")
+		   DEF(TOK_USED2, "__used__")
 		   DEF(TOK_UNUSED1, "unused")
 		   DEF(TOK_UNUSED2, "__unused__")
+		   DEF(TOK_FORMAT1, "format")
+		   DEF(TOK_FORMAT2, "__format__")
 		   DEF(TOK_NODEBUG1, "nodebug")
 		   DEF(TOK_NODEBUG2, "__nodebug__")
 		   DEF(TOK_CDECL1, "cdecl")
@@ -10399,6 +2544,9 @@ enum tcc_token {
 		   DEF(TOK_DESTRUCTOR2, "__destructor__")
 		   DEF(TOK_ALWAYS_INLINE1, "always_inline")
 		   DEF(TOK_ALWAYS_INLINE2, "__always_inline__")
+		   DEF(TOK_NOINLINE, "__noinline__")
+		   DEF(TOK_PURE1, "pure")
+		   DEF(TOK_PURE2, "__pure__")
 
 		   DEF(TOK_MODE, "__mode__")
 		   DEF(TOK_MODE_QI, "__QI__")
@@ -10424,10 +2572,8 @@ enum tcc_token {
 		   DEF(TOK_builtin_expect, "__builtin_expect")
 		   DEF(TOK_builtin_unreachable, "__builtin_unreachable")
 		   /*DEF(TOK_builtin_va_list, "__builtin_va_list")*/
-
 		   DEF(TOK_builtin_va_start, "__builtin_va_start")
 		   /* atomic operations */
-// 180 "tcctok.h"
 #define DEF_ATOMIC(ID) DEF(TOK_ ## __ ## ID, "__"#ID)
 		   DEF_ATOMIC(atomic_store)
 		   DEF_ATOMIC(atomic_load)
@@ -10475,40 +2621,16 @@ enum tcc_token {
 
 		   DEF(TOK___fixunssfdi, "__fixunssfdi")
 		   DEF(TOK___fixunsdfdi, "__fixunsdfdi")
-// 295 "tcctok.h"
+		   DEF(TOK___fixxfdi, "__fixxfdi")
+
 		   DEF(TOK_alloca, "alloca")
-
 		   DEF(TOK___chkstk, "__chkstk")
+		   DEF(TOK___tls_index, "__tls_index")
 		   /* bound checking symbols */
-#ifdef CONFIG_TCC_BCHECK
-
-		   DEF(TOK___bound_ptr_add, "__bound_ptr_add")
-		   DEF(TOK___bound_ptr_indir1, "__bound_ptr_indir1")
-		   DEF(TOK___bound_ptr_indir2, "__bound_ptr_indir2")
-		   DEF(TOK___bound_ptr_indir4, "__bound_ptr_indir4")
-		   DEF(TOK___bound_ptr_indir8, "__bound_ptr_indir8")
-		   DEF(TOK___bound_ptr_indir12, "__bound_ptr_indir12")
-		   DEF(TOK___bound_ptr_indir16, "__bound_ptr_indir16")
-		   DEF(TOK___bound_main_arg, "__bound_main_arg")
-		   DEF(TOK___bound_local_new, "__bound_local_new")
-		   DEF(TOK___bound_local_delete, "__bound_local_delete")
-		   DEF(TOK___bound_setjmp, "__bound_setjmp")
-		   DEF(TOK___bound_longjmp, "__bound_longjmp")
-		   DEF(TOK___bound_new_region, "__bound_new_region")
-		   DEF(TOK___bound_alloca_nr, "__bound_alloca_nr")
-		   DEF(TOK_setjmp, "setjmp")
-		   DEF(TOK__setjmp, "_setjmp")
-		   DEF(TOK_longjmp, "longjmp")
-#endif
 		   /**/
 		   /* Tiny Assembler */
-// 359 "tcctok.h"
 #define DEF_ASM(x) DEF(TOK_ASM_ ## x, #x)
 #define DEF_ASMDIR(x) DEF(TOK_ASMDIR_ ## x, "." #x)
-#define TOK_ASM_int TOK_INT
-
-#define TOK_ASMDIR_FIRST TOK_ASMDIR_byte
-#define TOK_ASMDIR_LAST TOK_ASMDIR_section
 
 		   DEF_ASMDIR(byte)/* must be first directive */
 
@@ -10548,29 +2670,23 @@ enum tcc_token {
 		   DEF_ASMDIR(long)
 		   DEF_ASMDIR(int)
 		   DEF_ASMDIR(symver)
+		   DEF_ASMDIR(reloc)
 		   DEF_ASMDIR(section)/* must be last directive */
 
-// 1 "i386-tok.h" 1
+		   /* ==================== i386-tok.h ==================== */
 		   /* ------------------------------------------------------------------ */
 		   /* WARNING: relative order of tokens is important. */
 
 #define DEF_BWL(x) DEF(TOK_ASM_ ## x ## b, #x "b") DEF(TOK_ASM_ ## x ## w, #x "w") DEF(TOK_ASM_ ## x ## l, #x "l") DEF(TOK_ASM_ ## x, #x)
-
-#define DEF_WL(x) DEF(TOK_ASM_ ## x ## w, #x "w") DEF(TOK_ASM_ ## x ## l, #x "l") DEF(TOK_ASM_ ## x, #x)
 
 #define DEF_BWLQ(x) DEF(TOK_ASM_ ## x ## b, #x "b") DEF(TOK_ASM_ ## x ## w, #x "w") DEF(TOK_ASM_ ## x ## l, #x "l") DEF(TOK_ASM_ ## x ## q, #x "q") DEF(TOK_ASM_ ## x, #x)
 
 #define DEF_WLQ(x) DEF(TOK_ASM_ ## x ## w, #x "w") DEF(TOK_ASM_ ## x ## l, #x "l") DEF(TOK_ASM_ ## x ## q, #x "q") DEF(TOK_ASM_ ## x, #x)
 #define DEF_BWLX DEF_BWLQ
 #define DEF_WLX DEF_WLQ
-		   /* number of sizes + 1 */
-
-#define NBWLX 5
-// 40 "i386-tok.h"
 #define DEF_FP1(x) DEF(TOK_ASM_ ## f ## x ## s, "f" #x "s") DEF(TOK_ASM_ ## fi ## x ## l, "fi" #x "l") DEF(TOK_ASM_ ## f ## x ## l, "f" #x "l") DEF(TOK_ASM_ ## fi ## x ## s, "fi" #x "s")
 
 #define DEF_FP(x) DEF(TOK_ASM_ ## f ## x, "f" #x ) DEF(TOK_ASM_ ## f ## x ## p, "f" #x "p") DEF_FP1(x)
-// 77 "i386-tok.h"
 #define DEF_ASMTEST(x,suffix) DEF_ASM(x ## o ## suffix) DEF_ASM(x ## no ## suffix) DEF_ASM(x ## b ## suffix) DEF_ASM(x ## c ## suffix) DEF_ASM(x ## nae ## suffix) DEF_ASM(x ## nb ## suffix) DEF_ASM(x ## nc ## suffix) DEF_ASM(x ## ae ## suffix) DEF_ASM(x ## e ## suffix) DEF_ASM(x ## z ## suffix) DEF_ASM(x ## ne ## suffix) DEF_ASM(x ## nz ## suffix) DEF_ASM(x ## be ## suffix) DEF_ASM(x ## na ## suffix) DEF_ASM(x ## nbe ## suffix) DEF_ASM(x ## a ## suffix) DEF_ASM(x ## s ## suffix) DEF_ASM(x ## ns ## suffix) DEF_ASM(x ## p ## suffix) DEF_ASM(x ## pe ## suffix) DEF_ASM(x ## np ## suffix) DEF_ASM(x ## po ## suffix) DEF_ASM(x ## l ## suffix) DEF_ASM(x ## nge ## suffix) DEF_ASM(x ## nl ## suffix) DEF_ASM(x ## ge ## suffix) DEF_ASM(x ## le ## suffix) DEF_ASM(x ## ng ## suffix) DEF_ASM(x ## nle ## suffix) DEF_ASM(x ## g ## suffix)
 		   /* ------------------------------------------------------------------ */
 		   /* register */
@@ -10808,9 +2924,8 @@ enum tcc_token {
 #define DEF_ASM_OP0L(name,opcode,group,instr_type)
 #define DEF_ASM_OP1(name,opcode,group,instr_type,op0)
 #define DEF_ASM_OP2(name,opcode,group,instr_type,op0,op1)
-#define DEF_ASM_OP3(name,opcode,group,instr_type,op0,op1,op2)
 
-// 1 "x86_64-asm.h" 1
+		   /* ==================== x86_64-asm.h ==================== */
 		   DEF_ASM_OP0(clc, 0xf8)/* must be first OP0 */
 
 		   DEF_ASM_OP0(cld, 0xfc)
@@ -11327,7 +3442,12 @@ enum tcc_token {
 		   DEF_ASM_OP2(addps, 0x0f58, 0, OPC_MODRM, OPT_EA | OPT_SSE, OPT_SSE )
 		   DEF_ASM_OP2(cvtpi2ps, 0x0f2a, 0, OPC_MODRM, OPT_EA | OPT_MMX, OPT_SSE )
 		   DEF_ASM_OP2(cvtps2pi, 0x0f2d, 0, OPC_MODRM, OPT_EA | OPT_SSE, OPT_MMX )
+		   DEF_ASM_OP2(cvtss2si, 0xf30f2d, 0, OPC_MODRM, OPT_EA | OPT_SSE, OPT_REG32 )
+		   ALT(DEF_ASM_OP2(cvtss2si, 0xf30f2d, 0, OPC_MODRM | OPC_48, OPT_EA | OPT_SSE, OPT_REG64 ))
+		   DEF_ASM_OP2(cvtsd2si, 0xf20f2d, 0, OPC_MODRM, OPT_EA | OPT_SSE, OPT_REG32 )
+		   ALT(DEF_ASM_OP2(cvtsd2si, 0xf20f2d, 0, OPC_MODRM | OPC_48, OPT_EA | OPT_SSE, OPT_REG64 ))
 		   DEF_ASM_OP2(cvttps2pi, 0x0f2c, 0, OPC_MODRM, OPT_EA | OPT_SSE, OPT_MMX )
+		   DEF_ASM_OP2(andps, 0x0f54, 0, OPC_MODRM, OPT_EA | OPT_SSE, OPT_SSE )
 		   DEF_ASM_OP2(divps, 0x0f5e, 0, OPC_MODRM, OPT_EA | OPT_SSE, OPT_SSE )
 		   DEF_ASM_OP2(maxps, 0x0f5f, 0, OPC_MODRM, OPT_EA | OPT_SSE, OPT_SSE )
 		   DEF_ASM_OP2(minps, 0x0f5d, 0, OPC_MODRM, OPT_EA | OPT_SSE, OPT_SSE )
@@ -11341,7 +3461,12 @@ enum tcc_token {
 		   DEF_ASM_OP2(rcpss, 0x0f53, 0, OPC_MODRM, OPT_EA | OPT_SSE, OPT_SSE )
 		   DEF_ASM_OP2(rsqrtps, 0x0f52, 0, OPC_MODRM, OPT_EA | OPT_SSE, OPT_SSE )
 		   DEF_ASM_OP2(sqrtps, 0x0f51, 0, OPC_MODRM, OPT_EA | OPT_SSE, OPT_SSE )
+		   DEF_ASM_OP2(sqrtss, 0xf30f51, 0, OPC_MODRM, OPT_EA | OPT_SSE, OPT_SSE )
 		   DEF_ASM_OP2(subps, 0x0f5c, 0, OPC_MODRM, OPT_EA | OPT_SSE, OPT_SSE )
+		   /* sse2 */
+
+		   DEF_ASM_OP2(andpd, 0x660f54, 0, OPC_MODRM, OPT_EA | OPT_SSE, OPT_SSE)
+		   DEF_ASM_OP2(sqrtsd, 0xf20f51, 0, OPC_MODRM, OPT_EA | OPT_SSE, OPT_SSE)
 		   /* movnti should only accept REG32 and REG64, we accept more */
 
 		   DEF_ASM_OP2(movnti, 0x0fc3, 0, OPC_MODRM, OPT_REG, OPT_EA)
@@ -11365,16 +3490,13 @@ enum tcc_token {
 #undef DEF_ASM_OP1
 #undef DEF_ASM_OP2
 #undef DEF_ASM_OP3
-// 318 "i386-tok.h" 2
 
 #define ALT(x)
 #define DEF_ASM_OP0(name,opcode)
 #define DEF_ASM_OP0L(name,opcode,group,instr_type) DEF_ASM(name)
 #define DEF_ASM_OP1(name,opcode,group,instr_type,op0) DEF_ASM(name)
 #define DEF_ASM_OP2(name,opcode,group,instr_type,op0,op1) DEF_ASM(name)
-#define DEF_ASM_OP3(name,opcode,group,instr_type,op0,op1,op2) DEF_ASM(name)
 
-// 1 "x86_64-asm.h" 1
 		   DEF_ASM_OP0(clc, 0xf8)/* must be first OP0 */
 
 		   DEF_ASM_OP0(cld, 0xfc)
@@ -11891,7 +4013,12 @@ enum tcc_token {
 		   DEF_ASM_OP2(addps, 0x0f58, 0, OPC_MODRM, OPT_EA | OPT_SSE, OPT_SSE )
 		   DEF_ASM_OP2(cvtpi2ps, 0x0f2a, 0, OPC_MODRM, OPT_EA | OPT_MMX, OPT_SSE )
 		   DEF_ASM_OP2(cvtps2pi, 0x0f2d, 0, OPC_MODRM, OPT_EA | OPT_SSE, OPT_MMX )
+		   DEF_ASM_OP2(cvtss2si, 0xf30f2d, 0, OPC_MODRM, OPT_EA | OPT_SSE, OPT_REG32 )
+		   ALT(DEF_ASM_OP2(cvtss2si, 0xf30f2d, 0, OPC_MODRM | OPC_48, OPT_EA | OPT_SSE, OPT_REG64 ))
+		   DEF_ASM_OP2(cvtsd2si, 0xf20f2d, 0, OPC_MODRM, OPT_EA | OPT_SSE, OPT_REG32 )
+		   ALT(DEF_ASM_OP2(cvtsd2si, 0xf20f2d, 0, OPC_MODRM | OPC_48, OPT_EA | OPT_SSE, OPT_REG64 ))
 		   DEF_ASM_OP2(cvttps2pi, 0x0f2c, 0, OPC_MODRM, OPT_EA | OPT_SSE, OPT_MMX )
+		   DEF_ASM_OP2(andps, 0x0f54, 0, OPC_MODRM, OPT_EA | OPT_SSE, OPT_SSE )
 		   DEF_ASM_OP2(divps, 0x0f5e, 0, OPC_MODRM, OPT_EA | OPT_SSE, OPT_SSE )
 		   DEF_ASM_OP2(maxps, 0x0f5f, 0, OPC_MODRM, OPT_EA | OPT_SSE, OPT_SSE )
 		   DEF_ASM_OP2(minps, 0x0f5d, 0, OPC_MODRM, OPT_EA | OPT_SSE, OPT_SSE )
@@ -11905,7 +4032,12 @@ enum tcc_token {
 		   DEF_ASM_OP2(rcpss, 0x0f53, 0, OPC_MODRM, OPT_EA | OPT_SSE, OPT_SSE )
 		   DEF_ASM_OP2(rsqrtps, 0x0f52, 0, OPC_MODRM, OPT_EA | OPT_SSE, OPT_SSE )
 		   DEF_ASM_OP2(sqrtps, 0x0f51, 0, OPC_MODRM, OPT_EA | OPT_SSE, OPT_SSE )
+		   DEF_ASM_OP2(sqrtss, 0xf30f51, 0, OPC_MODRM, OPT_EA | OPT_SSE, OPT_SSE )
 		   DEF_ASM_OP2(subps, 0x0f5c, 0, OPC_MODRM, OPT_EA | OPT_SSE, OPT_SSE )
+		   /* sse2 */
+
+		   DEF_ASM_OP2(andpd, 0x660f54, 0, OPC_MODRM, OPT_EA | OPT_SSE, OPT_SSE)
+		   DEF_ASM_OP2(sqrtsd, 0xf20f51, 0, OPC_MODRM, OPT_EA | OPT_SSE, OPT_SSE)
 		   /* movnti should only accept REG32 and REG64, we accept more */
 
 		   DEF_ASM_OP2(movnti, 0x0fc3, 0, OPC_MODRM, OPT_REG, OPT_EA)
@@ -11929,9 +4061,6 @@ enum tcc_token {
 #undef DEF_ASM_OP1
 #undef DEF_ASM_OP2
 #undef DEF_ASM_OP3
-// 330 "i386-tok.h" 2
-// 412 "tcctok.h" 2
-// 1184 "tcc.h" 2
 #undef DEF
 };
 /* keywords: tok >= TOK_IDENT && tok < TOK_UIDENT */
@@ -11957,28 +4086,8 @@ PUB_FUNC void *tcc_malloc(unsigned long size);
 PUB_FUNC void *tcc_mallocz(unsigned long size);
 PUB_FUNC void *tcc_realloc(void *ptr, unsigned long size);
 PUB_FUNC char *tcc_strdup(const char *str);
-#ifdef MEM_DEBUG
-
-#define tcc_free(ptr)           tcc_free_debug(ptr)
-#define tcc_malloc(size)        tcc_malloc_debug(size, __FILE__, __LINE__)
-#define tcc_mallocz(size)       tcc_mallocz_debug(size, __FILE__, __LINE__)
-#define tcc_realloc(ptr,size)   tcc_realloc_debug(ptr, size, __FILE__, __LINE__)
-#define tcc_strdup(str)         tcc_strdup_debug(str, __FILE__, __LINE__)
-PUB_FUNC void tcc_free_debug(void *ptr);
-PUB_FUNC void *tcc_malloc_debug(unsigned long size, const char *file, int line);
-PUB_FUNC void *tcc_mallocz_debug(unsigned long size, const char *file,
-				 int line);
-PUB_FUNC void *tcc_realloc_debug(void *ptr, unsigned long size,
-				 const char *file, int line);
-PUB_FUNC char *tcc_strdup_debug(const char *str, const char *file, int line);
-#endif
-// 1224 "tcc.h"
 ST_FUNC void libc_free(void *ptr);
-#define free(p) use_tcc_free(p)
-#define malloc(s) use_tcc_malloc(s)
-#define realloc(p,s) use_tcc_realloc(p, s)
 #undef strdup
-#define strdup(s) use_tcc_strdup(s)
 PUB_FUNC int _tcc_error_noabort(const char *fmt, ...) PRINTF_LIKE(1,2);
 PUB_FUNC NORETURN void _tcc_error(const char *fmt, ...) PRINTF_LIKE(1,2);
 PUB_FUNC void _tcc_warning(const char *fmt, ...) PRINTF_LIKE(1,2);
@@ -12014,8 +4123,6 @@ ST_FUNC int tcc_add_file_internal(TCCState *s1, const char *filename,
 /* print error if file not found */
 
 #define AFF_PRINT_ERROR 0x10
-/* load a referenced dll from another dll */
-#define AFF_REFERENCED_DLL 0x20
 /* file to add is binary */
 #define AFF_TYPE_BIN 0x40
 /* load all objects from archive */
@@ -12033,27 +4140,14 @@ ST_FUNC int tcc_add_file_internal(TCCState *s1, const char *filename,
 #define AFF_BINTYPE_REL 1
 #define AFF_BINTYPE_DYN 2
 #define AFF_BINTYPE_AR 3
-#define AFF_BINTYPE_C67 4
 /* return value of tcc_add_file_internal(): 0, -1, or FILE_NOT_FOUND */
 
 #define FILE_NOT_FOUND -2
 /* unrecognized file type */
 #define FILE_NOT_RECOGNIZED -3
-#ifndef ELF_OBJ_ONLY
-
-ST_FUNC int tcc_add_crt(TCCState *s, const char *filename);
-#endif
 
 ST_FUNC int tcc_add_dll(TCCState *s, const char *filename, int flags);
 ST_FUNC int tcc_add_support(TCCState *s1, const char *filename);
-#ifdef CONFIG_TCC_BCHECK
-
-ST_FUNC void tcc_add_bcheck(TCCState *s1);
-#endif
-#ifdef CONFIG_TCC_BACKTRACE
-
-ST_FUNC void tcc_add_btstub(TCCState *s1);
-#endif
 
 ST_FUNC void tcc_add_pragma_libs(TCCState *s1);
 PUB_FUNC int tcc_add_library_err(TCCState *s, const char *f);
@@ -12061,6 +4155,8 @@ PUB_FUNC void tcc_print_stats(TCCState *s, unsigned total_time);
 PUB_FUNC int tcc_parse_args(TCCState *s, int *argc, char ***argv);
 
 ST_FUNC char *normalize_slashes(char *path);
+PUB_FUNC FILE *tcc_fopen(const char *f, const char *m);
+PUB_FUNC int tcc_fclose(FILE *f);
 
 ST_FUNC DLLReference *tcc_add_dllref(TCCState *s1, const char *dllname,
 				     int level);
@@ -12208,8 +4304,10 @@ func_vt;/* current function return type (used by return instruction) */
 
 ST_DATA int func_var;/* true if current function is variadic */
 
-ST_DATA int func_vc;
-ST_DATA int func_ind;
+ST_DATA int func_vc;/* stack address for implicit struct return storage */
+
+ST_DATA int func_ind;/* function start address */
+
 ST_DATA const char *funcname;
 
 ST_FUNC void tccgen_init(TCCState *s1);
@@ -12228,9 +4326,6 @@ ST_FUNC void put_extern_sym2(Sym *sym, int sh_num, addr_t value,
 			     unsigned long size, int can_add_underscore);
 ST_FUNC void put_extern_sym(Sym *sym, Section *section, addr_t value,
 			    unsigned long size);
-#if PTR_SIZE == 4
-ST_FUNC void greloc(Section *s, Sym *sym, unsigned long offset, int type);
-#endif
 
 ST_FUNC void greloca(Section *s, Sym *sym, unsigned long offset, int type,
 		     addr_t addend);
@@ -12260,9 +4355,6 @@ ST_FUNC void vrott(int n);
 ST_FUNC void vrotb(int n);
 ST_FUNC void vrev(int n);
 ST_FUNC void vpop(void);
-#if PTR_SIZE == 4
-ST_FUNC void lexpand(void);
-#endif
 
 ST_FUNC void save_reg(int r);
 ST_FUNC void save_reg_upstack(int r, int n);
@@ -12282,23 +4374,14 @@ ST_FUNC void indir(void);
 ST_FUNC void unary(void);
 ST_FUNC void gexpr(void);
 ST_FUNC int expr_const(void);
-#if defined CONFIG_TCC_BCHECK || defined TCC_TARGET_C67
-ST_FUNC Sym *get_sym_ref(CType *type, Section *sec, unsigned long offset,
-			 unsigned long size);
-#endif
-#ifdef CONFIG_TCC_BCHECK
 
-ST_FUNC void gbound_args(int nb_args);
-ST_DATA int func_bound_add_epilog;
-#endif
+ST_FUNC Sym *gfunc_set_param(Sym *s, int c, int byref);
 /* ------------ tccelf.c ------------ */
 /* default output format: ELF */
-// 1507 "tcc.h"
+
 #define TCC_OUTPUT_FORMAT_ELF 0
 /* binary image output */
 #define TCC_OUTPUT_FORMAT_BINARY 1
-/* COFF */
-#define TCC_OUTPUT_FORMAT_COFF 2
 #define TCC_OUTPUT_DYN TCC_OUTPUT_DLL
 /* For COFF and a.out archives */
 
@@ -12366,15 +4449,8 @@ ST_FUNC int set_global_sym(TCCState *s1, const char *name, Section *sec,
    using variable <elem> */
 
 #define for_each_elem(sec,startoff,elem,type) for (elem = (type *) sec->data + startoff; elem < (type *) (sec->data + sec->data_offset); elem++)
-#ifndef ELF_OBJ_ONLY
-
-ST_FUNC int tcc_load_dll(TCCState *s1, int fd, const char *filename, int level);
-ST_FUNC int tcc_load_ldscript(TCCState *s1, int fd);
-ST_FUNC void tccelf_add_crtbegin(TCCState *s1);
-ST_FUNC void tccelf_add_crtend(TCCState *s1);
-#endif
 /* ------------ xxx-link.c ------------ */
-// 1597 "tcc.h"
+
 ST_FUNC void relocate(TCCState *s1, ElfW_Rel *rel, int type, unsigned char *ptr,
 		      addr_t addr, addr_t val);
 /* ------------ xxx-gen.c ------------ */
@@ -12444,25 +4520,119 @@ static inline void add64le(unsigned char *p, int64_t x)
 {
 	write64le(p, read64le(p) + x);
 }
+/* ------------ i386-gen.c ------------ */
+
+ST_FUNC void g(int c);
+ST_FUNC void gen_le16(int c);
+ST_FUNC void gen_le32(int c);
+
+ST_FUNC void gen_addr32(int r, Sym *sym, int c);
+ST_FUNC void gen_addrpc32(int r, Sym *sym, int c);
+ST_FUNC void gen_cvt_csti(int t);
+ST_FUNC void gen_increment_tcov (SValue *sv);
+/* ------------ x86_64-gen.c ------------ */
+
+ST_FUNC void gen_opl(int op);
+
+ST_FUNC void gen_vla_result(int addr);
+
+ST_FUNC void gen_cvt_sxtw(void);
+ST_FUNC void gen_cvt_csti(int t);
+/* ------------ arm-gen.c ------------ */
+/* ------------ arm64-gen.c ------------ */
+/* ------------ riscv64-gen.c ------------ */
+/* ------------ c67-gen.c ------------ */
+/* ------------ tcccoff.c ------------ */
+/* ------------ tccasm.c ------------ */
+ST_FUNC void asm_instr(void);
+ST_FUNC void asm_global_instr(void);
+ST_FUNC int tcc_assemble(TCCState *s1, int do_preprocess);
+
+ST_FUNC int find_constraint(ASMOperand *operands, int nb_operands,
+			    const char *name, const char **pp);
+ST_FUNC Sym *get_asm_sym(int name, Sym *csym);
+ST_FUNC void asm_expr(TCCState *s1, ExprValue *pe);
+ST_FUNC int asm_int_expr(TCCState *s1);
+
+ST_FUNC void gen_expr64(ExprValue *pe);
+/* ------------ i386-asm.c ------------ */
+
+ST_FUNC void gen_expr32(ExprValue *pe);
+ST_FUNC void asm_opcode(TCCState *s1, int opcode);
+ST_FUNC int asm_parse_regvar(int t);
+ST_FUNC void asm_compute_constraints(ASMOperand *operands, int nb_operands,
+				     int nb_outputs, const uint8_t *clobber_regs, int *pout_reg);
+ST_FUNC void subst_asm_operand(CString *add_str, SValue *sv, int modifier);
+ST_FUNC void asm_gen_code(ASMOperand *operands, int nb_operands, int nb_outputs,
+			  int is_output, uint8_t *clobber_regs, int out_reg);
+ST_FUNC void asm_clobber(uint8_t *clobber_regs, const char *str);
+/* ------------ tccpe.c -------------- */
+
+ST_FUNC int pe_load_file(struct TCCState *s1, int fd, const char *filename);
+ST_FUNC int pe_output_file(TCCState * s1, const char *filename);
+ST_FUNC int pe_putimport(TCCState *s1, int dllindex, const char *name,
+			 addr_t value);
+ST_FUNC int pe_setsubsy(TCCState *s1, const char *arg);
+ST_FUNC void pe_add_unwind_data(unsigned start, unsigned end, unsigned stack);
+PUB_FUNC int tcc_get_dllexports(const char *filename, char **pp);
+/* symbol properties stored in Elf32_Sym->st_other */
+
+#define ST_PE_EXPORT 0x10
+#define ST_PE_IMPORT 0x20
+#define ST_PE_STDCALL 0x40
+#define ST_ASM_SET 0x04
+/* ------------ tccmacho.c ----------------- */
+/* ------------ tccrun.c ----------------- */
+ST_FUNC void tcc_run_free(TCCState *s1);
+/* ------------ tcctools.c ----------------- */
+/* ------------ tccdbg.c ------------ */
+ST_FUNC void tcc_debug_new(TCCState *s);
+
+ST_FUNC void tcc_debug_start(TCCState *s1);
+ST_FUNC void tcc_debug_end(TCCState *s1);
+ST_FUNC void tcc_debug_bincl(TCCState *s1);
+ST_FUNC void tcc_debug_eincl(TCCState *s1);
+ST_FUNC void tcc_debug_newfile(TCCState *s1);
+
+ST_FUNC void tcc_debug_line(TCCState *s1);
+ST_FUNC void tcc_add_debug_info(TCCState *s1, Sym *s, Sym *e);
+ST_FUNC void tcc_debug_funcstart(TCCState *s1, Sym *sym);
+ST_FUNC void tcc_debug_prolog_epilog(TCCState *s1, int value);
+ST_FUNC void tcc_debug_funcend(TCCState *s1, int size);
+ST_FUNC void tcc_debug_extern_sym(TCCState *s1, Sym *sym, int sh_num,
+				  int sym_bind, int sym_type);
+ST_FUNC void tcc_debug_typedef(TCCState *s1, Sym *sym);
+ST_FUNC void tcc_debug_stabn(TCCState *s1, int type, int value);
+ST_FUNC void tcc_debug_fix_forw(TCCState *s1, CType *t);
+
+ST_FUNC void tcc_tcov_start(TCCState *s1);
+ST_FUNC void tcc_tcov_end(TCCState *s1);
+ST_FUNC void tcc_tcov_check_line(TCCState *s1, int start);
+ST_FUNC void tcc_tcov_block_end(TCCState *s1, int line);
+ST_FUNC void tcc_tcov_block_begin(TCCState *s1);
+ST_FUNC void tcc_tcov_reset_ind(TCCState *s1);
+
+#define stab_section s1->stab_section
+#define tcov_section s1->tcov_section
+#define eh_frame_section s1->eh_frame_section
+#define dwarf_info_section s1->dwarf_info_section
+#define dwarf_abbrev_section s1->dwarf_abbrev_section
+#define dwarf_line_section s1->dwarf_line_section
+#define dwarf_aranges_section s1->dwarf_aranges_section
+#define dwarf_str_section s1->dwarf_str_section
+#define dwarf_line_str_section s1->dwarf_line_str_section
+
 #define DWARF_MAX_128 ((8 * sizeof (int64_t) + 6) / 7)
 
 #define dwarf_read_1(ln,end) ((ln) < (end) ? *(ln)++ : 0)
-
-#define dwarf_read_2(ln,end) ((ln) + 1 < (end) ? (ln) += 2, read16le((ln) - 2) : 0)
-
-#define dwarf_read_4(ln,end) ((ln) + 3 < (end) ? (ln) += 4, read32le((ln) - 4) : 0)
-
-#define dwarf_read_8(ln,end) ((ln) + 7 < (end) ? (ln) += 8, read64le((ln) - 8) : 0)
 static inline uint64_t
 dwarf_read_uleb128(unsigned char **ln, unsigned char *end)
 {
 	unsigned char *cp = *ln;
 	uint64_t retval = 0;
 	int i;
-
 	for (i = 0; i < DWARF_MAX_128; i++) {
 		uint64_t byte = dwarf_read_1(cp, end);
-
 		retval |= (byte & 0x7f) << (i * 7);
 		if ((byte & 0x80) == 0)
 			break;
@@ -12476,151 +4646,18 @@ dwarf_read_sleb128(unsigned char **ln, unsigned char *end)
 	unsigned char *cp = *ln;
 	int64_t retval = 0;
 	int i;
-
 	for (i = 0; i < DWARF_MAX_128; i++) {
 		uint64_t byte = dwarf_read_1(cp, end);
-
 		retval |= (byte & 0x7f) << (i * 7);
 		if ((byte & 0x80) == 0) {
 			if ((byte & 0x40) && (i + 1) * 7 < 64)
-				retval |= -1LL << ((i + 1) * 7);
+				retval |= (uint64_t)-1LL << ((i + 1) * 7);
 			break;
 		}
 	}
 	*ln = cp;
 	return retval;
 }
-/* ------------ i386-gen.c ------------ */
-
-ST_FUNC void g(int c);
-ST_FUNC void gen_le16(int c);
-ST_FUNC void gen_le32(int c);
-
-ST_FUNC void gen_addr32(int r, Sym *sym, int c);
-ST_FUNC void gen_addrpc32(int r, Sym *sym, int c);
-ST_FUNC void gen_cvt_csti(int t);
-ST_FUNC void gen_increment_tcov (SValue *sv);
-/* ------------ x86_64-gen.c ------------ */
-
-ST_FUNC void gen_addr64(int r, Sym *sym, int64_t c);
-ST_FUNC void gen_opl(int op);
-
-ST_FUNC void gen_vla_result(int addr);
-
-ST_FUNC void gen_cvt_sxtw(void);
-ST_FUNC void gen_cvt_csti(int t);
-/* ------------ arm-gen.c ------------ */
-/* ------------ arm64-gen.c ------------ */
-/* ------------ riscv64-gen.c ------------ */
-/* ------------ c67-gen.c ------------ */
-/* ------------ tcccoff.c ------------ */
-/* ------------ tccasm.c ------------ */
-// 1767 "tcc.h"
-ST_FUNC void asm_instr(void);
-ST_FUNC void asm_global_instr(void);
-ST_FUNC int tcc_assemble(TCCState *s1, int do_preprocess);
-#ifdef CONFIG_TCC_ASM
-
-ST_FUNC int find_constraint(ASMOperand *operands, int nb_operands,
-			    const char *name, const char **pp);
-ST_FUNC Sym *get_asm_sym(int name, Sym *csym);
-ST_FUNC void asm_expr(TCCState *s1, ExprValue *pe);
-ST_FUNC int asm_int_expr(TCCState *s1);
-/* ------------ i386-asm.c ------------ */
-
-ST_FUNC void gen_expr32(ExprValue *pe);
-
-ST_FUNC void gen_expr64(ExprValue *pe);
-
-ST_FUNC void asm_opcode(TCCState *s1, int opcode);
-ST_FUNC int asm_parse_regvar(int t);
-ST_FUNC void asm_compute_constraints(ASMOperand *operands, int nb_operands,
-				     int nb_outputs, const uint8_t *clobber_regs, int *pout_reg);
-ST_FUNC void subst_asm_operand(CString *add_str, SValue *sv, int modifier);
-ST_FUNC void asm_gen_code(ASMOperand *operands, int nb_operands, int nb_outputs,
-			  int is_output, uint8_t *clobber_regs, int out_reg);
-ST_FUNC void asm_clobber(uint8_t *clobber_regs, const char *str);
-#endif
-/* ------------ tccpe.c -------------- */
-
-ST_FUNC int pe_load_file(struct TCCState *s1, int fd, const char *filename);
-ST_FUNC int pe_output_file(TCCState * s1, const char *filename);
-ST_FUNC int pe_putimport(TCCState *s1, int dllindex, const char *name,
-			 addr_t value);
-
-ST_FUNC void pe_add_unwind_data(unsigned start, unsigned end, unsigned stack);
-
-PUB_FUNC int tcc_get_dllexports(const char *filename, char **pp);
-/* symbol properties stored in Elf32_Sym->st_other */
-
-#define ST_PE_EXPORT 0x10
-#define ST_PE_IMPORT 0x20
-#define ST_PE_STDCALL 0x40
-
-#define ST_ASM_SET 0x04
-/* ------------ tccmacho.c ----------------- */
-/* ------------ tccrun.c ----------------- */
-#ifdef CONFIG_TCC_STATIC
-
-#define RTLD_LAZY       0x001
-#define RTLD_NOW        0x002
-#define RTLD_GLOBAL     0x100
-#define RTLD_DEFAULT    NULL
-/* dummy function for profiling */
-
-ST_FUNC void *dlopen(const char *filename, int flag);
-ST_FUNC void dlclose(void *p);
-ST_FUNC const char *dlerror(void);
-ST_FUNC void *dlsym(void *handle, const char *symbol);
-#endif
-// 1829 "tcc.h"
-ST_FUNC void tcc_run_free(TCCState *s1);
-/* ------------ tcctools.c ----------------- */
-/* ------------ tccdbg.c ------------ */
-// 1844 "tcc.h"
-ST_FUNC void tcc_debug_new(TCCState *s);
-
-ST_FUNC void tcc_debug_start(TCCState *s1);
-ST_FUNC void tcc_debug_end(TCCState *s1);
-ST_FUNC void tcc_debug_bincl(TCCState *s1);
-ST_FUNC void tcc_debug_eincl(TCCState *s1);
-ST_FUNC void tcc_debug_newfile(TCCState *s1);
-
-ST_FUNC void tcc_debug_line(TCCState *s1);
-ST_FUNC void tcc_add_debug_info(TCCState *s1, int param, Sym *s, Sym *e);
-ST_FUNC void tcc_debug_funcstart(TCCState *s1, Sym *sym);
-ST_FUNC void tcc_debug_prolog_epilog(TCCState *s1, int value);
-ST_FUNC void tcc_debug_funcend(TCCState *s1, int size);
-ST_FUNC void tcc_debug_extern_sym(TCCState *s1, Sym *sym, int sh_num,
-				  int sym_bind, int sym_type);
-ST_FUNC void tcc_debug_typedef(TCCState *s1, Sym *sym);
-ST_FUNC void tcc_debug_stabn(TCCState *s1, int type, int value);
-ST_FUNC void tcc_debug_fix_anon(TCCState *s1, CType *t);
-#if !(defined ELF_OBJ_ONLY || defined TCC_TARGET_ARM || defined TARGETOS_BSD)
-ST_FUNC void tcc_eh_frame_start(TCCState *s1);
-ST_FUNC void tcc_eh_frame_end(TCCState *s1);
-ST_FUNC void tcc_eh_frame_hdr(TCCState *s1, int final);
-#define TCC_EH_FRAME 1
-#endif
-// 1869 "tcc.h"
-ST_FUNC void tcc_tcov_start(TCCState *s1);
-ST_FUNC void tcc_tcov_end(TCCState *s1);
-ST_FUNC void tcc_tcov_check_line(TCCState *s1, int start);
-ST_FUNC void tcc_tcov_block_end(TCCState *s1, int line);
-ST_FUNC void tcc_tcov_block_begin(TCCState *s1);
-ST_FUNC void tcc_tcov_reset_ind(TCCState *s1);
-
-#define stab_section s1->stab_section
-#define stabstr_section stab_section->link
-#define tcov_section s1->tcov_section
-#define eh_frame_section s1->eh_frame_section
-#define eh_frame_hdr_section s1->eh_frame_hdr_section
-#define dwarf_info_section s1->dwarf_info_section
-#define dwarf_abbrev_section s1->dwarf_abbrev_section
-#define dwarf_line_section s1->dwarf_line_section
-#define dwarf_aranges_section s1->dwarf_aranges_section
-#define dwarf_str_section s1->dwarf_str_section
-#define dwarf_line_str_section s1->dwarf_line_str_section
 /* default dwarf version for "-gdwarf" */
 
 #define DEFAULT_DWARF_VERSION 5
@@ -12629,20 +4666,22 @@ ST_FUNC void tcc_tcov_reset_ind(TCCState *s1);
 
 #define CONFIG_DWARF_VERSION 0
 #endif
-/* fake code to avoid DLL relocs */
 
-#define R_DATA_32DW 'Z'
+#define R_DATA_32DW R_X86_64_32
 /**/
-#if CONFIG_TCC_SEMLOCK
-// 1911 "tcc.h"
 typedef struct {
-	int init;
+	volatile LONG init;
 	CRITICAL_SECTION cs;
 } TCCSem;
 static inline void wait_sem(TCCSem *p)
 {
-	if (!p->init)
-		InitializeCriticalSection(&p->cs), p->init = 1;
+	if (InterlockedCompareExchange(&p->init, 1, 0) == 0) {
+		InitializeCriticalSection(&p->cs);
+		InterlockedExchange(&p->init, 2);
+	} else {
+		while (InterlockedCompareExchange(&p->init, 2, 2) != 2)
+			Sleep(0);
+	}
 	EnterCriticalSection(&p->cs);
 }
 static inline void post_sem(TCCSem *p)
@@ -12653,12 +4692,6 @@ static inline void post_sem(TCCSem *p)
 #define TCC_SEM(s) TCCSem s
 #define WAIT_SEM wait_sem
 #define POST_SEM post_sem
-#else
-
-#define TCC_SEM(s)
-#define WAIT_SEM(p)
-#define POST_SEM(p)
-#endif
 /**/
 
 #undef ST_DATA
@@ -12672,8 +4705,6 @@ static inline void post_sem(TCCSem *p)
 #define bss_section TCC_STATE_VAR(bss_section)
 #define common_section TCC_STATE_VAR(common_section)
 #define cur_text_section TCC_STATE_VAR(cur_text_section)
-#define bounds_section TCC_STATE_VAR(bounds_section)
-#define lbounds_section TCC_STATE_VAR(lbounds_section)
 #define symtab_section TCC_STATE_VAR(symtab_section)
 #define gnu_ext TCC_STATE_VAR(gnu_ext)
 #define tcc_error_noabort TCC_SET_STATE(_tcc_error_noabort)
@@ -12691,49 +4722,21 @@ PUB_FUNC void tcc_exit_state(TCCState *s1);
 #define tcc_warning_c(sw) TCC_SET_STATE(( tcc_state->warn_num = offsetof(TCCState, sw) - offsetof(TCCState, warn_none), _tcc_warning))
 /**/
 /* _TCC_H */
-#endif /* _TCC_H */
 
 #undef TCC_STATE_VAR
 #undef TCC_SET_STATE
-#ifdef USING_GLOBALS
 
-#define TCC_STATE_VAR(sym) tcc_state->sym
-#define TCC_SET_STATE(fn) fn
-#undef USING_GLOBALS
-#undef _tcc_error
-#else
+/* ==================== libtcc.c ==================== */
 
-#define TCC_STATE_VAR(sym) s1->sym
-#define TCC_SET_STATE(fn) (tcc_enter_state(s1),fn)
-#define _tcc_error use_tcc_error_noabort
-#endif
-// 26 "tcc.c" 2
+/* ==================== tccpp.c ==================== */
 
-// 1 "libtcc.c" 1
-// 26 "libtcc.c"
-// 1 "tccpp.c" 1
-// 21 "tccpp.c"
-#define USING_GLOBALS
-// 1 "tcc.h" 1
-#ifndef _TCC_H
 /* _TCC_H */
-#endif /* _TCC_H */
-// 1990 "tcc.h"
 #undef TCC_STATE_VAR
 #undef TCC_SET_STATE
-#ifdef USING_GLOBALS
 
 #define TCC_STATE_VAR(sym) tcc_state->sym
 #define TCC_SET_STATE(fn) fn
-#undef USING_GLOBALS
 #undef _tcc_error
-#else
-
-#define TCC_STATE_VAR(sym) s1->sym
-#define TCC_SET_STATE(fn) (tcc_enter_state(s1),fn)
-#define _tcc_error use_tcc_error_noabort
-#endif
-// 23 "tccpp.c" 2
 /* #define to 1 to enable (see parse_pp_string()) */
 
 #define ACCEPT_LF_IN_STRINGS 0
@@ -12776,7 +4779,6 @@ static TokenString *macro_stack;
 
 static const char tcc_keywords[] =
 #define DEF(id,str) str "\0"
-// 1 "tcctok.h" 1
 	/**/
 	/* keywords */
 
@@ -12828,6 +4830,8 @@ static const char tcc_keywords[] =
 	DEF(TOK_EXTENSION, "__extension__")/* gcc keyword */
 
 	DEF(TOK_THREAD_LOCAL, "_Thread_local")/* C11 thread-local storage */
+
+	DEF(TOK___thread, "__thread")/* GCC thread-local storage extension */
 
 	DEF(TOK_GENERIC, "_Generic")
 	DEF(TOK_STATIC_ASSERT, "_Static_assert")
@@ -12903,8 +4907,12 @@ static const char tcc_keywords[] =
 	DEF(TOK_WEAK2, "__weak__")
 	DEF(TOK_ALIAS1, "alias")
 	DEF(TOK_ALIAS2, "__alias__")
+	DEF(TOK_USED1, "used")
+	DEF(TOK_USED2, "__used__")
 	DEF(TOK_UNUSED1, "unused")
 	DEF(TOK_UNUSED2, "__unused__")
+	DEF(TOK_FORMAT1, "format")
+	DEF(TOK_FORMAT2, "__format__")
 	DEF(TOK_NODEBUG1, "nodebug")
 	DEF(TOK_NODEBUG2, "__nodebug__")
 	DEF(TOK_CDECL1, "cdecl")
@@ -12929,6 +4937,9 @@ static const char tcc_keywords[] =
 	DEF(TOK_DESTRUCTOR2, "__destructor__")
 	DEF(TOK_ALWAYS_INLINE1, "always_inline")
 	DEF(TOK_ALWAYS_INLINE2, "__always_inline__")
+	DEF(TOK_NOINLINE, "__noinline__")
+	DEF(TOK_PURE1, "pure")
+	DEF(TOK_PURE2, "__pure__")
 
 	DEF(TOK_MODE, "__mode__")
 	DEF(TOK_MODE_QI, "__QI__")
@@ -12954,10 +4965,8 @@ static const char tcc_keywords[] =
 	DEF(TOK_builtin_expect, "__builtin_expect")
 	DEF(TOK_builtin_unreachable, "__builtin_unreachable")
 	/*DEF(TOK_builtin_va_list, "__builtin_va_list")*/
-
 	DEF(TOK_builtin_va_start, "__builtin_va_start")
 	/* atomic operations */
-// 180 "tcctok.h"
 #define DEF_ATOMIC(ID) DEF(TOK_ ## __ ## ID, "__"#ID)
 	DEF_ATOMIC(atomic_store)
 	DEF_ATOMIC(atomic_load)
@@ -13005,34 +5014,14 @@ static const char tcc_keywords[] =
 
 	DEF(TOK___fixunssfdi, "__fixunssfdi")
 	DEF(TOK___fixunsdfdi, "__fixunsdfdi")
-// 295 "tcctok.h"
+	DEF(TOK___fixxfdi, "__fixxfdi")
+
 	DEF(TOK_alloca, "alloca")
-
 	DEF(TOK___chkstk, "__chkstk")
+	DEF(TOK___tls_index, "__tls_index")
 	/* bound checking symbols */
-#ifdef CONFIG_TCC_BCHECK
-
-	DEF(TOK___bound_ptr_add, "__bound_ptr_add")
-	DEF(TOK___bound_ptr_indir1, "__bound_ptr_indir1")
-	DEF(TOK___bound_ptr_indir2, "__bound_ptr_indir2")
-	DEF(TOK___bound_ptr_indir4, "__bound_ptr_indir4")
-	DEF(TOK___bound_ptr_indir8, "__bound_ptr_indir8")
-	DEF(TOK___bound_ptr_indir12, "__bound_ptr_indir12")
-	DEF(TOK___bound_ptr_indir16, "__bound_ptr_indir16")
-	DEF(TOK___bound_main_arg, "__bound_main_arg")
-	DEF(TOK___bound_local_new, "__bound_local_new")
-	DEF(TOK___bound_local_delete, "__bound_local_delete")
-	DEF(TOK___bound_setjmp, "__bound_setjmp")
-	DEF(TOK___bound_longjmp, "__bound_longjmp")
-	DEF(TOK___bound_new_region, "__bound_new_region")
-	DEF(TOK___bound_alloca_nr, "__bound_alloca_nr")
-	DEF(TOK_setjmp, "setjmp")
-	DEF(TOK__setjmp, "_setjmp")
-	DEF(TOK_longjmp, "longjmp")
-#endif
 	/**/
 	/* Tiny Assembler */
-// 359 "tcctok.h"
 #define DEF_ASM(x) DEF(TOK_ASM_ ## x, #x)
 #define DEF_ASMDIR(x) DEF(TOK_ASMDIR_ ## x, "." #x)
 #define TOK_ASM_int TOK_INT
@@ -13078,15 +5067,13 @@ static const char tcc_keywords[] =
 	DEF_ASMDIR(long)
 	DEF_ASMDIR(int)
 	DEF_ASMDIR(symver)
+	DEF_ASMDIR(reloc)
 	DEF_ASMDIR(section)/* must be last directive */
 
-// 1 "i386-tok.h" 1
 	/* ------------------------------------------------------------------ */
 	/* WARNING: relative order of tokens is important. */
 
 #define DEF_BWL(x) DEF(TOK_ASM_ ## x ## b, #x "b") DEF(TOK_ASM_ ## x ## w, #x "w") DEF(TOK_ASM_ ## x ## l, #x "l") DEF(TOK_ASM_ ## x, #x)
-
-#define DEF_WL(x) DEF(TOK_ASM_ ## x ## w, #x "w") DEF(TOK_ASM_ ## x ## l, #x "l") DEF(TOK_ASM_ ## x, #x)
 
 #define DEF_BWLQ(x) DEF(TOK_ASM_ ## x ## b, #x "b") DEF(TOK_ASM_ ## x ## w, #x "w") DEF(TOK_ASM_ ## x ## l, #x "l") DEF(TOK_ASM_ ## x ## q, #x "q") DEF(TOK_ASM_ ## x, #x)
 
@@ -13096,11 +5083,9 @@ static const char tcc_keywords[] =
 	/* number of sizes + 1 */
 
 #define NBWLX 5
-// 40 "i386-tok.h"
 #define DEF_FP1(x) DEF(TOK_ASM_ ## f ## x ## s, "f" #x "s") DEF(TOK_ASM_ ## fi ## x ## l, "fi" #x "l") DEF(TOK_ASM_ ## f ## x ## l, "f" #x "l") DEF(TOK_ASM_ ## fi ## x ## s, "fi" #x "s")
 
 #define DEF_FP(x) DEF(TOK_ASM_ ## f ## x, "f" #x ) DEF(TOK_ASM_ ## f ## x ## p, "f" #x "p") DEF_FP1(x)
-// 77 "i386-tok.h"
 #define DEF_ASMTEST(x,suffix) DEF_ASM(x ## o ## suffix) DEF_ASM(x ## no ## suffix) DEF_ASM(x ## b ## suffix) DEF_ASM(x ## c ## suffix) DEF_ASM(x ## nae ## suffix) DEF_ASM(x ## nb ## suffix) DEF_ASM(x ## nc ## suffix) DEF_ASM(x ## ae ## suffix) DEF_ASM(x ## e ## suffix) DEF_ASM(x ## z ## suffix) DEF_ASM(x ## ne ## suffix) DEF_ASM(x ## nz ## suffix) DEF_ASM(x ## be ## suffix) DEF_ASM(x ## na ## suffix) DEF_ASM(x ## nbe ## suffix) DEF_ASM(x ## a ## suffix) DEF_ASM(x ## s ## suffix) DEF_ASM(x ## ns ## suffix) DEF_ASM(x ## p ## suffix) DEF_ASM(x ## pe ## suffix) DEF_ASM(x ## np ## suffix) DEF_ASM(x ## po ## suffix) DEF_ASM(x ## l ## suffix) DEF_ASM(x ## nge ## suffix) DEF_ASM(x ## nl ## suffix) DEF_ASM(x ## ge ## suffix) DEF_ASM(x ## le ## suffix) DEF_ASM(x ## ng ## suffix) DEF_ASM(x ## nle ## suffix) DEF_ASM(x ## g ## suffix)
 	/* ------------------------------------------------------------------ */
 	/* register */
@@ -13338,9 +5323,7 @@ static const char tcc_keywords[] =
 #define DEF_ASM_OP0L(name,opcode,group,instr_type)
 #define DEF_ASM_OP1(name,opcode,group,instr_type,op0)
 #define DEF_ASM_OP2(name,opcode,group,instr_type,op0,op1)
-#define DEF_ASM_OP3(name,opcode,group,instr_type,op0,op1,op2)
 
-// 1 "x86_64-asm.h" 1
 	DEF_ASM_OP0(clc, 0xf8)/* must be first OP0 */
 
 	DEF_ASM_OP0(cld, 0xfc)
@@ -13897,7 +5880,14 @@ static const char tcc_keywords[] =
 	DEF_ASM_OP2(addps, 0x0f58, 0, OPC_MODRM, OPT_EA | OPT_SSE, OPT_SSE )
 	DEF_ASM_OP2(cvtpi2ps, 0x0f2a, 0, OPC_MODRM, OPT_EA | OPT_MMX, OPT_SSE )
 	DEF_ASM_OP2(cvtps2pi, 0x0f2d, 0, OPC_MODRM, OPT_EA | OPT_SSE, OPT_MMX )
+	DEF_ASM_OP2(cvtss2si, 0xf30f2d, 0, OPC_MODRM, OPT_EA | OPT_SSE, OPT_REG32 )
+	ALT(DEF_ASM_OP2(cvtss2si, 0xf30f2d, 0, OPC_MODRM | OPC_48, OPT_EA | OPT_SSE,
+			OPT_REG64 ))
+	DEF_ASM_OP2(cvtsd2si, 0xf20f2d, 0, OPC_MODRM, OPT_EA | OPT_SSE, OPT_REG32 )
+	ALT(DEF_ASM_OP2(cvtsd2si, 0xf20f2d, 0, OPC_MODRM | OPC_48, OPT_EA | OPT_SSE,
+			OPT_REG64 ))
 	DEF_ASM_OP2(cvttps2pi, 0x0f2c, 0, OPC_MODRM, OPT_EA | OPT_SSE, OPT_MMX )
+	DEF_ASM_OP2(andps, 0x0f54, 0, OPC_MODRM, OPT_EA | OPT_SSE, OPT_SSE )
 	DEF_ASM_OP2(divps, 0x0f5e, 0, OPC_MODRM, OPT_EA | OPT_SSE, OPT_SSE )
 	DEF_ASM_OP2(maxps, 0x0f5f, 0, OPC_MODRM, OPT_EA | OPT_SSE, OPT_SSE )
 	DEF_ASM_OP2(minps, 0x0f5d, 0, OPC_MODRM, OPT_EA | OPT_SSE, OPT_SSE )
@@ -13911,7 +5901,12 @@ static const char tcc_keywords[] =
 	DEF_ASM_OP2(rcpss, 0x0f53, 0, OPC_MODRM, OPT_EA | OPT_SSE, OPT_SSE )
 	DEF_ASM_OP2(rsqrtps, 0x0f52, 0, OPC_MODRM, OPT_EA | OPT_SSE, OPT_SSE )
 	DEF_ASM_OP2(sqrtps, 0x0f51, 0, OPC_MODRM, OPT_EA | OPT_SSE, OPT_SSE )
+	DEF_ASM_OP2(sqrtss, 0xf30f51, 0, OPC_MODRM, OPT_EA | OPT_SSE, OPT_SSE )
 	DEF_ASM_OP2(subps, 0x0f5c, 0, OPC_MODRM, OPT_EA | OPT_SSE, OPT_SSE )
+	/* sse2 */
+
+	DEF_ASM_OP2(andpd, 0x660f54, 0, OPC_MODRM, OPT_EA | OPT_SSE, OPT_SSE)
+	DEF_ASM_OP2(sqrtsd, 0xf20f51, 0, OPC_MODRM, OPT_EA | OPT_SSE, OPT_SSE)
 	/* movnti should only accept REG32 and REG64, we accept more */
 
 	DEF_ASM_OP2(movnti, 0x0fc3, 0, OPC_MODRM, OPT_REG, OPT_EA)
@@ -13935,16 +5930,13 @@ static const char tcc_keywords[] =
 #undef DEF_ASM_OP1
 #undef DEF_ASM_OP2
 #undef DEF_ASM_OP3
-// 318 "i386-tok.h" 2
 
 #define ALT(x)
 #define DEF_ASM_OP0(name,opcode)
 #define DEF_ASM_OP0L(name,opcode,group,instr_type) DEF_ASM(name)
 #define DEF_ASM_OP1(name,opcode,group,instr_type,op0) DEF_ASM(name)
 #define DEF_ASM_OP2(name,opcode,group,instr_type,op0,op1) DEF_ASM(name)
-#define DEF_ASM_OP3(name,opcode,group,instr_type,op0,op1,op2) DEF_ASM(name)
 
-// 1 "x86_64-asm.h" 1
 	DEF_ASM_OP0(clc, 0xf8)/* must be first OP0 */
 
 	DEF_ASM_OP0(cld, 0xfc)
@@ -14501,7 +6493,14 @@ static const char tcc_keywords[] =
 	DEF_ASM_OP2(addps, 0x0f58, 0, OPC_MODRM, OPT_EA | OPT_SSE, OPT_SSE )
 	DEF_ASM_OP2(cvtpi2ps, 0x0f2a, 0, OPC_MODRM, OPT_EA | OPT_MMX, OPT_SSE )
 	DEF_ASM_OP2(cvtps2pi, 0x0f2d, 0, OPC_MODRM, OPT_EA | OPT_SSE, OPT_MMX )
+	DEF_ASM_OP2(cvtss2si, 0xf30f2d, 0, OPC_MODRM, OPT_EA | OPT_SSE, OPT_REG32 )
+	ALT(DEF_ASM_OP2(cvtss2si, 0xf30f2d, 0, OPC_MODRM | OPC_48, OPT_EA | OPT_SSE,
+			OPT_REG64 ))
+	DEF_ASM_OP2(cvtsd2si, 0xf20f2d, 0, OPC_MODRM, OPT_EA | OPT_SSE, OPT_REG32 )
+	ALT(DEF_ASM_OP2(cvtsd2si, 0xf20f2d, 0, OPC_MODRM | OPC_48, OPT_EA | OPT_SSE,
+			OPT_REG64 ))
 	DEF_ASM_OP2(cvttps2pi, 0x0f2c, 0, OPC_MODRM, OPT_EA | OPT_SSE, OPT_MMX )
+	DEF_ASM_OP2(andps, 0x0f54, 0, OPC_MODRM, OPT_EA | OPT_SSE, OPT_SSE )
 	DEF_ASM_OP2(divps, 0x0f5e, 0, OPC_MODRM, OPT_EA | OPT_SSE, OPT_SSE )
 	DEF_ASM_OP2(maxps, 0x0f5f, 0, OPC_MODRM, OPT_EA | OPT_SSE, OPT_SSE )
 	DEF_ASM_OP2(minps, 0x0f5d, 0, OPC_MODRM, OPT_EA | OPT_SSE, OPT_SSE )
@@ -14515,7 +6514,12 @@ static const char tcc_keywords[] =
 	DEF_ASM_OP2(rcpss, 0x0f53, 0, OPC_MODRM, OPT_EA | OPT_SSE, OPT_SSE )
 	DEF_ASM_OP2(rsqrtps, 0x0f52, 0, OPC_MODRM, OPT_EA | OPT_SSE, OPT_SSE )
 	DEF_ASM_OP2(sqrtps, 0x0f51, 0, OPC_MODRM, OPT_EA | OPT_SSE, OPT_SSE )
+	DEF_ASM_OP2(sqrtss, 0xf30f51, 0, OPC_MODRM, OPT_EA | OPT_SSE, OPT_SSE )
 	DEF_ASM_OP2(subps, 0x0f5c, 0, OPC_MODRM, OPT_EA | OPT_SSE, OPT_SSE )
+	/* sse2 */
+
+	DEF_ASM_OP2(andpd, 0x660f54, 0, OPC_MODRM, OPT_EA | OPT_SSE, OPT_SSE)
+	DEF_ASM_OP2(sqrtsd, 0xf20f51, 0, OPC_MODRM, OPT_EA | OPT_SSE, OPT_SSE)
 	/* movnti should only accept REG32 and REG64, we accept more */
 
 	DEF_ASM_OP2(movnti, 0x0fc3, 0, OPC_MODRM, OPT_REG, OPT_EA)
@@ -14539,9 +6543,6 @@ static const char tcc_keywords[] =
 #undef DEF_ASM_OP1
 #undef DEF_ASM_OP2
 #undef DEF_ASM_OP3
-// 330 "i386-tok.h" 2
-// 412 "tcctok.h" 2
-// 67 "tccpp.c" 2
 #undef DEF
 	;
 /* WARNING: the content of this string encodes token numbers */
@@ -14582,7 +6583,7 @@ ST_FUNC void skip(int c)
 	if (tok != c) {
 		char tmp[40];
 		pstrcpy(tmp, sizeof tmp, get_tok_str(c, &tokc));
-		tcc_error("'%s' expected (got \"%s\")", tmp, get_tok_str(tok, &tokc));
+		tcc_error("'%s' expected (got '%s')", tmp, get_tok_str(tok, &tokc));
 	}
 	next();
 }
@@ -14591,149 +6592,86 @@ ST_FUNC void expect(const char *msg)
 {
 	tcc_error("%s expected", msg);
 }
-/* ------------------------------------------------------------------------- */
-/* Custom allocator for tiny objects */
-
-#define USE_TAL
-#ifndef USE_TAL
-
-#define tal_free(al, p) tcc_free(p)
-#define tal_realloc(al, p, size) tcc_realloc(p, size)
-#define tal_new(a,b,c)
-#define tal_delete(a)
-#else
-#if !defined(MEM_DEBUG)
-// 127 "tccpp.c"
 #define tal_free(al,p) tal_free_impl(al, p)
-#define tal_realloc(al,p,size) tal_realloc_impl(&al, p, size)
+#define tal_realloc(al,p,size) tal_realloc_impl(al, p, size)
 #define TAL_DEBUG_PARAMS
-#else
-
-#define TAL_DEBUG MEM_DEBUG
-//#define TAL_INFO 1 /* collect and dump allocators stats */
-
-#define tal_free(al, p) tal_free_impl(al, p, __FILE__, __LINE__)
-#define tal_realloc(al, p, size) tal_realloc_impl(&al, p, size, __FILE__, __LINE__)
-#define TAL_DEBUG_PARAMS , const char *file, int line
-#define TAL_DEBUG_FILE_LEN 40
-#endif
-/* allocator for tiny TokenSym in table_ident */
-// 139 "tccpp.c"
-#define TOKSYM_TAL_SIZE (768 * 1024)
-/* allocator for tiny TokenString instances */
-#define TOKSTR_TAL_SIZE (768 * 1024)
-/* prefer unique limits to distinguish allocators debug msgs */
-#define TOKSYM_TAL_LIMIT 256
-/* 256 * sizeof(int) */
-#define TOKSTR_TAL_LIMIT 1024
+/* allocator for TokenSym in table_ident */
+#define TOKSYM_TAL_SIZE (256 * 1024)
+/* allocator for TokenString instances */
+#define TOKSTR_TAL_SIZE (256 * 1024)
 
 typedef struct TinyAlloc {
-	unsigned limit;
-	unsigned size;
-	uint8_t *buffer;
 	uint8_t *p;
+	uint8_t *bufend;
+	struct TinyAlloc *next;
 	unsigned nb_allocs;
-	struct TinyAlloc *next, *top;
-#ifdef TAL_INFO
+	unsigned size;
 
-	unsigned nb_peak;
-	unsigned nb_total;
-	unsigned nb_missed;
-	uint8_t *peak_p;
-#endif
-
+	union {
+		uint8_t buffer[1];
+		size_t _aligner_;
+	};
 } TinyAlloc;
 
 typedef struct tal_header_t {
-	unsigned size;
-#ifdef TAL_DEBUG
-
-	int line_num; /* negative line_num used for double free check */
-
-	char file_name[TAL_DEBUG_FILE_LEN + 1];
-#endif
+	size_t size;/* word align */
 
 } tal_header_t;
+
+#define TAL_ALIGN(size) (((size) + (sizeof (size_t) - 1)) & ~(sizeof (size_t) - 1))
 /* ------------------------------------------------------------------------- */
 
-static TinyAlloc *tal_new(TinyAlloc **pal, unsigned limit, unsigned size)
+static TinyAlloc *tal_new(TinyAlloc **pal, unsigned size)
 {
-	TinyAlloc *al = tcc_mallocz(sizeof(TinyAlloc));
-	al->p = al->buffer = tcc_malloc(size);
-	al->limit = limit;
-	al->size = size;
-	if (pal) *pal = al;
+	TinyAlloc *al = tcc_malloc(sizeof(TinyAlloc) - sizeof (size_t) + size);
+	al->p = al->buffer;
+	al->bufend = al->buffer + size;
+	al->nb_allocs = 0;
+	al->next = *pal, *pal = al;
+	al->size = al->next ? al->next->size : size;
+
 	return al;
 }
 
-static void tal_delete(TinyAlloc *al)
+static void tal_delete(TinyAlloc **pal)
 {
-	TinyAlloc *next;
+	TinyAlloc *al = *pal, *next;
 
 tail_call:
-	if (!al)
-		return;
-#ifdef TAL_INFO
-
-	fprintf(stderr,
-		"limit %4d  size %7d  nb_peak %5d  nb_total %7d  nb_missed %5d  usage %5.1f%%\n",
-		al->limit, al->size, al->nb_peak, al->nb_total, al->nb_missed,
-		(al->peak_p - al->buffer) * 100.0 al->size);
-#endif
-#if TAL_DEBUG && TAL_DEBUG != 3 /* do not check TAL leaks with -DMEM_DEBUG=3 */
-	/* do not check TAL leaks with -DMEM_DEBUG=3 */
-	if (al->nb_allocs > 0) {
-		uint8_t *p;
-		fprintf(stderr, "TAL_DEBUG: memory leak %d chunk(s) (limit= %d)\n",
-			al->nb_allocs, al->limit);
-		p = al->buffer;
-		while (p < al->p) {
-			tal_header_t *header = (tal_header_t *)p;
-			if (header->line_num > 0) {
-				fprintf(stderr, "%s:%d: chunk of %d bytes leaked\n",
-					header->file_name, header->line_num, header->size);
-			}
-			p += header->size + sizeof(tal_header_t);
-		}
-#if TAL_DEBUG == 2
-		exit(2);
-#endif
-	}
-#endif
-// 210 "tccpp.c"
 	next = al->next;
-	tcc_free(al->buffer);
 	tcc_free(al);
 	al = next;
-	goto tail_call;
+	if (al)
+		goto tail_call;
+	*pal = al;
 }
 
-static void tal_free_impl(TinyAlloc *al, void *p TAL_DEBUG_PARAMS)
+static void tal_free_impl(TinyAlloc **pal, void *p TAL_DEBUG_PARAMS)
 {
+	TinyAlloc *al, **top = pal;
+	tal_header_t *header;
+
 	if (!p)
 		return;
-tail_call:
-	if (al->buffer <= (uint8_t *)p && (uint8_t *)p < al->buffer + al->size) {
-#ifdef TAL_DEBUG
+	header = (tal_header_t *)p - 1;
+	al = *pal;
+	while ((uint8_t *)p < al->buffer || (uint8_t *)p > al->bufend)
+		al = *(pal = &al->next);
+	if (0 == --al->nb_allocs) {
+		*pal = al->next;
+		if ((al->bufend - al->buffer) > al->size) {
+//fprintf(stderr, "free big tal: %u\n", header->size);
 
-		tal_header_t *header = (((tal_header_t *)p) - 1);
-		if (header->line_num < 0) {
-			fprintf(stderr, "%s:%d: TAL_DEBUG: double frees chunk from\n",
-				file, line);
-			fprintf(stderr, "%s:%d: %d bytes\n",
-				header->file_name, (int)-header->line_num, (int)header->size);
-		} else
-			header->line_num = -header->line_num;
-#endif
-// 233 "tccpp.c"
-		al->nb_allocs--;
-		if (!al->nb_allocs)
+			tcc_free(al);
+		} else {
+			/* reset and move to front */
+
 			al->p = al->buffer;
-	} else if (al->next) {
-		al = al->next;
-		goto tail_call;
-	} else
-		tcc_free(p);
+			al->next = *top, *top = al;
+		}
+	} else if ((uint8_t *)p + header->size == al->p) {
+		al->p = (uint8_t *)header;
+	}
 }
 
 static void *tal_realloc_impl(TinyAlloc **pal, void *p,
@@ -14741,95 +6679,51 @@ static void *tal_realloc_impl(TinyAlloc **pal, void *p,
 {
 	tal_header_t *header;
 	void *ret;
-	int is_own;
-	unsigned adj_size = (size + 3) & -4;
+	unsigned adj_size = TAL_ALIGN(size) + sizeof(tal_header_t);
 	TinyAlloc *al = *pal;
 
-tail_call:
-	is_own = (al->buffer <= (uint8_t *)p && (uint8_t *)p < al->buffer + al->size);
-	if ((!p || is_own) && size <= al->limit) {
-		if (al->p - al->buffer + adj_size + sizeof(tal_header_t) < al->size) {
-			header = (tal_header_t *)al->p;
-			header->size = adj_size;
-#ifdef TAL_DEBUG
+	if (p) {
+		/* reallpc case */
 
-			{
-				int ofs = strlen(file) - TAL_DEBUG_FILE_LEN;
-				strncpy(header->file_name, file + (ofs > 0 ? ofs : 0), TAL_DEBUG_FILE_LEN);
-				header->file_name[TAL_DEBUG_FILE_LEN] = 0;
-				header->line_num = line;
-			}
-#endif
-
-			ret = al->p + sizeof(tal_header_t);
-			al->p += adj_size + sizeof(tal_header_t);
-			if (is_own) {
-				header = (((tal_header_t *)p) - 1);
-				if (p) memcpy(ret, p, header->size);
-#ifdef TAL_DEBUG
-
-				header->line_num = -header->line_num;
-#endif
-
-			} else {
-				al->nb_allocs++;
-			}
-#ifdef TAL_INFO
-
-			if (al->nb_peak < al->nb_allocs)
-				al->nb_peak = al->nb_allocs;
-			if (al->peak_p < al->p)
-				al->peak_p = al->p;
-			al->nb_total++;
-#endif
-
-			return ret;
-		} else if (is_own) {
-			al->nb_allocs--;
-			ret = tal_realloc(*pal, 0, size);
-			header = (((tal_header_t *)p) - 1);
-			if (p) memcpy(ret, p, header->size);
-#ifdef TAL_DEBUG
-
-			header->line_num = -header->line_num;
-#endif
-
-			return ret;
-		}
-		if (al->next) {
+		while ((uint8_t *)p < al->buffer || (uint8_t *)p > al->bufend)
 			al = al->next;
-		} else {
-			TinyAlloc *bottom = al, *next = al->top ? al->top : al;
+		header = (tal_header_t *)p - 1;
+		if ((uint8_t *)p + header->size == al->p)
+			al->p = (uint8_t *)header; /* maybe reuse */
 
-			al = tal_new(pal, next->limit, next->size * 2);
-			al->next = next;
-			bottom->top = al;
+		if (al->p + adj_size > al->bufend) {
+			ret = tal_realloc(pal, 0, size);
+			memcpy(ret, p, header->size);
+			tal_free(pal, p);
+			return ret;
+		} else if (al->p != (uint8_t *)header) {
+			memcpy((tal_header_t *)al->p + 1, p, header->size);
+
 		}
-		goto tail_call;
+	} else {
+		/* new alloc case */
+
+		while (al->p + adj_size > al->bufend) {
+			al = al->next;
+			if (!al) {
+				unsigned new_size = (*pal)->size;
+				if (adj_size > new_size) {
+					new_size = adj_size;
+//fprintf(stderr, "%s:%d: alloc big tal: %u\n", file->filename, file->line_num, adj_size - sizeof(tal_header_t));
+
+				}
+				al = tal_new(pal, new_size);
+				break;
+			}
+		}
+		al->nb_allocs++;
 	}
-	if (is_own) {
-		al->nb_allocs--;
-		ret = tcc_malloc(size);
-		header = (((tal_header_t *)p) - 1);
-		if (p) memcpy(ret, p, header->size);
-#ifdef TAL_DEBUG
-
-		header->line_num = -header->line_num;
-#endif
-
-	} else if (al->next) {
-		al = al->next;
-		goto tail_call;
-	} else
-		ret = tcc_realloc(p, size);
-#ifdef TAL_INFO
-
-	al->nb_missed++;
-#endif
-
+	header = (tal_header_t *)al->p;
+	header->size = adj_size - sizeof(tal_header_t);
+	al->p += adj_size;
+	ret = header + 1;
 	return ret;
 }
-#endif
 /* USE_TAL */
 /* ------------------------------------------------------------------------- */
 /* CString handling */
@@ -14861,13 +6755,18 @@ ST_INLN void cstr_ccat(CString *cstr, int ch)
 
 ST_INLN char *unicode_to_utf8 (char *b, uint32_t Uc)
 {
-	if (Uc<0x80) *b++=Uc;
-	else if (Uc<0x800) *b++=192+Uc/64, *b++=128+Uc%64;
-	else if (Uc-0xd800u<0x800) goto error;
-	else if (Uc<0x10000) *b++=224+Uc/4096, *b++=128+Uc/64%64, *b++=128+Uc%64;
-	else if (Uc<0x110000) *b++=240+Uc/262144, *b++=128+Uc/4096%64,
-		*b++=128+Uc/64%64, *b++=128+Uc%64;
-else error: tcc_error("0x%x is not a valid universal character", Uc);
+	if (Uc<0x80)
+		*b++=Uc;
+	else if (Uc<0x800)
+		*b++=192+Uc/64, *b++=128+Uc%64;
+	else if (Uc-0xd800u<0x800)
+		goto error;
+	else if (Uc<0x10000)
+		*b++=224+Uc/4096, *b++=128+Uc/64%64, *b++=128+Uc%64;
+	else if (Uc<0x110000)
+		*b++=240+Uc/262144, *b++=128+Uc/4096%64, *b++=128+Uc/64%64, *b++=128+Uc%64;
+	else
+error: tcc_error("0x%x is not a valid universal character", Uc);
 	return b;
 }
 /* add a unicode character expanded into utf8 */
@@ -14989,7 +6888,7 @@ static TokenSym *tok_alloc_new(TokenSym **pts, const char *str, int len)
 		table_ident = ptable;
 	}
 
-	ts = tal_realloc(toksym_alloc, 0, sizeof(TokenSym) + len);
+	ts = tal_realloc(&toksym_alloc, 0, sizeof(TokenSym) + len);
 	table_ident[i] = ts;
 	ts->tok = tok_ident++;
 	ts->sym_define = NULL;
@@ -15067,7 +6966,7 @@ ST_FUNC const char *get_tok_str(int v, CValue *cv)
 		break;
 	case TOK_PPNUM:
 	case TOK_PPSTR:
-		return (char*)cv->str.data;
+		return (char *)cv->str.data;
 	case TOK_LSTR:
 		cstr_ccat(&cstr_buf, 'L');
 	case TOK_STR:
@@ -15160,12 +7059,8 @@ static int handle_eob(void)
 
 	if (bf->buf_ptr >= bf->buf_end) {
 		if (bf->fd >= 0) {
-#if defined(PARSE_DEBUG)
-			len = 1;
-#else
 
 			len = IO_BUF_SIZE;
-#endif
 
 			len = read(bf->fd, bf->buffer, len);
 			if (len < 0)
@@ -15482,7 +7377,6 @@ the_end: ;
 	file->buf_ptr = p;
 }
 /* token string handling */
-// 1002 "tccpp.c"
 ST_INLN void tok_str_new(TokenString *s)
 {
 	s->str = NULL;
@@ -15493,20 +7387,20 @@ ST_INLN void tok_str_new(TokenString *s)
 
 ST_FUNC TokenString *tok_str_alloc(void)
 {
-	TokenString *str = tal_realloc(tokstr_alloc, 0, sizeof *str);
+	TokenString *str = tal_realloc(&tokstr_alloc, 0, sizeof *str);
 	tok_str_new(str);
 	return str;
 }
 
 ST_FUNC void tok_str_free_str(int *str)
 {
-	tal_free(tokstr_alloc, str);
+	tal_free(&tokstr_alloc, str);
 }
 
 ST_FUNC void tok_str_free(TokenString *str)
 {
 	tok_str_free_str(str->str);
-	tal_free(tokstr_alloc, str);
+	tal_free(&tokstr_alloc, str);
 }
 
 ST_FUNC int *tok_str_realloc(TokenString *s, int new_size)
@@ -15519,7 +7413,7 @@ ST_FUNC int *tok_str_realloc(TokenString *s, int new_size)
 	while (size < new_size)
 		size = size * 2;
 	if (size > s->allocated_len) {
-		str = tal_realloc(tokstr_alloc, s->str, size * sizeof(int));
+		str = tal_realloc(&tokstr_alloc, s->str, size * sizeof(int));
 		s->allocated_len = size;
 		s->str = str;
 	}
@@ -15584,11 +7478,8 @@ static void tok_str_add2(TokenString *s, int t, CValue *cv)
 	case TOK_LCHAR:
 	case TOK_CFLOAT:
 	case TOK_LINENUM:
-#if LONG_SIZE == 4
-
 	case TOK_CLONG:
 	case TOK_CULONG:
-#endif
 
 		str[len++] = cv->tab[0];
 		break;
@@ -15610,36 +7501,17 @@ static void tok_str_add2(TokenString *s, int t, CValue *cv)
 	case TOK_CDOUBLE:
 	case TOK_CLLONG:
 	case TOK_CULLONG:
-#if LONG_SIZE == 8
-	case TOK_CLONG:
-	case TOK_CULONG:
-#endif
 
 		str[len++] = cv->tab[0];
 		str[len++] = cv->tab[1];
 		break;
 	case TOK_CLDOUBLE:
-#if LDOUBLE_SIZE == 8 || defined TCC_USING_DOUBLE_FOR_LDOUBLE
-
 		str[len++] = cv->tab[0];
 		str[len++] = cv->tab[1];
-#elif LDOUBLE_SIZE == 12
-
-		str[len++] = cv->tab[0];
-		str[len++] = cv->tab[1];
-		str[len++] = cv->tab[2];
-#elif LDOUBLE_SIZE == 16
-
-		str[len++] = cv->tab[0];
-		str[len++] = cv->tab[1];
-		str[len++] = cv->tab[2];
-		str[len++] = cv->tab[3];
-#else
-
-#error add long double size support
-#endif
-// 1148 "tccpp.c"
-		break;
+		if (LDOUBLE_WORDS >= 3)
+			str[len++] = cv->tab[2];
+		if (LDOUBLE_WORDS >= 4)
+			str[len++] = cv->tab[3];
 	default:
 		break;
 	}
@@ -15677,10 +7549,7 @@ static inline void tok_get(int *t, const int **pp, CValue *cv)
 
 	tab = cv->tab;
 	switch (*t = *p++) {
-#if LONG_SIZE == 4
-
 	case TOK_CLONG:
-#endif
 
 	case TOK_CINT:
 	case TOK_CCHAR:
@@ -15688,10 +7557,7 @@ static inline void tok_get(int *t, const int **pp, CValue *cv)
 	case TOK_LINENUM:
 		cv->i = *p++;
 		break;
-#if LONG_SIZE == 4
-
 	case TOK_CULONG:
-#endif
 
 	case TOK_CUINT:
 		cv->i = (unsigned)*p++;
@@ -15704,34 +7570,17 @@ static inline void tok_get(int *t, const int **pp, CValue *cv)
 	case TOK_PPNUM:
 	case TOK_PPSTR:
 		cv->str.size = *p++;
-		cv->str.data = (char*)p;
+		cv->str.data = (char *)p;
 		p += (cv->str.size + sizeof(int) - 1) / sizeof(int);
 		break;
 	case TOK_CDOUBLE:
 	case TOK_CLLONG:
 	case TOK_CULLONG:
-#if LONG_SIZE == 8
-	case TOK_CLONG:
-	case TOK_CULONG:
-#endif
 
 		n = 2;
 		goto copy;
 	case TOK_CLDOUBLE:
-#if LDOUBLE_SIZE == 8 || defined TCC_USING_DOUBLE_FOR_LDOUBLE
-
-		n = 2;
-#elif LDOUBLE_SIZE == 12
-
-		n = 3;
-#elif LDOUBLE_SIZE == 16
-
-		n = 4;
-#else
-
-#error add long double size support
-#endif
-
+		n = LDOUBLE_WORDS;
 copy:
 		do
 			*tab++ = *p++;
@@ -15742,7 +7591,6 @@ copy:
 	}
 	*pp = p;
 }
-// 1251 "tccpp.c"
 #define TOK_GET(t,p,c) do { int _t = **(p); if (TOK_HAS_VALUE(_t)) tok_get(t, p, c); else *(t) = _t, ++*(p); } while (0)
 
 static int macro_is_equal(const int *a, const int *b)
@@ -15912,11 +7760,11 @@ static int parse_include(TCCState *s1, int do_next, int test)
 		if (e && (define_find(e->ifndef_macro) || e->once)) {
 			/* no need to parse the include because the 'ifndef macro'
 			               is defined (or had #pragma once) */
-#ifdef INC_DEBUG
 
-			printf("%s: skipping cached %s\n", file->filename, buf);
-#endif
+			if ((s1->verbose | 1) == 3)/* -vv[v] */
 
+				printf("=> %*s%s\n",
+				       (int)(s1->include_stack_ptr - s1->include_stack), "", buf);
 			return 1;
 		}
 		if (tcc_open(s1, buf) >= 0)
@@ -15932,10 +7780,6 @@ static int parse_include(TCCState *s1, int do_next, int test)
 
 		*s1->include_stack_ptr++ = file->prev;
 		file->include_next_index = i;
-#ifdef INC_DEBUG
-
-		printf("%s: including %s\n", file->prev->filename, file->filename);
-#endif
 		/* update target deps */
 
 		if (s1->gen_deps) {
@@ -16075,7 +7919,8 @@ ST_FUNC void parse_define(void)
 		int dotid = set_idnum('.', 0);
 		next_nomacro();
 		ps = &first;
-		if (tok != ')') for (;;) {
+		if (tok != ')')
+			for (;;) {
 				varg = tok;
 				next_nomacro();
 				is_vaargs = 0;
@@ -16181,10 +8026,6 @@ static CachedInclude *search_cached_include(TCCState *s1, const char *filename,
 
 	e->hash_next = s1->cached_includes_hash[h];
 	s1->cached_includes_hash[h] = s1->nb_cached_includes;
-#ifdef INC_DEBUG
-
-	printf("adding cached '%s'\n", filename);
-#endif
 
 	return e;
 }
@@ -16386,10 +8227,6 @@ do_ifdef:
 			tcc_error("invalid argument for '#if%sdef'", c ? "n" : "");
 		if (is_bof) {
 			if (c) {
-#ifdef INC_DEBUG
-
-				printf("#ifndef %s\n", get_tok_str(tok, NULL));
-#endif
 
 				file->ifndef_macro = tok;
 			}
@@ -16527,7 +8364,7 @@ _line_num:
 			/* '#!' is ignored at beginning to allow C scripts. */
 
 			goto ignore;
-		tcc_warning("Ignoring unknown preprocessing directive #%s", get_tok_str(tok,
+		tcc_warning("ignoring unknown preprocessing directive #%s", get_tok_str(tok,
 				&tokc));
 ignore:
 		skip_to_eol(0);
@@ -16604,7 +8441,7 @@ parse_hex_or_ucn:
 						expect("more hex digits in universal-character-name");
 					else
 						goto add_hex_or_ucn;
-					n = n * 16 + c;
+					n = (unsigned) n * 16 + c;
 					p++;
 				} while (--i);
 				if (is_long) {
@@ -16729,6 +8566,7 @@ add_char_nonext:
 		if (!is_long)
 			cstr_ccat(outstr, c);
 		else {
+
 			/* store as UTF-16 */
 
 			if (c < 0x10000) {
@@ -16797,20 +8635,23 @@ static void parse_string(const char *s, int len)
 			tok = TOK_LSTR;
 	}
 }
-/* we use 64 bit numbers */
+/* we use 128 bit (64/112 needed) numbers */
 
-#define BN_SIZE 2
+#define BN_SIZE 4
 /* bn = (bn << shift) | or_val */
 
-static void bn_lshift(unsigned int *bn, int shift, int or_val)
+static int bn_lshift(unsigned int *bn, int shift, int or_val)
 {
 	int i;
 	unsigned int v;
+	if (bn[BN_SIZE - 1] >> (32 - shift))
+		return shift;
 	for (i=0; i<BN_SIZE; i++) {
 		v = bn[i];
 		bn[i] = (v << shift) | or_val;
 		or_val = v >> (32 - shift);
 	}
+	return 0;
 }
 
 static void bn_zero(unsigned int *bn)
@@ -16828,7 +8669,7 @@ static void parse_number(const char *p)
 	int b, t, shift, frac_bits, s, exp_val, ch;
 	char *q;
 	unsigned int bn[BN_SIZE];
-	double d;
+	long double d;
 	/* number */
 
 	q = token_buf;
@@ -16881,6 +8722,7 @@ num_too_long:
 			/* hexadecimal or binary floats */
 			/* XXX: handle overflows */
 
+			frac_bits = 0;
 			*q = '\0';
 			if (b == 16)
 				shift = 4;
@@ -16899,9 +8741,8 @@ num_too_long:
 				} else {
 					t = t - '0';
 				}
-				bn_lshift(bn, shift, t);
+				frac_bits -= bn_lshift(bn, shift, t);
 			}
-			frac_bits = 0;
 			if (ch == '.') {
 				ch = *p++;
 				while (1) {
@@ -16917,7 +8758,7 @@ num_too_long:
 					}
 					if (t >= b)
 						tcc_error("invalid digit");
-					bn_lshift(bn, shift, t);
+					frac_bits -= bn_lshift(bn, shift, t);
 					frac_bits += shift;
 					ch = *p++;
 				}
@@ -16936,15 +8777,21 @@ num_too_long:
 			if (ch < '0' || ch > '9')
 				expect("exponent digits");
 			while (ch >= '0' && ch <= '9') {
-				exp_val = exp_val * 10 + ch - '0';
+				/* If exp_val is this large ldexp will return HUGE_VAL */
+
+				if (exp_val < 100000000)
+					exp_val = exp_val * 10 + ch - '0';
 				ch = *p++;
 			}
 			exp_val = exp_val * s;
 			/* now we can generate the number */
 			/* XXX: should patch directly float number */
 
-			d = (double)bn[1] * 4294967296.0 + (double)bn[0];
-			d = ldexp(d, exp_val - frac_bits);
+			d = (long double)bn[3] * 79228162514264337593543950336.0L +
+			    (long double)bn[2] * 18446744073709551616.0L +
+			    (long double)bn[1] * 4294967296.0L +
+			    (long double)bn[0];
+			d = ldexpl(d, exp_val - frac_bits);
 			t = toup(ch);
 			if (t == 'F') {
 				ch = *p++;
@@ -16955,19 +8802,10 @@ num_too_long:
 			} else if (t == 'L') {
 				ch = *p++;
 				tok = TOK_CLDOUBLE;
-#ifdef TCC_USING_DOUBLE_FOR_LDOUBLE
-
-				tokc.d = d;
-#else
-
-				/* XXX: not large enough */
-
-				tokc.ld = (long double)d;
-#endif
-
+				tokc.ld = d;
 			} else {
 				tok = TOK_CDOUBLE;
-				tokc.d = d;
+				tokc.d = (double)d;
 			}
 		} else {
 			/* decimal floats */
@@ -17015,14 +8853,7 @@ float_frac_parse:
 			} else if (t == 'L') {
 				ch = *p++;
 				tok = TOK_CLDOUBLE;
-#ifdef TCC_USING_DOUBLE_FOR_LDOUBLE
-
-				tokc.d = strtod(token_buf, NULL);
-#else
-
 				tokc.ld = strtold(token_buf, NULL);
-#endif
-
 			} else {
 				tok = TOK_CDOUBLE;
 				tokc.d = strtod(token_buf, NULL);
@@ -17126,7 +8957,6 @@ float_frac_parse:
 	if (ch)
 		tcc_error("invalid number");
 }
-// 2559 "tccpp.c"
 #define PARSE2(c1,tok1,c2,tok2) case c1: PEEKC(c, p); if (c == c2) { p++; tok = tok2; } else { tok = tok1; } break;
 /* return next token without macro substitution */
 
@@ -17182,10 +9012,6 @@ maybe_space:
 				                   start of file */
 
 				if (tok_flags & TOK_FLAG_ENDIF) {
-#ifdef INC_DEBUG
-
-					printf("#endif %s\n", get_tok_str(file->ifndef_macro_saved, NULL));
-#endif
 
 					search_cached_include(s1, file->true_filename, 1)
 					->ifndef_macro = file->ifndef_macro_saved;
@@ -17334,7 +9160,6 @@ token_found: ;
 			cstr_cat(&tokcstr, (char *) p1, len);
 			p--;
 			PEEKC(c, p);
-parse_ident_slow:
 			while (isidnum_table[c - CH_EOF] & (IS_ID|IS_NUM)) {
 				cstr_ccat(&tokcstr, c);
 				PEEKC(c, p);
@@ -17345,22 +9170,15 @@ parse_ident_slow:
 		break;
 	case 'L':
 		t = p[1];
-		if (t != '\\' && t != '\'' && t != '\"') {
-			/* fast case */
-
-			goto parse_ident_fast;
-		} else {
+		if (t == '\'' || t == '\"' || t == '\\') {
 			PEEKC(c, p);
 			if (c == '\'' || c == '\"') {
 				is_long = 1;
 				goto str_const;
-			} else {
-				cstr_reset(&tokcstr);
-				cstr_ccat(&tokcstr, 'L');
-				goto parse_ident_slow;
 			}
+			*--p = c = 'L';
 		}
-		break;
+		goto parse_ident_fast;
 
 	case '0':
 	case '1':
@@ -17388,8 +9206,8 @@ parse_num:
 				       && !(parse_flags & PARSE_FLAG_ASM_FILE
 					    /* 0xe+1 is 3 tokens in asm */
 
-					    && ((char*)tokcstr.data)[0] == '0'
-					    && toup(((char*)tokcstr.data)[1]) == 'X'))
+					    && ((char *)tokcstr.data)[0] == '0'
+					    && toup(((char *)tokcstr.data)[1]) == 'X'))
 				      || t == 'p' || t == 'P'))))
 				break;
 			t = c;
@@ -17579,6 +9397,12 @@ parse_simple:
 		tok = c;
 		p++;
 		break;
+	case 0xEF:/* UTF8 BOM ? */
+
+		if (p[1] == 0xBB && p[2] == 0xBF && p == file->buffer) {
+			p += 3;
+			goto redo_no_start;
+		}
 	default:
 		if (c >= 0x80 && c <= 0xFF)/* utf8 identifiers */
 
@@ -17591,38 +9415,9 @@ parse_simple:
 	tok_flags = 0;
 keep_tok_flags:
 	file->buf_ptr = p;
-#if defined(PARSE_DEBUG)
-	printf("token = %d %s\n", tok, get_tok_str(tok, &tokc));
-#endif
 
 }
-#ifdef PP_DEBUG
-
-static int indent;
-static void define_print(TCCState *s1, int v);
-static void pp_print(const char *msg, int v, const int *str)
-{
-	FILE *fp = tcc_state->ppfp;
-
-	if (msg[0] == '#' && indent == 0)
-		fprintf(fp, "\n");
-	else if (msg[0] == '+')
-		++indent, ++msg;
-	else if (msg[0] == '-')
-		--indent, ++msg;
-
-	fprintf(fp, "%*s", indent, "");
-	if (msg[0] == '#') {
-		define_print(tcc_state, v);
-	} else {
-		tok_print(str, v ? "%s %s" : "%s", msg, get_tok_str(v, 0));
-	}
-}
-#define PP_PRINT(x) pp_print x
-#else
-// 2997 "tccpp.c"
 #define PP_PRINT(x)
-#endif
 
 static int macro_subst(
 	TokenString *tok_str,
@@ -17639,16 +9434,6 @@ static int *macro_arg_subst(Sym **nested_list, const int *macro_str, Sym *args)
 	Sym *s;
 	CValue cval;
 	TokenString str;
-#ifdef PP_DEBUG
-
-	PP_PRINT(("asubst:", 0, macro_str));
-	for (s = args, n = 0; s; s = s->prev, ++n);
-	while (n--) {
-		for (s = args, t = 0; t < n; s = s->prev, ++t);
-		tok_print(s->d, "%*s - arg: %s:", indent, "", get_tok_str(s->v, 0));
-	}
-#endif
-// 3025 "tccpp.c"
 	tok_str_new(&str);
 	t0 = t1 = 0;
 	while (1) {
@@ -17658,7 +9443,8 @@ static int *macro_arg_subst(Sym **nested_list, const int *macro_str, Sym *args)
 		if (t == '#') {
 			/* stringize */
 
-			do t = *macro_str++;
+			do
+				t = *macro_str++;
 			while (t == ' ');
 			s = sym_find2(args, t);
 			if (s) {
@@ -17685,6 +9471,7 @@ static int *macro_arg_subst(Sym **nested_list, const int *macro_str, Sym *args)
 				cval.str.size = tokcstr.size;
 				cval.str.data = tokcstr.data;
 				tok_str_add2(&str, TOK_PPSTR, &cval);
+
 			} else {
 				expect("macro parameter after '#'");
 			}
@@ -17851,8 +9638,8 @@ leave:
 			tok_str_add(ws_str, c);
 	}
 }
-/* peek or read [ws_str == NULL] next t\oken from function macro call,
-   walking up macro levels up to the file if necessary */
+/* peek or read [ws_str == NULL] next token from function macro call,
+   walking up macro levels\ up to the file if necessary */
 
 static int next_argstream(Sym **nested_list, TokenString *ws_str)
 {
@@ -18082,11 +9869,6 @@ static int macro_subst(
 	int t, nosubst = 0;
 	CValue cval;
 	TokenString *str;
-#ifdef PP_DEBUG
-
-	int tlen = tok_str->len;
-	PP_PRINT(("+expand:", 0, macro_str));
-#endif
 
 	while (1) {
 		TOK_GET(&t, &macro_str, &cval);
@@ -18105,7 +9887,7 @@ static int macro_subst(
 				goto no_subst;
 			}
 			str = tok_str_alloc();
-			str->str = (int*)macro_str;/* setup stream for possible arguments */
+			str->str = (int *)macro_str; /* setup stream for possible arguments */
 
 			begin_macro(str, 2);
 			nosubst = macro_subst_tok(tok_str, nested_list, s);
@@ -18130,11 +9912,6 @@ no_subst:
 				nosubst = 1;
 		}
 	}
-#ifdef PP_DEBUG
-
-	tok_str_add(tok_str, 0), --tok_str->len;
-	PP_PRINT(("-result:", 0, tok_str->str + tlen));
-#endif
 
 	return nosubst;
 }
@@ -18223,11 +10000,8 @@ ST_INLN void unget_tok(int last_tok)
 static const char *const target_os_defs =
 
 	"_WIN32\0"
-#if PTR_SIZE == 8
-
 	"_WIN64\0"
-#endif
-// 3589 "tccpp.c"
+
 	;
 
 static void putdef(CString *cs, const char *p)
@@ -18243,7 +10017,7 @@ static void putdefs(CString *cs, const char *p)
 
 static void tcc_predefs(TCCState *s1, CString *cs, int is_asm)
 {
-	cstr_printf(cs, "#define __TINYC__ 9%.2s\n", * &TCC_VERSION + 4);
+	cstr_printf(cs, "#define __TINYC__ 9%.2s\n", &TCC_VERSION[4]);
 	putdefs(cs, target_machine_defs);
 	putdefs(cs, target_os_defs);
 
@@ -18253,16 +10027,6 @@ static void tcc_predefs(TCCState *s1, CString *cs, int is_asm)
 		putdef(cs, "__TCC_PP__");
 	if (s1->output_type == TCC_OUTPUT_MEMORY)
 		putdef(cs, "__TCC_RUN__");
-#ifdef CONFIG_TCC_BACKTRACE
-
-	if (s1->do_backtrace)
-		putdef(cs, "__TCC_BACKTRACE__");
-#endif
-#ifdef CONFIG_TCC_BCHECK
-
-	if (s1->do_bounds_check)
-		putdef(cs, "__TCC_BCHECK__");
-#endif
 
 	if (s1->char_is_unsigned)
 		putdef(cs, "__CHAR_UNSIGNED__");
@@ -18276,16 +10040,12 @@ static void tcc_predefs(TCCState *s1, CString *cs, int is_asm)
 	cstr_printf(cs, "#define __SIZEOF_LONG__ %d\n", LONG_SIZE);
 	if (!is_asm) {
 		putdef(cs, "__STDC__");
+		cstr_printf(cs, "#define __STDC_HOSTED__ %d\n", s1->nostdlib ? 0 : 1);
 		cstr_printf(cs, "#define __STDC_VERSION__ %dL\n", s1->cversion);
 		cstr_cat(cs,
 			 /* load more predefs and __builtins */
-#if CONFIG_TCC_PREDEFS
-			 /* include as strings */
-#else
 
 			 "#include <tccdefs.h>\n"/* load at runtime */
-
-#endif
 
 			 , -1);
 	}
@@ -18307,7 +10067,7 @@ ST_FUNC void preprocess_start(TCCState *s1, int filetype)
 	s1->pack_stack[0] = 0;
 	s1->pack_stack_ptr = s1->pack_stack;
 
-	set_idnum('$', !is_asm && s1->dollars_in_identifiers ? IS_ID : 0);
+	set_idnum('$', s1->dollars_in_identifiers ? IS_ID : 0);
 	set_idnum('.', is_asm ? IS_ID : 0);
 
 	if (!(filetype & AFF_TYPE_ASM)) {
@@ -18363,8 +10123,8 @@ ST_FUNC void tccpp_new(TCCState *s)
 		set_idnum(i, IS_ID);
 	/* init allocators */
 
-	tal_new(&toksym_alloc, TOKSYM_TAL_LIMIT, TOKSYM_TAL_SIZE);
-	tal_new(&tokstr_alloc, TOKSTR_TAL_LIMIT, TOKSTR_TAL_SIZE);
+	tal_new(&toksym_alloc, TOKSYM_TAL_SIZE);
+	tal_new(&tokstr_alloc, TOKSTR_TAL_SIZE);
 
 	memset(hash_ident, 0, TOK_HASH_SIZE * sizeof(TokenSym *));
 	memset(s->cached_includes_hash, 0, sizeof s->cached_includes_hash);
@@ -18372,9 +10132,10 @@ ST_FUNC void tccpp_new(TCCState *s)
 	cstr_new(&tokcstr);
 	cstr_new(&cstr_buf);
 	cstr_realloc(&cstr_buf, STRING_MAX_SIZE);
+	tok_str_new(&unget_buf);
+	tok_str_realloc(&unget_buf, TOKSTR_MAX_SIZE);
 	tok_str_new(&tokstr_buf);
 	tok_str_realloc(&tokstr_buf, TOKSTR_MAX_SIZE);
-	tok_str_new(&unget_buf);
 
 	tok_ident = TOK_IDENT;
 	p = tcc_keywords;
@@ -18408,8 +10169,8 @@ ST_FUNC void tccpp_delete(TCCState *s)
 	n = tok_ident - TOK_IDENT;
 	if (n > total_idents)
 		total_idents = n;
-	for (i = 0; i < n; i++)
-		tal_free(toksym_alloc, table_ident[i]);
+	for (i = n; --i >= 0;)
+		tal_free(&toksym_alloc, table_ident[i]);
 	tcc_free(table_ident);
 	table_ident = NULL;
 	/* free static buffers */
@@ -18420,10 +10181,8 @@ ST_FUNC void tccpp_delete(TCCState *s)
 	tok_str_free_str(unget_buf.str);
 	/* free allocators */
 
-	tal_delete(toksym_alloc);
-	toksym_alloc = NULL;
-	tal_delete(tokstr_alloc);
-	tokstr_alloc = NULL;
+	tal_delete(&toksym_alloc);
+	tal_delete(&tokstr_alloc);
 }
 /* ------------------------------------------------------------------------- */
 /* tcc -E [-P[1]] [-dD} support */
@@ -18572,7 +10331,8 @@ ST_FUNC int tcc_preprocess(TCCState *s1)
 	if (s1->do_bench) {
 		/* for PP benchmarks */
 
-		do next();
+		do
+			next();
 		while (tok != TOK_EOF);
 		return 0;
 	}
@@ -18622,30 +10382,15 @@ ST_FUNC int tcc_preprocess(TCCState *s1)
 	return 0;
 }
 /* ------------------------------------------------------------------------- */
-// 27 "libtcc.c" 2
-// 1 "tccgen.c" 1
-// 21 "tccgen.c"
-#define USING_GLOBALS
-// 1 "tcc.h" 1
-#ifndef _TCC_H
+/* ==================== tccgen.c ==================== */
+
 /* _TCC_H */
-#endif /* _TCC_H */
-// 1990 "tcc.h"
 #undef TCC_STATE_VAR
 #undef TCC_SET_STATE
-#ifdef USING_GLOBALS
 
 #define TCC_STATE_VAR(sym) tcc_state->sym
 #define TCC_SET_STATE(fn) fn
-#undef USING_GLOBALS
 #undef _tcc_error
-#else
-
-#define TCC_STATE_VAR(sym) s1->sym
-#define TCC_SET_STATE(fn) (tcc_enter_state(s1),fn)
-#define _tcc_error use_tcc_error_noabort
-#endif
-// 23 "tccgen.c" 2
 /**/
 /* global variables */
 /* loc : local variable index
@@ -18653,7 +10398,6 @@ ST_FUNC int tcc_preprocess(TCCState *s1)
    rsym: return symbol
    anon_sym: anonymous symbol index
 */
-// 32 "tccgen.c"
 ST_DATA int rsym, anon_sym, ind, loc;
 
 ST_DATA Sym *global_stack;
@@ -18704,23 +10448,16 @@ func_vt;/* current function return type (used by return instruction) */
 ST_DATA int
 func_var;/* true if current function is variadic (used by return instruction) */
 
-ST_DATA int func_vc;
-ST_DATA int func_ind;
+ST_DATA int func_vc;/* stack address for implicit struct return storage */
+
+ST_DATA int func_ind;/* function start address */
+
+static int func_old;
 ST_DATA const char *funcname;
 ST_DATA CType int_type, func_old_type, char_type, char_pointer_type;
 static CString initstr;
-#if PTR_SIZE == 4
-#define VT_SIZE_T (VT_INT | VT_UNSIGNED)
-#define VT_PTRDIFF_T VT_INT
-#elif LONG_SIZE == 4
-
 #define VT_SIZE_T (VT_LLONG | VT_UNSIGNED)
 #define VT_PTRDIFF_T VT_LLONG
-#else
-
-#define VT_SIZE_T (VT_LONG | VT_LLONG | VT_UNSIGNED)
-#define VT_PTRDIFF_T (VT_LONG | VT_LLONG)
-#endif
 
 static struct switch_t {
 	struct case_t {
@@ -18767,8 +10504,6 @@ typedef struct {
 	int local_offset;
 	Sym *flex_array_ref;
 } init_params;
-
-#define precedence_parser
 static void init_prec(void);
 
 static void block(int flags);
@@ -18888,16 +10623,11 @@ static int R_RET(int t)
 static int R2_RET(int t)
 {
 	t &= VT_BTYPE;
-#if PTR_SIZE == 4
-	if (t == VT_LLONG)
-		return REG_IRE2;
-#else
 
 	if (t == VT_QLONG)
 		return REG_IRE2;
 	if (t == VT_QFLOAT)
 		return REG_FRE2;
-#endif
 
 	return VT_CONST;
 }
@@ -18936,16 +10666,12 @@ static int RC2_TYPE(int t, int rc)
 {
 	if (!USING_TWO_WORDS(t))
 		return 0;
-#ifdef RC_IRE2
 
 	if (rc == RC_IRET)
 		return RC_IRE2;
-#endif
-#ifdef RC_FRE2
 
 	if (rc == RC_FRET)
 		return RC_FRE2;
-#endif
 
 	if (rc & RC_FLOAT)
 		return RC_FLOAT;
@@ -18961,9 +10687,6 @@ ST_FUNC int ieee_finite(double d)
 	memcpy(p, &d, sizeof(double));
 	return ((unsigned)((p[1] | 0x800fffff) + 1)) >> 31;
 }
-/* compiling intel long double natively */
-
-#define TCC_IS_NATIVE_387
 
 ST_FUNC void test_lvalue(void)
 {
@@ -18977,10 +10700,8 @@ ST_FUNC void check_vstack(void)
 		tcc_error("internal compiler error: vstack leak (%d)",
 			  (int)(vtop - vstack + 1));
 }
-/* vstack debugging aid */
 /* ------------------------------------------------------------------------- */
 /* initialize vstack and types.  This must be done also for tcc -E */
-// 359 "tccgen.c"
 ST_FUNC void tccgen_init(TCCState *s1)
 {
 	vtop = vstack - 1;
@@ -18999,10 +10720,8 @@ ST_FUNC void tccgen_init(TCCState *s1)
 	func_old_type.ref = sym_push(SYM_FIELD, &int_type, 0, 0);
 	func_old_type.ref->f.func_call = FUNC_CDECL;
 	func_old_type.ref->f.func_type = FUNC_OLD;
-#ifdef precedence_parser
 
 	init_prec();
-#endif
 
 	cstr_new(&initstr);
 }
@@ -19015,13 +10734,10 @@ ST_FUNC int tccgen_compile(TCCState *s1)
 	nocode_wanted = DATA_ONLY_WANTED;/* no code outside of functions */
 
 	debug_modes = (s1->do_debug ? 1 : 0) | s1->test_coverage << 1;
+	global_expr = 0;
 
 	tcc_debug_start(s1);
 	tcc_tcov_start (s1);
-#ifdef INC_DEBUG
-
-	printf("%s: **** new file\n", file->filename);
-#endif
 
 	parse_flags = PARSE_FLAG_PREPROCESS | PARSE_FLAG_TOK_NUM | PARSE_FLAG_TOK_STR;
 	next();
@@ -19029,9 +10745,6 @@ ST_FUNC int tccgen_compile(TCCState *s1)
 	gen_inline_functions(s1);
 	check_vstack();
 	/* end of translation unit info */
-#if TCC_EH_FRAME
-	tcc_eh_frame_end(s1);
-#endif
 
 	tcc_debug_end(s1);
 	tcc_tcov_end(s1);
@@ -19103,7 +10816,6 @@ ST_FUNC void update_storage(Sym *sym)
 		esym->st_other |= ST_PE_IMPORT;
 	if (sym->a.dllexport)
 		esym->st_other |= ST_PE_EXPORT;
-// 487 "tccgen.c"
 }
 /* ------------------------------------------------------------------------- */
 /* update sym->c so that it points to an external symbol in section
@@ -19125,8 +10837,10 @@ ST_FUNC void put_extern_sym2(Sym *sym, int sh_num,
 			sym_type = STT_FUNC;
 		} else if ((t & VT_BTYPE) == VT_VOID) {
 			sym_type = STT_NOTYPE;
-			if ((t & (VT_BTYPE|VT_ASM_FUNC)) == VT_ASM_FUNC)
+			if (IS_ASM_FUNC(t))
 				sym_type = STT_FUNC;
+		} else if (t & VT_TLS) {
+			sym_type = STT_TLS;
 		} else {
 			sym_type = STT_OBJECT;
 		}
@@ -19148,7 +10862,6 @@ ST_FUNC void put_extern_sym2(Sym *sym, int sh_num,
 				can_add_underscore = 0;
 			}
 		}
-
 		if (sym->asm_label) {
 			name = get_tok_str(sym->asm_label, NULL);
 			can_add_underscore = 0;
@@ -19193,23 +10906,27 @@ ST_FUNC void greloca(Section *s, Sym *sym, unsigned long offset, int type,
 		return;
 
 	if (sym) {
-		if (0 == sym->c)
+		if (0 == sym->c) {
 			put_extern_sym(sym, NULL, 0, 0);
+			if (sym->sym_scope
+			    && (sym->type.t & (VT_STATIC|VT_EXTERN)) == (VT_STATIC|VT_EXTERN)) {
+				/* when a local function declaraion redeclares a global static one
+				                   then tccelf would not resolve them to the same symbol. */
+
+				Sym *s = sym;
+				while (s->prev_tok)
+					s = s->prev_tok;
+				s->c = sym->c;
+			}
+		}
 		c = sym->c;
 	}
 	/* now we can add ELF relocation info */
 
 	put_elf_reloca(symtab_section, s, offset, type, c, addend);
 }
-#if PTR_SIZE == 4
-ST_FUNC void greloc(Section *s, Sym *sym, unsigned long offset, int type)
-{
-	greloca(s, sym, offset, type, 0);
-}
-#endif
-/* -------------------------------\------------------------------------------ */
+/* ------------------------------------------------------------------------- */
 /* symbol allocator */
-// 596 "tccgen.c"
 static Sym *__sym_malloc(void)
 {
 	Sym *sym_pool, *sym, *last_sym;
@@ -19232,31 +10949,20 @@ static Sym *__sym_malloc(void)
 static inline Sym *sym_malloc(void)
 {
 	Sym *sym;
-#ifndef SYM_DEBUG
 
 	sym = sym_free_first;
 	if (!sym)
 		sym = __sym_malloc();
 	sym_free_first = sym->next;
 	return sym;
-#else
-
-	sym = tcc_malloc(sizeof(Sym));
-	return sym;
-#endif
 
 }
 
 ST_INLN void sym_free(Sym *sym)
 {
-#ifndef SYM_DEBUG
 
 	sym->next = sym_free_first;
 	sym_free_first = sym;
-#else
-
-	tcc_free(sym);
-#endif
 
 }
 /* push, without hashing */
@@ -19306,21 +11012,37 @@ ST_INLN Sym *sym_find(int v)
 		return NULL;
 	return table_ident[v]->sym_identifier;
 }
+/* make sym in-/visible to the parser */
 
-static int sym_scope(Sym *s)
+static inline void sym_link(Sym *s, int yes)
 {
-	if (IS_ENUM_VAL (s->type.t))
-		return s->type.ref->sym_scope;
+	TokenSym *ts = table_ident[(s->v & ~SYM_STRUCT) - TOK_IDENT];
+	Sym **ps;
+	if (s->v & SYM_STRUCT)
+		ps = &ts->sym_struct;
 	else
-		return s->sym_scope;
+		ps = &ts->sym_identifier;
+	if (yes) {
+		s->prev_tok = *ps, *ps = s;
+		s->sym_scope = local_scope;
+	} else {
+		*ps = s->prev_tok;
+	}
+}
+
+static inline int sym_scope_ex(Sym *s)
+{
+	/* enums have 'sym_scope' overwritten by 'enum_val' */
+
+	return IS_ENUM_VAL (s->type.t)
+	       ? s->type.ref->sym_scope
+	       : s->sym_scope;
 }
 /* push a given symbol on the symbol stack */
 
 ST_FUNC Sym *sym_push(int v, CType *type, int r, int c)
 {
 	Sym *s, **ps;
-	TokenSym *ts;
-
 	if (local_stack)
 		ps = &local_stack;
 	else
@@ -19329,22 +11051,13 @@ ST_FUNC Sym *sym_push(int v, CType *type, int r, int c)
 	s->type.ref = type->ref;
 	s->r = r;
 	/* don't record fields or anonymous symbols */
-	/* XXX: simplify */
 
-	if (!(v & SYM_FIELD) && (v & ~SYM_STRUCT) < SYM_FIRST_ANOM) {
+	if ((v & ~SYM_STRUCT) < SYM_FIRST_ANOM) {
 		/* record symbol in token array */
 
-		ts = table_ident[(v & ~SYM_STRUCT) - TOK_IDENT];
-		if (v & SYM_STRUCT)
-			ps = &ts->sym_struct;
-		else
-			ps = &ts->sym_identifier;
-		s->prev_tok = *ps;
-		*ps = s;
-		s->sym_scope = local_scope;
-		if (s->prev_tok && sym_scope(s->prev_tok) == s->sym_scope)
-			tcc_error("redeclaration of '%s'",
-				  get_tok_str(v & ~SYM_STRUCT, NULL));
+		sym_link(s, 1);
+		if (s->prev_tok && sym_scope_ex(s->prev_tok) == local_scope)
+			tcc_error("redeclaration of '%s'", get_tok_str(s->v, NULL));
 	}
 	return s;
 }
@@ -19374,8 +11087,7 @@ ST_FUNC Sym *global_identifier_push(int v, int t, int c)
 
 ST_FUNC void sym_pop(Sym **ptop, Sym *b, int keep)
 {
-	Sym *s, *ss, **ps;
-	TokenSym *ts;
+	Sym *s, *ss;
 	int v;
 
 	s = *ptop;
@@ -19383,16 +11095,9 @@ ST_FUNC void sym_pop(Sym **ptop, Sym *b, int keep)
 		ss = s->prev;
 		v = s->v;
 		/* remove symbol in token array */
-		/* XXX: simplify */
 
-		if (!(v & SYM_FIELD) && (v & ~SYM_STRUCT) < SYM_FIRST_ANOM) {
-			ts = table_ident[(v & ~SYM_STRUCT) - TOK_IDENT];
-			if (v & SYM_STRUCT)
-				ps = &ts->sym_struct;
-			else
-				ps = &ts->sym_identifier;
-			*ps = s->prev_tok;
-		}
+		if ((v & ~SYM_STRUCT) < SYM_FIRST_ANOM)
+			sym_link(s, 0);
 		if (!keep)
 			sym_free(s);
 		s = ss;
@@ -19437,7 +11142,7 @@ ST_FUNC void label_pop(Sym **ptop, Sym *slast, int keep)
 		s1 = s->prev;
 		if (s->r == LABEL_DECLARED) {
 			tcc_warning_c(warn_all)("label '%s' declared but not used", get_tok_str(s->v,
-						NULL));
+					NULL));
 		} else if (s->r == LABEL_FORWARD) {
 			tcc_error("label '%s' used but not defined",
 				  get_tok_str(s->v, NULL));
@@ -19446,7 +11151,7 @@ ST_FUNC void label_pop(Sym **ptop, Sym *slast, int keep)
 				/* define corresponding symbol. A size of
 				                   1 is put. */
 
-				put_extern_sym(s, cur_text_section, s->jnext, 1);
+				put_extern_sym(s, cur_text_section, s->jind, 1);
 			}
 		}
 		/* remove label */
@@ -19481,7 +11186,6 @@ static void vcheck_cmp(void)
 	       How can it work at all under nocode_wanted?  Well, gv() will
 	       actually clear it at the gsym() in load()/VT_JMP in the
 	       generator backends */
-// 853 "tccgen.c"
 	if (vtop->r == VT_CMP && 0 == (nocode_wanted & ~CODE_OFF_BIT))
 		gv(RC_INT);
 }
@@ -19862,6 +11566,8 @@ static void patch_type(Sym *sym, CType *type)
 
 	} else if ((sym->type.t & VT_BTYPE) == VT_FUNC) {
 		int static_proto = sym->type.t & VT_STATIC;
+		int ft1 = sym->type.ref->f.func_type;
+		int ft2 = type->ref->f.func_type;
 		/* warn if static follows non-static function declaration */
 
 		if ((type->t & VT_STATIC) && !static_proto
@@ -19872,7 +11578,7 @@ static void patch_type(Sym *sym, CType *type)
 		    && !((type->t | sym->type.t) & VT_INLINE))
 			tcc_warning("static storage ignored for redefinition of '%s'",
 				    get_tok_str(sym->v, NULL));
-		/* set 'inline' if both agree or if\ one has static */
+		/* set 'inline' if both agree or if one has static */
 
 		if ((type->t | sym->type.t) & VT_INLINE) {
 			if (!((type->t ^ sym->type.t) & VT_INLINE)
@@ -19885,15 +11591,14 @@ static void patch_type(Sym *sym, CType *type)
 			/* put complete type, use static from prototype */
 
 			sym->type.t = (type->t & ~(VT_STATIC|VT_INLINE)) | static_proto;
+			if (ft1 != FUNC_OLD)
+				type->ref->f.func_type = ft1;
 			sym->type.ref = type->ref;
 			merge_funcattr(&sym->type.ref->f, &f);
 		} else {
 			sym->type.t &= ~VT_INLINE | static_proto;
-		}
-
-		if (sym->type.ref->f.func_type == FUNC_OLD
-		    && type->ref->f.func_type != FUNC_OLD) {
-			sym->type.ref = type->ref;
+			if (ft1 == FUNC_OLD && ft2 != FUNC_OLD)
+				sym->type.ref = type->ref;
 		}
 
 	} else {
@@ -19930,24 +11635,49 @@ static Sym *sym_copy(Sym *s0, Sym **ps)
 	Sym *s;
 	s = sym_malloc(), *s = *s0;
 	s->prev = *ps, *ps = s;
-	if (s->v < SYM_FIRST_ANOM) {
-		ps = &table_ident[s->v - TOK_IDENT]->sym_identifier;
-		s->prev_tok = *ps, *ps = s;
-	}
+	if ((s->v & ~SYM_STRUCT) < SYM_FIRST_ANOM)
+		sym_link(s, 1);
 	return s;
 }
-/* copy s->type.ref to stack 'ps' for VT_FUNC and VT_PTR */
+/* Symbol 's' was locally declared 'extern' (or as function), and is
+   on global_stack.  Now must copy its 'ref' to global_stack too */
 
-static void sym_copy_ref(Sym *s, Sym **ps)
+static void move_ref_to_global(Sym *s)
 {
-	int bt = s->type.t & VT_BTYPE;
-	if (bt == VT_FUNC || bt == VT_PTR || (bt == VT_STRUCT && s->sym_scope)) {
-		Sym **sp = &s->type.ref;
-		for (s = *sp, *sp = NULL; s; s = s->next) {
-			Sym *s2 = sym_copy(s, ps);
-			sp = &(*sp = s2)->next;
-			sym_copy_ref(s2, ps);
+	Sym *l, **lp;
+	int n, bt;
+
+	bt = s->type.t & VT_BTYPE;
+	if (!(bt == VT_PTR
+	      || bt == VT_FUNC
+	      || bt == VT_STRUCT
+	      || IS_ENUM(s->type.t)))
+		return;
+
+	for (s = s->type.ref, n = 0; s; s = s->next) {
+		for (lp = &local_stack; !!(l = *lp); lp = &l->prev) {
+			if (l == s) {
+				*lp = s->prev;
+				s->prev = global_stack, global_stack = s;
+				if (n || bt == VT_PTR || bt == VT_FUNC) {
+					move_ref_to_global(s);
+				} else {
+					if ((s->v & ~SYM_STRUCT) < SYM_FIRST_ANOM) {
+						/* copy struct/enum tag to local scope */
+
+						s->v |= SYM_FIELD;
+						l = sym_copy(s, lp);
+						l->v &= ~SYM_FIELD;
+					}
+				}
+				if (bt != VT_PTR)
+					n = 1;
+				break;
+			}
 		}
+		if (n == 0)/* no next (VT_PTR) or ref not on local_stack */
+
+			break;
 	}
 }
 /* define a new external reference to a symbol 'v' */
@@ -19969,17 +11699,17 @@ static Sym *external_sym(int v, CType *type, int r, AttributeDef *ad)
 		s->a = ad->a;
 		s->asm_label = ad->asm_label;
 		s->type.ref = type->ref;
-		/* copy type to the global stack */
-
-		if (local_stack)
-			sym_copy_ref(s, &global_stack);
 	} else {
 		patch_storage(s, ad, type);
 	}
-	/* push variables on local_stack if any */
+	if (local_stack) {
+		/* make sure that type->ref is on global stack */
 
-	if (local_stack && (s->type.t & VT_BTYPE) != VT_FUNC)
-		s = sym_copy(s, &local_stack);
+		move_ref_to_global(s);
+		/* put into local scope */
+
+		sym_copy(s, &local_stack);
+	}
 	return s;
 }
 /* save registers up to (vtop - n) stack entry */
@@ -20024,6 +11754,7 @@ ST_FUNC void save_reg_upstack(int r, int n)
 				l = get_temp_local_var(size, align, &r2);
 				sv.r = VT_LOCAL | VT_LVAL;
 				sv.c.i = l;
+				sv.sym = NULL;
 				store(p->r & VT_VALMASK, &sv);
 				/* x86 specific: need to pop fp register ST0 if saved */
 
@@ -20058,7 +11789,6 @@ ST_FUNC void save_reg_upstack(int r, int n)
 	}
 }
 /* find a free register of class 'rc'. If none, save one register */
-// 1433 "tccgen.c"
 ST_FUNC int get_reg(int rc)
 {
 	int r;
@@ -20167,177 +11897,12 @@ ST_FUNC void gaddrof(void)
 	if ((vtop->r & VT_VALMASK) == VT_LLOCAL)
 		vtop->r = (vtop->r & ~VT_VALMASK) | VT_LOCAL | VT_LVAL;
 }
-#ifdef CONFIG_TCC_BCHECK
-
-/* generate a bounded pointer addition */
-
-static void gen_bounded_ptr_add(void)
+/* add debug info for locals or function parameters, optionally
+   register bounds */
+static void tcc_debug_end_scope(Sym *b, int bounds)
 {
-	int save = (vtop[-1].r & VT_VALMASK) == VT_LOCAL;
-	if (save) {
-		vpushv(&vtop[-1]);
-		vrott(3);
-	}
-	vpush_helper_func(TOK___bound_ptr_add);
-	vrott(3);
-	gfunc_call(2);
-	vtop -= save;
-	vpushi(0);
-	/* returned pointer is in REG_IRET */
 
-	vtop->r = REG_IRET | VT_BOUNDED;
-	if (nocode_wanted)
-		return;
-	/* relocation offset of the bounding function call point */
-
-	vtop->c.i = (cur_text_section->reloc->data_offset - sizeof(ElfW_Rel));
-}
-
-/* patch pointer addition in vtop so that pointer dereferencing is
-   also tested */
-
-static void gen_bounded_ptr_deref(void)
-{
-	addr_t func;
-	int size, align;
-	ElfW_Rel *rel;
-	Sym *sym;
-
-	if (nocode_wanted)
-		return;
-
-	size = type_size(&vtop->type, &align);
-	switch (size) {
-	case 1:
-		func = TOK___bound_ptr_indir1;
-		break;
-	case 2:
-		func = TOK___bound_ptr_indir2;
-		break;
-	case 4:
-		func = TOK___bound_ptr_indir4;
-		break;
-	case 8:
-		func = TOK___bound_ptr_indir8;
-		break;
-	case 12:
-		func = TOK___bound_ptr_indir12;
-		break;
-	case 16:
-		func = TOK___bound_ptr_indir16;
-		break;
-	default:
-		/* may happen with struct member access */
-
-		return;
-	}
-	sym = external_helper_sym(func);
-	if (!sym->c)
-		put_extern_sym(sym, NULL, 0, 0);
-	/* patch relocation */
-
-	/* XXX: find a better solution ? */
-
-	rel = (ElfW_Rel *)(cur_text_section->reloc->data + vtop->c.i);
-	rel->r_info = ELFW(R_INFO)(sym->c, ELFW(R_TYPE)(rel->r_info));
-}
-
-/* generate lvalue bound code */
-
-static void gbound(void)
-{
-	CType type1;
-
-	vtop->r &= ~VT_MUSTBOUND;
-	/* if lvalue, then use checking code before dereferencing */
-
-	if (vtop->r & VT_LVAL) {
-		/* if not VT_BOUNDED value, then make one */
-
-		if (!(vtop->r & VT_BOUNDED)) {
-			/* must save type because we must set it to int to get pointer */
-
-			type1 = vtop->type;
-			vtop->type.t = VT_PTR;
-			gaddrof();
-			vpushi(0);
-			gen_bounded_ptr_add();
-			vtop->r |= VT_LVAL;
-			vtop->type = type1;
-		}
-		/* then check for dereferencing */
-
-		gen_bounded_ptr_deref();
-	}
-}
-
-/* we need to call __bound_ptr_add before we start to load function
-   args into registers */
-
-ST_FUNC void gbound_args(int nb_args)
-{
-	int i, v;
-	SValue *sv;
-
-	for (i = 1; i <= nb_args; ++i)
-		if (vtop[1 - i].r & VT_MUSTBOUND) {
-			vrotb(i);
-			gbound();
-			vrott(i);
-		}
-
-	sv = vtop - nb_args;
-	if (sv->r & VT_SYM) {
-		v = sv->sym->v;
-		if (v == TOK_setjmp
-		    || v == TOK__setjmp
-		   ) {
-			vpush_helper_func(TOK___bound_setjmp);
-			vpushv(sv + 1);
-			gfunc_call(1);
-			func_bound_add_epilog = 1;
-		}
-		if (v == TOK_alloca)
-			func_bound_add_epilog = 1;
-	}
-}
-
-/* Add bounds for local symbols from S to E (via ->prev) */
-
-static void add_local_bounds(Sym *s, Sym *e)
-{
-	for (; s != e; s = s->prev) {
-		if (!s->v || (s->r & VT_VALMASK) != VT_LOCAL)
-			continue;
-		/* Add arrays/structs/unions because we always take address */
-
-		if ((s->type.t & VT_ARRAY)
-		    || (s->type.t & VT_BTYPE) == VT_STRUCT
-		    || s->a.addrtaken) {
-			/* add local bound info */
-
-			int align, size = type_size(&s->type, &align);
-			addr_t *bounds_ptr = section_ptr_add(lbounds_section,
-							     2 * sizeof(addr_t));
-			bounds_ptr[0] = s->c;
-			bounds_ptr[1] = size;
-		}
-	}
-}
-#endif
-/* Wrapper around sym_pop, that potentially also registers local bounds.  */
-// 1680 "tccgen.c"
-static void pop_local_syms(Sym *b, int keep)
-{
-#ifdef CONFIG_TCC_BCHECK
-
-	if (tcc_state->do_bounds_check && !keep && (local_scope || !func_var))
-		add_local_bounds(local_stack, b);
-#endif
-
-	if (debug_modes)
-		tcc_add_debug_info (tcc_state, !local_scope, local_stack, b);
-	sym_pop(&local_stack, b, keep);
+	tcc_add_debug_info (tcc_state, local_stack, b);
 }
 /* increment an lvalue pointer */
 
@@ -20522,13 +12087,11 @@ ST_FUNC int gv(int rc)
 			init_putv(&p, &vtop->type, offset);
 			vtop->r |= VT_LVAL;
 		}
-#ifdef CONFIG_TCC_BCHECK
-
-		if (vtop->r & VT_MUSTBOUND)
-			gbound();
-#endif
 
 		bt = vtop->type.t & VT_BTYPE;
+		if (bt == VT_VOID || bt == VT_STRUCT)/* should not happen */
+
+			return vtop->r;
 
 		rc2 = RC2_TYPE(bt, rc);
 		/* need to reload if:
@@ -20654,73 +12217,14 @@ ST_FUNC void gv2(int rc1, int rc2)
 		}
 	}
 }
-#if PTR_SIZE == 4
-/* expand 64bit on stack in two ints */
-
-ST_FUNC void lexpand(void)
-{
-	int u, v;
-	u = vtop->type.t & (VT_DEFSIGN | VT_UNSIGNED);
-	v = vtop->r & (VT_VALMASK | VT_LVAL);
-	if (v == VT_CONST) {
-		vdup();
-		vtop[0].c.i >>= 32;
-	} else if (v == (VT_LVAL|VT_CONST) || v == (VT_LVAL|VT_LOCAL)) {
-		vdup();
-		vtop[0].c.i += 4;
-	} else {
-		gv(RC_INT);
-		vdup();
-		vtop[0].r = vtop[-1].r2;
-		vtop[0].r2 = vtop[-1].r2 = VT_CONST;
-	}
-	vtop[0].type.t = vtop[-1].type.t = VT_INT | u;
-}
-#endif
-#if PTR_SIZE == 4
-/* build a long long from two ints */
-
-static void lbuild(int t)
-{
-	gv2(RC_INT, RC_INT);
-	vtop[-1].r2 = vtop[0].r;
-	vtop[-1].type.t = t;
-	vpop();
-}
-#endif
 /* convert stack entry to register and duplicate its value in another
    register */
-// 2009 "tccgen.c"
 static void gv_dup(void)
 {
 	int t, rc, r;
 
 	t = vtop->type.t;
-#if PTR_SIZE == 4
-	if ((t & VT_BTYPE) == VT_LLONG) {
-		if (t & VT_BITFIELD) {
-			gv(RC_INT);
-			t = vtop->type.t;
-		}
-		lexpand();
-		gv_dup();
-		vswap();
-		vrotb(3);
-		gv_dup();
-		vrotb(4);
-		/* stack: H L L1 H1 */
-
-		lbuild(t);
-		vrotb(3);
-		vrotb(3);
-		vswap();
-		lbuild(t);
-		vswap();
-		return;
-	}
-#endif
 	/* duplicate value */
-// 2037 "tccgen.c"
 	rc = RC_TYPE(t);
 	gv(rc);
 	r = get_reg(rc);
@@ -20728,268 +12232,7 @@ static void gv_dup(void)
 	load(r, vtop);
 	vtop->r = r;
 }
-#if PTR_SIZE == 4
-/* generate CPU independent (unsigned) long long operations */
-
-static void gen_opl(int op)
-{
-	int t, a, b, op1, c, i;
-	int func;
-	unsigned short reg_iret = REG_IRET;
-	unsigned short reg_lret = REG_IRE2;
-	SValue tmp;
-
-	switch (op) {
-	case '/':
-	case TOK_PDIV:
-		func = TOK___divdi3;
-		goto gen_func;
-	case TOK_UDIV:
-		func = TOK___udivdi3;
-		goto gen_func;
-	case '%':
-		func = TOK___moddi3;
-		goto gen_mod_func;
-	case TOK_UMOD:
-		func = TOK___umoddi3;
-gen_mod_func:
-gen_func:
-		/* call generic long long function */
-
-		vpush_helper_func(func);
-		vrott(3);
-		gfunc_call(2);
-		vpushi(0);
-		vtop->r = reg_iret;
-		vtop->r2 = reg_lret;
-		break;
-	case '^':
-	case '&':
-	case '|':
-	case '*':
-	case '+':
-	case '-':
-		//pv("gen_opl A",0,2);
-
-		t = vtop->type.t;
-		vswap();
-		lexpand();
-		vrotb(3);
-		lexpand();
-		/* stack: L1 H1 L2 H2 */
-
-		tmp = vtop[0];
-		vtop[0] = vtop[-3];
-		vtop[-3] = tmp;
-		tmp = vtop[-2];
-		vtop[-2] = vtop[-3];
-		vtop[-3] = tmp;
-		vswap();
-		/* stack: H1 H2 L1 L2 */
-
-		//pv("gen_opl B",0,4);
-
-		if (op == '*') {
-			vpushv(vtop - 1);
-			vpushv(vtop - 1);
-			gen_op(TOK_UMULL);
-			lexpand();
-			/* stack: H1 H2 L1 L2 ML MH */
-
-			for (i=0; i<4; i++)
-				vrotb(6);
-			/* stack: ML MH H1 H2 L1 L2 */
-
-			tmp = vtop[0];
-			vtop[0] = vtop[-2];
-			vtop[-2] = tmp;
-			/* stack: ML MH H1 L2 H2 L1 */
-
-			gen_op('*');
-			vrotb(3);
-			vrotb(3);
-			gen_op('*');
-			/* stack: ML MH M1 M2 */
-
-			gen_op('+');
-			gen_op('+');
-		} else if (op == '+' || op == '-') {
-			/* XXX: add non carry method too (for MIPS or alpha) */
-
-			if (op == '+')
-				op1 = TOK_ADDC1;
-			else
-				op1 = TOK_SUBC1;
-			gen_op(op1);
-			/* stack: H1 H2 (L1 op L2) */
-
-			vrotb(3);
-			vrotb(3);
-			gen_op(op1 + 1); /* TOK_xxxC2 */
-
-		} else {
-			gen_op(op);
-			/* stack: H1 H2 (L1 op L2) */
-
-			vrotb(3);
-			vrotb(3);
-			/* stack: (L1 op L2) H1 H2 */
-
-			gen_op(op);
-			/* stack: (L1 op L2) (H1 op H2) */
-
-		}
-		/* stack: L H */
-
-		lbuild(t);
-		break;
-	case TOK_SAR:
-	case TOK_SHR:
-	case TOK_SHL:
-		if ((vtop->r & (VT_VALMASK | VT_LVAL | VT_SYM)) == VT_CONST) {
-			t = vtop[-1].type.t;
-			vswap();
-			lexpand();
-			vrotb(3);
-			/* stack: L H shift */
-
-			c = (int)vtop->c.i;
-			/* constant: simpler */
-
-			/* NOTE: all comments are for SHL. the other cases are
-			   done by swapping words */
-
-			vpop();
-			if (op != TOK_SHL)
-				vswap();
-			if (c >= 32) {
-				/* stack: L H */
-
-				vpop();
-				if (c > 32) {
-					vpushi(c - 32);
-					gen_op(op);
-				}
-				if (op != TOK_SAR) {
-					vpushi(0);
-				} else {
-					gv_dup();
-					vpushi(31);
-					gen_op(TOK_SAR);
-				}
-				vswap();
-			} else {
-				vswap();
-				gv_dup();
-				/* stack: H L L */
-
-				vpushi(c);
-				gen_op(op);
-				vswap();
-				vpushi(32 - c);
-				if (op == TOK_SHL)
-					gen_op(TOK_SHR);
-				else
-					gen_op(TOK_SHL);
-				vrotb(3);
-				/* stack: L L H */
-
-				vpushi(c);
-				if (op == TOK_SHL)
-					gen_op(TOK_SHL);
-				else
-					gen_op(TOK_SHR);
-				gen_op('|');
-			}
-			if (op != TOK_SHL)
-				vswap();
-			lbuild(t);
-		} else {
-			/* XXX: should provide a faster fallback on x86 ? */
-
-			switch (op) {
-			case TOK_SAR:
-				func = TOK___ashrdi3;
-				goto gen_func;
-			case TOK_SHR:
-				func = TOK___lshrdi3;
-				goto gen_func;
-			case TOK_SHL:
-				func = TOK___ashldi3;
-				goto gen_func;
-			}
-		}
-		break;
-	default:
-		/* compare operations */
-
-		t = vtop->type.t;
-		vswap();
-		lexpand();
-		vrotb(3);
-		lexpand();
-		/* stack: L1 H1 L2 H2 */
-
-		tmp = vtop[-1];
-		vtop[-1] = vtop[-2];
-		vtop[-2] = tmp;
-		/* stack: L1 L2 H1 H2 */
-
-		if (!cur_switch || cur_switch->bsym) {
-			/* avoid differnt registers being saved in branches.
-			   This is not needed when comparing switch cases */
-
-			save_regs(4);
-		}
-		/* compare high */
-
-		op1 = op;
-		/* when values are equal, we need to compare low words. since
-		   the jump is inverted, we invert the test too. */
-
-		if (op1 == TOK_LT)
-			op1 = TOK_LE;
-		else if (op1 == TOK_GT)
-			op1 = TOK_GE;
-		else if (op1 == TOK_ULT)
-			op1 = TOK_ULE;
-		else if (op1 == TOK_UGT)
-			op1 = TOK_UGE;
-		a = 0;
-		b = 0;
-		gen_op(op1);
-		if (op == TOK_NE) {
-			b = gvtst(0, 0);
-		} else {
-			a = gvtst(1, 0);
-			if (op != TOK_EQ) {
-				/* generate non equal test */
-
-				vpushi(0);
-				vset_VT_CMP(TOK_NE);
-				b = gvtst(0, 0);
-			}
-		}
-		/* compare low. Always unsigned */
-
-		op1 = op;
-		if (op1 == TOK_LT)
-			op1 = TOK_ULT;
-		else if (op1 == TOK_LE)
-			op1 = TOK_ULE;
-		else if (op1 == TOK_GT)
-			op1 = TOK_UGT;
-		else if (op1 == TOK_GE)
-			op1 = TOK_UGE;
-		gen_op(op1);
-		gvtst_set(1, a);
-		gvtst_set(0, b);
-		break;
-	}
-}
-#endif
 /* normalize values */
-// 2283 "tccgen.c"
 static uint64_t value64(uint64_t l1, int t)
 {
 	if ((t & VT_BTYPE) == VT_LLONG
@@ -21225,7 +12468,6 @@ general_case:
 
 #define gen_negf gen_opf
 /* generate a floating point operation with constant propagation */
-// 2487 "tccgen.c"
 static void gen_opif(int op)
 {
 	int c1, c2, i, bt;
@@ -21280,7 +12522,7 @@ static void gen_opif(int op)
 				if (!CONST_WANTED)
 					goto general_case;
 				/* the run-time result of 0.0/0.0 on x87, also of other compilers
-				                   when used to compile the f1 /= f2 below, would be -nan */
+				                   when used t\o compile the f1 /= f2 below, would be -nan */
 
 				x1.f = f1, x2.f = f2;
 				if (f1 == 0.0)
@@ -21483,7 +12725,7 @@ tstruct:
 no_var: ;
 }
 
-static void type_incompatibility_error(CType* st, CType* dt, const char* fmt)
+static void type_incompatibility_error(CType* st, CType* dt, const char *fmt)
 {
 	char buf1[256], buf2[256];
 	type_to_str(buf1, sizeof(buf1), st, NULL);
@@ -21491,7 +12733,7 @@ static void type_incompatibility_error(CType* st, CType* dt, const char* fmt)
 	tcc_error(fmt, buf1, buf2);
 }
 
-static void type_incompatibility_warning(CType* st, CType* dt, const char* fmt)
+static void type_incompatibility_warning(CType* st, CType* dt, const char *fmt)
 {
 	char buf1[256], buf2[256];
 	type_to_str(buf1, sizeof(buf1), st, NULL);
@@ -21622,7 +12864,8 @@ static int combine_types(CType *dest, SValue *op1, SValue *op2, int op)
 	type.ref = NULL;
 
 	if (bt1 == VT_VOID || bt2 == VT_VOID) {
-		ret = op == '?' ? 1 : 0;
+		if (op != '?')
+			tcc_error("operation on void value");
 		/* NOTE: as an extension, we accept void on only one side */
 
 		type.t = VT_VOID;
@@ -21634,8 +12877,10 @@ static int combine_types(CType *dest, SValue *op1, SValue *op2, int op)
 		/* http://port70.net/~nsz/c/c99/n1256.html#6.5.15p6 */
 		/* If one is a null ptr constant the result type is the other.  */
 
-		else if (is_null_pointer (op2)) type = *type1;
-		else if (is_null_pointer (op1)) type = *type2;
+		else if (is_null_pointer (op2))
+			type = *type1;
+		else if (is_null_pointer (op1))
+			type = *type2;
 		else if (bt1 != bt2) {
 			/* accept comparison or cond-expr between pointer and integer
 			               with a warning */
@@ -21723,8 +12968,8 @@ static int combine_types(CType *dest, SValue *op1, SValue *op2, int op)
 			type.t &= t2;
 		/* convert to unsigned if it does not fit in a long long */
 
-		if ((t1 & (VT_BTYPE | VT_UNSIGNED | VT_BITFIELD)) == (VT_LLONG | VT_UNSIGNED) ||
-		    (t2 & (VT_BTYPE | VT_UNSIGNED | VT_BITFIELD)) == (VT_LLONG | VT_UNSIGNED))
+		if ((t1 & (VT_BTYPE | VT_UNSIGNED)) == (VT_LLONG | VT_UNSIGNED) ||
+		    (t2 & (VT_BTYPE | VT_UNSIGNED)) == (VT_LLONG | VT_UNSIGNED))
 			type.t |= VT_UNSIGNED;
 	} else {
 		/* integer operations */
@@ -21732,8 +12977,10 @@ static int combine_types(CType *dest, SValue *op1, SValue *op2, int op)
 		type.t = VT_INT | (VT_LONG & (t1 | t2));
 		/* convert to unsigned if it does not fit in an integer */
 
-		if ((t1 & (VT_BTYPE | VT_UNSIGNED | VT_BITFIELD)) == (VT_INT | VT_UNSIGNED) ||
-		    (t2 & (VT_BTYPE | VT_UNSIGNED | VT_BITFIELD)) == (VT_INT | VT_UNSIGNED))
+		if (((t1 & (VT_BTYPE | VT_UNSIGNED)) == (VT_INT | VT_UNSIGNED)
+		     && (!(t1 & VT_BITFIELD) || BIT_SIZE(t1) == 32))
+		    || ((t2 & (VT_BTYPE | VT_UNSIGNED)) == (VT_INT | VT_UNSIGNED)
+			&& (!(t2 & VT_BITFIELD) || BIT_SIZE(t2) == 32)))
 			type.t |= VT_UNSIGNED;
 	}
 	if (dest)
@@ -21806,31 +13053,11 @@ op_err:
 				t = t1, t1 = t2, t2 = t;
 				bt2 = bt1;
 			}
-#if PTR_SIZE == 4
-			if (bt2 == VT_LLONG)
-				/* XXX: truncate here because gen_opl can't handle ptr + long long */
-
-				gen_cast_s(VT_INT);
-#endif
 
 			type1 = vtop[-1].type;
 			vpush_type_size(pointed_type(&vtop[-1].type), &align);
+			vtop->type.t &= ~VT_UNSIGNED;
 			gen_op('*');
-#ifdef CONFIG_TCC_BCHECK
-
-			if (tcc_state->do_bounds_check && !CONST_WANTED) {
-				/* if bounded pointers, we generate a special code to
-				   test bounds */
-
-				if (op == '-') {
-					vpushi(0);
-					vswap();
-					gen_op('-');
-				}
-				gen_bounded_ptr_add();
-			} else
-#endif
-// 3057 "tccgen.c"
 			{
 				gen_opic(op);
 			}
@@ -21892,7 +13119,7 @@ std_op:
 // Make sure that we have converted to an rvalue:
 
 	if (vtop->r & VT_LVAL)
-		gv(is_float(vtop->type.t & VT_BTYPE) ? RC_FLOAT : RC_INT);
+		gv(RC_TYPE(vtop->type.t));
 }
 /* generic itof for unsigned long long case */
 
@@ -21903,11 +13130,9 @@ static void gen_cvt_itof1(int t)
 
 		if (t == VT_FLOAT)
 			vpush_helper_func(TOK___floatundisf);
-#if LDOUBLE_SIZE != 8
 
 		else if (t == VT_LDOUBLE)
 			vpush_helper_func(TOK___floatundixf);
-#endif
 
 		else
 			vpush_helper_func(TOK___floatundidf);
@@ -21930,11 +13155,9 @@ static void gen_cvt_ftoi1(int t)
 		st = vtop->type.t & VT_BTYPE;
 		if (st == VT_FLOAT)
 			vpush_helper_func(TOK___fixunssfdi);
-#if LDOUBLE_SIZE != 8
 
 		else if (st == VT_LDOUBLE)
 			vpush_helper_func(TOK___fixunsxfdi);
-#endif
 
 		else
 			vpush_helper_func(TOK___fixunsdfdi);
@@ -21994,15 +13217,18 @@ again:
 		df = is_float(dbt);
 		dbt_bt = dbt & VT_BTYPE;
 		sbt_bt = sbt & VT_BTYPE;
-		if (dbt_bt == VT_VOID)
+		if (dbt_bt == VT_VOID) {
+			/* do not confuse backends with VT_VOID in registers */
+
+			vpop(), vpushi(0);
 			goto done;
+		}
 		if (sbt_bt == VT_VOID) {
 error:
 			cast_error(&vtop->type, type);
 		}
 
 		c = (vtop->r & (VT_VALMASK | VT_LVAL | VT_SYM)) == VT_CONST;
-
 		if (c) {
 			/* constant case: we can do it now */
 			/* XXX: in ISOC, cannot do it if error in convert */
@@ -22070,8 +13296,12 @@ error:
 		}
 		/* cannot generate code for global or static initializers */
 
-		if (nocode_wanted & DATA_ONLY_WANTED)
+		if (nocode_wanted & DATA_ONLY_WANTED) {
+			if (df)
+				vtop->r = get_reg(RC_FLOAT);/* don't confuse backends */
+
 			goto done;
+		}
 		/* non constant case: generate code */
 
 		if (dbt == VT_BOOL) {
@@ -22139,29 +13369,6 @@ error:
 		gv(RC_INT);
 
 		trunc = 0;
-#if PTR_SIZE == 4
-		if (ds == 8) {
-			/* generate high word */
-
-			if (sbt & VT_UNSIGNED) {
-				vpushi(0);
-				gv(RC_INT);
-			} else {
-				gv_dup();
-				vpushi(31);
-				gen_op(TOK_SAR);
-			}
-			lbuild(dbt);
-		} else if (ss == 8) {
-			/* from long long: just take low order word */
-
-			lexpand();
-			vpop();
-		}
-		ss = 4;
-
-#elif PTR_SIZE == 8
-// 3378 "tccgen.c"
 		if (ds == 8) {
 			/* need to convert from 32bit to 64bit */
 
@@ -22184,7 +13391,6 @@ error:
 		} else {
 			ss = 4;
 		}
-#endif
 
 		if (ds >= ss)
 			goto done;
@@ -22207,7 +13413,7 @@ error:
 	}
 done:
 	vtop->type = *type;
-	vtop->type.t &= ~ ( VT_CONSTANT | VT_VOLATILE | VT_ARRAY );
+	vtop->type.t &= ~ ( VT_CONSTANT | VT_VOLATILE | VT_ARRAY | VT_TLS );
 }
 /* return type size as known at compile time. Put alignment at 'a' */
 
@@ -22228,8 +13434,8 @@ ST_FUNC int type_size(CType *type, int *a)
 			int ts;
 			s = type->ref;
 			ts = type_size(&s->type, a);
-			if (ts < 0 && s->c < 0)
-				ts = -ts;
+			if (s->c < 0)
+				return s->c;
 			return ts * s->c;
 		} else {
 			*a = PTR_SIZE;
@@ -22432,45 +13638,27 @@ ST_FUNC void vstore(void)
 		/* destination, keep on stack() as result */
 
 		vpushv(vtop - 1);
-#ifdef CONFIG_TCC_BCHECK
-
-		if (vtop->r & VT_MUSTBOUND)
-			gbound(); /* check would be wrong after gaddrof() */
-
-#endif
 
 		vtop->type.t = VT_PTR;
 		gaddrof();
 		/* source */
 
 		vswap();
-#ifdef CONFIG_TCC_BCHECK
-
-		if (vtop->r & VT_MUSTBOUND)
-			gbound();
-#endif
 
 		vtop->type.t = VT_PTR;
 		gaddrof();
-#ifdef TCC_TARGET_NATIVE_STRUCT_COPY
 
 		if (1
-#ifdef CONFIG_TCC_BCHECK
-
-		    && !tcc_state->do_bounds_check
-#endif
 
 		   ) {
 			gen_struct_copy(size);
 		} else
-#endif
 
 		{
 			/* type size */
 
 			vpushi(size);
 			/* Use memmove, rather than memcpy, as dest and src may be same: */
-// 3675 "tccgen.c"
 			vpush_helper_func(TOK_memmove);
 			vrott(4);
 			gfunc_call(3);
@@ -22551,17 +13739,6 @@ ST_FUNC void vstore(void)
 		} else {
 			gen_cast(&vtop[-1].type);
 		}
-#ifdef CONFIG_TCC_BCHECK
-
-		/* bound check case */
-
-		if (vtop[-1].r & VT_MUSTBOUND) {
-			vswap();
-			gbound();
-			vswap();
-		}
-#endif
-// 3756 "tccgen.c"
 		gv(RC_TYPE(dbt));/* generate value */
 
 		if (delayed_cast) {
@@ -22578,6 +13755,7 @@ ST_FUNC void vstore(void)
 			sv.type.t = VT_PTRDIFF_T;
 			sv.r = VT_LOCAL | VT_LVAL;
 			sv.c.i = vtop[-1].c.i;
+			sv.sym = NULL;
 			load(r, &sv);
 			vtop[-1].r = r | VT_LVAL;
 		}
@@ -22670,10 +13848,15 @@ static void parse_attribute(AttributeDef *ad)
 {
 	int t, n;
 	char *astr;
+	AttributeDef ad_tmp;
 
 redo:
 	if (tok != TOK_ATTRIBUTE1 && tok != TOK_ATTRIBUTE2)
 		return;
+	if (NULL == ad)/* skip over / ignore attributes */
+
+		ad = &ad_tmp;
+
 	next();
 	skip('(');
 	skip('(');
@@ -22716,7 +13899,9 @@ redo:
 		case TOK_SECTION2:
 			skip('(');
 			astr = parse_mult_str("section name")->data;
+			n = tcc_state->nb_sections;
 			ad->section = find_section(tcc_state, astr);
+			ad->new_section = n < tcc_state->nb_sections;
 			skip(')');
 			break;
 		case TOK_ALIAS1:
@@ -22771,12 +13956,31 @@ redo:
 		case TOK_NODEBUG2:
 			ad->a.nodebug = 1;
 			break;
+		case TOK_USED1:
+		case TOK_USED2:
 		case TOK_UNUSED1:
 		case TOK_UNUSED2:
 			/* currently, no need to handle it because tcc does not
-			               track unused objects */
+			               track used/unused objects */
 
 			break;
+		case TOK_CONST1:
+		case TOK_CONST2:
+		case TOK_CONST3:
+		case TOK_PURE1:
+		case TOK_PURE2:
+			/* ignored */
+
+			break;
+		case TOK_NOINLINE:
+			/* ignored */
+
+			break;
+		case TOK_FORMAT1:
+		case TOK_FORMAT2:
+			/* ignored */
+
+			goto skip_param;
 		case TOK_NORETURN1:
 		case TOK_NORETURN2:
 			ad->f.func_noreturn = 1;
@@ -22791,7 +13995,6 @@ redo:
 		case TOK_STDCALL3:
 			ad->f.func_call = FUNC_STDCALL;
 			break;
-// 3996 "tccgen.c"
 		case TOK_MODE:
 			skip('(');
 			switch (tok) {
@@ -22828,6 +14031,7 @@ redo:
 			tcc_warning_c(warn_unsupported)("'%s' attribute ignored", get_tok_str(t, NULL));
 			/* skip parameters */
 
+skip_param:
 			if (tok == '(') {
 				int parenthesis = 0;
 				do {
@@ -23003,7 +14207,7 @@ new_field:
 				offset = c;
 				/* In PCC layout named bit-fields influence the alignment
 						   of the containing struct using the base types alignment,
-						   except for packed fields (which here have correct align).  \*/
+						   except for packed fields (which here have correct align).  */
 
 				if (f->v & SYM_FIRST_ANOM
 // && bit_size // ??? gcc on ARM/rpi does that
@@ -23044,19 +14248,6 @@ new_field:
 		}
 		if (align > maxalign)
 			maxalign = align;
-#ifdef BF_DEBUG
-
-		printf("set field %s offset %-2d size %-2d align %-2d",
-		       get_tok_str(f->v & ~SYM_FIELD, NULL), offset, size, align);
-		if (f->type.t & VT_BITFIELD) {
-			printf(" pos %-2d bits %-2d",
-			       BIT_POS(f->type.t),
-			       BIT_SIZE(f->type.t)
-			      );
-		}
-		printf("\n");
-#endif
-// 4250 "tccgen.c"
 		f->c = offset;
 		f->r = 0;
 	}
@@ -23079,10 +14270,6 @@ new_field:
 	}
 	c = (c + a - 1) & -a;
 	type->ref->c = c;
-#ifdef BF_DEBUG
-
-	printf("struct size %-2d align %-2d\n\n", c, a), fflush(stdout);
-#endif
 	/* check whether we can access bitfields by their type */
 
 	for (f = type->ref->next; f; f = f->next) {
@@ -23138,26 +14325,23 @@ new_field:
 				    | (bit_pos << VT_STRUCT_SHIFT);
 			if (s != size)
 				f->auxtype = t.t;
-#ifdef BF_DEBUG
-
-			printf("FIX field %s offset %-2d size %-2d align %-2d "
-			       "pos %-2d bits %-2d\n",
-			       get_tok_str(f->v & ~SYM_FIELD, NULL),
-			       cx, s, align, px, bit_size);
-#endif
 
 		} else {
 			/* fall back to load/store single-byte wise */
 
 			f->auxtype = VT_STRUCT;
-#ifdef BF_DEBUG
-
-			printf("FIX field %s : load byte-wise\n",
-			       get_tok_str(f->v & ~SYM_FIELD, NULL));
-#endif
 
 		}
 	}
+}
+/* Does 'n' fit into integer type 't' ? */
+
+static int in_range(long long n, int t)
+{
+	unsigned long long m = (1ULL << (btype_size(t & VT_BTYPE) * 8 - 1)) - 1;
+	if (t & VT_UNSIGNED)
+		return n <= (m << 1) + 1;
+	return n >= -(long long)m - 1 && n <= (long long)m;
 }
 /* enum/struct/union declaration. u is VT_ENUM/VT_STRUCT/VT_UNION */
 
@@ -23236,6 +14420,8 @@ do_decl:
 			long long ll = 0, pl = 0, nl = 0;
 			CType t;
 			t.ref = s;
+			s->sym_scope = local_scope;/* anonymous symbol won't have set */
+
 			/* enum symbols have static storage */
 
 			t.t = VT_INT|VT_STATIC|VT_ENUM_VAL;
@@ -23245,15 +14431,14 @@ do_decl:
 				v = tok;
 				if (v < TOK_UIDENT)
 					expect("identifier");
-				ss = sym_find(v);
-				if (ss && !local_stack)
-					tcc_error("redefinition of enumerator '%s'",
-						  get_tok_str(v, NULL));
 				next();
 				if (tok == '=') {
 					next();
 					ll = expr_const64();
 				}
+				if (bt && !in_range(ll, t.t))
+					tcc_error("enumerator '%s' out of range of its type",
+						  get_tok_str(v, NULL));
 				ss = sym_push(v, &t, VT_CONST, 0);
 				ss->enum_val = ll;
 				*ps = ss, ps = &ss->next;
@@ -23332,7 +14517,7 @@ enum_done:
 								expect("identifier");
 							else {
 								int v = btype.ref->v;
-								if (!(v & SYM_FIELD) && (v & ~SYM_STRUCT) < SYM_FIRST_ANOM) {
+								if ((v & ~SYM_STRUCT) < SYM_FIRST_ANOM) {
 									if (tcc_state->ms_extensions == 0)
 										expect("identifier");
 								}
@@ -23378,6 +14563,7 @@ enum_done:
 							tcc_error("width of '%s' exceeds its type",
 								  get_tok_str(v, NULL));
 						} else if (bit_size == bsize
+							   && !*tcc_state->pack_stack_ptr
 							   && !ad.a.packed && !ad1.a.packed) {
 							/* no need for bit fields */
 
@@ -23387,7 +14573,7 @@ enum_done:
 						} else {
 							type1.t = (type1.t & ~VT_STRUCT_MASK)
 								  | VT_BITFIELD
-								  | (bit_size << (VT_STRUCT_SHIFT + 6));
+								  | ((unsigned)bit_size << (VT_STRUCT_SHIFT + 6));
 						}
 					}
 					if (v != 0 || (type1.t & VT_BTYPE) == VT_STRUCT) {
@@ -23424,9 +14610,9 @@ enum_done:
 			check_fields(type, 1);
 			check_fields(type, 0);
 			struct_layout(type, &ad);
-			if (debug_modes)
-				tcc_debug_fix_anon(tcc_state, type);
 		}
+		if (debug_modes)
+			tcc_debug_fix_forw(tcc_state, type);
 	}
 }
 
@@ -23483,6 +14669,8 @@ tmbt: tcc_error("too many basic types");
 				st = u;
 			} else {
 				if (bt != -1 || (st != -1 && u != VT_INT))
+					goto tmbt;
+				if ((t & VT_DEFSIGN) && (u == VT_VOID || u > VT_LLONG))
 					goto tmbt;
 				bt = u;
 			}
@@ -23663,11 +14851,19 @@ storage:
 			/* remove all storage modifiers except typedef */
 
 			type1.t &= ~(VT_STORAGE&~VT_TYPEDEF);
-			if (type1.ref)
+			if (type1.ref) {
 				sym_to_attr(ad, type1.ref);
+				if (type1.t & VT_ARRAY)
+					type1.t |= VT_BT_ARRAY;
+			}
 			goto basic_type2;
 		case TOK_THREAD_LOCAL:
-			tcc_error("_Thread_local is not implemented");
+		case TOK___thread:
+			if (t & VT_TLS)
+				tcc_error("multiple thread-local storage specifiers");
+			t |= VT_TLS;
+			next();
+			break;
 		default:
 			if (typespec_found)
 				goto the_end;
@@ -23690,6 +14886,8 @@ storage:
 			if (t)
 				parse_btype_qualify(type, t);
 			t = type->t;
+			if (t & VT_ARRAY)
+				t |= VT_BT_ARRAY;
 			/* get attributes from typedef */
 
 			sym_to_attr(ad, s);
@@ -23709,11 +14907,9 @@ the_end:
 	bt = t & (VT_BTYPE|VT_LONG);
 	if (bt == VT_LONG)
 		t |= LONG_SIZE == 8 ? VT_LLONG : VT_INT;
-#ifdef TCC_USING_DOUBLE_FOR_LDOUBLE
 
 	if (bt == VT_LDOUBLE)
 		t = (t & ~(VT_BTYPE|VT_LONG)) | (VT_DOUBLE|VT_LONG);
-#endif
 
 	type->t = t;
 	return type_found;
@@ -23750,10 +14946,6 @@ static int asm_label_instr(void)
 	next();
 	astr = parse_asm_str()->data;
 	skip(')');
-#ifdef ASM_DEBUG
-
-	printf("asm_alias: \"%s\"\n", astr);
-#endif
 
 	v = tok_alloc_const(astr);
 	return v;
@@ -23762,7 +14954,7 @@ static int asm_label_instr(void)
 static int post_type(CType *type, AttributeDef *ad, int storage, int td)
 {
 	int n, l, t1, arg_size, align;
-	Sym **plast, *s, *first;
+	Sym **plast, *s, *first, **ps, *sr;
 	AttributeDef ad1;
 	CType pt;
 	TokenString *vla_array_tok = NULL;
@@ -23774,11 +14966,20 @@ static int post_type(CType *type, AttributeDef *ad, int storage, int td)
 		next();
 		if (TYPE_DIRECT == (td & (TYPE_DIRECT|TYPE_ABSTRACT)))
 			return 0;
+		/* we push a anonymous symbol which will contain the function prototype */
+		/* it also serves as a boundary for the function parameter scope */
+
+		ps = local_stack ? &local_stack : &global_stack;
+		++local_scope;
+		sr = sym_push2(ps, SYM_FIELD, 0, 0);
+
 		if (tok == ')')
 			l = 0;
 		else if (parse_btype(&pt, &ad1, 0))
 			l = FUNC_NEW;
 		else if (td & (TYPE_DIRECT|TYPE_ABSTRACT)) {
+			sym_pop(ps, sr->prev, 0);
+			--local_scope;
 			merge_attr (ad, &ad1);
 			return 0;
 		} else
@@ -23787,7 +14988,6 @@ static int post_type(CType *type, AttributeDef *ad, int storage, int td)
 		first = NULL;
 		plast = &first;
 		arg_size = 0;
-		++local_scope;
 		if (l) {
 			for (;;) {
 				/* read param name and compute offset */
@@ -23798,11 +14998,11 @@ static int post_type(CType *type, AttributeDef *ad, int storage, int td)
 					type_decl(&pt, &ad1, &n, TYPE_DIRECT | TYPE_ABSTRACT | TYPE_PARAM);
 					if ((pt.t & VT_BTYPE) == VT_VOID)
 						tcc_error("parameter declared as void");
-					if (n == 0)
-						n = SYM_FIELD;
+					if (n == 0 || (td & TYPE_PARAM))
+						n |= SYM_FIELD;
 				} else {
 					n = tok;
-					pt.t = VT_VOID;/* invalid type */
+					pt.t = VT_INT | VT_EXTERN;/* default type */
 
 					pt.ref = NULL;
 					next();
@@ -23812,8 +15012,7 @@ static int post_type(CType *type, AttributeDef *ad, int storage, int td)
 				convert_parameter_type(&pt);
 				arg_size += (type_size(&pt, &align) + PTR_SIZE - 1) / PTR_SIZE;
 				/* these symbols may be evaluated for VLArrays (see below, under
-				                   nocode_wanted) which is why we push them here as normal symbols
-				                   temporarily.  Example: int func(int a, int b[++a])\; */
+				                   nocode_wanted) Example: int func(int a, int b[++a]); */
 
 				s = sym_push(n, &pt, VT_LOCAL|VT_LVAL, 0);
 				*plast = s;
@@ -23834,14 +15033,6 @@ static int post_type(CType *type, AttributeDef *ad, int storage, int td)
 
 			l = FUNC_OLD;
 		skip(')');
-		/* remove parameter symbols from token table, keep on stack */
-
-		if (first) {
-			sym_pop(local_stack ? &local_stack : &global_stack, first->prev, 1);
-			for (s = first; s; s = s->next)
-				s->v |= SYM_FIELD;
-		}
-		--local_scope;
 		/* NOTE: const is ignored in returned type as it has a special
 		           meaning in gcc / C++ */
 
@@ -23856,16 +15047,19 @@ static int post_type(CType *type, AttributeDef *ad, int storage, int td)
 
 			mk_pointer(type);
 		}
-		/* we push a anonymous symbol which will contain the function prototype */
-
 		ad->f.func_args = arg_size;
 		ad->f.func_type = l;
-		s = sym_push(SYM_FIELD, type, 0, 0);
+		sr->type = *type, s = sr;
 		s->a = ad->a;
 		s->f = ad->f;
 		s->next = first;
 		type->t = VT_FUNC;
 		type->ref = s;
+		/* unlink parameter symbols from the token table, keep on stack */
+
+		sym_pop(ps, sr, 1);
+		--local_scope;
+
 	} else if (tok == '[') {
 		int saved_nocode_wanted = nocode_wanted;
 		/* array definition */
@@ -23873,7 +15067,8 @@ static int post_type(CType *type, AttributeDef *ad, int storage, int td)
 		next();
 		n = -1;
 		t1 = 0;
-		if (td & TYPE_PARAM) while (1) {
+		if (td & TYPE_PARAM)
+			while (1) {
 				/* XXX The optional type-quals and static should only be accepted
 					       in parameter decls.  The '*' as well, and then even only
 					       in prototypes (not function defs).  */
@@ -23989,7 +15184,6 @@ check:
    type_decl().  If this (possibly abstract) declarator is a pointer chain
    it returns the innermost pointed to type (equals *type, but is a different
    pointer), otherwise returns type itself, that's used for recursive calls.  */
-// 5133 "tccgen.c"
 static CType *type_decl(CType *type, AttributeDef *ad, int *v, int td)
 {
 	CType *post, *ret;
@@ -24087,11 +15281,6 @@ ST_FUNC void indir(void)
 	    && (vtop->type.t & VT_BTYPE) != VT_FUNC) {
 		vtop->r |= VT_LVAL;
 		/* if bound checking, the referenced pointer must be checked */
-#ifdef CONFIG_TCC_BCHECK
-
-		if (tcc_state->do_bounds_check)
-			vtop->r |= VT_MUSTBOUND;
-#endif
 
 	}
 }
@@ -24237,7 +15426,6 @@ static void parse_atomic(int atok)
 		         */
 		/* keep in order of appearance in tcctok.h: */
 		/* __atomic_store */
-// 5370 "tccgen.c"
 		"alm.?",
 		/* __atomic_load */
 		"Asm.v",
@@ -24351,13 +15539,8 @@ static void parse_atomic(int atok)
 	PUT_R_RET(vtop, ct.t);
 	t = ct.t & VT_BTYPE;
 	if (t == VT_BYTE || t == VT_SHORT || t == VT_BOOL) {
-#ifdef PROMOTE_RET
 
 		vtop->r |= BFVAL(VT_MUSTCAST, 1);
-#else
-
-		vtop->type.t = VT_INT;
-#endif
 
 	}
 	gen_cast(&ct);
@@ -24418,13 +15601,9 @@ push_tokc:
 		t = VT_DOUBLE;
 		goto push_tokc;
 	case TOK_CLDOUBLE:
-#ifdef TCC_USING_DOUBLE_FOR_LDOUBLE
 
 		t = VT_DOUBLE | VT_LONG;
-#else
-
-		t = VT_LDOUBLE;
-#endif
+		tokc.d = tokc.ld;
 
 		goto push_tokc;
 	case TOK_CLONG:
@@ -24511,7 +15690,9 @@ str_init:
 				       as statement expressions can't ever be entered from the
 				       outside, so any reactivation of code emission (from labels
 				       or loop heads) can be disabled again after the end of it. */
+			/* default return value is (void) */
 
+			vpushi(0), vtop->type.t = VT_VOID;
 			block(STMT_EXPR);
 			/* If the statement expr can be entered, then we retain the current
 			               nocode_wanted state (from e.g. a 'return 0;' in the stmt-expr).
@@ -24676,7 +15857,6 @@ str_init:
 		}
 		if (tok1 == TOK_builtin_return_address) {
 // assume return address is just above frame pointer on stack
-// 5781 "tccgen.c"
 			vpushi(PTR_SIZE);
 			gen_op('+');
 
@@ -24685,7 +15865,7 @@ str_init:
 		}
 	}
 	break;
-// 5803 "tccgen.c"
+
 	case TOK_builtin_va_start:
 		parse_builtin_params(0, "ee");
 		r = vtop->r & VT_VALMASK;
@@ -24699,7 +15879,6 @@ str_init:
 		vstore();
 		break;
 	/* atomic operations */
-// 5853 "tccgen.c"
 	case TOK___atomic_store:
 	case TOK___atomic_load:
 	case TOK___atomic_exchange:
@@ -24789,13 +15968,10 @@ str_init:
 					learn = 1;
 				next();
 			} else {
-				AttributeDef ad_tmp;
-				int itmp;
-				CType cur_type;
-
-				parse_btype(&cur_type, &ad_tmp, 0);
-				type_decl(&cur_type, &ad_tmp, &itmp, TYPE_ABSTRACT);
-				if (compare_types(&controlling_type, &cur_type, 0)) {
+				int v;
+				parse_btype(&type, &ad, 0);
+				type_decl(&type, &ad, &v, TYPE_ABSTRACT);
+				if (compare_types(&controlling_type, &type, 0)) {
 					if (has_match) {
 						tcc_error("type match twice");
 					}
@@ -24858,8 +16034,9 @@ tok_identifier:
 			/* for simple function calls, we tolerate undeclared
 			               external reference to int() function */
 
-			tcc_warning_c(warn_implicit_function_declaration)(
-				"implicit declaration of function '%s'", name);
+			if (!func_old)
+				tcc_warning_c(warn_implicit_function_declaration)(
+					"implicit declaration of function '%s'", name);
 			s = external_global_sym(t, &func_old_type);
 		}
 
@@ -24919,18 +16096,12 @@ tok_identifier:
 			/* change type to field type, and set to lvalue */
 
 			vtop->type = s->type;
-			vtop->type.t |= qualifiers;
+			if (qualifiers)
+				parse_btype_qualify(&vtop->type, qualifiers);
 			/* an array is never an lvalue */
 
 			if (!(vtop->type.t & VT_ARRAY)) {
 				vtop->r |= VT_LVAL;
-#ifdef CONFIG_TCC_BCHECK
-
-				/* if bound checking, the referenced pointer must be checked */
-
-				if (tcc_state->do_bounds_check)
-					vtop->r |= VT_MUSTBOUND;
-#endif
 
 			}
 			next();
@@ -24980,7 +16151,6 @@ error_func:
 					/* get some space for the returned structure */
 
 					size = type_size(&s->type, &align);
-// 6123 "tccgen.c"
 					loc = (loc - size) & -align;
 					ret.type = s->type;
 					ret.r = VT_LOCAL | VT_LVAL;
@@ -24988,11 +16158,6 @@ error_func:
 					                       problems */
 
 					vseti(VT_LOCAL, loc);
-#ifdef CONFIG_TCC_BCHECK
-
-					if (tcc_state->do_bounds_check)
-						--loc;
-#endif
 
 					ret.c = vtop->c;
 					if (ret_nregs < 0)
@@ -25110,13 +16275,8 @@ error_func:
 
 				t = s->type.t & VT_BTYPE;
 				if (t == VT_BYTE || t == VT_SHORT || t == VT_BOOL) {
-#ifdef PROMOTE_RET
 
 					vtop->r |= BFVAL(VT_MUSTCAST, 1);
-#else
-
-					vtop->type.t = VT_INT;
-#endif
 
 				}
 			}
@@ -25130,120 +16290,7 @@ error_func:
 		}
 	}
 }
-#ifndef precedence_parser
-/* original top-down parser */
-
-static void expr_prod(void)
-{
-	int t;
-
-	unary();
-	while ((t = tok) == '*' || t == '/' || t == '%') {
-		next();
-		unary();
-		gen_op(t);
-	}
-}
-
-static void expr_sum(void)
-{
-	int t;
-
-	expr_prod();
-	while ((t = tok) == '+' || t == '-') {
-		next();
-		expr_prod();
-		gen_op(t);
-	}
-}
-
-static void expr_shift(void)
-{
-	int t;
-
-	expr_sum();
-	while ((t = tok) == TOK_SHL || t == TOK_SAR) {
-		next();
-		expr_sum();
-		gen_op(t);
-	}
-}
-
-static void expr_cmp(void)
-{
-	int t;
-
-	expr_shift();
-	while (((t = tok) >= TOK_ULE && t <= TOK_GT) ||
-	       t == TOK_ULT || t == TOK_UGE) {
-		next();
-		expr_shift();
-		gen_op(t);
-	}
-}
-
-static void expr_cmpeq(void)
-{
-	int t;
-
-	expr_cmp();
-	while ((t = tok) == TOK_EQ || t == TOK_NE) {
-		next();
-		expr_cmp();
-		gen_op(t);
-	}
-}
-
-static void expr_and(void)
-{
-	expr_cmpeq();
-	while (tok == '&') {
-		next();
-		expr_cmpeq();
-		gen_op('&');
-	}
-}
-
-static void expr_xor(void)
-{
-	expr_and();
-	while (tok == '^') {
-		next();
-		expr_and();
-		gen_op('^');
-	}
-}
-
-static void expr_or(void)
-{
-	expr_xor();
-	while (tok == '|') {
-		next();
-		expr_xor();
-		gen_op('|');
-	}
-}
-
-static void expr_landor(int op);
-
-static void expr_land(void)
-{
-	expr_or();
-	if (tok == TOK_LAND)
-		expr_landor(tok);
-}
-
-static void expr_lor(void)
-{
-	expr_land();
-	if (tok == TOK_LOR)
-		expr_landor(tok);
-}
-
-#define expr_landor_next(op) op == TOK_LAND ? expr_or() : expr_land()
-#else
 /* defined precedence_parser */
-// 6374 "tccgen.c"
 #define expr_landor_next(op) unary(), expr_infix(precedence(op) + 1)
 #define expr_lor() unary(), expr_infix(1)
 
@@ -25310,7 +16357,6 @@ static void expr_infix(int p)
 		t = tok;
 	}
 }
-#endif
 /* Assuming vtop is a value used in a conditional context
    (i.e. compared with zero) return 0 if it's false, 1 if
    true and -1 if it can't be statically determined.  */
@@ -25449,8 +16495,7 @@ static void expr_cond(void)
 		/* keep structs lvalue by transforming `(expr ? a : b)` to `*(expr ? &a : &b)` so
 		           that `(expr ? a : b).mem` does not error  with "lvalue expected" */
 
-		islv = (vtop->r & VT_LVAL) && (sv.r & VT_LVAL)
-		       && VT_STRUCT == (type.t & VT_BTYPE);
+		islv = VT_STRUCT == (type.t & VT_BTYPE);
 		/* now we convert second operand */
 
 		if (c != 1) {
@@ -25458,8 +16503,7 @@ static void expr_cond(void)
 			if (islv) {
 				mk_pointer(&vtop->type);
 				gaddrof();
-			} else if (VT_STRUCT == (vtop->type.t & VT_BTYPE))
-				gaddrof();
+			}
 		}
 
 		rc = RC_TYPE(type.t);
@@ -25471,13 +16515,14 @@ static void expr_cond(void)
 
 		tt = r2 = 0;
 		if (c < 0) {
-			r2 = gv(rc);
+			if (type.t != VT_VOID)
+				r2 = gv(rc);
 			tt = gjmp(0);
 		}
 		gsym(u);
 		if (c == 1)
 			nocode_wanted--;
-		/* this is horrible, but we must also convert first
+		/* this is horrible, but we mu\st also convert first
 		           operand */
 
 		if (c != 0) {
@@ -25486,14 +16531,15 @@ static void expr_cond(void)
 			if (islv) {
 				mk_pointer(&vtop->type);
 				gaddrof();
-			} else if (VT_STRUCT == (vtop->type.t & VT_BTYPE))
-				gaddrof();
+			}
 		}
 
 		if (c < 0) {
-			r1 = gv(rc);
-			move_reg(r2, r1, islv ? VT_PTR : type.t);
-			vtop->r = r2;
+			if (type.t != VT_VOID) {
+				r1 = gv(rc);
+				move_reg(r2, r1, islv ? VT_PTR : type.t);
+				vtop->r = r2;
+			}
 			gsym(tt);
 		}
 
@@ -25536,7 +16582,8 @@ ST_FUNC void gexpr(void)
 		/* make builtin_constant_p((1,2)) return 0 (like on gcc) */
 
 		if ((vtop->r & VT_VALMASK) == VT_CONST && nocode_wanted && !CONST_WANTED)
-			gv(RC_TYPE(vtop->type.t));
+			if (vtop->type.t != VT_VOID && (vtop->type.t & VT_BTYPE) != VT_STRUCT)
+				gv(RC_TYPE(vtop->type.t));
 	}
 }
 /* parse a constant expression and return value in vtop.  */
@@ -25600,12 +16647,17 @@ static void gfunc_return(CType *func_type)
 
 			int size, addr, align, rc, n;
 			size = type_size(func_type,&align);
-			if ((align & (ret_align - 1))
-			    && ((vtop->r & VT_VALMASK) < VT_CONST/* pointer to struct */
+			if (ret_nregs * regsize > size ||
+			    ((align & (ret_align - 1))
+			     && ((vtop->r & VT_VALMASK) < VT_CONST/* pointer to struct */
 
-				|| (vtop->c.i & (ret_align - 1))
-			       )) {
-				loc = (loc - size) & -ret_align;
+				 || (vtop->c.i & (ret_align - 1))
+				))) {
+				if (ret_nregs * regsize > size)
+					size = ret_nregs * regsize;
+				if (ret_align > align)
+					align = ret_align;
+				loc = (loc - size) & -align;
 				addr = loc;
 				type = *func_type;
 				vset(&type, VT_LOCAL | VT_LVAL, addr);
@@ -25616,7 +16668,7 @@ static void gfunc_return(CType *func_type)
 			}
 			vtop->type = ret_type;
 			rc = RC_RET(ret_type.t);
-//printf("struct return: n:%d t:%02x rc:%02x\n", ret_nreg\, ret_type.t, rc);
+//printf("struct return: n:%d t:%02x rc:%02x\n", ret_nregs, ret_type.t, rc);
 
 			for (n = ret_nregs; --n > 0;) {
 				vdup();
@@ -25643,12 +16695,11 @@ static void check_func_return(void)
 {
 	if ((func_vt.t & VT_BTYPE) == VT_VOID)
 		return;
-	if (!strcmp (funcname, "main")
+	if ((!strcmp(funcname, "main") || func_old)
 	    && (func_vt.t & VT_BTYPE) == VT_INT) {
 		/* main returns 0 by default */
 
 		vpushi(0);
-		gen_assign_cast(&func_vt);
 		gfunc_return(&func_vt);
 	} else {
 		tcc_warning("function might return no value: '%s'", funcname);
@@ -25667,7 +16718,7 @@ static int case_cmp(uint64_t a, uint64_t b)
 
 static int case_cmp_qs(const void *pa, const void *pb)
 {
-	return case_cmp((*(struct case_t**)pa)->v1, (*(struct case_t**)pb)->v1);
+	return case_cmp((*(struct case_t **)pa)->v1, (*(struct case_t **)pb)->v1);
 }
 
 static void case_sort(struct switch_t *sw)
@@ -25745,15 +16796,29 @@ static void end_switch(void)
 }
 /* ------------------------------------------------------------------------- */
 /* __attribute__((cleanup(fn))) */
+/* protect symbol lvalues from further modification  */
+
+static void save_lvalues(void)
+{
+	SValue *sv = vtop;
+	while (sv >= vstack) {
+		if (sv->sym && (sv->r & VT_LVAL)) {
+			int align, size = type_size(&sv->type, &align);
+			int r2, l = get_temp_local_var(size, align, &r2);
+			vset(&sv->type, VT_LOCAL | VT_LVAL, l), vtop->r2 = r2;
+			vpushv(sv), *sv = vtop[-1], vstore(), --vtop;
+		}
+		--sv;
+	}
+}
 
 static void try_call_scope_cleanup(Sym *stop)
 {
 	Sym *cls = cur_scope->cl.s;
-
 	for (; cls != stop; cls = cls->next) {
 		Sym *fs = cls->cleanup_func;
-		Sym *vs = cls->prev_tok;
-
+		Sym *vs = cls->cleanup_sym;
+		save_lvalues();
 		vpushsym(&fs->type, fs);
 		vset(&vs->type, vs->r, vs->c);
 		vtop->sym = vs;
@@ -25789,7 +16854,7 @@ static void block_cleanup(struct scope *o)
 	int jmp = 0;
 	Sym *g, **pg;
 	for (pg = &pending_gotos; (g = *pg) && g->c > o->cl.n;) {
-		if (g->prev_tok->r & LABEL_FORWARD) {
+		if (g->cleanup_label->r & LABEL_FORWARD) {
 			Sym *pcl = g->next;
 			if (!jmp)
 				jmp = gjmp(0);
@@ -25851,6 +16916,9 @@ static void prev_scope(struct scope *o, int is_expr)
 
 	if (o->cl.s != o->prev->cl.s)
 		block_cleanup(o->prev);
+
+	if (debug_modes)
+		tcc_debug_end_scope(o->lstk, !is_expr);
 	/* pop locally defined labels */
 
 	label_pop(&local_label_stack, o->llstk, is_expr);
@@ -25862,8 +16930,7 @@ static void prev_scope(struct scope *o, int is_expr)
 	       do that.  We do have to remove such symbols from the lookup
 	       tables, though.  sym_pop will do that.  */
 	/* pop locally defined symbols */
-// 6961 "tccgen.c"
-	pop_local_syms(o->lstk, is_expr);
+	sym_pop(&local_stack, o->lstk, is_expr);
 	cur_scope = o->prev;
 	--local_scope;
 }
@@ -25909,19 +16976,27 @@ static void lblock(int *bsym, int *csym)
 		loop_scope = lo;
 	}
 }
+/* c2y if/switch declaration */
+
+static void gexpr_decl(void)
+{
+	int v = decl(VT_JMP);
+	if (v > 1 && tok != ';') {
+		Sym *s = sym_find(v);
+		vset(&s->type, s->r, (s->r & VT_SYM) ? 0 : s->c);
+		vtop->sym = s;
+	} else {
+		if (v)
+			skip(';');
+		gexpr();
+	}
+}
 
 static void block(int flags)
 {
 	int a, b, c, d, e, t;
 	struct scope o;
 	Sym *s;
-
-	if (flags & STMT_EXPR) {
-		/* default return value is (void) */
-
-		vpushi(0);
-		vtop->type.t = VT_VOID;
-	}
 
 again:
 	t = tok;
@@ -25938,9 +17013,9 @@ again:
 	if (t == TOK_IF) {
 		new_scope_s(&o);
 		skip('(');
-		gexpr();
-		skip(')');
+		gexpr_decl();
 		a = gvtst(1, 0);
+		skip(')');
 		block(0);
 		if (tok == TOK_ELSE) {
 			d = gjmp(0);
@@ -25959,8 +17034,8 @@ again:
 		d = gind();
 		skip('(');
 		gexpr();
-		skip(')');
 		a = gvtst(1, 0);
+		skip(')');
 		b = 0;
 		lblock(&a, &b);
 		gjmp_addr(d);
@@ -25988,8 +17063,6 @@ again:
 		while (tok != '}') {
 			decl(VT_LOCAL);
 			if (tok != '}') {
-				if (flags & STMT_EXPR)
-					vpop();
 				block(flags | STMT_COMPOUND);
 			}
 		}
@@ -26013,6 +17086,8 @@ again:
 					tcc_warning("void function returns a value");
 				vtop--;
 			}
+		} else if (b && func_old && (func_vt.t & VT_BTYPE) == VT_INT) {
+			vpushi(0);
 		} else if (b) {
 			tcc_warning("'return' with no value");
 			b = 0;
@@ -26096,9 +17171,9 @@ again:
 		skip(TOK_WHILE);
 		skip('(');
 		gexpr();
+		c = gvtst(0, 0);
 		skip(')');
 		skip(';');
-		c = gvtst(0, 0);
 		gsym_addr(c, d);
 		gsym(a);
 		prev_scope_s(&o);
@@ -26115,10 +17190,10 @@ again:
 
 		new_scope_s(&o);
 		skip('(');
-		gexpr();
-		skip(')');
+		gexpr_decl();
 		if (!is_integer_btype(vtop->type.t & VT_BTYPE))
 			tcc_error("switch value not an integer");
+		skip(')');
 		sw->sv = *vtop--;/* save switch value */
 
 		a = 0;
@@ -26206,7 +17281,7 @@ skip_switch:
 
 				if (cur_scope->cl.s && !nocode_wanted) {
 					sym_push2(&pending_gotos, SYM_FIELD, 0, cur_scope->cl.n);
-					pending_gotos->prev_tok = s;
+					pending_gotos->cleanup_label = s;
 					s = sym_push2(&s->next, SYM_FIELD, 0, 0);
 					pending_gotos->next = s;
 				}
@@ -26249,12 +17324,11 @@ skip_switch:
 			s->jind = gind();
 			s->cleanupstate = cur_scope->cl.s;
 
-block_after_label: {
-				/* Accept attributes after labels (e.g. 'unused') */
+block_after_label:
+			/* Accept attributes after labels (e.g. 'unused') */
 
-				AttributeDef ad_tmp;
-				parse_attribute(&ad_tmp);
-			}
+			parse_attribute(NULL);
+
 			if (debug_modes)
 				tcc_tcov_reset_ind(tcc_state);
 			vla_restore(cur_scope->vla.loc);
@@ -26401,8 +17475,8 @@ static void decl_design_delrels(Section *sec, int c, int size)
 	ElfW_Rel *rel, *rel2, *rel_end;
 	if (!sec || !sec->reloc)
 		return;
-	rel = rel2 = (ElfW_Rel*)sec->reloc->data;
-	rel_end = (ElfW_Rel*)(sec->reloc->data + sec->reloc->data_offset);
+	rel = rel2 = (ElfW_Rel *)sec->reloc->data;
+	rel_end = (ElfW_Rel *)(sec->reloc->data + sec->reloc->data_offset);
 	while (rel < rel_end) {
 		if (rel->r_offset >= c && rel->r_offset < c + size) {
 			sec->reloc->data_offset -= sizeof *rel;
@@ -26420,7 +17494,7 @@ static void decl_design_flex(init_params *p, Sym *ref, int index)
 	if (ref == p->flex_array_ref) {
 		if (index >= ref->c)
 			ref->c = index + 1;
-	} else if (ref->c < 0)
+	} else if (ref->c < 0 && index >= 0)
 		tcc_error("flexible array has zero size in this context");
 }
 /* t is the array or struct type. c is the array or struct
@@ -26559,6 +17633,41 @@ no_designator:
 		al = c - corig;
 	return al;
 }
+
+static void write_ldouble(unsigned char *d, void *s)
+{
+//printf("long double %Lf\n", *(long double*)s);
+
+	if (sizeof (long double) == 8 && LDOUBLE_SIZE >= 10) {
+		/* our 'long double' is a double really (_WIN32, __APPLE__) */
+
+		uint64_t m = *(uint64_t *)s;
+		int e = m >> 48;
+		int f = e >> 4 & 0x7FF;
+		m <<= 11;
+		if (0 == f) {
+			if (0 == m)
+				goto set;
+			for (f = 1; !(m & 1ULL<<63); --f)
+				m <<= 1;
+		}
+		if (f == 0x7ff)
+			f = 0x43FF;
+		e = (e & 0x8000) | (f + 0x3C00);
+		m |= 1ULL<<63;
+set:
+		/* double -> extended */
+
+		write64le(d, m);
+		write16le(d+8, e);
+
+		;
+	} else {
+		/* extended -> extended */
+
+		memcpy(d, s, 10);
+	}
+}
 /* store a value or an expression directly in global data or in local array */
 
 static void init_putv(init_params *p, CType *type, unsigned long c)
@@ -26600,23 +17709,15 @@ static void init_putv(init_params *p, CType *type, unsigned long c)
 
 		ptr = sec->data + c;
 		val = vtop->c.i;
-		/* XXX: make code faster ? */
 
-		if ((vtop->r & (VT_SYM|VT_CONST)) == (VT_SYM|VT_CONST) &&
-		    vtop->sym->v >= SYM_FIRST_ANOM &&
-		    /* XXX This rejects compound literals like
-		    	       '(void *){ptr}'.  The problem is that '&sym' is
-		    	       represented the same way, which would be ruled out
-		    	       by the SYM_FIRST_ANOM check above, but also '"string"'
-		    	       in 'char *p = "string"' is represented the same
-		    	       with the type being VT_PTR and the symbol being an
-		    	       anonymous one.  That is, there's no difference in vtop
-		    	       between '(void *){x}' and '&(void *){x}'.  Ignore
-		    	       pointer typed entities here.  Hopefully no real code
-		    	       will ever use compound literals with scalar type.  */
-// 7688 "tccgen.c"
-		    (vtop->type.t & VT_BTYPE) != VT_PTR) {
-			/* These come from compound literals, memcpy stuff over.  */
+		if ((vtop->r & (VT_SYM|VT_CONST)) == (VT_SYM|VT_CONST)
+		    && vtop->sym->v >= SYM_FIRST_ANOM
+		    && ((vtop->r & VT_LVAL)/* compound literal */
+
+			|| bt == VT_STRUCT/* designator */
+
+		       )) {
+			/* memcpy stuff over.  */
 
 			Section *ssec;
 			ElfSym *esym;
@@ -26633,7 +17734,7 @@ static void init_putv(init_params *p, CType *type, unsigned long c)
 				unsigned long relofs = ssec->reloc->data_offset;
 				while (relofs >= sizeof(*rel)) {
 					relofs -= sizeof(*rel);
-					rel = (ElfW_Rel*)(ssec->reloc->data + relofs);
+					rel = (ElfW_Rel *)(ssec->reloc->data + relofs);
 					if (rel->r_offset >= esym->st_value + size)
 						continue;
 					if (rel->r_offset < esym->st_value)
@@ -26642,13 +17743,8 @@ static void init_putv(init_params *p, CType *type, unsigned long c)
 						       c + rel->r_offset - esym->st_value,
 						       ELFW(R_TYPE)(rel->r_info),
 						       ELFW(R_SYM)(rel->r_info),
-#if PTR_SIZE == 8
 
 						       rel->r_addend
-#else
-
-						       0
-#endif
 
 						      );
 				}
@@ -26659,7 +17755,7 @@ static void init_putv(init_params *p, CType *type, unsigned long c)
 				unsigned char *p, v, m;
 				bit_pos = BIT_POS(vtop->type.t);
 				bit_size = BIT_SIZE(vtop->type.t);
-				p = (unsigned char*)ptr + (bit_pos >> 3);
+				p = (unsigned char *)ptr + (bit_pos >> 3);
 				bit_pos &= 7, bits = 0;
 				while (bit_size) {
 					n = 8 - bit_pos;
@@ -26688,43 +17784,8 @@ static void init_putv(init_params *p, CType *type, unsigned long c)
 					write64le(ptr, val);
 					break;
 				case VT_LDOUBLE:
-#if defined TCC_IS_NATIVE_387
-					/* Host and target platform may be different but both have x87.
-					                   On windows, tcc does not use VT_LDOUBLE, except when it is a
-					                   cross compiler.  In this case a mingw gcc as host compiler
-					                   comes here with 10-byte long doubles, while msvc or tcc won't.
-					                   tcc itself can still translate by asm.
-					                   In any case we avoid possibly random bytes 11 and 12.
-					                */
-// 7764 "tccgen.c"
-					if (sizeof (long double) >= 10)
-						memcpy(ptr, &vtop->c.ld, 10);
-#ifdef __TINYC__
-
-					else if (sizeof (long double) == sizeof (double))
-						__asm__("fldl %1\nfstpt %0\n" : "=m" (*ptr) : "m" (vtop->c.ld));
-#endif
-
-					else
-#endif
-						/* For other platforms it should work natively, but may not work
-						                   for cross compilers */
-
-						if (sizeof(long double) == LDOUBLE_SIZE)
-							memcpy(ptr, &vtop->c.ld, LDOUBLE_SIZE);
-						else if (sizeof(double) == LDOUBLE_SIZE)
-							*(double*)ptr = (double)vtop->c.ld;
-						else if (0 == memcmp(ptr, &vtop->c.ld, LDOUBLE_SIZE))
-							;/* nothing to do for 0.0 */
-
-#ifndef TCC_CROSS_TEST
-
-						else
-							tcc_error("can't cross compile long double constants");
-#endif
-
+					write_ldouble(ptr, &vtop->c.ld);
 					break;
-#if PTR_SIZE == 8
 				/* intptr_t may need a reloc too, see tcctest.c:relocation_test() */
 
 				case VT_LLONG:
@@ -26737,19 +17798,6 @@ static void init_putv(init_params *p, CType *type, unsigned long c)
 				case VT_INT:
 					write32le(ptr, val);
 					break;
-#else
-
-				case VT_LLONG:
-					write64le(ptr, val);
-					break;
-				case VT_PTR:
-				case VT_INT:
-					if (vtop->r & VT_SYM)
-						greloc(sec, vtop->sym, c, R_DATA_PTR);
-					write32le(ptr, val);
-					break;
-#endif
-// 7809 "tccgen.c"
 				default:
 //tcc_internal_error("unexpected type");
 
@@ -26786,7 +17834,7 @@ static void decl_initializer(init_params *p, CType *type, unsigned long c,
 	if (!(flags & DIF_HAVE_ELEM) && tok != '{' &&
 	    /* In case of strings we have special handling for arrays, so
 	    	   don't consume them as initializer value (which would commit them
-	    \	   to some anonymous symbol).  */
+	    	   to some anonymous symbol).  */
 
 	    tok != TOK_LSTR && tok != TOK_STR &&
 	    (!(flags & DIF_SIZE_ONLY)
@@ -26887,6 +17935,9 @@ static void decl_initializer(init_params *p, CType *type, unsigned long c,
 					}
 				}
 			}
+			if (tok == ',' && !no_oblock)/* static const char s[] = { "123", }; */
+
+				next();
 		} else {
 
 do_init_array:
@@ -26906,7 +17957,7 @@ do_init_list:
 			               it's size is zero.  We won't enter the loop, so set the size
 			               now.  */
 
-			decl_design_flex(p, s, len);
+			decl_design_flex(p, s, len - 1);
 			while (tok != '}' || (flags & DIF_HAVE_ELEM)) {
 				len = decl_designator(p, type, c, &f, flags, len);
 				flags &= ~DIF_HAVE_ELEM;
@@ -26962,7 +18013,8 @@ do_init_list:
 		decl_initializer(p, type, c, flags & ~DIF_HAVE_ELEM);
 		skip('}');
 
-} else one_elem:
+	} else
+one_elem:
 		if ((flags & DIF_SIZE_ONLY)) {
 			/* If we supported only ISO C we wouldn't have to accept calling
 				   this on anything than an array if DIF_SIZE_ONLY (and even then
@@ -27006,23 +18058,32 @@ do_init_list:
    are parsed. If 'v' is zero, then a reference to the new object
    is put in the value stack. If 'has_init' is 2, a special parsing
    is done to handle string constants. */
-// 8052 "tccgen.c"
 static void decl_initializer_alloc(CType *type, AttributeDef *ad, int r,
-				   int has_init, int v, int global)
+				   int has_init, int v, int scope)
 {
 	int size, align, addr;
 	TokenString *init_str = NULL;
 
 	Section *sec;
 	Sym *flexible_array;
-	Sym *sym;
+	Sym *sym = NULL;
 	int saved_nocode_wanted = nocode_wanted;
-#ifdef CONFIG_TCC_BCHECK
-
-	int bcheck = tcc_state->do_bounds_check && !NODATA_WANTED;
-#endif
 
 	init_params p = {0};
+
+	if (scope == VT_CONST) {
+		/* see if a global symbol was already defined */
+
+		sym = sym_find(v);
+		if (sym) {
+			patch_storage(sym, ad, type);
+			/* we accept several definitions of the same global variable. */
+
+			if (!has_init && sym->c && elfsym(sym)->st_shndx != SHN_UNDEF)
+				return;
+			type = &sym->type;
+		}
+	}
 	/* Always allocate static or global variables */
 
 	if (v && (r & VT_VALMASK) == VT_CONST)
@@ -27030,7 +18091,7 @@ static void decl_initializer_alloc(CType *type, AttributeDef *ad, int r,
 
 	flexible_array = NULL;
 	size = type_size(type, &align);
-	/* exactly o\ne flexible array may be initialized, either the
+	/* exactly one flexible array may be initialized, either the
 	       toplevel array or the last member of the toplevel struct */
 
 	if (size < 0) {
@@ -27039,12 +18100,14 @@ static void decl_initializer_alloc(CType *type, AttributeDef *ad, int r,
 
 		if (!(type->t & VT_ARRAY))
 			tcc_error("initialization of incomplete type");
-		/* If the base type itself was an array type of unspecified size
-		           (like in 'typedef int arr[]; arr x = {1};') then we will
-		           overwrite the unknown size by the real one for this decl.
-		           We need to unshare the ref symbol holding that size. */
+		/* If the base type itself was an array type of unspecified
+		           size (like in 'typedef int arr[]; arr x = {1};') then
+		           we will overwrite the unknown size by the real one for
+		           this decl.  We need to unshare the ref symbol holding
+		           that size.  */
 
-		type->ref = sym_push(SYM_FIELD, &type->ref->type, 0, type->ref->c);
+		if (IS_BT_ARRAY(type->t))
+			type->ref = sym_push(SYM_FIELD, &type->ref->type, 0, type->ref->c);
 		p.flex_array_ref = type->ref;
 
 	} else if (has_init && (type->t & VT_BTYPE) == VT_STRUCT) {
@@ -27064,7 +18127,7 @@ static void decl_initializer_alloc(CType *type, AttributeDef *ad, int r,
 		/* If unknown size, do a dry-run 1st pass */
 
 		if (!has_init)
-			tcc_error("unknown type size");
+			goto err_size;
 		if (has_init == 2) {
 			/* only get strings */
 
@@ -27090,6 +18153,7 @@ static void decl_initializer_alloc(CType *type, AttributeDef *ad, int r,
 
 		size = type_size(type, &align);
 		if (size < 0)
+err_size:
 			tcc_error("unknown type size");
 		/* If there's a flex member and it was used in the initializer
 		           adjust size.  */
@@ -27113,43 +18177,25 @@ static void decl_initializer_alloc(CType *type, AttributeDef *ad, int r,
 
 	if ((r & VT_VALMASK) == VT_LOCAL) {
 		sec = NULL;
-#ifdef CONFIG_TCC_BCHECK
-
-		if (bcheck && v) {
-			/* add padding between stack variables for bound checking */
-
-			loc -= align;
-		}
-#endif
 
 		loc = (loc - size) & -align;
 		addr = loc;
 		p.local_offset = addr + size;
-#ifdef CONFIG_TCC_BCHECK
-
-		if (bcheck && v) {
-			/* add padding between stack variables for bound checking */
-
-			loc -= align;
-		}
-#endif
 
 		if (v) {
 			/* local variable */
-#ifdef CONFIG_TCC_ASM
 
 			if (ad->asm_label) {
 				int reg = asm_parse_regvar(ad->asm_label);
 				if (reg >= 0)
 					r = (r & ~VT_VALMASK) | reg;
 			}
-#endif
 
 			sym = sym_push(v, type, r, addr);
 			if (ad->cleanup_func) {
 				Sym *cls = sym_push2(&all_cleanups,
 						     SYM_FIELD | ++cur_scope->cl.n, 0, 0);
-				cls->prev_tok = sym;
+				cls->cleanup_sym = sym;
 				cls->cleanup_func = ad->cleanup_func;
 				cls->next = cur_scope->cl.s;
 				cur_scope->cl.s = cls;
@@ -27162,36 +18208,21 @@ static void decl_initializer_alloc(CType *type, AttributeDef *ad, int r,
 			vset(type, r, addr);
 		}
 	} else {
-		sym = NULL;
-		if (v && global) {
-			/* see if the symbol was already defined */
+		CType *tp = type;
+		int is_const;
 
-			sym = sym_find(v);
-			if (sym) {
-				if (p.flex_array_ref && (sym->type.t & type->t & VT_ARRAY)
-				    && sym->type.ref->c > type->ref->c) {
-					/* flex array was already declared with explicit size
-					                            extern int arr[10];
-					                            int arr[] = { 1,2,3 }; */
-
-					type->ref->c = sym->type.ref->c;
-					size = type_size(type, &align);
-				}
-				patch_storage(sym, ad, type);
-				/* we accept several definitions of the same global variable. */
-
-				if (!has_init && sym->c && elfsym(sym)->st_shndx != SHN_UNDEF)
-					goto no_alloc;
-			}
-		}
+		while ((tp->t & (VT_BTYPE|VT_ARRAY)) == (VT_PTR|VT_ARRAY))
+			tp = &tp->ref->type;
+		is_const = tp->t & VT_CONSTANT;
 		/* allocate symbol in corresponding section */
 
 		sec = ad->section;
 		if (!sec) {
-			CType *tp = type;
-			while ((tp->t & (VT_BTYPE|VT_ARRAY)) == (VT_PTR|VT_ARRAY))
-				tp = &tp->ref->type;
-			if (tp->t & VT_CONSTANT) {
+			if (type->t & VT_TLS) {
+				sec = find_section(tcc_state, has_init ? ".tdata" : ".tbss");
+				sec->sh_flags = SHF_ALLOC | SHF_WRITE | SHF_TLS;
+				sec->sh_type = has_init ? SHT_PROGBITS : SHT_NOBITS;
+			} else if (is_const) {
 				sec = rodata_section;
 			} else if (has_init) {
 				sec = data_section;
@@ -27200,18 +18231,18 @@ static void decl_initializer_alloc(CType *type, AttributeDef *ad, int r,
 
 			} else if (tcc_state->nocommon)
 				sec = bss_section;
+		} else if (ad->new_section) {
+			/* XXX: DWIM logic: set section flags according to first usage */
+
+			if (!is_const) {
+				sec->sh_flags |= SHF_WRITE;
+				if (!has_init)
+					sec->sh_type = SHT_NOBITS;
+			}
 		}
 
 		if (sec) {
 			addr = section_add(sec, size, align);
-#ifdef CONFIG_TCC_BCHECK
-
-			/* add padding if bound check */
-
-			if (bcheck)
-				section_add(sec, 1, 1);
-#endif
-
 		} else {
 			addr = align;/* SHN_COMMON is special, symbol value is align */
 
@@ -27233,28 +18264,13 @@ static void decl_initializer_alloc(CType *type, AttributeDef *ad, int r,
 			sym = vtop->sym;
 			vtop->r |= r;
 		}
-#ifdef CONFIG_TCC_BCHECK
-
-		/* handles bounds now because the symbol must be defined
-		   before for the relocation */
-
-		if (bcheck) {
-			addr_t *bounds_ptr;
-
-			greloca(bounds_section, sym, bounds_section->data_offset, R_DATA_PTR, 0);
-			/* then add global bound info */
-
-			bounds_ptr = section_ptr_add(bounds_section, 2 * sizeof(addr_t));
-			bounds_ptr[0] = 0; /* relocated */
-
-			bounds_ptr[1] = size;
-		}
-#endif
-// 8268 "tccgen.c"
 	}
 
 	if (type->t & VT_VLA) {
 		int a;
+
+		if (has_init)
+			tcc_error("variable length array cannot be initialized");
 
 		if (NODATA_WANTED)
 			goto no_alloc;
@@ -27272,7 +18288,7 @@ static void decl_initializer_alloc(CType *type, AttributeDef *ad, int r,
 		vpush_type_size(type, &a);
 		gen_vla_alloc(type, a);
 		/* on _WIN64, because of the function args scratch area, the
-		           result of alloca differs from RSP and is returned in RAX.  */
+		   result of alloca differs from RSP and is returned in RAX.  */
 
 		gen_vla_result(addr), addr = (loc -= PTR_SIZE);
 
@@ -27339,12 +18355,40 @@ static void func_vla_arg(Sym *sym)
 		if ((arg->type.t & VT_BTYPE) == VT_PTR && (arg->type.ref->type.t & VT_VLA))
 			func_vla_arg_code(arg->type.ref);
 }
+/* set the local stack address for function parameter from gfunc_prolog() */
+
+ST_FUNC Sym *gfunc_set_param(Sym *s, int c, int byref)
+{
+	s = sym_find(s->v);
+	if (!s)/* unnamed parameters, not enabled */
+
+		return NULL;
+	s->c = c;
+	if (byref)
+		s->r = VT_LLOCAL | VT_LVAL;/* otherwise VT_LOCAL */
+
+	return s;
+}
+/* push parameters (and their types), last first */
+
+static void sym_push_params(Sym *ref)
+{
+	Sym *s = ref;
+	while (s->next)
+		s = s->next;
+	while (s != ref) {
+		if ((s->v & ~SYM_STRUCT) < SYM_FIRST_ANOM)
+			sym_copy(s, &local_stack);
+		s = s->prev;
+	}
+}
 /* parse a function defined by symbol 'sym' and generate its code in
    'cur_text_section' */
 
 static void gen_function(Sym *sym)
 {
 	struct scope f = { 0 };
+
 	cur_scope = root_scope = &f;
 	nocode_wanted = 0;
 
@@ -27359,6 +18403,7 @@ static void gen_function(Sym *sym)
 	func_ind = ind;
 	func_vt = sym->type.ref->type;
 	func_var = sym->type.ref->f.func_type == FUNC_ELLIPSIS;
+	func_old = sym->type.ref->f.func_type == FUNC_OLD;
 	/* NOTE: we patch the symbol size later */
 
 	put_extern_sym(sym, cur_text_section, ind, 0);
@@ -27373,22 +18418,22 @@ static void gen_function(Sym *sym)
 	/* push a dummy symbol to enable local sym storage */
 
 	sym_push2(&local_stack, SYM_FIELD, 0, 0);
-	local_scope = 1;/* for function parameters */
+	/* push parameters */
 
-	nb_temp_local_vars = 0;
-	gfunc_prolog(sym);
-	tcc_debug_prolog_epilog(tcc_state, 0);
+	local_scope = 1;
+	sym_push_params(sym->type.ref);
 
 	local_scope = 0;
 	rsym = 0;
+	nb_temp_local_vars = 0;
+
+	gfunc_prolog(sym);
+	tcc_debug_prolog_epilog(tcc_state, 0);
 	func_vla_arg(sym);
 	block(0);
 	gsym(rsym);
-
 	nocode_wanted = 0;
-	/* reset local stack */
-
-	pop_local_syms(NULL, 0);
+	tcc_debug_end_scope(NULL, !func_var);
 	tcc_debug_prolog_epilog(tcc_state, 1);
 	gfunc_epilog();
 	/* end of function */
@@ -27397,12 +18442,13 @@ static void gen_function(Sym *sym)
 	/* patch symbol size */
 
 	elfsym(sym)->st_size = ind - func_ind;
-
 	cur_text_section->data_offset = ind;
-	local_scope = 0;
+
+	sym_pop(&local_stack, NULL, 0);
 	label_pop(&global_label_stack, NULL, 0);
 	sym_pop(&all_cleanups, NULL, 0);
-	/* It's better to crash than to generate wrong code */
+	local_scope = 0;
+	/* It's bette\r to crash than to generate wrong code */
 
 	cur_text_section = NULL;
 	funcname = "";/* for safety */
@@ -27485,15 +18531,33 @@ static void do_Static_assert(void)
 		tcc_error("%s", msg);
 	skip(';');
 }
+
+static void pe_check_linkage(CType *type, AttributeDef *ad)
+{
+	if (!ad->a.dllimport && !ad->a.dllexport)
+		return;
+	if (type->t & VT_STATIC)
+		tcc_error("cannot have dll linkage with static");
+	if (type->t & VT_TYPEDEF) {
+		const char *m = ad->a.dllimport ? "im" : "ex";
+		tcc_warning("'dll%sport' attribute ignored for typedef", m);
+		ad->a.dllimport = 0;
+		ad->a.dllexport = 0;
+	} else if (ad->a.dllimport) {
+		if ((type->t & VT_BTYPE) == VT_FUNC)
+			ad->a.dllimport = 0;
+		else
+			type->t |= VT_EXTERN;
+	}
+}
 /* 'l' is VT_LOCAL or VT_CONST to define default storage type
    or VT_CMP if parsing old style parameter list
    or VT_JMP if parsing c99 for decl: for (int i = 0, ...) */
-
 static int decl(int l)
 {
 	int v, has_init, r, oldint;
 	CType type, btype;
-	Sym *sym;
+	Sym *sym, *sa;
 	AttributeDef ad, adbase;
 	ElfSym *esym;
 
@@ -27535,24 +18599,27 @@ static int decl(int l)
 		}
 
 		if (tok == ';') {
-			if ((btype.t & VT_BTYPE) == VT_STRUCT) {
-				v = btype.ref->v;
-				if (!(v & SYM_FIELD) && (v & ~SYM_STRUCT) >= SYM_FIRST_ANOM)
-					tcc_warning("unnamed struct/union that defines no instances");
-				next();
-				continue;
-			}
-			if (IS_ENUM(btype.t)) {
-				next();
-				continue;
-			}
+			if ((btype.t & VT_BTYPE) == VT_STRUCT
+			    && (btype.ref->v & ~SYM_STRUCT) < SYM_FIRST_ANOM)
+				;/* struct decl with named tag */
+
+			else if (IS_ENUM(btype.t))
+				;/* enum decl */
+
+			else
+				tcc_warning("useless type defines no instances");
+			if (l == VT_JMP)
+				return 1;
+			next();
+			continue;
 		}
 
 		while (1) {/* iterate thru each declaration */
 
 			type = btype;
 			ad = adbase;
-			type_decl(&type, &ad, &v, TYPE_DIRECT);
+			type_decl(&type, &ad, &v, l == VT_CMP ? TYPE_DIRECT | TYPE_PARAM : TYPE_DIRECT);
+			/*ptype("decl", &type, v);*/
 
 			if ((type.t & VT_BTYPE) == VT_FUNC) {
 				if ((type.t & VT_STATIC) && (l != VT_CONST))
@@ -27563,9 +18630,10 @@ static int decl(int l)
 				sym = type.ref;
 				if (sym->f.func_type == FUNC_OLD && l == VT_CONST) {
 					func_vt = type;
+					++local_scope;
 					decl(VT_CMP);
+					--local_scope;
 				}
-
 				if ((type.t & (VT_EXTERN|VT_INLINE)) == (VT_EXTERN|VT_INLINE)) {
 					/* always_inline functions must be handled as if they
 					                       don't generate multiple global defs, even if extern
@@ -27591,36 +18659,13 @@ static int decl(int l)
 
 			}
 
-			if (ad.a.dllimport || ad.a.dllexport) {
-				if (type.t & VT_STATIC)
-					tcc_error("cannot have dll linkage with static");
-				if (type.t & VT_TYPEDEF) {
-					tcc_warning("'%s' attribute ignored for typedef",
-						    ad.a.dllimport ? (ad.a.dllimport = 0, "dllimport") :
-						    (ad.a.dllexport = 0, "dllexport"));
-				} else if (ad.a.dllimport) {
-					if ((type.t & VT_BTYPE) == VT_FUNC)
-						ad.a.dllimport = 0;
-					else
-						type.t |= VT_EXTERN;
-				}
-			}
+			pe_check_linkage(&type, &ad);
 
 			if (tok == '{') {
 				if (l != VT_CONST)
 					tcc_error("cannot use local functions");
 				if ((type.t & VT_BTYPE) != VT_FUNC)
 					expect("function definition");
-				/* reject abstract declarators in function definition
-				                   make old style params without decl have int type */
-
-				sym = type.ref;
-				while ((sym = sym->next) != NULL) {
-					if (!(sym->v & ~SYM_FIELD))
-						expect("identifier");
-					if (sym->type.t == VT_VOID)
-						sym->type = int_type;
-				}
 				/* apply post-declaraton attributes */
 
 				merge_funcattr(&type.ref->f, &ad.f);
@@ -27628,6 +18673,17 @@ static int decl(int l)
 
 				type.t &= ~VT_EXTERN;
 				sym = external_sym(v, &type, 0, &ad);
+				/* reject abstract declarators in function definition
+				                   make old-style float params double */
+
+				for (sa = sym->type.ref; (sa = sa->next) != NULL;) {
+					if (!(sa->v & ~SYM_FIELD))
+						expect("identifier");
+					if (sa->type.t == VT_FLOAT
+					    && sym->type.ref->f.func_type == FUNC_OLD) {
+						sa->type.t = VT_DOUBLE;
+					}
+				}
 				/* static inline functions are just recorded as a kind
 				                   of macro. Their code will be emitted at the end of
 				                   the compilation unit only if they are used */
@@ -27643,15 +18699,17 @@ static int decl(int l)
 				} else {
 					/* compute text section */
 
-					cur_text_section = ad.section;
-					if (!cur_text_section)
-						cur_text_section = text_section;
-					else if (cur_text_section->sh_num > bss_section->sh_num)
-						cur_text_section->sh_flags = text_section->sh_flags;
+					cur_text_section = text_section;
+					if (ad.section) {
+						cur_text_section = ad.section;
+						if (ad.new_section)
+							ad.section->sh_flags = text_section->sh_flags;
+					}
 					gen_function(sym);
 				}
 				break;
 			} else {
+				has_init = 0;
 				if (l == VT_CMP) {
 					/* find parameter in function parameter list */
 
@@ -27665,7 +18723,7 @@ found:
 
 						tcc_error("storage class specified for '%s'",
 							  get_tok_str(v, NULL));
-					if (sym->type.t != VT_VOID)
+					if (!(sym->type.t & VT_EXTERN))
 						tcc_error("redefinition of parameter '%s'",
 							  get_tok_str(v, NULL));
 					convert_parameter_type(&type);
@@ -27704,9 +18762,9 @@ found:
 
 						r |= VT_LVAL;
 					}
-					has_init = (tok == '=');
-					if (has_init && (type.t & VT_VLA))
-						tcc_error("variable length array cannot be initialized");
+
+					if (tok == '=')
+						has_init = 1;
 
 					if (((type.t & VT_EXTERN) && (!has_init || l != VT_CONST))
 					    || (type.t & VT_BTYPE) == VT_FUNC
@@ -27725,13 +18783,14 @@ found:
 							r |= VT_CONST;
 						else
 							r |= VT_LOCAL;
+						type.t &= ~VT_EXTERN;
 						if (has_init)
 							next();
 						else if (l == VT_CONST)
 							/* uninitialized global variables may be overridden */
 
 							type.t |= VT_EXTERN;
-						decl_initializer_alloc(&type, &ad, r, has_init, v, l == VT_CONST);
+						decl_initializer_alloc(&type, &ad, r, has_init, v, l);
 					}
 
 					if (ad.alias_target && l == VT_CONST) {
@@ -27750,7 +18809,7 @@ found:
 				}
 				if (tok != ',') {
 					if (l == VT_JMP)
-						return 1;
+						return has_init ? v : 1;
 					skip(';');
 					break;
 				}
@@ -27765,29 +18824,13 @@ found:
 #undef gjmp_addr
 #undef gjmp
 /* ------------------------------------------------------------------------- */
-// 28 "libtcc.c" 2
-// 1 "tccdbg.c" 1
-// 21 "tccdbg.c"
-// 1 "tcc.h" 1
-#ifndef _TCC_H
+/* ==================== tccdbg.c ==================== */
+
 /* _TCC_H */
-#endif /* _TCC_H */
-// 1990 "tcc.h"
 #undef TCC_STATE_VAR
 #undef TCC_SET_STATE
-#ifdef USING_GLOBALS
-
-#define TCC_STATE_VAR(sym) tcc_state->sym
-#define TCC_SET_STATE(fn) fn
-#undef USING_GLOBALS
-#undef _tcc_error
-#else
 
 #define TCC_STATE_VAR(sym) s1->sym
-#define TCC_SET_STATE(fn) (tcc_enter_state(s1),fn)
-#define _tcc_error use_tcc_error_noabort
-#endif
-// 22 "tccdbg.c" 2
 /* stab debug support */
 
 static const struct {
@@ -27798,24 +18841,10 @@ static const struct {
 } default_debug[] = {
 	{ VT_INT, 4, DW_ATE_signed, "int:t1=r1;-2147483648;2147483647;" },
 	{ VT_BYTE, 1, DW_ATE_signed_char, "char:t2=r2;0;127;" },
-#if LONG_SIZE == 4
-
 	{ VT_LONG | VT_INT, 4, DW_ATE_signed, "long int:t3=r3;-2147483648;2147483647;" },
-#else
-
-	{ VT_LLONG | VT_LONG, 8, DW_ATE_signed, "long int:t3=r3;-9223372036854775808;9223372036854775807;" },
-#endif
 
 	{ VT_INT | VT_UNSIGNED, 4, DW_ATE_unsigned, "unsigned int:t4=r4;0;037777777777;" },
-#if LONG_SIZE == 4
-
 	{ VT_LONG | VT_INT | VT_UNSIGNED, 4, DW_ATE_unsigned, "long unsigned int:t5=r5;0;037777777777;" },
-#else
-
-	/* use octal instead of -1 so size_t works (-gstabs+ in gcc) */
-
-	{ VT_LLONG | VT_LONG | VT_UNSIGNED, 8, DW_ATE_unsigned, "long unsigned int:t5=r5;0;01777777777777777777777;" },
-#endif
 
 	{ VT_QLONG, 16, DW_ATE_signed, "__int128:t6=r6;0;-1;" },
 	{ VT_QLONG | VT_UNSIGNED, 16, DW_ATE_unsigned, "__int128 unsigned:t7=r7;0;-1;" },
@@ -27827,13 +18856,8 @@ static const struct {
 	{ VT_BYTE | VT_DEFSIGN | VT_UNSIGNED, 1, DW_ATE_unsigned_char, "unsigned char:t13=r13;0;255;" },
 	{ VT_FLOAT, 4, DW_ATE_float, "float:t14=r1;4;0;" },
 	{ VT_DOUBLE, 8, DW_ATE_float, "double:t15=r1;8;0;" },
-#ifdef TCC_USING_DOUBLE_FOR_LDOUBLE
 
 	{ VT_DOUBLE | VT_LONG, 8, DW_ATE_float, "long double:t16=r1;8;0;" },
-#else
-
-	{ VT_LDOUBLE, 16, DW_ATE_float, "long double:t16=r1;16;0;" },
-#endif
 
 	{ -1, -1, -1, "_Float32:t17=r1;4;0;" },
 	{ -1, -1, -1, "_Float64:t18=r1;8;0;" },
@@ -27849,17 +18873,7 @@ static const struct {
 	/* boolean type */
 
 	{ VT_BOOL, 1, DW_ATE_boolean, "bool:t26=r26;0;255;" },
-#if LONG_SIZE == 4
-
 	{ VT_VOID, 1, DW_ATE_unsigned_char, "void:t27=27" },
-#else
-
-	/* bitfields use these */
-
-	{ VT_LONG | VT_INT, 8, DW_ATE_signed, "long int:t27=r27;-9223372036854775808;9223372036854775807;" },
-	{ VT_LONG | VT_INT | VT_UNSIGNED, 8, DW_ATE_unsigned, "long unsigned int:t28=r28;0;01777777777777777777777;" },
-	{ VT_VOID, 1, DW_ATE_unsigned_char, "void:t29=29" },
-#endif
 
 };
 
@@ -27909,12 +18923,8 @@ static const unsigned char dwarf_abbrev_init[] = {
 	DW_AT_name, DW_FORM_line_strp,
 	DW_AT_comp_dir, DW_FORM_line_strp,
 	DW_AT_low_pc, DW_FORM_addr,
-#if PTR_SIZE == 4
-	DW_AT_high_pc, DW_FORM_data4,
-#else
 
 	DW_AT_high_pc, DW_FORM_data8,
-#endif
 
 	DW_AT_stmt_list, DW_FORM_sec_offset,
 	0, 0,
@@ -28031,12 +19041,8 @@ static const unsigned char dwarf_abbrev_init[] = {
 	DW_AT_decl_line, DW_FORM_udata,
 	DW_AT_type, DW_FORM_ref4,
 	DW_AT_low_pc, DW_FORM_addr,
-#if PTR_SIZE == 4
-	DW_AT_high_pc, DW_FORM_data4,
-#else
 
 	DW_AT_high_pc, DW_FORM_data8,
-#endif
 
 	DW_AT_sibling, DW_FORM_ref4,
 	DW_AT_frame_base, DW_FORM_exprloc,
@@ -28047,34 +19053,22 @@ static const unsigned char dwarf_abbrev_init[] = {
 	DW_AT_decl_line, DW_FORM_udata,
 	DW_AT_type, DW_FORM_ref4,
 	DW_AT_low_pc, DW_FORM_addr,
-#if PTR_SIZE == 4
-	DW_AT_high_pc, DW_FORM_data4,
-#else
 
 	DW_AT_high_pc, DW_FORM_data8,
-#endif
 
 	DW_AT_sibling, DW_FORM_ref4,
 	DW_AT_frame_base, DW_FORM_exprloc,
 	0, 0,
 	DWARF_ABBREV_LEXICAL_BLOCK, DW_TAG_lexical_block, 1,
 	DW_AT_low_pc, DW_FORM_addr,
-#if PTR_SIZE == 4
-	DW_AT_high_pc, DW_FORM_data4,
-#else
 
 	DW_AT_high_pc, DW_FORM_data8,
-#endif
 
 	0, 0,
 	DWARF_ABBREV_LEXICAL_EMPTY_BLOCK, DW_TAG_lexical_block, 0,
 	DW_AT_low_pc, DW_FORM_addr,
-#if PTR_SIZE == 4
-	DW_AT_high_pc, DW_FORM_data4,
-#else
 
 	DW_AT_high_pc, DW_FORM_data8,
-#endif
 
 	0, 0,
 	DWARF_ABBREV_SUBROUTINE_TYPE, DW_TAG_subroutine_type, 1,
@@ -28096,6 +19090,14 @@ static const unsigned char dwarf_line_opcodes[] = {
 /* ------------------------------------------------------------------------- */
 /* debug state */
 
+#define N_STR_HASH (251)
+
+struct dwarf_str_hash {
+	int len;
+	unsigned long data_offset;
+	struct dwarf_str_hash *next;
+};
+
 struct _tccdbg {
 
 	int last_line_num, new_file;
@@ -28106,20 +19108,25 @@ struct _tccdbg {
 	struct _debug_hash {
 		int debug_type;
 		Sym *type;
-	} *debug_hash;
+	} *debug_hash_global, *debug_hash_local;
+	/* store forward structure/unions types */
 
-	struct _debug_anon_hash {
+	struct _debug_forw_hash {
 		Sym *type;
 		int n_debug_type;
 		int *debug_type;
-	} *debug_anon_hash;
+	} *debug_forw_hash_global, *debug_forw_hash_local;
 
-	int n_debug_hash;
-	int n_debug_anon_hash;
+	int n_debug_hash_global;
+	int n_debug_hash_local;
+	int n_debug_forw_hash_global;
+	int n_debug_forw_hash_local;
 
 	struct _debug_info {
 		int start;
 		int end;
+		int last_debug_hash;
+		int last_debug_forw_hash;
 		int n_sym;
 		struct debug_sym {
 			int type;
@@ -28166,6 +19173,9 @@ struct _tccdbg {
 		int line;
 		int base_type_used[N_DEFAULT_DEBUG];
 	} dwarf_info;
+
+	struct dwarf_str_hash *dwarf_str[N_STR_HASH];
+	struct dwarf_str_hash *dwarf_line_str[N_STR_HASH];
 	/* test coverage */
 
 	struct {
@@ -28175,46 +19185,54 @@ struct _tccdbg {
 		int ind;
 		int line;
 	} tcov_data;
-
 };
 
 #define last_line_num s1->dState->last_line_num
 #define new_file s1->dState->new_file
 #define section_sym s1->dState->section_sym
 #define debug_next_type s1->dState->debug_next_type
-#define debug_hash s1->dState->debug_hash
-#define debug_anon_hash s1->dState->debug_anon_hash
-#define n_debug_hash s1->dState->n_debug_hash
-#define n_debug_anon_hash s1->dState->n_debug_anon_hash
+#define debug_hash_global s1->dState->debug_hash_global
+#define debug_hash_local s1->dState->debug_hash_local
+#define debug_forw_hash_global s1->dState->debug_forw_hash_global
+#define debug_forw_hash_local s1->dState->debug_forw_hash_local
+#define n_debug_hash_global s1->dState->n_debug_hash_global
+#define n_debug_hash_local s1->dState->n_debug_hash_local
+#define n_debug_forw_hash_global s1->dState->n_debug_forw_hash_global
+#define n_debug_forw_hash_local s1->dState->n_debug_forw_hash_local
 #define debug_info s1->dState->debug_info
 #define debug_info_root s1->dState->debug_info_root
 #define dwarf_sym s1->dState->dwarf_sym
 #define dwarf_line s1->dState->dwarf_line
 #define dwarf_info s1->dState->dwarf_info
+#define dwarf_str s1->dState->dwarf_str
+#define dwarf_line_str s1->dState->dwarf_line_str
 #define tcov_data s1->dState->tcov_data
-
-#define FDE_ENCODING (DW_EH_PE_udata4 | DW_EH_PE_signed | DW_EH_PE_pcrel)
 /* ------------------------------------------------------------------------- */
 
-static void put_stabs(TCCState *s1, const char *str, int type, int other,
-		      int desc, unsigned long value);
+static int put_stabs(TCCState *s1, const char *str, int type, int other,
+		     int desc, unsigned long value);
 
 ST_FUNC void tcc_debug_new(TCCState *s1)
 {
 	int shf = 0;
 	if (!s1->dState)
 		s1->dState = tcc_mallocz(sizeof *s1->dState);
-#ifdef CONFIG_TCC_BACKTRACE
-	/* include stab info with standalone backtrace support */
-
-	if (s1->do_debug && s1->output_type == TCC_OUTPUT_MEMORY)
-		s1->do_backtrace = 1;
-	if (s1->do_backtrace)
-		shf = SHF_ALLOC;/* have debug data available at runtime */
-
-#endif
 
 	if (s1->dwarf) {
+		int i;
+		/* The sections below are just to make reloctions with
+			   R_DATA_32DW work correctly. See tccelf.c */
+
+		static const char *const debug[] = {
+			".debug_macro",
+			".debug_loc",
+			".debug_ranges",
+			".debug_loclists",
+			".debug_rnglists",
+			".debug_str_offsets",
+			".debug_addr"
+		};
+
 		s1->dwlo = s1->nb_sections;
 		dwarf_info_section =
 			new_section(s1, ".debug_info", SHT_PROGBITS, shf);
@@ -28224,6 +19242,8 @@ ST_FUNC void tcc_debug_new(TCCState *s1)
 			new_section(s1, ".debug_line", SHT_PROGBITS, shf);
 		dwarf_aranges_section =
 			new_section(s1, ".debug_aranges", SHT_PROGBITS, shf);
+		for (i = 0; i < sizeof(debug)/sizeof(debug[0]); i++)
+			new_section(s1, debug[i], SHT_PROGBITS, 0)->sh_addralign = 1;
 		shf |= SHF_MERGE | SHF_STRINGS;
 		dwarf_str_section =
 			new_section(s1, ".debug_str", SHT_PROGBITS, shf);
@@ -28243,7 +19263,7 @@ ST_FUNC void tcc_debug_new(TCCState *s1)
 	} else {
 		stab_section = new_section(s1, ".stab", SHT_PROGBITS, shf);
 		stab_section->sh_entsize = sizeof(Stab_Sym);
-		stab_section->sh_addralign = sizeof ((Stab_Sym*)0)->n_value;
+		stab_section->sh_addralign = sizeof ((Stab_Sym *)0)->n_value;
 		stab_section->link = new_section(s1, ".stabstr", SHT_STRTAB, shf);
 		/* put first entry */
 
@@ -28252,22 +19272,22 @@ ST_FUNC void tcc_debug_new(TCCState *s1)
 }
 /* put stab debug information */
 
-static void put_stabs(TCCState *s1, const char *str, int type, int other,
-		      int desc,
-		      unsigned long value)
+static int put_stabs(TCCState *s1, const char *str, int type, int other,
+		     int desc,
+		     unsigned long value)
 {
 	Stab_Sym *sym;
 
 	unsigned offset;
 	if (type == N_SLINE
 	    && (offset = stab_section->data_offset)
-	    && (sym = (Stab_Sym*)(stab_section->data + offset) - 1)
+	    && (sym = (Stab_Sym *)(stab_section->data + offset) - 1)
 	    && sym->n_type == type
 	    && sym->n_value == value) {
 		/* just update line_number in previous entry */
 
 		sym->n_desc = desc;
-		return;
+		return 0;
 	}
 
 	sym = section_ptr_add(stab_section, sizeof(Stab_Sym));
@@ -28280,17 +19300,18 @@ static void put_stabs(TCCState *s1, const char *str, int type, int other,
 	sym->n_other = other;
 	sym->n_desc = desc;
 	sym->n_value = value;
+	return 1;
 }
 
 static void put_stabs_r(TCCState *s1, const char *str, int type, int other,
 			int desc,
 			unsigned long value, Section *sec, int sym_index)
 {
-	put_elf_reloc(symtab_section, stab_section,
-		      stab_section->data_offset + 8,
-		      sizeof ((Stab_Sym*)0)->n_value == PTR_SIZE ? R_DATA_PTR : R_DATA_32,
-		      sym_index);
-	put_stabs(s1, str, type, other, desc, value);
+	if (put_stabs(s1, str, type, other, desc, value))
+		put_elf_reloc(symtab_section, stab_section,
+			      stab_section->data_offset - 4,
+			      sizeof ((Stab_Sym *)0)->n_value == PTR_SIZE ? R_DATA_PTR : R_DATA_32,
+			      sym_index);
 }
 
 static void put_stabn(TCCState *s1, int type, int other, int desc, int value)
@@ -28321,19 +19342,74 @@ static void dwarf_reloc(Section *s, int sym, int rel)
 	put_elf_reloca(symtab_section, s, s->data_offset, rel, sym, 0);
 }
 
+static void free_str(struct dwarf_str_hash **str)
+{
+	int i;
+
+	for (i = 0; i < N_STR_HASH; i++) {
+		while (str[i]) {
+			struct dwarf_str_hash *next = str[i]->next;
+
+			tcc_free(str[i]);
+			str[i] = next;
+		}
+	}
+}
+
+static unsigned str_hash(const char *s)
+{
+	unsigned h = 5381;
+
+	while (*s)
+		h += (*s++ & 0xffu) + h * 31;
+	return h;
+}
+
 static void dwarf_string(Section *s, Section *dw, int sym, const char *str)
 {
 	TCCState *s1 = s->s1;
-	int offset, len;
+	int len, hash = str_hash(str) % N_STR_HASH;
 	char *ptr;
+	struct dwarf_str_hash *new_hash;
+	struct dwarf_str_hash **dw_hash =
+			dw == dwarf_str_section ? dwarf_str : dwarf_line_str;
 
 	len = strlen(str) + 1;
-	offset = dw->data_offset;
-	ptr = section_ptr_add(dw, len);
-	memmove(ptr, str, len);
+	new_hash = dw_hash[hash];
+	while (new_hash) {
+		if (new_hash->len == len &&
+		    !memcmp(str, dw->data + new_hash->data_offset, len))
+			break;
+		new_hash = new_hash->next;
+	}
+	if (new_hash == NULL) {
+		unsigned long offset = dw->data_offset;
+
+		new_hash = dw_hash[hash];
+		while (new_hash) {
+			unsigned long n = new_hash->data_offset + new_hash->len - len;
+
+			if (new_hash->len > len &&
+			    !memcmp(str, dw->data + n, len)) {
+				offset = n;
+				break;
+			}
+			new_hash = new_hash->next;
+		}
+		if (new_hash == NULL) {
+			ptr = section_ptr_add(dw, len);
+			memmove(ptr, str, len);
+		}
+		new_hash = (struct dwarf_str_hash *)
+			   tcc_malloc(sizeof(struct dwarf_str_hash));
+		new_hash->len = len;
+		new_hash->data_offset = offset;
+		new_hash->next = dw_hash[hash];
+		dw_hash[hash] = new_hash;
+	}
 	put_elf_reloca(symtab_section, s, s->data_offset, R_DATA_32DW, sym,
-		       PTR_SIZE == 4 ? 0 : offset);
-	dwarf_data4(s, PTR_SIZE == 4 ? offset : 0);
+		       PTR_SIZE == 4 ? 0 : new_hash->data_offset);
+	dwarf_data4(s, PTR_SIZE == 4 ? new_hash->data_offset : 0);
 }
 
 static void dwarf_strp(Section *s, const char *str)
@@ -28420,7 +19496,6 @@ static void dwarf_file(TCCState *s1)
 	dwarf_line.cur_file = dwarf_line.filename_size++ + index_offset;
 	return;
 }
-// 650 "tccdbg.c"
 static int dwarf_sleb128_size (long long value)
 {
 	int size = 0;
@@ -28485,205 +19560,8 @@ static void dwarf_sleb128_op (TCCState *s1, long long value)
 		dwarf_line_op(s1, byte | (0x80 * more));
 	} while (more);
 }
-#if TCC_EH_FRAME
-ST_FUNC void tcc_eh_frame_start(TCCState *s1)
-{
-	if (!s1->unwind_tables)
-		return;
-	eh_frame_section = new_section(s1, ".eh_frame", SHT_PROGBITS, SHF_ALLOC);
-
-	s1->eh_start = eh_frame_section->data_offset;
-	dwarf_data4(eh_frame_section, 0); // length
-
-	dwarf_data4(eh_frame_section, 0); // CIE ID
-
-	dwarf_data1(eh_frame_section, 1); // Version
-
-	dwarf_data1(eh_frame_section, 'z'); // Augmentation String
-
-	dwarf_data1(eh_frame_section, 'R');
-	dwarf_data1(eh_frame_section, 0);
-	dwarf_uleb128(eh_frame_section, 1); // code_alignment_factor
-
-	dwarf_sleb128(eh_frame_section, -8); // data_alignment_factor
-
-	dwarf_uleb128(eh_frame_section, 16); // return address column
-
-	dwarf_uleb128(eh_frame_section, 1); // Augmentation len
-
-	dwarf_data1(eh_frame_section, FDE_ENCODING);
-	dwarf_data1(eh_frame_section, DW_CFA_def_cfa);
-	dwarf_uleb128(eh_frame_section, 7); // r7 (rsp)
-
-	dwarf_uleb128(eh_frame_section, 8); // ofs 8
-
-	dwarf_data1(eh_frame_section, DW_CFA_offset + 16); // r16 (rip)
-
-	dwarf_uleb128(eh_frame_section, 1); // cfa-8
-
-	while ((eh_frame_section->data_offset - s1->eh_start) & 3)
-		dwarf_data1(eh_frame_section, DW_CFA_nop);
-	write32le(eh_frame_section->data + s1->eh_start, // length
-
-		  eh_frame_section->data_offset - s1->eh_start - 4);
-}
-
-static void tcc_debug_frame_end(TCCState *s1, int size)
-{
-	int eh_section_sym;
-	unsigned long fde_start;
-
-	if (!eh_frame_section)
-		return;
-	eh_section_sym = dwarf_get_section_sym(text_section);
-	fde_start = eh_frame_section->data_offset;
-	dwarf_data4(eh_frame_section, 0); // length
-
-	dwarf_data4(eh_frame_section,
-		    fde_start - s1->eh_start + 4); // CIE Pointer
-
-	dwarf_reloc(eh_frame_section, eh_section_sym, R_X86_64_PC32);
-	dwarf_data4(eh_frame_section, func_ind); // PC Begin
-
-	dwarf_data4(eh_frame_section, size); // PC Range
-
-	dwarf_data1(eh_frame_section, 0); // Augmentation Length
-
-	dwarf_data1(eh_frame_section, DW_CFA_advance_loc + 1);
-	dwarf_data1(eh_frame_section, DW_CFA_def_cfa_offset);
-	dwarf_uleb128(eh_frame_section, 16);
-	dwarf_data1(eh_frame_section, DW_CFA_offset + 6); // r6 (rbp)
-
-	dwarf_uleb128(eh_frame_section, 2); // cfa-16
-
-	dwarf_data1(eh_frame_section, DW_CFA_advance_loc + 3);
-	dwarf_data1(eh_frame_section, DW_CFA_def_cfa_register);
-	dwarf_uleb128(eh_frame_section, 6); // r6 (rbp)
-
-	dwarf_data1(eh_frame_section, DW_CFA_advance_loc4);
-	dwarf_data4(eh_frame_section, size - 5);
-	dwarf_data1(eh_frame_section, DW_CFA_def_cfa);
-	dwarf_uleb128(eh_frame_section, 7); // r7 (rsp)
-
-	dwarf_uleb128(eh_frame_section, 8); // ofs 8
-
-	while ((eh_frame_section->data_offset - fde_start) & 3)
-		dwarf_data1(eh_frame_section, DW_CFA_nop);
-	write32le(eh_frame_section->data + fde_start, // length
-
-		  eh_frame_section->data_offset - fde_start - 4);
-}
-
-ST_FUNC void tcc_eh_frame_end(TCCState *s1)
-{
-	if (!eh_frame_section)
-		return;
-	dwarf_data4(eh_frame_section, 0);
-}
-
-struct eh_search_table {
-	uint32_t pc_offset;
-	uint32_t fde_offset;
-};
-
-static int sort_eh_table(const void *a, const void *b)
-{
-	uint32_t pc1 = ((const struct eh_search_table *)a)->pc_offset;
-	uint32_t pc2 = ((const struct eh_search_table *)b)->pc_offset;
-
-	return pc1 < pc2 ? -1 : pc1 > pc2 ? 1 : 0;
-}
-
-ST_FUNC void tcc_eh_frame_hdr(TCCState *s1, int final)
-{
-	int count = 0, offset;
-	unsigned long count_offset, tab_offset;
-	unsigned char *ln, *end;
-	unsigned int last_cie_offset = 0xffffffff;
-
-	if (!eh_frame_section || !eh_frame_section->data_offset)
-		return;
-	if (final && !eh_frame_hdr_section)
-		return;
-	if (final == 0)
-		eh_frame_hdr_section =
-			new_section(s1, ".eh_frame_hdr", SHT_PROGBITS, SHF_ALLOC);
-	eh_frame_hdr_section->data_offset = 0;
-	dwarf_data1(eh_frame_hdr_section, 1); // Version
-
-	// Pointer Encoding Format
-
-	dwarf_data1(eh_frame_hdr_section, DW_EH_PE_sdata4 | DW_EH_PE_pcrel);
-	// Count Encoding Format
-
-	dwarf_data1(eh_frame_hdr_section, DW_EH_PE_udata4 | DW_EH_PE_absptr);
-	// Table Encoding Format
-
-	dwarf_data1(eh_frame_hdr_section, DW_EH_PE_sdata4 | DW_EH_PE_datarel);
-	offset = eh_frame_section->sh_addr -
-		 eh_frame_hdr_section->sh_addr -
-		 eh_frame_hdr_section->data_offset;
-	dwarf_data4(eh_frame_hdr_section, offset); // eh_frame_ptr
-
-	// Count
-
-	count_offset = eh_frame_hdr_section->data_offset;
-	dwarf_data4(eh_frame_hdr_section, 0);
-	tab_offset = eh_frame_hdr_section->data_offset;
-	ln = eh_frame_section->data;
-	end = eh_frame_section->data + eh_frame_section->data_offset;
-	while (ln < end) {
-		unsigned char *fde = ln, *rd = ln;
-		unsigned int cie_offset, version, length = dwarf_read_4(rd, end);
-		unsigned int pc_offset, fde_offset;
-
-		if (length == 0)
-			goto next;
-		cie_offset = dwarf_read_4(rd, end);
-		if (cie_offset == 0)
-			goto next;
-		if (cie_offset != last_cie_offset) {
-			unsigned char *cie = rd - cie_offset + 4;
-
-			if (cie < eh_frame_section->data)
-				goto next;
-			version = dwarf_read_1(cie, end);
-			if ((version == 1 || version == 3) &&
-			    dwarf_read_1(cie, end) == 'z' && // Augmentation String
-
-			    dwarf_read_1(cie, end) == 'R' &&
-			    dwarf_read_1(cie, end) == 0) {
-				dwarf_read_uleb128(&cie, end); // code_alignment_factor
-
-				dwarf_read_sleb128(&cie, end); // data_alignment_factor
-
-				dwarf_read_1(cie, end); // return address column
-
-				if (dwarf_read_uleb128(&cie, end) == 1 &&
-				    dwarf_read_1(cie, end) == FDE_ENCODING) {
-					last_cie_offset = cie_offset;
-				} else
-					goto next;
-			} else
-				goto next;
-		}
-		count++;
-		fde_offset = eh_frame_section->sh_addr +
-			     (fde - eh_frame_section->data) -
-			     eh_frame_hdr_section->sh_addr;
-		pc_offset = dwarf_read_4(rd, end) + fde_offset + 8;
-		dwarf_data4(eh_frame_hdr_section, pc_offset);
-		dwarf_data4(eh_frame_hdr_section, fde_offset);
-next:
-		ln += length + 4;
-	}
-	add32le(eh_frame_hdr_section->data + count_offset, count);
-	qsort(eh_frame_hdr_section->data + tab_offset, count,
-	      sizeof(struct eh_search_table), sort_eh_table);
-}
-#endif
 /* start of translation unit info */
-// 1010 "tccdbg.c"
+
 ST_FUNC void tcc_debug_start(TCCState *s1)
 {
 	int i;
@@ -28709,10 +19587,14 @@ ST_FUNC void tcc_debug_start(TCCState *s1)
 
 		new_file = last_line_num = 0;
 		debug_next_type = N_DEFAULT_DEBUG;
-		debug_hash = NULL;
-		debug_anon_hash = NULL;
-		n_debug_hash = 0;
-		n_debug_anon_hash = 0;
+		debug_hash_global = NULL;
+		debug_hash_local = NULL;
+		debug_forw_hash_global = NULL;
+		debug_forw_hash_local = NULL;
+		n_debug_hash_global = 0;
+		n_debug_hash_local = 0;
+		n_debug_forw_hash_global = 0;
+		n_debug_forw_hash_local = 0;
 
 		getcwd(buf, sizeof(buf));
 
@@ -28789,18 +19671,10 @@ ST_FUNC void tcc_debug_start(TCCState *s1)
 			dwarf_line_strp(dwarf_info_section, filename);
 			dwarf_line_strp(dwarf_info_section, buf);
 			dwarf_reloc(dwarf_info_section, section_sym, R_DATA_PTR);
-#if PTR_SIZE == 4
-			dwarf_data4(dwarf_info_section, ind); // low pc
-
-			dwarf_data4(dwarf_info_section, 0); // high pc
-
-#else
 
 			dwarf_data8(dwarf_info_section, ind);// low pc
 
 			dwarf_data8(dwarf_info_section, 0);// high pc
-
-#endif
 
 			dwarf_reloc(dwarf_info_section, dwarf_sym.line, R_DATA_32DW);
 			dwarf_data4(dwarf_info_section, dwarf_line_section->data_offset);// stmt_list
@@ -28836,7 +19710,7 @@ ST_FUNC void tcc_debug_start(TCCState *s1)
 				*undo = 0;
 			dwarf_line.dir_size = 1 + (undo != NULL);
 			dwarf_line.dir_table = (char **) tcc_malloc(sizeof (char *) *
-					       dwarf_line.dir_size);
+				dwarf_line.dir_size);
 			dwarf_line.dir_table[0] = tcc_strdup(buf);
 			if (undo)
 				dwarf_line.dir_table[1] = tcc_strdup(filename);
@@ -28888,10 +19762,13 @@ ST_FUNC void tcc_debug_start(TCCState *s1)
 		tcc_debug_bincl(s1);
 	}
 }
+
+static void fix_debug_forw_hash(TCCState *s1, int global, int start);
 /* put end of translation unit info */
 
 ST_FUNC void tcc_debug_end(TCCState *s1)
 {
+
 	if (!s1->do_debug || debug_next_type == 0)
 		return;
 
@@ -28899,32 +19776,14 @@ ST_FUNC void tcc_debug_end(TCCState *s1)
 		tcc_debug_funcend(s1, 0);/* free stuff in case of errors */
 
 	if (s1->dwarf) {
-		int i, j;
+		int i;
 		int start_aranges;
 		unsigned char *ptr;
 		int text_size = text_section->data_offset;
 		/* dwarf_info */
 
-		for (i = 0; i < n_debug_anon_hash; i++) {
-			Sym *t = debug_anon_hash[i].type;
-			int pos = dwarf_info_section->data_offset;
-
-			dwarf_data1(dwarf_info_section,
-				    IS_UNION (t->type.t) ? DWARF_ABBREV_UNION_EMPTY_TYPE
-				    : DWARF_ABBREV_STRUCTURE_EMPTY_TYPE);
-			dwarf_strp(dwarf_info_section,
-				   (t->v & ~SYM_STRUCT) >= SYM_FIRST_ANOM
-				   ? "" : get_tok_str(t->v, NULL));
-			dwarf_uleb128(dwarf_info_section, 0);
-			dwarf_uleb128(dwarf_info_section, dwarf_line.cur_file);
-			dwarf_uleb128(dwarf_info_section, file->line_num);
-			for (j = 0; j < debug_anon_hash[i].n_debug_type; j++)
-				write32le(dwarf_info_section->data +
-					  debug_anon_hash[i].debug_type[j],
-					  pos - dwarf_info.start);
-			tcc_free (debug_anon_hash[i].debug_type);
-		}
-		tcc_free (debug_anon_hash);
+		fix_debug_forw_hash(s1, 0, 0);
+		fix_debug_forw_hash(s1, 1, 0);
 		dwarf_data1(dwarf_info_section, 0);
 		ptr = dwarf_info_section->data + dwarf_info.start;
 		write32le(ptr, dwarf_info_section->data_offset - dwarf_info.start - 4);
@@ -28939,30 +19798,13 @@ ST_FUNC void tcc_debug_end(TCCState *s1)
 		dwarf_reloc(dwarf_aranges_section, dwarf_sym.info, R_DATA_32DW);
 		dwarf_data4(dwarf_aranges_section, 0);// dwarf_info
 
-#if PTR_SIZE == 4
-		dwarf_data1(dwarf_aranges_section, 4); // address size
-
-#else
-
 		dwarf_data1(dwarf_aranges_section, 8);// address size
-
-#endif
 
 		dwarf_data1(dwarf_aranges_section, 0);// segment selector size
 
 		dwarf_data4(dwarf_aranges_section, 0);// padding
 
 		dwarf_reloc(dwarf_aranges_section, section_sym, R_DATA_PTR);
-#if PTR_SIZE == 4
-		dwarf_data4(dwarf_aranges_section, 0); // Begin
-
-		dwarf_data4(dwarf_aranges_section, text_size); // End
-
-		dwarf_data4(dwarf_aranges_section, 0); // End list
-
-		dwarf_data4(dwarf_aranges_section, 0); // End list
-
-#else
 
 		dwarf_data8(dwarf_aranges_section, 0);// Begin
 
@@ -28971,8 +19813,6 @@ ST_FUNC void tcc_debug_end(TCCState *s1)
 		dwarf_data8(dwarf_aranges_section, 0);// End list
 
 		dwarf_data8(dwarf_aranges_section, 0);// End list
-
-#endif
 
 		ptr = dwarf_aranges_section->data + start_aranges;
 		write32le(ptr, dwarf_aranges_section->data_offset - start_aranges - 4);
@@ -29049,7 +19889,12 @@ ST_FUNC void tcc_debug_end(TCCState *s1)
 		put_stabs_r(s1, NULL, N_SO, 0, 0,
 			    text_section->data_offset, text_section, section_sym);
 	}
-	tcc_free(debug_hash);
+	free_str (dwarf_str);
+	free_str (dwarf_line_str);
+	tcc_free (debug_forw_hash_global);
+	tcc_free (debug_forw_hash_local);
+	tcc_free(debug_hash_global);
+	tcc_free(debug_hash_local);
 	debug_next_type = 0;
 }
 
@@ -29155,6 +20000,9 @@ ST_FUNC void tcc_debug_line(TCCState *s1)
 				else {
 					dwarf_line_op(s1, DW_LNS_advance_line);
 					dwarf_sleb128_op(s1, len_line);
+					/* advance by nothing */
+
+					dwarf_line_op(s1, DWARF_OPCODE_BASE - DWARF_LINE_BASE);
 				}
 			}
 		}
@@ -29197,6 +20045,36 @@ static void tcc_debug_stabs (TCCState *s1, const char *str, int type,
 		put_stabs (s1, str, type, 0, 0, value);
 }
 
+static void fix_debug_forw_hash(TCCState *s1, int global, int start)
+{
+	if (s1->dwarf) {
+		int i, j, n_hash = global
+				   ? n_debug_forw_hash_global : n_debug_forw_hash_local;
+		struct _debug_forw_hash *hash = global
+							? debug_forw_hash_global : debug_forw_hash_local;
+
+		for (i = start; i < n_hash; i++) {
+			Sym *t = hash[i].type;
+			int pos = dwarf_info_section->data_offset;
+
+			dwarf_data1(dwarf_info_section,
+				    IS_UNION (t->type.t) ? DWARF_ABBREV_UNION_EMPTY_TYPE
+				    : DWARF_ABBREV_STRUCTURE_EMPTY_TYPE);
+			dwarf_strp(dwarf_info_section,
+				   (t->v & ~SYM_STRUCT) >= SYM_FIRST_ANOM
+				   ? "" : get_tok_str(t->v, NULL));
+			dwarf_uleb128(dwarf_info_section, 0);
+			dwarf_uleb128(dwarf_info_section, dwarf_line.cur_file);
+			dwarf_uleb128(dwarf_info_section, file->line_num);
+			for (j = 0; j < hash[i].n_debug_type; j++)
+				write32le(dwarf_info_section->data +
+					  hash[i].debug_type[j],
+					  pos - dwarf_info.start);
+			tcc_free (hash[i].debug_type);
+		}
+	}
+}
+
 ST_FUNC void tcc_debug_stabn(TCCState *s1, int type, int value)
 {
 	if (!s1->do_debug)
@@ -29206,6 +20084,8 @@ ST_FUNC void tcc_debug_stabn(TCCState *s1, int type, int value)
 			(struct _debug_info *) tcc_mallocz(sizeof (*info));
 
 		info->start = value;
+		info->last_debug_hash = n_debug_hash_local;
+		info->last_debug_forw_hash = n_debug_forw_hash_local;
 		info->parent = debug_info;
 		if (debug_info) {
 			if (debug_info->child) {
@@ -29220,103 +20100,185 @@ ST_FUNC void tcc_debug_stabn(TCCState *s1, int type, int value)
 			debug_info_root = info;
 		debug_info = info;
 	} else {
+		fix_debug_forw_hash(s1, 0, debug_info->last_debug_forw_hash);
+		n_debug_hash_local = debug_info->last_debug_hash;
+		n_debug_forw_hash_local = debug_info->last_debug_forw_hash;
 		debug_info->end = value;
 		debug_info = debug_info->parent;
 	}
 }
 
+static int check_global(Sym *t)
+{
+	Sym *g = local_stack;
+
+	while (g) {
+		if (t == g)
+			return 0;
+		g = g->prev;
+	}
+	return 1;
+}
+
 static int tcc_debug_find(TCCState *s1, Sym *t, int dwarf)
 {
-	int i;
+	int i, g = check_global(t);
+	int n_hash, *n_forw_hash;
+	struct _debug_hash *hash;
+	struct _debug_forw_hash **forw_hash;
 
-	if (!debug_info && dwarf &&
-	    (t->type.t & VT_BTYPE) == VT_STRUCT && t->c == -1) {
-		for (i = 0; i < n_debug_anon_hash; i++)
-			if (t == debug_anon_hash[i].type)
+	if ((t->type.t & VT_BTYPE) == VT_STRUCT && t->c == -1) {
+		forw_hash = g ? &debug_forw_hash_global : &debug_forw_hash_local;
+		n_forw_hash = g ? &n_debug_forw_hash_global : &n_debug_forw_hash_local;
+		for (i = 0; i < *n_forw_hash; i++)
+			if (t == (*forw_hash)[i].type)
 				return 0;
-		debug_anon_hash = (struct _debug_anon_hash *)
-				  tcc_realloc (debug_anon_hash,
-					       (n_debug_anon_hash + 1) * sizeof(*debug_anon_hash));
-		debug_anon_hash[n_debug_anon_hash].n_debug_type = 0;
-		debug_anon_hash[n_debug_anon_hash].debug_type = NULL;
-		debug_anon_hash[n_debug_anon_hash++].type = t;
+		*forw_hash = (struct _debug_forw_hash *)
+			     tcc_realloc (*forw_hash,
+					  (*n_forw_hash + 1) * sizeof(**forw_hash));
+		(*forw_hash)[*n_forw_hash].n_debug_type = 0;
+		(*forw_hash)[*n_forw_hash].debug_type = NULL;
+		(*forw_hash)[(*n_forw_hash)++].type = t;
 		return 0;
 	}
-	for (i = 0; i < n_debug_hash; i++)
-		if (t == debug_hash[i].type)
-			return debug_hash[i].debug_type;
+	hash = g ? debug_hash_global : debug_hash_local;
+	n_hash = g ? n_debug_hash_global : n_debug_hash_local;
+	for (i = 0; i < n_hash; i++)
+		if (t == hash[i].type)
+			return hash[i].debug_type;
 	return -1;
 }
 
 static int tcc_get_dwarf_info(TCCState *s1, Sym *s);
 
-static void tcc_debug_check_anon(TCCState *s1, Sym *t, int debug_type)
+static void tcc_debug_check_forw(TCCState *s1, Sym *t, int debug_type)
 {
-	int i;
+	if ((t->type.t & VT_BTYPE) == VT_STRUCT && t->type.ref->c == -1) {
+		int i, j, g = check_global(t);
+		int n_forw_hash;
+		struct _debug_forw_hash **forw_hash;
 
-	if (!debug_info && (t->type.t & VT_BTYPE) == VT_STRUCT && t->type.ref->c == -1)
-		for (i = 0; i < n_debug_anon_hash; i++)
-			if (t->type.ref == debug_anon_hash[i].type) {
-				debug_anon_hash[i].debug_type =
-					tcc_realloc(debug_anon_hash[i].debug_type,
-						    (debug_anon_hash[i].n_debug_type + 1) * sizeof(int));
-				debug_anon_hash[i].debug_type[debug_anon_hash[i].n_debug_type++] =
-					debug_type;
-			}
+		for (i = g; i <= 1; i++) {
+			forw_hash = i ? &debug_forw_hash_global : &debug_forw_hash_local;
+			n_forw_hash = i ? n_debug_forw_hash_global : n_debug_forw_hash_local;
+			for (j = 0; j < n_forw_hash; j++)
+				if (t->type.ref == (*forw_hash)[j].type) {
+					(*forw_hash)[j].debug_type =
+						tcc_realloc((*forw_hash)[j].debug_type,
+							    ((*forw_hash)[j].n_debug_type + 1) * sizeof(int));
+					(*forw_hash)[j].debug_type[(*forw_hash)[j].n_debug_type++] =
+						debug_type;
+					return;
+				}
+		}
+	}
 }
 
-ST_FUNC void tcc_debug_fix_anon(TCCState *s1, CType *t)
+static void stabs_struct_complete(TCCState *s1, CType *t);
+
+ST_FUNC void tcc_debug_fix_forw(TCCState *s1, CType *t)
 {
-	int i, j, debug_type;
-
-	if (!(s1->do_debug & 2) || !s1->dwarf || debug_info)
+	if (!(s1->do_debug & 2))
 		return;
+	if (0 == s1->dwarf) {
+		stabs_struct_complete(s1, t);
+		return;
+	}
+	if ((t->t & VT_BTYPE) == VT_STRUCT && t->ref->c != -1) {
+		int i, j, debug_type, g = check_global(t->ref);
+		int *n_forw_hash;
+		struct _debug_forw_hash **forw_hash;
+		forw_hash = g ? &debug_forw_hash_global : &debug_forw_hash_local;
+		n_forw_hash = g ? &n_debug_forw_hash_global : &n_debug_forw_hash_local;
+		for (i = 0; i < *n_forw_hash; i++)
+			if (t->ref == (*forw_hash)[i].type) {
+				if (s1->dwarf) {
+					Sym sym = {0};
+					sym .type = *t ;
 
-	if ((t->t & VT_BTYPE) == VT_STRUCT && t->ref->c != -1)
-		for (i = 0; i < n_debug_anon_hash; i++)
-			if (t->ref == debug_anon_hash[i].type) {
-				Sym sym = {0};
-				sym .type = *t ;
-				/* Trick to not hash this struct */
-
-				debug_info = (struct _debug_info *) t;
-				debug_type = tcc_get_dwarf_info(s1, &sym);
-				debug_info = NULL;
-				for (j = 0; j < debug_anon_hash[i].n_debug_type; j++)
-					write32le(dwarf_info_section->data +
-						  debug_anon_hash[i].debug_type[j],
-						  debug_type - dwarf_info.start);
-				tcc_free(debug_anon_hash[i].debug_type);
-				n_debug_anon_hash--;
-				for (; i < n_debug_anon_hash; i++)
-					debug_anon_hash[i] = debug_anon_hash[i + 1];
+					debug_type = tcc_get_dwarf_info(s1, &sym);
+					for (j = 0; j < (*forw_hash)[i].n_debug_type; j++)
+						write32le(dwarf_info_section->data +
+							  (*forw_hash)[i].debug_type[j],
+							  debug_type - dwarf_info.start);
+					tcc_free((*forw_hash)[i].debug_type);
+				}
+				(*n_forw_hash)--;
+				for (; i < *n_forw_hash; i++)
+					(*forw_hash)[i] = (*forw_hash)[i + 1];
 			}
+	}
 }
 
 static int tcc_debug_add(TCCState *s1, Sym *t, int dwarf)
 {
 	int offset = dwarf ? dwarf_info_section->data_offset : ++debug_next_type;
-	debug_hash = (struct _debug_hash *)
-		     tcc_realloc (debug_hash,
-				  (n_debug_hash + 1) * sizeof(*debug_hash));
-	debug_hash[n_debug_hash].debug_type = offset;
-	debug_hash[n_debug_hash++].type = t;
+	int *n_hash, g = check_global(t);
+	struct _debug_hash **hash;
+
+	hash = g ? &debug_hash_global : &debug_hash_local;
+	n_hash = g ? &n_debug_hash_global : &n_debug_hash_local;
+	*hash = (struct _debug_hash *)
+		tcc_realloc (*hash,
+			     (*n_hash + 1) * sizeof(**hash));
+	(*hash)[*n_hash].debug_type = offset;
+	(*hash)[(*n_hash)++].type = t;
 	return offset;
 }
 
-static void tcc_debug_remove(TCCState *s1, Sym *t)
+static int STRUCT_NODEBUG(Sym *s)
 {
-	int i;
-
-	for (i = 0; i < n_debug_hash; i++)
-		if (t == debug_hash[i].type) {
-			n_debug_hash--;
-			for (; i < n_debug_hash; i++)
-				debug_hash[i] = debug_hash[i+1];
-		}
+	return
+		(s->a.nodebug ||
+		 ((s->v & ~SYM_FIELD) >= SYM_FIRST_ANOM &&
+		  ((s->type.t & VT_BTYPE) == VT_BYTE ||
+		   (s->type.t & VT_BTYPE) == VT_BOOL ||
+		   (s->type.t & VT_BTYPE) == VT_SHORT ||
+		   (s->type.t & VT_BTYPE) == VT_INT ||
+		   (s->type.t & VT_BTYPE) == VT_LLONG)));
 }
-// 1604 "tccdbg.c"
-#define STRUCT_NODEBUG(s) (s->a.nodebug || ((s->v & ~SYM_FIELD) >= SYM_FIRST_ANOM && ((s->type.t & VT_BTYPE) == VT_BYTE || (s->type.t & VT_BTYPE) == VT_BOOL || (s->type.t & VT_BTYPE) == VT_SHORT || (s->type.t & VT_BTYPE) == VT_INT || (s->type.t & VT_BTYPE) == VT_LLONG)))
+
+static int stabs_struct_find(TCCState *s1, Sym *t, int *p_id)
+{
+	/* A struct/enum has a ref to its type but that type has no ref.
+	       So we can (ab)use it for some info.  Here:
+	         s->c : stabs type id
+	         s->r : already defined in stabs */
+
+	Sym *s = t->type.ref;
+	/*
+	    if (s && s->v != (SYM_FIELD|0x00DEBBED)) {
+	        tcc_error_noabort("tccdbg: internal error: %s", get_tok_str(t->v, 0));
+	        if (p_id)
+	            *p_id = 0;
+	        return 0;
+	    }
+	*/
+	if (NULL == p_id)
+		return s && !s->r && t->c >= 0;
+	if (NULL == s) {
+		/* just use global_stack always */
+
+		s = sym_push2(&global_stack, SYM_FIELD|0x00DEBBED, 0, ++debug_next_type);
+		t->type.ref = s;
+	}
+	*p_id = s->c;
+	if (s->r || t->c < 0)/* already defined or still incomplete */
+
+		return 0;
+	s->r = 1;
+	return 1;
+}
+
+static int remove_type_info(int type)
+{
+	type &= ~(VT_STORAGE | VT_CONSTANT | VT_VOLATILE | VT_VLA);
+	if ((type & VT_BTYPE) != VT_BYTE)
+		type &= ~VT_DEFSIGN;
+	if (!(type & VT_BITFIELD) && (type & VT_STRUCT_MASK) > VT_ENUM)
+		type &= ~VT_STRUCT_MASK;
+	return type;
+}
 
 static void tcc_get_debug_info(TCCState *s1, Sym *s, CString *result)
 {
@@ -29327,21 +20289,15 @@ static void tcc_get_debug_info(TCCState *s1, Sym *s, CString *result)
 	CString str;
 
 	for (;;) {
-		type = t->type.t & ~(VT_STORAGE | VT_CONSTANT | VT_VOLATILE | VT_VLA);
-		if ((type & VT_BTYPE) != VT_BYTE)
-			type &= ~VT_DEFSIGN;
+		type = remove_type_info (t->type.t);
 		if (type == VT_PTR || type == (VT_PTR | VT_ARRAY))
 			n++, t = t->type.ref;
 		else
 			break;
 	}
 	if ((type & VT_BTYPE) == VT_STRUCT) {
-		Sym *e = t;
-
 		t = t->type.ref;
-		debug_type = tcc_debug_find(s1, t, 0);
-		if (debug_type == -1) {
-			debug_type = tcc_debug_add(s1, t, 0);
+		if (stabs_struct_find(s1, t, &debug_type)) {
 			cstr_new (&str);
 			cstr_printf (&str, "%s:T%d=%c%d",
 				     (t->v & ~SYM_STRUCT) >= SYM_FIRST_ANOM
@@ -29349,14 +20305,16 @@ static void tcc_get_debug_info(TCCState *s1, Sym *s, CString *result)
 				     debug_type,
 				     IS_UNION (t->type.t) ? 'u' : 's',
 				     t->c);
+
 			while (t->next) {
 				int pos, size, align;
-
 				t = t->next;
 				if (STRUCT_NODEBUG(t))
 					continue;
 				cstr_printf (&str, "%s:",
-					     get_tok_str(t->v, NULL));
+					     (t->v & ~SYM_FIELD) >= SYM_FIRST_ANOM
+					     ? "" : get_tok_str(t->v, NULL)
+					    );
 				tcc_get_debug_info (s1, t, &str);
 				if (t->type.t & VT_BITFIELD) {
 					pos = t->c * 8 + BIT_POS(t->type.t);
@@ -29370,15 +20328,10 @@ static void tcc_get_debug_info(TCCState *s1, Sym *s, CString *result)
 			cstr_printf (&str, ";");
 			tcc_debug_stabs(s1, str.data, N_LSYM, 0, NULL, 0, 0);
 			cstr_free (&str);
-			if (debug_info)
-				tcc_debug_remove(s1, e);
 		}
 	} else if (IS_ENUM(type)) {
 		Sym *e = t = t->type.ref;
-
-		debug_type = tcc_debug_find(s1, t, 0);
-		if (debug_type == -1) {
-			debug_type = tcc_debug_add(s1, t, 0);
+		if (stabs_struct_find(s1, t, &debug_type)) {
 			cstr_new (&str);
 			cstr_printf (&str, "%s:T%d=e",
 				     (t->v & ~SYM_STRUCT) >= SYM_FIRST_ANOM
@@ -29395,8 +20348,6 @@ static void tcc_get_debug_info(TCCState *s1, Sym *s, CString *result)
 			cstr_printf (&str, ";");
 			tcc_debug_stabs(s1, str.data, N_LSYM, 0, NULL, 0, 0);
 			cstr_free (&str);
-			if (debug_info)
-				tcc_debug_remove(s1, e);
 		}
 	} else if ((type & VT_BTYPE) != VT_FUNC) {
 		type &= ~VT_STRUCT_MASK;
@@ -29406,13 +20357,16 @@ static void tcc_get_debug_info(TCCState *s1, Sym *s, CString *result)
 		if (debug_type > N_DEFAULT_DEBUG)
 			return;
 	}
+
+	if (NULL == result)/* from stabs_struct_complete() */
+
+		return;
+
 	if (n > 0)
 		cstr_printf (result, "%d=", ++debug_next_type);
 	t = s;
 	for (;;) {
-		type = t->type.t & ~(VT_STORAGE | VT_CONSTANT | VT_VOLATILE | VT_VLA);
-		if ((type & VT_BTYPE) != VT_BYTE)
-			type &= ~VT_DEFSIGN;
+		type = remove_type_info (t->type.t);
 		if (type == VT_PTR)
 			cstr_printf (result, "%d=*", ++debug_next_type);
 		else if (type == (VT_PTR | VT_ARRAY))
@@ -29429,6 +20383,15 @@ static void tcc_get_debug_info(TCCState *s1, Sym *s, CString *result)
 	cstr_printf (result, "%d", debug_type);
 }
 
+static void stabs_struct_complete(TCCState *s1, CType *t)
+{
+	if (stabs_struct_find(s1, t->ref, NULL)) {
+		Sym s = {0};
+		s.type = *t;
+		tcc_get_debug_info(s1, &s, NULL);
+	}
+}
+
 static int tcc_get_dwarf_info(TCCState *s1, Sym *s)
 {
 	int type;
@@ -29441,9 +20404,7 @@ static int tcc_get_dwarf_info(TCCState *s1, Sym *s)
 	if (new_file)
 		put_new_file(s1);
 	for (;;) {
-		type = t->type.t & ~(VT_STORAGE | VT_CONSTANT | VT_VOLATILE | VT_VLA);
-		if ((type & VT_BTYPE) != VT_BYTE)
-			type &= ~VT_DEFSIGN;
+		type = remove_type_info (t->type.t);
 		if (type == VT_PTR || type == (VT_PTR | VT_ARRAY))
 			t = t->type.ref;
 		else
@@ -29517,13 +20478,11 @@ static int tcc_get_dwarf_info(TCCState *s1, Sym *s)
 				if (STRUCT_NODEBUG(e))
 					continue;
 				type = tcc_get_dwarf_info(s1, e);
-				tcc_debug_check_anon(s1, e, pos_type[i]);
+				tcc_debug_check_forw(s1, e, pos_type[i]);
 				write32le(dwarf_info_section->data + pos_type[i++],
 					  type - dwarf_info.start);
 			}
 			tcc_free(pos_type);
-			if (debug_info)
-				tcc_debug_remove(s1, t);
 		}
 	} else if (IS_ENUM(type)) {
 		t = t->type.ref;
@@ -29564,8 +20523,6 @@ static int tcc_get_dwarf_info(TCCState *s1, Sym *s)
 			dwarf_data1(dwarf_info_section, 0);
 			write32le(dwarf_info_section->data + pos_sib,
 				  dwarf_info_section->data_offset - dwarf_info.start);
-			if (debug_info)
-				tcc_debug_remove(s1, t);
 		}
 	} else if ((type & VT_BTYPE) != VT_FUNC) {
 		type &= ~VT_STRUCT_MASK;
@@ -29582,7 +20539,7 @@ static int tcc_get_dwarf_info(TCCState *s1, Sym *s)
 			dwarf_data1(dwarf_info_section, DWARF_ABBREV_BASE_TYPE);
 			dwarf_uleb128(dwarf_info_section, default_debug[i - 1].size);
 			dwarf_data1(dwarf_info_section, default_debug[i - 1].encoding);
-			strncpy(name, default_debug[i - 1].name, sizeof(name) -1);
+			pstrcpy(name, sizeof name, default_debug[i - 1].name);
 			*strchr(name, ':') = 0;
 			dwarf_strp(dwarf_info_section, name);
 			dwarf_info.base_type_used[i - 1] = debug_type;
@@ -29592,9 +20549,7 @@ static int tcc_get_dwarf_info(TCCState *s1, Sym *s)
 	e = NULL;
 	t = s;
 	for (;;) {
-		type = t->type.t & ~(VT_STORAGE | VT_CONSTANT | VT_VOLATILE | VT_VLA);
-		if ((type & VT_BTYPE) != VT_BYTE)
-			type &= ~VT_DEFSIGN;
+		type = remove_type_info (t->type.t);
 		if (type == VT_PTR) {
 			i = dwarf_info_section->data_offset;
 			if (retval == debug_type)
@@ -29602,7 +20557,7 @@ static int tcc_get_dwarf_info(TCCState *s1, Sym *s)
 			dwarf_data1(dwarf_info_section, DWARF_ABBREV_POINTER);
 			dwarf_data1(dwarf_info_section, PTR_SIZE);
 			if (last_pos != -1) {
-				tcc_debug_check_anon(s1, e, last_pos);
+				tcc_debug_check_forw(s1, e, last_pos);
 				write32le(dwarf_info_section->data + last_pos,
 					  i - dwarf_info.start);
 			}
@@ -29611,15 +20566,8 @@ static int tcc_get_dwarf_info(TCCState *s1, Sym *s)
 			dwarf_data4(dwarf_info_section, 0);
 		} else if (type == (VT_PTR | VT_ARRAY)) {
 			int sib_pos, sub_type;
-#if LONG_SIZE == 4
-
 			Sym sym = {0};
 			sym.type.t = VT_LONG | VT_INT | VT_UNSIGNED;
-#else
-
-			Sym sym = {0};
-			sym.type.t = VT_LLONG | VT_LONG | VT_UNSIGNED;
-#endif
 
 			sub_type = tcc_get_dwarf_info(s1, &sym);
 			i = dwarf_info_section->data_offset;
@@ -29627,7 +20575,7 @@ static int tcc_get_dwarf_info(TCCState *s1, Sym *s)
 				retval = i;
 			dwarf_data1(dwarf_info_section, DWARF_ABBREV_ARRAY_TYPE);
 			if (last_pos != -1) {
-				tcc_debug_check_anon(s1, e, last_pos);
+				tcc_debug_check_forw(s1, e, last_pos);
 				write32le(dwarf_info_section->data + last_pos,
 					  i - dwarf_info.start);
 			}
@@ -29661,7 +20609,7 @@ static int tcc_get_dwarf_info(TCCState *s1, Sym *s)
 				    t->type.ref->next ? DWARF_ABBREV_SUBROUTINE_TYPE
 				    : DWARF_ABBREV_SUBROUTINE_EMPTY_TYPE);
 			if (last_pos != -1) {
-				tcc_debug_check_anon(s1, e, last_pos);
+				tcc_debug_check_forw(s1, e, last_pos);
 				write32le(dwarf_info_section->data + last_pos,
 					  i - dwarf_info.start);
 			}
@@ -29697,14 +20645,14 @@ static int tcc_get_dwarf_info(TCCState *s1, Sym *s)
 			while (f->next) {
 				f = f->next;
 				type = tcc_get_dwarf_info(s1, f);
-				tcc_debug_check_anon(s1, f, pos_type[i]);
+				tcc_debug_check_forw(s1, f, pos_type[i]);
 				write32le(dwarf_info_section->data + pos_type[i++],
 					  type - dwarf_info.start);
 			}
 			tcc_free(pos_type);
 		} else {
 			if (last_pos != -1) {
-				tcc_debug_check_anon(s1, e, last_pos);
+				tcc_debug_check_forw(s1, e, last_pos);
 				write32le(dwarf_info_section->data + last_pos,
 					  debug_type - dwarf_info.start);
 			}
@@ -29749,19 +20697,15 @@ static void tcc_debug_finish (TCCState *s1, struct _debug_info *cur)
 					dwarf_data1(dwarf_info_section, DW_OP_addr);
 					if (s->type == N_STSYM)
 						dwarf_reloc(dwarf_info_section, section_sym, R_DATA_PTR);
-#if PTR_SIZE == 4
-					dwarf_data4(dwarf_info_section, s->value);
-#else
 
 					dwarf_data8(dwarf_info_section, s->value);
-#endif
 
 				} else {
 					/* param/local */
 
-					dwarf_data1(dwarf_info_section, dwarf_sleb128_size(s->value) + 1);
+					dwarf_data1(dwarf_info_section, dwarf_sleb128_size((long)s->value) + 1);
 					dwarf_data1(dwarf_info_section, DW_OP_fbreg);
-					dwarf_sleb128(dwarf_info_section, s->value);
+					dwarf_sleb128(dwarf_info_section, (long)s->value);
 				}
 				tcc_free (s->str);
 			}
@@ -29770,14 +20714,9 @@ static void tcc_debug_finish (TCCState *s1, struct _debug_info *cur)
 				    cur->child ? DWARF_ABBREV_LEXICAL_BLOCK
 				    : DWARF_ABBREV_LEXICAL_EMPTY_BLOCK);
 			dwarf_reloc(dwarf_info_section, section_sym, R_DATA_PTR);
-#if PTR_SIZE == 4
-			dwarf_data4(dwarf_info_section, func_ind + cur->start);
-			dwarf_data4(dwarf_info_section, cur->end - cur->start);
-#else
 
 			dwarf_data8(dwarf_info_section, func_ind + cur->start);
 			dwarf_data8(dwarf_info_section, cur->end - cur->start);
-#endif
 
 			tcc_debug_finish (s1, cur->child);
 			if (cur->child)
@@ -29803,14 +20742,16 @@ static void tcc_debug_finish (TCCState *s1, struct _debug_info *cur)
 	}
 }
 
-ST_FUNC void tcc_add_debug_info(TCCState *s1, int param, Sym *s, Sym *e)
+ST_FUNC void tcc_add_debug_info(TCCState *s1, Sym *s, Sym *e)
 {
 	CString debug_str;
+	int param;
 
 	if (!(s1->do_debug & 2))
 		return;
 
 	cstr_new (&debug_str);
+	param = !e;
 	for (; s != e; s = s->prev) {
 		if (!s->v || (s->r & VT_VALMASK) != VT_LOCAL)
 			continue;
@@ -29887,9 +20828,6 @@ ST_FUNC void tcc_debug_funcend(TCCState *s1, int size)
 	/* lldb does not like function end and next function start at same pc */
 
 	int min_instr_len;
-#if TCC_EH_FRAME
-	tcc_debug_frame_end(s1, size);
-#endif
 
 	if (!s1->do_debug)
 		return;
@@ -29911,21 +20849,13 @@ ST_FUNC void tcc_debug_funcend(TCCState *s1, int size)
 		dwarf_strp(dwarf_info_section, funcname);
 		dwarf_uleb128(dwarf_info_section, dwarf_line.cur_file);
 		dwarf_uleb128(dwarf_info_section, dwarf_info.line);
-		tcc_debug_check_anon(s1, sym->type.ref, dwarf_info_section->data_offset);
+		tcc_debug_check_forw(s1, sym->type.ref, dwarf_info_section->data_offset);
 		dwarf_data4(dwarf_info_section, n_debug_info - dwarf_info.start);
 		dwarf_reloc(dwarf_info_section, section_sym, R_DATA_PTR);
-#if PTR_SIZE == 4
-		dwarf_data4(dwarf_info_section, func_ind); // low_pc
-
-		dwarf_data4(dwarf_info_section, size); // high_pc
-
-#else
 
 		dwarf_data8(dwarf_info_section, func_ind);// low_pc
 
 		dwarf_data8(dwarf_info_section, size);// high_pc
-
-#endif
 
 		func_sib = dwarf_info_section->data_offset;
 		dwarf_data4(dwarf_info_section, 0);// sibling
@@ -29934,7 +20864,6 @@ ST_FUNC void tcc_debug_funcend(TCCState *s1, int size)
 
 		dwarf_data1(dwarf_info_section, DW_OP_reg6);// rbp
 
-// 2228 "tccdbg.c"
 		tcc_debug_finish (s1, debug_info_root);
 		dwarf_data1(dwarf_info_section, 0);
 		write32le(dwarf_info_section->data + func_sib,
@@ -29964,7 +20893,7 @@ ST_FUNC void tcc_debug_extern_sym(TCCState *s1, Sym *sym, int sh_num,
 		dwarf_strp(dwarf_info_section, get_tok_str(sym->v, NULL));
 		dwarf_uleb128(dwarf_info_section, dwarf_line.cur_file);
 		dwarf_uleb128(dwarf_info_section, file->line_num);
-		tcc_debug_check_anon(s1, sym, dwarf_info_section->data_offset);
+		tcc_debug_check_forw(s1, sym, dwarf_info_section->data_offset);
 		dwarf_data4(dwarf_info_section, debug_type - dwarf_info.start);
 		if (sym_bind == STB_GLOBAL)
 			dwarf_data1(dwarf_info_section, 1);
@@ -29972,12 +20901,8 @@ ST_FUNC void tcc_debug_extern_sym(TCCState *s1, Sym *sym, int sh_num,
 		dwarf_data1(dwarf_info_section, DW_OP_addr);
 		greloca(dwarf_info_section, sym, dwarf_info_section->data_offset,
 			R_DATA_PTR, 0);
-#if PTR_SIZE == 4
-		dwarf_data4(dwarf_info_section, 0);
-#else
 
 		dwarf_data8(dwarf_info_section, 0);
-#endif
 
 	} else {
 		Section *s = sh_num == SHN_COMMON ? common_section
@@ -30014,15 +20939,13 @@ ST_FUNC void tcc_debug_typedef(TCCState *s1, Sym *sym)
 			dwarf_strp(dwarf_info_section, get_tok_str(sym->v, NULL));
 			dwarf_uleb128(dwarf_info_section, dwarf_line.cur_file);
 			dwarf_uleb128(dwarf_info_section, file->line_num);
-			tcc_debug_check_anon(s1, sym, dwarf_info_section->data_offset);
+			tcc_debug_check_forw(s1, sym, dwarf_info_section->data_offset);
 			dwarf_data4(dwarf_info_section, debug_type - dwarf_info.start);
 		}
 	} else {
 		CString str;
 		cstr_new (&str);
-		cstr_printf (&str, "%s:t",
-			     (sym->v & ~SYM_FIELD) >= SYM_FIRST_ANOM
-			     ? "" : get_tok_str(sym->v, NULL));
+		cstr_printf (&str, "%s:t", get_tok_str(sym->v, NULL));
 		tcc_get_debug_info(s1, sym, &str);
 		tcc_debug_stabs(s1, str.data, N_LSYM, 0, NULL, 0, 0);
 		cstr_free (&str);
@@ -30173,64 +21096,54 @@ ST_FUNC void tcc_tcov_reset_ind(TCCState *s1)
 #undef new_file
 #undef section_sym
 #undef debug_next_type
-#undef debug_hash
-#undef n_debug_hash
-#undef debug_anon_hash
-#undef n_debug_anon_hash
+#undef debug_hash_global
+#undef debug_hash_local
+#undef n_debug_hash_global
+#undef n_debug_hash_local
+#undef debug_forw_hash_global
+#undef debug_forw_hash_local
+#undef n_debug_forw_hash_global
+#undef n_debug_forw_hash_local
 #undef debug_info
 #undef debug_info_root
 #undef dwarf_sym
 #undef dwarf_line
 #undef dwarf_info
+#undef dwarf_str
+#undef dwarf_line_str
 #undef tcov_data
-// 29 "libtcc.c" 2
-// 1 "tccasm.c" 1
-/*
- *  GAS like assembler for TCC
- *
- *  Copyright (c) 2001-2004 Fabrice Bellard
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- */
-// 21 "tccasm.c"
-#define USING_GLOBALS
-// 1 "tcc.h" 1
-#ifndef _TCC_H
+/* ==================== tccasm.c ==================== */
+
 /* _TCC_H */
-#endif /* _TCC_H */
-// 1990 "tcc.h"
 #undef TCC_STATE_VAR
 #undef TCC_SET_STATE
-#ifdef USING_GLOBALS
 
 #define TCC_STATE_VAR(sym) tcc_state->sym
 #define TCC_SET_STATE(fn) fn
-#undef USING_GLOBALS
 #undef _tcc_error
-#else
-
-#define TCC_STATE_VAR(sym) s1->sym
-#define TCC_SET_STATE(fn) (tcc_enter_state(s1),fn)
-#define _tcc_error use_tcc_error_noabort
-#endif
-// 23 "tccasm.c" 2
-#ifdef CONFIG_TCC_ASM
 
 static Section *last_text_section;/* to handle .previous asm directive */
 
 static int asmgoto_n;
+
+static int tcc_assemble_internal(TCCState *s1, int do_preprocess, int global);
+static Sym *asm_new_label(TCCState *s1, int label, int is_local);
+static Sym *asm_new_label1(TCCState *s1, int label, int is_local, int sh_num,
+			   int value);
+/* output constant with relocation if 'r & VT_SYM' is true */
+
+ST_FUNC void gen_addr64(int r, Sym *sym, int64_t c)
+{
+	if (r & VT_SYM)
+		greloca(cur_text_section, sym, ind, R_DATA_PTR, c), c=0;
+	gen_le32(c);
+	gen_le32(c>>32);
+}
+
+ST_FUNC void gen_expr64(ExprValue *pe)
+{
+	gen_addr64(pe->sym ? VT_SYM : 0, pe->sym, pe->v);
+}
 
 static int asm_get_prefix_name(TCCState *s1, const char *prefix, unsigned int n)
 {
@@ -30243,11 +21156,6 @@ ST_FUNC int asm_get_local_label_name(TCCState *s1, unsigned int n)
 {
 	return asm_get_prefix_name(s1, "L..", n);
 }
-
-static int tcc_assemble_internal(TCCState *s1, int do_preprocess, int global);
-static Sym *asm_new_label(TCCState *s1, int label, int is_local);
-static Sym *asm_new_label1(TCCState *s1, int label, int is_local, int sh_num,
-			   int value);
 /* If a C name has an _ prepended then only asm labels that start
    with _ are representable in C, by removing the first _.  ASM names
    without _ at the beginning don't correspond to C names, but we use
@@ -30308,7 +21216,6 @@ static Sym *asm_label_push(int v)
    are anonymous in C, in this case CSYM can be used to transfer
    all information from that symbol to the (possibly newly created)
    asm symbol.  */
-// 103 "tccasm.c"
 ST_FUNC Sym *get_asm_sym(int name, Sym *csym)
 {
 	Sym *sym = asm_label_find(name);
@@ -30549,13 +21456,13 @@ static inline void asm_expr_sum(TCCState *s1, ExprValue *pe)
 				    && esym1->st_shndx != SHN_UNDEF) {
 					/* we also accept defined symbols in the same section */
 
-					pe->v += esym1->st_value - esym2->st_value;
+					pe->v += (int)(esym1->st_value - esym2->st_value);
 					pe->sym = NULL;
 				} else if (esym2->st_shndx == cur_text_section->sh_num) {
 					/* When subtracting a defined symbol in current section
 							       this actually makes the value PC-relative.  */
 
-					pe->v += 0 - esym2->st_value;
+					pe->v += (int)(0 - esym2->st_value);
 					pe->pcrel = 1;
 					e2.sym = NULL;
 				} else {
@@ -30621,6 +21528,8 @@ ST_FUNC int asm_int_expr(TCCState *s1)
 	asm_expr(s1, &e);
 	if (e.sym)
 		expect("constant");
+	if ((int)e.v != e.v)
+		tcc_error("integer out of range %lld", (long long)e.v);
 	return e.v;
 }
 
@@ -30717,7 +21626,7 @@ static void pop_section(TCCState *s1)
 
 static void asm_parse_directive(TCCState *s1, int global)
 {
-	int n, offset, v, size, tok1;
+	int n, offset, v, size, tok1, c;
 	Section *sec;
 	uint8_t *ptr;
 	/* assembler directive */
@@ -30739,7 +21648,7 @@ static void asm_parse_directive(TCCState *s1, int global)
 			tok1 = TOK_ASMDIR_align;
 		}
 		if (tok1 == TOK_ASMDIR_align || tok1 == TOK_ASMDIR_balign) {
-			if (n < 0 || (n & (n-1)) != 0)
+			if (n <= 0 || (n & (n-1)) != 0)
 				tcc_error("alignment must be a positive power of two");
 			offset = (ind + n - 1) & -n;
 			size = offset - ind;
@@ -30747,18 +21656,25 @@ static void asm_parse_directive(TCCState *s1, int global)
 
 			if (sec->sh_addralign < n)
 				sec->sh_addralign = n;
+			c = sec->sh_flags & SHF_EXECINSTR;
 		} else {
 			if (n < 0)
 				n = 0;
-			size = n;
+			size = n, c = 0;
 		}
 		v = 0;
 		if (tok == ',') {
 			next();
-			v = asm_int_expr(s1);
+			v = asm_int_expr(s1), c = 0;
 		}
 zero_pad:
+		if ((uint64_t)ind + size >= 1<<30)
+			tcc_error("too much data");
 		if (sec->sh_type != SHT_NOBITS) {
+			if (c) {
+				gen_fill_nops(size);
+				break;
+			}
 			sec->data_offset = ind;
 			ptr = section_ptr_add(sec, size);
 			memset(ptr, v, size);
@@ -30769,7 +21685,6 @@ zero_pad:
 
 		size = 8;
 		goto asm_data;
-// 575 "tccasm.c"
 	case TOK_ASMDIR_byte:
 		size = 1;
 		goto asm_data;
@@ -30873,7 +21788,6 @@ asm_data:
 		break;
 	}
 	case TOK_ASMDIR_org: {
-		unsigned long n;
 		ExprValue e;
 		ElfSym *esym;
 		next();
@@ -30887,7 +21801,7 @@ asm_data:
 		}
 		if (n < ind)
 			tcc_error("attempt to .org backwards");
-		v = 0;
+		v = c = 0;
 		size = n - ind;
 		goto zero_pad;
 	}
@@ -30910,6 +21824,8 @@ asm_data:
 		do {
 			Sym *sym;
 			next();
+			if (tok < TOK_IDENT)
+				expect("identifier");
 			sym = get_asm_sym(tok, NULL);
 			if (tok1 != TOK_ASMDIR_hidden)
 				sym->type.t &= ~VT_STATIC;
@@ -30992,26 +21908,30 @@ asm_data:
 		if (tok == TOK_STR)
 			pstrcat(ident, sizeof(ident), tokc.str.data);
 		else
-			pstrcat(ident, sizeof(ident), get_tok_str(tok, NULL));
+			pstrcat(ident, sizeof(ident), get_tok_str(tok, &tokc));
 		tcc_warning_c(warn_unsupported)("ignoring .ident %s", ident);
 		next();
 	}
 	break;
 	case TOK_ASMDIR_size: {
 		Sym *sym;
+		ElfSym *esym;
 
 		next();
+		if (tok < TOK_IDENT)
+			expect("identifier");
 		sym = asm_label_find(tok);
-		if (!sym) {
+		if (!sym)
 			tcc_error("label not found: %s", get_tok_str(tok, NULL));
-		}
 		/* XXX .size name,label2-label1 */
 
 		tcc_warning_c(warn_unsupported)("ignoring .size %s,*", get_tok_str(tok, NULL));
 		next();
 		skip(',');
-		while (tok != TOK_LINEFEED && tok != ';' && tok != CH_EOF) {
-			next();
+		n = asm_int_expr(s1);
+		esym = elfsym(sym);
+		if (esym) {
+			esym->st_size = n;
 		}
 	}
 	break;
@@ -31021,6 +21941,8 @@ asm_data:
 		int st_type;
 
 		next();
+		if (tok < TOK_IDENT)
+			expect("identifier");
 		sym = get_asm_sym(tok, NULL);
 		next();
 		skip(',');
@@ -31034,7 +21956,7 @@ asm_data:
 
 		if (!strcmp(newtype, "function") || !strcmp(newtype, "STT_FUNC")) {
 			if (IS_ASM_SYM(sym))
-				sym->type.t = (sym->type.t & ~VT_ASM) | VT_ASM_FUNC;
+				sym->type.t |= VT_ASM_FUNC;
 			st_type = STT_FUNC;
 set_st_type:
 			if (sym->c) {
@@ -31101,6 +22023,11 @@ set_st_type:
 
 		if (old_nb_section != s1->nb_sections) {
 			cur_text_section->sh_addralign = 1;
+			/* Make .init and .fini sections executable by default.
+			                   GAS does so, too, and musl relies on it. */
+
+			if (!strcmp(sname, ".init") || !strcmp(sname, ".fini"))
+				flags |= SHF_EXECINSTR;
 			cur_text_section->sh_flags = flags;
 		}
 	}
@@ -31120,12 +22047,10 @@ set_st_type:
 		pop_section(s1);
 		break;
 	/* added for compatibility with GAS */
-// 945 "tccasm.c"
 	case TOK_ASMDIR_code64:
 		next();
 		break;
 	/* TODO: Implement symvar support. FreeBSD >= 14 needs this */
-// 975 "tccasm.c"
 	case TOK_ASMDIR_symver:
 		next();
 		next();
@@ -31134,6 +22059,23 @@ set_st_type:
 		skip('@');
 		next();
 		break;
+	case TOK_ASMDIR_reloc: {
+		ExprValue e;
+		const char *reloc_name;
+		int reloc_type = -1;
+
+		next();
+		asm_expr(s1, &e);
+		skip(',');
+		reloc_name = get_tok_str(tok, NULL);
+		if (reloc_type < 0)
+			tcc_error("unimp: reloc '%s' unknown", reloc_name);
+		next();
+		skip(',');
+		greloca(cur_text_section, get_asm_sym(tok, NULL), e.v, reloc_type, 0);
+		next();
+	}
+	break;
 	default:
 		tcc_error("unknown assembler directive '.%s'", get_tok_str(tok, NULL));
 		break;
@@ -31157,44 +22099,47 @@ static int tcc_assemble_internal(TCCState *s1, int do_preprocess, int global)
 		parse_flags |= PARSE_FLAG_LINEFEED;/* XXX: suppress that hack */
 
 redo:
+
 		if (tok == '#') {
 			/* horrible gas comment */
 
 			while (tok != TOK_LINEFEED)
 				next();
-		} else if (tok >= TOK_ASMDIR_FIRST && tok <= TOK_ASMDIR_LAST) {
-			asm_parse_directive(s1, global);
-		} else if (tok == TOK_PPNUM) {
-			const char *p;
-			int n;
-			p = tokc.str.data;
-			n = strtoul(p, (char **)&p, 10);
-			if (*p != '\0')
-				expect("':'");
-			/* new local label */
+		} else
 
-			asm_new_label(s1, asm_get_local_label_name(s1, n), 1);
-			next();
-			skip(':');
-			goto redo;
-		} else if (tok >= TOK_IDENT) {
-			/* instruction or label */
+			if (tok >= TOK_ASMDIR_FIRST && tok <= TOK_ASMDIR_LAST) {
+				asm_parse_directive(s1, global);
+			} else if (tok == TOK_PPNUM) {
+				const char *p;
+				int n;
+				p = tokc.str.data;
+				n = strtoul(p, (char **)&p, 10);
+				if (*p != '\0')
+					expect("':'");
+				/* new local label */
 
-			opcode = tok;
-			next();
-			if (tok == ':') {
-				/* new label */
-
-				asm_new_label(s1, opcode, 0);
+				asm_new_label(s1, asm_get_local_label_name(s1, n), 1);
 				next();
+				skip(':');
 				goto redo;
-			} else if (tok == '=') {
-				set_symbol(s1, opcode);
-				goto redo;
-			} else {
-				asm_opcode(s1, opcode);
+			} else if (tok >= TOK_IDENT) {
+				/* instruction or label */
+
+				opcode = tok;
+				next();
+				if (tok == ':') {
+					/* new label */
+
+					asm_new_label(s1, opcode, 0);
+					next();
+					goto redo;
+				} else if (tok == '=') {
+					set_symbol(s1, opcode);
+					goto redo;
+				} else {
+					asm_opcode(s1, opcode);
+				}
 			}
-		}
 		/* end of line */
 
 		if (tok != ';' && tok != TOK_LINEFEED)
@@ -31233,15 +22178,11 @@ static void tcc_assemble_inline(TCCState *s1, const char *str, int len,
 	const int *saved_macro_ptr = macro_ptr;
 	int dotid = set_idnum('.', IS_ID);
 
-	int dolid = set_idnum('$', 0);
-
 	tcc_open_bf(s1, ":asm:", len);
 	memcpy(file->buffer, str, len);
 	macro_ptr = NULL;
 	tcc_assemble_internal(s1, 0, global);
 	tcc_close();
-
-	set_idnum('$', dolid);
 
 	set_idnum('.', dotid);
 	macro_ptr = saved_macro_ptr;
@@ -31308,20 +22249,22 @@ static void subst_asm_operands(ASMOperand *operands, int nb_operands,
 			    *str == 'q' || *str == 'l' ||
 			    /* P in GCC would add "@PLT" to symbol refs in PIC mode,
 			    		   and make literal operands not be decorated with '$'.  */
-
 			    *str == 'P')
 				modifier = *str++;
 			index = find_constraint(operands, nb_operands, str, &str);
 			if (index < 0)
+error:
 				tcc_error("invalid operand reference after %%");
 			op = &operands[index];
 			if (modifier == 'l') {
 				cstr_cat(out_str, get_tok_str(op->is_label, NULL), -1);
 			} else {
+				if (op->vt == NULL)
+					goto error;
 				sv = *op->vt;
 				if (op->reg >= 0) {
 					sv.r = op->reg;
-					if ((op->vt->r & VT_VALMASK) == VT_LLOCAL && op->is_memory)
+					if (op->is_memory)
 						sv.r |= VT_LVAL;
 				}
 				subst_asm_operand(out_str, &sv, modifier);
@@ -31373,7 +22316,9 @@ static void parse_asm_operands(ASMOperand *operands, int *nb_operands_ptr,
 				if ((vtop->r & VT_LVAL) &&
 				    ((vtop->r & VT_VALMASK) == VT_LLOCAL ||
 				     (vtop->r & VT_VALMASK) < VT_CONST) &&
-				    !strchr(op->constraint, 'm')) {
+				    !strchr(op->constraint, 'm')
+
+				   ) {
 					gv(RC_INT);
 				}
 			}
@@ -31458,6 +22403,8 @@ ST_FUNC void asm_instr(void)
 							tcc_error("too many asm operands");
 						if (tok < TOK_UIDENT)
 							expect("label identifier");
+						memset(operands + nb_operands + nb_labels, 0,
+						       sizeof(operands[0]));
 						operands[nb_operands + nb_labels++].id = tok;
 
 						csym = label_find(tok);
@@ -31499,10 +22446,6 @@ ST_FUNC void asm_instr(void)
 				clobber_regs, &out_reg);
 	/* substitute the operands in the asm string. No substitution is
 	       done if no operands (GCC behaviour) */
-#ifdef ASM_DEBUG
-
-	printf("asm: \"%s\"\n", (char *)astr.data);
-#endif
 
 	if (must_subst) {
 		cstr_reset(astr1);
@@ -31510,10 +22453,6 @@ ST_FUNC void asm_instr(void)
 		cstr_reset(&astr);
 		subst_asm_operands(operands, nb_operands + nb_labels, &astr, astr1->data);
 	}
-#ifdef ASM_DEBUG
-
-	printf("subst_asm: \"%s\"\n", (char *)astr.data);
-#endif
 	/* generate loads */
 
 	asm_gen_code(operands, nb_operands, nb_outputs, 0,
@@ -31560,10 +22499,6 @@ ST_FUNC void asm_global_instr(void)
 
 	if (tok != ';')
 		expect("';'");
-#ifdef ASM_DEBUG
-
-	printf("asm_global: \"%s\"\n", (char *)astr->data);
-#endif
 
 	cur_text_section = text_section;
 	ind = cur_text_section->data_offset;
@@ -31579,66 +22514,15 @@ ST_FUNC void asm_global_instr(void)
 	nocode_wanted = saved_nocode_wanted;
 }
 /**/
-#else
-
-ST_FUNC int tcc_assemble(TCCState *s1, int do_preprocess)
-{
-	tcc_error("asm not supported");
-}
-
-ST_FUNC void asm_instr(void)
-{
-	tcc_error("inline asm() not supported");
-}
-
-ST_FUNC void asm_global_instr(void)
-{
-	tcc_error("inline asm() not supported");
-}
-#endif
 /* CONFIG_TCC_ASM */
-// 30 "libtcc.c" 2
-// 1 "tccelf.c" 1
-/*
- *  ELF file handling for TCC
- *
- *  Copyright (c) 2001-2004 Fabrice Bellard
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- */
-// 21 "tccelf.c"
-// 1 "tcc.h" 1
-#ifndef _TCC_H
+/* ==================== tccelf.c ==================== */
+
 /* _TCC_H */
-#endif /* _TCC_H */
-// 1990 "tcc.h"
 #undef TCC_STATE_VAR
 #undef TCC_SET_STATE
-#ifdef USING_GLOBALS
-
-#define TCC_STATE_VAR(sym) tcc_state->sym
-#define TCC_SET_STATE(fn) fn
-#undef USING_GLOBALS
-#undef _tcc_error
-#else
 
 #define TCC_STATE_VAR(sym) s1->sym
 #define TCC_SET_STATE(fn) (tcc_enter_state(s1),fn)
-#define _tcc_error use_tcc_error_noabort
-#endif
-// 22 "tccelf.c" 2
 /* Define this to get some debug output during relocation processing.  */
 
 #undef DEBUG_RELOC
@@ -31652,14 +22536,6 @@ struct sym_version {
 	int out_index;
 	int prev_same_lib;
 };
-
-#define nb_sym_versions s1->nb_sym_versions
-#define sym_versions s1->sym_versions
-#define nb_sym_to_version s1->nb_sym_to_version
-#define sym_to_version s1->sym_to_version
-#define dt_verneednum s1->dt_verneednum
-#define versym_section s1->versym_section
-#define verneed_section s1->verneed_section
 /* special flag to indicate that the section should not be linked to the other ones */
 
 #define SHF_PRIVATE 0x80000000
@@ -31705,27 +22581,14 @@ ST_FUNC void tccelf_new(TCCState *s)
 
 		tcc_debug_new(s);
 	}
-#if TCC_EH_FRAME
-	if (s->output_format != TCC_OUTPUT_FORMAT_ELF)
-		s->unwind_tables = 0;
-	tcc_eh_frame_start(s);
-#endif
-#ifdef CONFIG_TCC_BCHECK
 
-	if (s->do_bounds_check) {
-		/* if bound checking, then add corresponding sections */
-
-		/* (make ro after relocation done with GNU_RELRO) */
-
-		bounds_section = new_section(s, ".bounds", SHT_PROGBITS, shf_RELRO);
-		lbounds_section = new_section(s, ".lbounds", SHT_PROGBITS, shf_RELRO);
-	}
-#endif
 	/* to make sure that -ltcc1 -Wl,-e,_start will grab the startup code
-	       from libtcc1.a (unless _start defined) */
-// 110 "tccelf.c"
+	   from libtcc1.a (unless _start defined) */
+
 	if (s->elf_entryname)
-		set_global_sym(s, s->elf_entryname, NULL, 0);/* SHN_UNDEF */
+		set_global_sym(s, s->elf_entryname, NULL, 0); /* SHN_UNDEF */
+
+	/* ndef ELF_OBJ_ONLY */
 
 }
 
@@ -31741,19 +22604,8 @@ ST_FUNC void free_section(Section *s)
 ST_FUNC void tccelf_delete(TCCState *s1)
 {
 	int i;
-#ifndef ELF_OBJ_ONLY
-
-	/* free symbol versions */
-
-	for (i = 0; i < nb_sym_versions; i++) {
-		tcc_free(sym_versions[i].version);
-		tcc_free(sym_versions[i].lib);
-	}
-	tcc_free(sym_versions);
-	tcc_free(sym_to_version);
-#endif
 	/* free all sections */
-// 139 "tccelf.c"
+
 	for (i = 1; i < s1->nb_sections; i++)
 		free_section(s1->sections[i]);
 	dynarray_reset(&s1->sections, &s1->nb_sections);
@@ -31779,7 +22631,6 @@ ST_FUNC void tccelf_begin_file(TCCState *s1)
 	/* disable symbol hashing during compilation */
 
 	s = s1->symtab, s->reloc = s->hash, s->hash = NULL;
-
 	s1->uw_sym = 0;
 	s1->uw_offs = 0;
 
@@ -31803,7 +22654,7 @@ ST_FUNC void tccelf_end_file(TCCState *s1)
 	tr = tcc_mallocz(nb_syms * sizeof *tr);
 
 	for (i = 0; i < nb_syms; ++i) {
-		ElfSym *sym = (ElfSym*)s->data + first_sym + i;
+		ElfSym *sym = (ElfSym *)s->data + first_sym + i;
 		if (sym->st_shndx == SHN_UNDEF) {
 			int sym_bind = ELFW(ST_BIND)(sym->st_info);
 			int sym_type = ELFW(ST_TYPE)(sym->st_info);
@@ -31813,7 +22664,7 @@ ST_FUNC void tccelf_end_file(TCCState *s1)
 			sym->st_info = ELFW(ST_INFO)(sym_bind, sym_type);
 		}
 		tr[i] = set_elf_sym(s, sym->st_value, sym->st_size, sym->st_info,
-				    sym->st_other, sym->st_shndx, (char*)s->link->data + sym->st_name);
+				    sym->st_other, sym->st_shndx, (char *)s->link->data + sym->st_name);
 	}
 	/* now update relocations */
 
@@ -31940,19 +22791,7 @@ ST_FUNC void *section_ptr_add(Section *sec, addr_t size)
 	size_t offset = section_add(sec, size, 1);
 	return sec->data + offset;
 }
-#ifndef ELF_OBJ_ONLY
 
-/* reserve at least 'size' bytes from section start */
-
-static void section_reserve(Section *sec, unsigned long size)
-{
-	if (size > sec->data_allocated)
-		section_realloc(sec, size);
-	if (size > sec->data_offset)
-		sec->data_offset = size;
-}
-#endif
-// 335 "tccelf.c"
 static Section *have_section(TCCState *s1, const char *name)
 {
 	Section *sec;
@@ -32017,7 +22856,7 @@ static void rebuild_hash(Section *s, unsigned int nb_buckets)
 	nb_syms = s->data_offset / sizeof(ElfW(Sym));
 
 	if (!nb_buckets)
-		nb_buckets = ((int*)s->hash->data)[0];
+		nb_buckets = ((int *)s->hash->data)[0];
 
 	s->hash->data_offset = 0;
 	ptr = section_ptr_add(s->hash, (2 + nb_buckets + nb_syms) * sizeof(int));
@@ -32125,6 +22964,7 @@ ST_FUNC addr_t get_sym_addr(TCCState *s1, const char *name, int err, int forc)
 	ElfW(Sym) *sym;
 	char buf[256];
 	if (forc && s1->leading_underscore
+
 	    /* win32-32bit stdcall symbols always have _ already */
 
 	    && !strchr(name, '@')
@@ -32148,16 +22988,17 @@ ST_FUNC addr_t get_sym_addr(TCCState *s1, const char *name, int err, int forc)
 LIBTCCAPI void *tcc_get_symbol(TCCState *s, const char *name)
 {
 	addr_t addr = get_sym_addr(s, name, 0, 1);
-	return addr == -1 ? NULL : (void*)(uintptr_t)addr;
+	return addr == -1 ? NULL : (void *)(uintptr_t)addr;
 }
 
 LIBTCCAPI int tcc_add_symbol(TCCState *s1, const char *name, const void *val)
 {
+
 	/* On x86_64 'val' might not be reachable with a 32bit offset.
-	       So it is handled here as if it were in a DLL. */
+	   So it is handled here as if it were in a DLL. */
 
 	pe_putimport(s1, 0, name, (uintptr_t)val);
-// 544 "tccelf.c"
+
 	return 0;
 }
 /* list elf symbol names and values */
@@ -32180,7 +23021,7 @@ ST_FUNC void list_elf_symbols(TCCState *s, void *ctx,
 			sym_bind = ELFW(ST_BIND)(sym->st_info);
 			sym_vis = ELFW(ST_VISIBILITY)(sym->st_other);
 			if (sym_bind == STB_GLOBAL && sym_vis == STV_DEFAULT)
-				symbol_cb(ctx, name, (void*)(uintptr_t)sym->st_value);
+				symbol_cb(ctx, name, (void *)(uintptr_t)sym->st_value);
 		}
 	}
 }
@@ -32191,119 +23032,10 @@ LIBTCCAPI void tcc_list_symbols(TCCState *s, void *ctx,
 {
 	list_elf_symbols(s, ctx, symbol_cb);
 }
-#ifndef ELF_OBJ_ONLY
-
-static void
-version_add (TCCState *s1)
-{
-	int i;
-	ElfW(Sym) *sym;
-	ElfW(Verneed) *vn = NULL;
-	Section *symtab;
-	int sym_index, end_sym, nb_versions = 2, nb_entries = 0;
-	ElfW(Half) *versym;
-	const char *name;
-
-	if (0 == nb_sym_versions)
-		return;
-	versym_section = new_section(s1, ".gnu.version", SHT_GNU_versym, SHF_ALLOC);
-	versym_section->sh_entsize = sizeof(ElfW(Half));
-	versym_section->link = s1->dynsym;
-
-	/* add needed symbols */
-
-	symtab = s1->dynsym;
-	end_sym = symtab->data_offset sizeof (ElfSym);
-	versym = section_ptr_add(versym_section, end_sym * sizeof(ElfW(Half)));
-	for (sym_index = 1; sym_index < end_sym; ++sym_index) {
-		int dllindex, verndx;
-		sym = &((ElfW(Sym) *)symtab->data)[sym_index];
-		name = (char *) symtab->link->data + sym->st_name;
-		dllindex = find_elf_sym(s1->dynsymtab_section, name);
-		verndx = (dllindex && dllindex < nb_sym_to_version)
-			 ? sym_to_version[dllindex] : -1;
-		if (verndx >= 0
-		    /* XXX: on android, clang refuses to link with a libtcc.so made by tcc
-		       when defined symbols have a version > 1 or when the version is '0'.
-		       Whereas version '1' for example for 'signal' in an exe defeats
-		       bcheck's signal_redir. */
-
-		    && (sym->st_shndx == SHN_UNDEF || (s1->output_type & TCC_OUTPUT_EXE))
-		   ) {
-			if (!sym_versions[verndx].out_index)
-				sym_versions[verndx].out_index = nb_versions++;
-			versym[sym_index] = sym_versions[verndx].out_index;
-		} else {
-			versym[sym_index] = 1; /* (*global*) */
-
-		}
-		//printf("SYM %d %s\n", versym[sym_index], name);
-
-	}
-	/* generate verneed section, but not when it will be empty.  Some
-	   dynamic linkers look at their contents even when DTVERNEEDNUM and
-	   section size is zero.  */
-
-	if (nb_versions > 2) {
-		verneed_section = new_section(s1, ".gnu.version_r",
-					      SHT_GNU_verneed, SHF_ALLOC);
-		verneed_section->link = s1->dynsym->link;
-		for (i = nb_sym_versions; i-- > 0;) {
-			struct sym_version *sv = &sym_versions[i];
-			int n_same_libs = 0, prev;
-			size_t vnofs;
-			ElfW(Vernaux) *vna = 0;
-			if (sv->out_index < 1)
-				continue;
-
-			/* make sure that a DT_NEEDED tag is put */
-
-			/* abitest-tcc fails on older i386-linux with "ld-linux.so.2" DT_NEEDED
-			   ret_int_test... Inconsistency detected by ld.so: dl-minimal.c: 148:
-			   realloc: Assertion `ptr == alloc_last_block' failed! */
-
-			if (strcmp(sv->lib, "ld-linux.so.2"))
-				tcc_add_dllref(s1, sv->lib, 0);
-
-			vnofs = section_add(verneed_section, sizeof(*vn), 1);
-			vn = (ElfW(Verneed)*)(verneed_section->data + vnofs);
-			vn->vn_version = 1;
-			vn->vn_file = put_elf_str(verneed_section->link, sv->lib);
-			vn->vn_aux = sizeof (*vn);
-			do {
-				prev = sv->prev_same_lib;
-				if (sv->out_index > 0) {
-					vna = section_ptr_add(verneed_section, sizeof(*vna));
-					vna->vna_hash = elf_hash ((const unsigned char *)sv->version);
-					vna->vna_flags = 0;
-					vna->vna_other = sv->out_index;
-					sv->out_index = -2;
-					vna->vna_name = put_elf_str(verneed_section->link, sv->version);
-					vna->vna_next = sizeof (*vna);
-					//printf("LIB %d %s %s\n", vna->vna_other, sv->lib, verneed_section->link->data + vna->vna_name);
-
-					n_same_libs++;
-				}
-				if (prev >= 0)
-					sv = &sym_versions[prev];
-			} while (prev >= 0);
-			vna->vna_next = 0;
-			vn = (ElfW(Verneed)*)(verneed_section->data + vnofs);
-			vn->vn_cnt = n_same_libs;
-			vn->vn_next = sizeof(*vn) + n_same_libs * sizeof(*vna);
-			nb_entries++;
-		}
-		if (vn)
-			vn->vn_next = 0;
-		verneed_section->sh_info = nb_entries;
-	}
-	dt_verneednum = nb_entries;
-}
-#endif
 /* ndef ELF_OBJ_ONLY */
 /* add an elf symbol : check if it is already defined and patch
    it. Return symbol index. NOTE that sh_num can be SHN_UNDEF. */
-// 681 "tccelf.c"
+
 ST_FUNC int set_elf_sym(Section *s, addr_t value, unsigned long size,
 			int info, int other, int shndx, const char *name)
 {
@@ -32358,6 +23090,9 @@ ST_FUNC int set_elf_sym(Section *s, addr_t value, unsigned long size,
 			} else if (sym_vis == STV_HIDDEN || sym_vis == STV_INTERNAL) {
 				/* ignore hidden symbols after */
 
+			} else if (s->sh_flags & SHF_DYNSYM) {
+				/* we accept that two DLL define the same symbol */
+
 			} else if ((esym->st_shndx == SHN_COMMON
 				    || esym->st_shndx == bss_section->sh_num)
 				   && (shndx < SHN_LORESERVE
@@ -32368,9 +23103,6 @@ ST_FUNC int set_elf_sym(Section *s, addr_t value, unsigned long size,
 			} else if (shndx == SHN_COMMON || shndx == bss_section->sh_num) {
 				/* data symbol keeps precedence over common/bss */
 
-			} else if (s->sh_flags & SHF_DYNSYM) {
-				/* we accept that two DLL define the same symbol */
-
 			} else if (esym->st_other & ST_ASM_SET) {
 				/* If the existing symbol came from an asm .set
 						   we can override.  */
@@ -32378,7 +23110,7 @@ ST_FUNC int set_elf_sym(Section *s, addr_t value, unsigned long size,
 				goto do_patch;
 			} else {
 
-				tcc_error_noabort("'%s' defined twice", name);
+				tcc_error_noabort("link symbol '%s' defined twice", name);
 			}
 		} else {
 			esym->st_other = other;
@@ -32423,10 +23155,8 @@ ST_FUNC void put_elf_reloca(Section *symtab, Section *s, unsigned long offset,
 	rel = section_ptr_add(sr, sizeof(ElfW_Rel));
 	rel->r_offset = offset;
 	rel->r_info = ELFW(R_INFO)(symbol, type);
-#if SHT_RELX == SHT_RELA
 
 	rel->r_addend = addend;
-#endif
 
 	if (SHT_RELX != SHT_RELA && addend)
 		tcc_error_noabort("non-zero addend on REL architecture");
@@ -32531,189 +23261,9 @@ static void sort_syms(TCCState *s1, Section *s)
 	update_relocs(s1, s, old_to_new_syms, 0);
 	tcc_free(old_to_new_syms);
 }
-#ifndef ELF_OBJ_ONLY
-
-/* See: https://flapenguin.me/elf-dt-gnu-hash */
-
-#define	ELFCLASS_BITS (PTR_SIZE * 8)
-
-static Section *create_gnu_hash(TCCState *s1)
-{
-	int nb_syms, i, ndef, nbuckets, symoffset, bloom_size, bloom_shift;
-	ElfW(Sym) *p;
-	Section *gnu_hash;
-	Section *dynsym = s1->dynsym;
-	Elf32_Word *ptr;
-
-	gnu_hash = new_section(s1, ".gnu.hash", SHT_GNU_HASH, SHF_ALLOC);
-	gnu_hash->link = dynsym->hash->link;
-
-	nb_syms = dynsym->data_offset sizeof(ElfW(Sym));
-
-	/* count def symbols */
-
-	ndef = 0;
-	p = (ElfW(Sym) *)dynsym->data;
-	for (i = 0; i < nb_syms; i++, p++)
-		ndef += p->st_shndx != SHN_UNDEF;
-
-	/* calculate gnu hash sizes and fill header */
-
-	nbuckets = ndef 4 + 1;
-	symoffset = nb_syms - ndef;
-	bloom_shift = PTR_SIZE == 8 ? 6 : 5;
-	bloom_size = 1; /* must be power of two */
-
-	while (ndef >= bloom_size * (1 << (bloom_shift - 3)))
-		bloom_size *= 2;
-	ptr = section_ptr_add(gnu_hash, 4 * 4 +
-			      PTR_SIZE * bloom_size +
-			      nbuckets * 4 +
-			      ndef * 4);
-	ptr[0] = nbuckets;
-	ptr[1] = symoffset;
-	ptr[2] = bloom_size;
-	ptr[3] = bloom_shift;
-	return gnu_hash;
-}
-
-static Elf32_Word elf_gnu_hash (const unsigned char *name)
-{
-	Elf32_Word h = 5381;
-	unsigned char c;
-
-	while ((c = *name++))
-		h = h * 33 + c;
-	return h;
-}
-
-static void update_gnu_hash(TCCState *s1, Section *gnu_hash)
-{
-	int *old_to_new_syms;
-	ElfW(Sym) *new_syms;
-	int nb_syms, i, nbuckets, bloom_size, bloom_shift;
-	ElfW(Sym) *p, *q;
-	Section *vs;
-	Section *dynsym = s1->dynsym;
-	Elf32_Word *ptr, *buckets, *chain, *hash;
-	unsigned int *nextbuck;
-	addr_t *bloom;
-	unsigned char *strtab;
-	struct {
-		int first, last;
-	} *buck;
-
-	strtab = dynsym->link->data;
-	nb_syms = dynsym->data_offset sizeof(ElfW(Sym));
-	new_syms = tcc_malloc(nb_syms * sizeof(ElfW(Sym)));
-	old_to_new_syms = tcc_malloc(nb_syms * sizeof(int));
-	hash = tcc_malloc(nb_syms * sizeof(Elf32_Word));
-	nextbuck = tcc_malloc(nb_syms * sizeof(int));
-
-	/* calculate hashes and copy undefs */
-
-	p = (ElfW(Sym) *)dynsym->data;
-	q = new_syms;
-	for (i = 0; i < nb_syms; i++, p++) {
-		if (p->st_shndx == SHN_UNDEF) {
-			old_to_new_syms[i] = q - new_syms;
-			*q++ = *p;
-		} else
-			hash[i] = elf_gnu_hash(strtab + p->st_name);
-	}
-
-	ptr = (Elf32_Word *) gnu_hash->data;
-	nbuckets = ptr[0];
-	bloom_size = ptr[2];
-	bloom_shift = ptr[3];
-	bloom = (addr_t *) (void *) &ptr[4];
-	buckets = (Elf32_Word*) (void *) &bloom[bloom_size];
-	chain = &buckets[nbuckets];
-	buck = tcc_malloc(nbuckets * sizeof(*buck));
-
-	if (gnu_hash->data_offset != 4 * 4 +
-	    PTR_SIZE * bloom_size +
-	    nbuckets * 4 +
-	    (nb_syms - (q - new_syms)) * 4)
-		tcc_error_noabort ("gnu_hash size incorrect");
-
-	/* find buckets */
-
-	for (i = 0; i < nbuckets; i++)
-		buck[i].first = -1;
-
-	p = (ElfW(Sym) *)dynsym->data;
-	for (i = 0; i < nb_syms; i++, p++)
-		if (p->st_shndx != SHN_UNDEF) {
-			int bucket = hash[i] % nbuckets;
-
-			if (buck[bucket].first == -1)
-				buck[bucket].first = buck[bucket].last = i;
-			else {
-				nextbuck[buck[bucket].last] = i;
-				buck[bucket].last = i;
-			}
-		}
-
-	/* fill buckets/chains/bloom and sort symbols */
-
-	p = (ElfW(Sym) *)dynsym->data;
-	for (i = 0; i < nbuckets; i++) {
-		int cur = buck[i].first;
-
-		if (cur != -1) {
-			buckets[i] = q - new_syms;
-			for (;;) {
-				old_to_new_syms[cur] = q - new_syms;
-				*q++ = p[cur];
-				*chain++ = hash[cur] & ~1;
-				bloom[(hash[cur] ELFCLASS_BITS) % bloom_size] |=
-					(addr_t)1 << (hash[cur] % ELFCLASS_BITS) |
-					(addr_t)1 << ((hash[cur] >> bloom_shift) % ELFCLASS_BITS);
-				if (cur == buck[i].last)
-					break;
-				cur = nextbuck[cur];
-			}
-			chain[-1] |= 1;
-		}
-	}
-
-	memcpy(dynsym->data, new_syms, nb_syms * sizeof(ElfW(Sym)));
-	tcc_free(new_syms);
-	tcc_free(hash);
-	tcc_free(buck);
-	tcc_free(nextbuck);
-
-	update_relocs(s1, dynsym, old_to_new_syms, 0);
-
-	/* modify the versions */
-
-	vs = versym_section;
-	if (vs) {
-		ElfW(Half) *newver, *versym = (ElfW(Half) *)vs->data;
-
-		if (1/*versym*/
-		   ) {
-			newver = tcc_malloc(nb_syms * sizeof(*newver));
-			for (i = 0; i < nb_syms; i++)
-				newver[old_to_new_syms[i]] = versym[i];
-			memcpy(vs->data, newver, nb_syms * sizeof(*newver));
-			tcc_free(newver);
-		}
-	}
-
-	tcc_free(old_to_new_syms);
-
-	/* rebuild hash */
-
-	ptr = (Elf32_Word *) dynsym->hash->data;
-	rebuild_hash(dynsym, ptr[0]);
-}
-#endif
-/* ELF_OBJ_ONLY */
 /* relocate symbol table, resolve undefined symbols if do_resolve is
    true and output error if undefined symbol. */
-// 1062 "tccelf.c"
+
 ST_FUNC void relocate_syms(TCCState *s1, Section *symtab, int do_resolve)
 {
 	ElfW(Sym) *sym;
@@ -32731,7 +23281,7 @@ ST_FUNC void relocate_syms(TCCState *s1, Section *symtab, int do_resolve)
 
 			if (do_resolve) {
 				/* if dynamic symbol exist, it will be used in relocate_section */
-// 1097 "tccelf.c"
+
 			} else if (s1->dynsym && find_elf_sym(s1->dynsym, name))
 				goto found;
 			/* XXX: _fp_hw seems to be part of the ABI, so we ignore
@@ -32746,7 +23296,7 @@ ST_FUNC void relocate_syms(TCCState *s1, Section *symtab, int do_resolve)
 			if (sym_bind == STB_WEAK)
 				sym->st_value = 0;
 			else
-				tcc_error_noabort("undefined symbol '%s'", name);
+				tcc_error_noabort("unresolved reference to '%s'", name);
 
 		} else if (sh_num < SHN_LORESERVE) {
 			/* add section base */
@@ -32770,15 +23320,16 @@ static void relocate_section(TCCState *s1, Section *s, Section *sr)
 
 	qrel = (ElfW_Rel *)sr->data;
 	for_each_elem(sr, 0, rel, ElfW_Rel) {
+		if (s->data == NULL)/* bss */
+
+			continue;
 		ptr = s->data + rel->r_offset;
 		sym_index = ELFW(R_SYM)(rel->r_info);
 		sym = &((ElfW(Sym) *)symtab_section->data)[sym_index];
 		type = ELFW(R_TYPE)(rel->r_info);
 		tgt = sym->st_value;
-#if SHT_RELX == SHT_RELA
 
 		tgt += rel->r_addend;
-#endif
 
 		if (is_dwarf && type == R_DATA_32DW
 		    && sym->st_shndx >= s1->dwlo && sym->st_shndx < s1->dwhi) {
@@ -32790,27 +23341,7 @@ static void relocate_section(TCCState *s1, Section *s, Section *sr)
 		addr = s->sh_addr + rel->r_offset;
 		relocate(s1, rel, type, ptr, addr, tgt);
 	}
-#ifndef ELF_OBJ_ONLY
 
-	/* if the relocation is allocated, we change its symbol table */
-
-	if (sr->sh_flags & SHF_ALLOC) {
-		sr->link = s1->dynsym;
-		if (s1->output_type & TCC_OUTPUT_DYN) {
-			size_t r = (uint8_t*)qrel - sr->data;
-			if (sizeof ((Stab_Sym*)0)->n_value < PTR_SIZE
-			    && 0 == strcmp(s->name, ".stab"))
-				r = 0; /* cannot apply 64bit relocation to 32bit value */
-
-			sr->data_offset = sr->sh_size = r;
-#ifdef CONFIG_TCC_PIE
-			if (r && (s->sh_flags & SHF_EXECINSTR))
-				tcc_warning("%d relocations to %s", (unsigned)(r sizeof *qrel), s->name);
-#endif
-		}
-	}
-#endif
-// 1166 "tccelf.c"
 }
 /* relocate all sections */
 
@@ -32832,62 +23363,9 @@ ST_FUNC void relocate_sections(TCCState *s1)
 		{
 			relocate_section(s1, s, sr);
 		}
-#ifndef ELF_OBJ_ONLY
 
-		if (sr->sh_flags & SHF_ALLOC) {
-			ElfW_Rel *rel;
-			/* relocate relocation table in 'sr' */
-
-			for_each_elem(sr, 0, rel, ElfW_Rel)
-			rel->r_offset += s->sh_addr;
-		}
-#endif
-// 1195 "tccelf.c"
 	}
 }
-#ifndef ELF_OBJ_ONLY
-
-/* count the number of dynamic relocations so that we can reserve
-   their space */
-
-static int prepare_dynamic_rel(TCCState *s1, Section *sr)
-{
-	int count = 0;
-	ElfW_Rel *rel;
-	for_each_elem(sr, 0, rel, ElfW_Rel) {
-		int sym_index = ELFW(R_SYM)(rel->r_info);
-		int type = ELFW(R_TYPE)(rel->r_info);
-		switch (type) {
-		case R_X86_64_32:
-		case R_X86_64_32S:
-		case R_X86_64_64:
-			count++;
-			break;
-		case R_X86_64_PC32: {
-			ElfW(Sym) *sym = &((ElfW(Sym) *)symtab_section->data)[sym_index];
-			/* Hidden defined symbols can and must be resolved locally.
-			   We're misusing a PLT32 reloc for this, as that's always
-			   resolved to its address even in shared libs.  */
-
-			if (sym->st_shndx != SHN_UNDEF &&
-			    ELFW(ST_VISIBILITY)(sym->st_other) == STV_HIDDEN) {
-				rel->r_info = ELFW(R_INFO)(sym_index, R_X86_64_PLT32);
-				break;
-			}
-		}
-		if (s1->output_type != TCC_OUTPUT_DLL)
-			break;
-		if (get_sym_attr(s1, sym_index, 0)->dyn_index)
-			count++;
-		break;
-		default:
-			break;
-		}
-	}
-	return count;
-}
-#endif
-#ifdef NEED_BUILD_GOT
 
 static int build_got(TCCState *s1)
 {
@@ -32901,7 +23379,6 @@ static int build_got(TCCState *s1)
 	return set_elf_sym(symtab_section, 0, 0, ELFW(ST_INFO)(STB_GLOBAL, STT_OBJECT),
 			   0, s1->got->sh_num, "_GLOBAL_OFFSET_TABLE_");
 }
-
 /* Create a GOT and (for function call) a PLT entry corresponding to a symbol
    in s1->symtab. When creating the dynamic symbol table entry for the GOT
    relocation, use 'size' and 'info' for the corresponding symbol metadata.
@@ -32921,10 +23398,9 @@ static struct sym_attr *put_got_entry(TCCState *s1, int dyn_reloc_type,
 
 	need_plt_entry = (dyn_reloc_type == R_JMP_SLOT);
 	attr = get_sym_attr(s1, sym_index, 1);
-
 	/* In case a function is both called and its address taken 2 GOT entries
-	   are created, one for taking the address (GOT) and the other for the PLT
-	   entry (PLTGOT).  */
+	       are created, one for taking the address (GOT) and the other for the PLT
+	       entry (PLTGOT).  */
 
 	if (need_plt_entry ? attr->plt_offset : attr->got_offset)
 		return attr;
@@ -32937,41 +23413,37 @@ static struct sym_attr *put_got_entry(TCCState *s1, int dyn_reloc_type,
 		}
 		s_rel = s1->plt;
 	}
-
 	/* create the GOT entry */
 
 	got_offset = s1->got->data_offset;
 	section_ptr_add(s1->got, PTR_SIZE);
-
 	/* Create the GOT relocation that will insert the address of the object or
-	   function of interest in the GOT entry. This is a static relocation for
-	   memory output (dlsym will give us the address of symbols) and dynamic
-	   relocation otherwise (executable and DLLs). The relocation should be
-	   done lazily for GOT entry with *_JUMP_SLOT relocation type (the one
-	   associated to a PLT entry) but is currently done at load time for an
-	   unknown reason. */
-
+	       function of interest in the GOT entry. This is a static relocation for
+	       memory output (dlsym will give us the address of symbols) and dynamic
+	       relocation otherwise (executable and DLLs). The relocation should be
+	       done lazily for GOT entry with *_JUMP_SLOT relocation type (the one
+	       associated to a PLT entry) but is currently done at load time for an
+	       unknown reason. */
 	sym = &((ElfW(Sym) *) symtab_section->data)[sym_index];
 	name = (char *) symtab_section->link->data + sym->st_name;
-	//printf("sym %d %s\n", need_plt_entry, name);
+//printf("sym %d %s\n", need_plt_entry, name);
 
 	if (s1->dynsym) {
 		if (ELFW(ST_BIND)(sym->st_info) == STB_LOCAL) {
 			/* Hack alarm.  We don't want to emit dynamic symbols
-			   and symbol based relocs for STB_LOCAL symbols, but rather
-			   want to resolve them directly.  At this point the symbol
-			   values aren't final yet, so we must defer this.  We will later
-			   have to create a RELATIVE reloc anyway, so we misuse the
-			   relocation slot to smuggle the symbol reference until
-			   fill_local_got_entries.  Not that the sym_index is
-			   relative to symtab_section, not s1->dynsym!  Nevertheless
-			   we use s1->dyn_sym so that if this is the first call
-			   that got->reloc is correctly created.  Also note that
-			   RELATIVE relocs are not normally created for the .got,
-			   so the types serves as a marker for later (and is retained
-			   also for the final output, which is okay because then the
-			   got is just normal data).  */
-
+				       and symbol based relocs for STB_LOCAL symbols, but rather
+				       want to resolve them directly.  At this point the symbol
+				       values aren't final yet, so we must defer this.  We will later
+				       have to create a RELATIVE reloc anyway, so we misuse the
+				       relocation slot to smuggle the symbol reference until
+				       fill_local_got_entries.  Not that the sym_index is
+				       relative to symtab_section, not s1->dynsym!  Nevertheless
+				       we use s1->dyn_sym so that if this is the first call
+				       that got->reloc is correctly created.  Also note that
+				       RELATIVE relocs are not normally created for the .got,
+				       so the types serves as a marker for later (and is retained
+				       also for the final output, which is okay because then the
+				       got is just normal data).  */
 			put_elf_reloc(s1->dynsym, s1->got, got_offset, R_RELATIVE,
 				      sym_index);
 		} else {
@@ -32989,7 +23461,6 @@ static struct sym_attr *put_got_entry(TCCState *s1, int dyn_reloc_type,
 
 	if (need_plt_entry) {
 		attr->plt_offset = create_plt_entry(s1, got_offset, attr);
-
 		/* create a symbol 'sym@plt' for the PLT jump vector */
 
 		len = strlen(name);
@@ -33005,9 +23476,7 @@ static struct sym_attr *put_got_entry(TCCState *s1, int dyn_reloc_type,
 
 	return attr;
 }
-
 /* build GOT and PLT entries */
-
 /* Two passes because R_JMP_SLOT should become first. Some targets
    (arm, arm64) do not allow mixing R_JMP_SLOT and R_GLOB_DAT. */
 
@@ -33041,11 +23510,10 @@ redo:
 			if (gotplt_entry == NO_GOTPLT_ENTRY) {
 				continue;
 			}
-
 			/* Automatically create PLT/GOT [entry] if it is an undefined
-			   reference (resolved at runtime), or the symbol is absolute,
-			   probably created by tcc_add_symbol, and thus on 64-bit
-			   targets might be too far from application code.  */
+				       reference (resolved at runtime), or the symbol is absolute,
+				       probably created by tcc_add_symbol, and thus on 64-bit
+				       targets might be too far from application code.  */
 
 			if (gotplt_entry == AUTO_GOTPLT_ENTRY) {
 				if (sym->st_shndx == SHN_UNDEF) {
@@ -33055,16 +23523,15 @@ redo:
 					    && (s1->output_type & TCC_OUTPUT_DYN))
 						continue;
 					/* Relocations for UNDEF symbols would normally need
-					   to be transferred into the executable or shared object.
-					   If that were done AUTO_GOTPLT_ENTRY wouldn't exist.
-					   But TCC doesn't do that (at least for exes), so we
-					   need to resolve all such relocs locally.  And that
-					   means PLT slots for functions in DLLs and COPY relocs for
-					   data symbols.  COPY relocs were generated in
-					   bind_exe_dynsyms (and the symbol adjusted to be defined),
-					   and for functions we were generated a dynamic symbol
-					   of function type.  */
-
+							       to be transferred into the executable or shared object.
+							       If that were done AUTO_GOTPLT_ENTRY wouldn't exist.
+							       But TCC doesn't do that (at least for exes), so we
+							       need to resolve all such relocs locally.  And that
+							       means PLT slots for functions in DLLs and COPY relocs for
+							       data symbols.  COPY relocs were generated in
+							       bind_exe_dynsyms (and the symbol adjusted to be defined),
+							       and for functions we were generated a dynamic symbol
+							       of function type.  */
 					if (s1->dynsym) {
 						/* dynsym isn't set for -run :-/  */
 
@@ -33077,18 +23544,18 @@ redo:
 							goto jmp_slot;
 					}
 				} else if (sym->st_shndx == SHN_ABS) {
-					if (sym->st_value == 0) /* from tcc_add_btstub() */
+					if (sym->st_value == 0)/* from tcc_add_btstub() */
 
 						continue;
+
 					if (PTR_SIZE != 8)
 						continue;
 					/* from tcc_add_symbol(): on 64 bit platforms these
-					   need to go through .got */
+					                       need to go through .got */
 
 				} else
 					continue;
 			}
-
 			if ((type == R_X86_64_PLT32 || type == R_X86_64_PC32) &&
 			    sym->st_shndx != SHN_UNDEF &&
 			    (ELFW(ST_VISIBILITY)(sym->st_other) != STV_DEFAULT ||
@@ -33099,6 +23566,7 @@ redo:
 				rel->r_info = ELFW(R_INFO)(sym_index, R_X86_64_PC32);
 				continue;
 			}
+
 			reloc_type = code_reloc(type);
 			if (reloc_type == -1) {
 				tcc_error_noabort ("Unknown relocation type: %d", type);
@@ -33134,13 +23602,11 @@ jmp_slot:
 
 	if (s1->plt && s1->plt->reloc)
 		s1->plt->reloc->sh_info = s1->got->sh_num;
-	if (got_sym) /* set size */
+	if (got_sym)/* set size */
 
-		((ElfW(Sym)*)symtab_section->data)[got_sym].st_size = s1->got->data_offset;
+		((ElfW(Sym) *)symtab_section->data)[got_sym].st_size = s1->got->data_offset;
 }
-#endif
-/* def NEED_BUILD_GOT */
-// 1507 "tccelf.c"
+
 ST_FUNC int set_global_sym(TCCState *s1, const char *name, Section *sec,
 			   addr_t offs)
 {
@@ -33178,24 +23644,14 @@ ST_FUNC void add_array (TCCState *s1, const char *sec, int c)
 	put_elf_reloc (s1->symtab, s, s->data_offset, R_DATA_PTR, c);
 	section_ptr_add(s, PTR_SIZE);
 }
-#ifdef CONFIG_TCC_BCHECK
-
-ST_FUNC void tcc_add_bcheck(TCCState *s1)
-{
-	if (0 == s1->do_bounds_check)
-		return;
-	section_ptr_add(bounds_section, sizeof(addr_t));
-}
-#endif
 /* set symbol to STB_LOCAL and resolve. The point is to not export it as
    a dynamic symbol to allow so's to have one each with a different value. */
-// 1555 "tccelf.c"
 static void set_local_sym(TCCState *s1, const char *name, Section *s,
 			  int offset)
 {
 	int c = find_elf_sym(s1->symtab, name);
 	if (c) {
-		ElfW(Sym) *esym = (ElfW(Sym)*)s1->symtab->data + c;
+		ElfW(Sym) *esym = (ElfW(Sym) *)s1->symtab->data + c;
 		esym->st_info = ELFW(ST_INFO)(STB_LOCAL, STT_NOTYPE);
 		esym->st_value = offset;
 		esym->st_shndx = s->sh_num;
@@ -33214,103 +23670,6 @@ static void tcc_compile_string_no_debug(TCCState *s, const char *str)
 	s->do_debug = save_do_debug;
 	s->test_coverage = save_test_coverage;
 }
-#ifdef CONFIG_TCC_BACKTRACE
-
-static void put_ptr(TCCState *s1, Section *s, int offs)
-{
-	int c;
-	c = set_global_sym(s1, NULL, s, offs);
-	s = data_section;
-	put_elf_reloc (s1->symtab, s, s->data_offset, R_DATA_PTR, c);
-	section_ptr_add(s, PTR_SIZE);
-}
-
-ST_FUNC void tcc_add_btstub(TCCState *s1)
-{
-	Section *s;
-	int n, o, *p;
-	CString cstr;
-	const char *__rt_info = &"___rt_info"[!s1->leading_underscore];
-
-	s = data_section;
-	/* Align to PTR_SIZE */
-
-	section_ptr_add(s, -s->data_offset & (PTR_SIZE - 1));
-	o = s->data_offset;
-	/* create a struct rt_context (see tccrun.c) */
-
-	if (s1->dwarf) {
-		put_ptr(s1, dwarf_line_section, 0);
-		put_ptr(s1, dwarf_line_section, -1);
-		if (s1->dwarf >= 5)
-			put_ptr(s1, dwarf_line_str_section, 0);
-		else
-			put_ptr(s1, dwarf_str_section, 0);
-	} else {
-		put_ptr(s1, stab_section, 0);
-		put_ptr(s1, stab_section, -1);
-		put_ptr(s1, stab_section->link, 0);
-	}
-	/* skip esym_start/esym_end/elf_str (not loaded) */
-
-	section_ptr_add(s, 3 * PTR_SIZE);
-
-	if (s1->output_type == TCC_OUTPUT_MEMORY && 0 == s1->dwarf) {
-		put_ptr(s1, text_section, 0);
-	} else {
-		/* prog_base : local nameless symbol with offset 0 at SHN_ABS */
-
-		put_ptr(s1, NULL, 0);
-
-	}
-	n = 3 * PTR_SIZE;
-#ifdef CONFIG_TCC_BCHECK
-
-	if (s1->do_bounds_check) {
-		put_ptr(s1, bounds_section, 0);
-		n -= PTR_SIZE;
-	}
-#endif
-
-	section_ptr_add(s, n);
-	p = section_ptr_add(s, 2 * sizeof (int));
-	p[0] = s1->rt_num_callers;
-	p[1] = s1->dwarf;
-// if (s->data_offset - o != 10*PTR_SIZE + 2*sizeof (int)) exit(99);
-
-	if (s1->output_type == TCC_OUTPUT_MEMORY) {
-		set_global_sym(s1, __rt_info, s, o);
-		return;
-	}
-
-	cstr_new(&cstr);
-	cstr_printf(&cstr,
-		    "extern void __bt_init(),__bt_exit(),__bt_init_dll();"
-		    "static void *__rt_info[];"
-		    "__attribute__((constructor)) static void __bt_init_rt(){");
-
-	if (s1->output_type == TCC_OUTPUT_DLL)
-#ifdef CONFIG_TCC_BCHECK
-
-		cstr_printf(&cstr, "__bt_init_dll(%d);", s1->do_bounds_check);
-#else
-
-		cstr_printf(&cstr, "__bt_init_dll(0);");
-#endif
-
-	cstr_printf(&cstr, "__bt_init(__rt_info,%d);}",
-		    s1->output_type != TCC_OUTPUT_DLL);
-	/* In case dlcose is called by application */
-
-	cstr_printf(&cstr,
-		    "__attribute__((destructor)) static void __bt_exit_rt(){"
-		    "__bt_exit(__rt_info);}");
-	tcc_compile_string_no_debug(s1, cstr.data);
-	cstr_free(&cstr);
-	set_local_sym(s1, __rt_info, s, o);
-}
-#endif
-/* def CONFIG_TCC_BACKTRACE */
 
 static void tcc_tcov_add_file(TCCState *s1, const char *filename)
 {
@@ -33349,23 +23708,53 @@ static void tcc_tcov_add_file(TCCState *s1, const char *filename)
 	cstr_free(&cstr);
 	set_local_sym(s1, &"___tcov_data"[!s1->leading_underscore], tcov_section, 0);
 }
-/* TCC_TARGET_UNIX */
 /* ndef TCC_TARGET_PE */
+/* set _etext/_edata/_end  f=0:set  f=1:when_needed  f=2,3:just_update */
+
+static void set_linker_sym(TCCState *s1, const char *name, Section *sec, int f)
+{
+	int sym_index, esym_index, defined;
+	ElfW(Sym) *sym, *esym;
+	sym_index = find_elf_sym(symtab_section, name);
+	sym = (ElfW(Sym) *)symtab_section->data + sym_index;
+	esym_index = find_elf_sym(s1->dynsymtab_section, name);
+	esym = (ElfW(Sym) *)s1->dynsymtab_section->data + esym_index;
+	defined = sym->st_shndx != SHN_UNDEF
+		  || (esym->st_shndx != SHN_UNDEF && esym->st_size);
+	switch (f) {
+	case 1:/* old symbols w/o '_' */
+
+		if (!(sym_index || esym_index) || defined)
+			break;
+	case 0:
+		if (defined) {
+			tcc_warning("linker symbol '%s' already defined", name);
+			break;
+		}
+		sym_index = set_global_sym(s1, name, sec, -1);
+		get_sym_attr(s1, sym_index, 1)->linker_sym = 1;
+		break;
+	default:/* update (bss only) */
+
+		if (get_sym_attr(s1, sym_index, 0)->linker_sym)
+			sym->st_value = sec->data_offset;
+	}
+
+}
 /* add various standard linker symbols (must be done after the
    sections are filled (for example after allocating common
    symbols)) */
-// 1834 "tccelf.c"
+
 static void tcc_add_linker_symbols(TCCState *s1)
 {
 	char buf[1024];
 	int i;
 	Section *s;
 
-	set_global_sym(s1, "_etext", text_section, -1);
-	set_global_sym(s1, "_edata", data_section, -1);
-	set_global_sym(s1, "_end", bss_section, -1);
+	set_linker_sym(s1, "_etext", text_section, 0);
+	set_linker_sym(s1, "_edata", data_section, 0);
+	set_linker_sym(s1, "_end", bss_section, 0);
 	/* horrible new standard ldscript defines */
-// 1851 "tccelf.c"
 	add_init_array_defines(s1, ".preinit_array");
 	add_init_array_defines(s1, ".init_array");
 	add_init_array_defines(s1, ".fini_array");
@@ -33407,7 +23796,7 @@ ST_FUNC void resolve_common_syms(TCCState *s1)
 	/* Allocate common symbols in BSS.  */
 
 	for_each_elem(symtab_section, 1, sym, ElfW(Sym)) {
-		if (sym->st_shndx == SHN_COMMON) {
+		if (sym->st_shndx == SHN_COMMON && sym->st_size) {
 			/* symbol alignment is in st_value for SHN_COMMONs */
 
 			sym->st_value = section_add(bss_section, sym->st_size,
@@ -33417,708 +23806,13 @@ ST_FUNC void resolve_common_syms(TCCState *s1)
 	}
 	/* Now assign linker provided symbols their value.  */
 
-	tcc_add_linker_symbols(s1);
+	if (s1->output_type != TCC_OUTPUT_DLL)
+		tcc_add_linker_symbols(s1);
 }
-#ifndef ELF_OBJ_ONLY
-
-ST_FUNC void fill_got_entry(TCCState *s1, ElfW_Rel *rel)
-{
-	int sym_index = ELFW(R_SYM) (rel->r_info);
-	ElfW(Sym) *sym = &((ElfW(Sym) *) symtab_section->data)[sym_index];
-	struct sym_attr *attr = get_sym_attr(s1, sym_index, 0);
-	unsigned offset = attr->got_offset;
-
-	if (0 == offset)
-		return;
-	section_reserve(s1->got, offset + PTR_SIZE);
-#if PTR_SIZE == 8
-	write64le(s1->got->data + offset, sym->st_value);
-#else
-	write32le(s1->got->data + offset, sym->st_value);
-#endif
-}
-
-/* Perform relocation to GOT or PLT entries */
-
-ST_FUNC void fill_got(TCCState *s1)
-{
-	Section *s;
-	ElfW_Rel *rel;
-	int i;
-
-	for (i = 1; i < s1->nb_sections; i++) {
-		s = s1->sections[i];
-		if (s->sh_type != SHT_RELX)
-			continue;
-		/* no need to handle got relocations */
-
-		if (s->link != symtab_section)
-			continue;
-		for_each_elem(s, 0, rel, ElfW_Rel) {
-			switch (ELFW(R_TYPE) (rel->r_info)) {
-			case R_X86_64_GOT32:
-			case R_X86_64_GOTPCREL:
-			case R_X86_64_GOTPCRELX:
-			case R_X86_64_REX_GOTPCRELX:
-			case R_X86_64_PLT32:
-				fill_got_entry(s1, rel);
-				break;
-			}
-		}
-	}
-}
-
-/* See put_got_entry for a description.  This is the second stage
-   where GOT references to local defined symbols are rewritten.  */
-
-static void fill_local_got_entries(TCCState *s1)
-{
-	ElfW_Rel *rel;
-	if (!s1->got->reloc)
-		return;
-	for_each_elem(s1->got->reloc, 0, rel, ElfW_Rel) {
-		if (ELFW(R_TYPE)(rel->r_info) == R_RELATIVE) {
-			int sym_index = ELFW(R_SYM) (rel->r_info);
-			ElfW(Sym) *sym = &((ElfW(Sym) *) symtab_section->data)[sym_index];
-			struct sym_attr *attr = get_sym_attr(s1, sym_index, 0);
-			unsigned offset = attr->got_offset;
-			if (offset != rel->r_offset - s1->got->sh_addr)
-				tcc_error_noabort("fill_local_got_entries: huh?");
-			rel->r_info = ELFW(R_INFO)(0, R_RELATIVE);
-#if SHT_RELX == SHT_RELA
-			rel->r_addend = sym->st_value;
-#else
-			/* All our REL architectures also happen to be 32bit LE.  */
-
-			write32le(s1->got->data + offset, sym->st_value);
-#endif
-		}
-	}
-}
-
-/* Bind symbols of executable: resolve undefined symbols from exported symbols
-   in shared libraries */
-
-static void bind_exe_dynsyms(TCCState *s1, int is_PIE)
-{
-	const char *name;
-	int sym_index, index;
-	ElfW(Sym) *sym, *esym;
-	int type;
-
-	/* Resolve undefined symbols from dynamic symbols. When there is a match:
-	   - if STT_FUNC or STT_GNU_IFUNC symbol -> add it in PLT
-	   - if STT_OBJECT symbol -> add it in .bss section with suitable reloc */
-
-	for_each_elem(symtab_section, 1, sym, ElfW(Sym)) {
-		if (sym->st_shndx == SHN_UNDEF) {
-			name = (char *) symtab_section->link->data + sym->st_name;
-			sym_index = find_elf_sym(s1->dynsymtab_section, name);
-			if (sym_index) {
-				if (is_PIE)
-					continue;
-				esym = &((ElfW(Sym) *)s1->dynsymtab_section->data)[sym_index];
-				type = ELFW(ST_TYPE)(esym->st_info);
-				if ((type == STT_FUNC) || (type == STT_GNU_IFUNC)) {
-					/* Indirect functions shall have STT_FUNC type in executable
-					 * dynsym section. Indeed, a dlsym call following a lazy
-					 * resolution would pick the symbol value from the
-					 * executable dynsym entry which would contain the address
-					 * of the function wanted by the caller of dlsym instead of
-					 * the address \of the function that would return that
-					 * address */
-
-					int dynindex
-						= put_elf_sym(s1->dynsym, 0, esym->st_size,
-							      ELFW(ST_INFO)(STB_GLOBAL,STT_FUNC), 0, 0,
-							      name);
-					int index = sym - (ElfW(Sym) *) symtab_section->data;
-					get_sym_attr(s1, index, 1)->dyn_index = dynindex;
-				} else if (type == STT_OBJECT) {
-					unsigned long offset;
-					ElfW(Sym) *dynsym;
-					offset = bss_section->data_offset;
-					/* XXX: which alignment ? */
-
-					offset = (offset + 16 - 1) & -16;
-					set_elf_sym (s1->symtab, offset, esym->st_size,
-						     esym->st_info, 0, bss_section->sh_num, name);
-					index = put_elf_sym(s1->dynsym, offset, esym->st_size,
-							    esym->st_info, 0, bss_section->sh_num,
-							    name);
-
-					/* Ensure R_COPY works for weak symbol aliases */
-
-					if (ELFW(ST_BIND)(esym->st_info) == STB_WEAK) {
-						for_each_elem(s1->dynsymtab_section, 1, dynsym, ElfW(Sym)) {
-							if ((dynsym->st_value == esym->st_value)
-							    && (ELFW(ST_BIND)(dynsym->st_info) == STB_GLOBAL)) {
-								char *dynname = (char *) s1->dynsymtab_section->link->data
-										+ dynsym->st_name;
-								put_elf_sym(s1->dynsym, offset, dynsym->st_size,
-									    dynsym->st_info, 0,
-									    bss_section->sh_num, dynname);
-								break;
-							}
-						}
-					}
-
-					put_elf_reloc(s1->dynsym, bss_section,
-						      offset, R_COPY, index);
-					offset += esym->st_size;
-					bss_section->data_offset = offset;
-				}
-			} else {
-				/* STB_WEAK undefined symbols are accepted */
-
-				/* XXX: _fp_hw seems to be part of the ABI, so we ignore it */
-
-				if (ELFW(ST_BIND)(sym->st_info) == STB_WEAK ||
-				    !strcmp(name, "_fp_hw")) {
-				} else {
-					tcc_error_noabort("undefined symbol '%s'", name);
-				}
-			}
-		}
-	}
-}
-
-/* Bind symbols of libraries: export all non local symbols of executable that
-   are referenced by shared libraries. The reason is that the dynamic loader
-   search symbol first in executable and then in libraries. Therefore a
-   reference to a symbol already defined by a library can still be resolved by
-   a symbol in the executable.   With -rdynamic, export all defined symbols */
-
-static void bind_libs_dynsyms(TCCState *s1)
-{
-	const char *name;
-	int dynsym_index;
-	ElfW(Sym) *sym, *esym;
-
-	for_each_elem(symtab_section, 1, sym, ElfW(Sym)) {
-		name = (char *)symtab_section->link->data + sym->st_name;
-		dynsym_index = find_elf_sym(s1->dynsymtab_section, name);
-		if (sym->st_shndx != SHN_UNDEF) {
-			if (ELFW(ST_BIND)(sym->st_info) != STB_LOCAL
-			    && (dynsym_index || s1->rdynamic))
-				set_elf_sym(s1->dynsym, sym->st_value, sym->st_size,
-					    sym->st_info, 0, sym->st_shndx, name);
-		} else if (dynsym_index) {
-			esym = (ElfW(Sym) *)s1->dynsymtab_section->data + dynsym_index;
-			if (esym->st_shndx == SHN_UNDEF) {
-				/* weak symbols can stay undefined */
-
-				if (ELFW(ST_BIND)(esym->st_info) != STB_WEAK)
-					tcc_warning("undefined dynamic symbol '%s'", name);
-			}
-		}
-	}
-}
-
-/* Export all non local symbols. This is used by shared libraries so that the
-   non local symbols they define can resolve a reference in another shared
-   library or in the executable. Correspondingly, it allows undefined local
-   symbols to be resolved by other shared libraries or by the executable. */
-
-static void export_global_syms(TCCState *s1)
-{
-	int dynindex, index;
-	const char *name;
-	ElfW(Sym) *sym;
-	for_each_elem(symtab_section, 1, sym, ElfW(Sym)) {
-		if (ELFW(ST_BIND)(sym->st_info) != STB_LOCAL) {
-			name = (char *) symtab_section->link->data + sym->st_name;
-			dynindex = set_elf_sym(s1->dynsym, sym->st_value, sym->st_size,
-					       sym->st_info, 0, sym->st_shndx, name);
-			index = sym - (ElfW(Sym) *) symtab_section->data;
-			get_sym_attr(s1, index, 1)->dyn_index = dynindex;
-		}
-	}
-}
-
-/* decide if an unallocated section should be output. */
-
-static int set_sec_sizes(TCCState *s1)
-{
-	int i;
-	Section *s;
-	int textrel = 0;
-	int file_type = s1->output_type;
-
-	/* Allocate strings for section names */
-
-	for (i = 1; i < s1->nb_sections; i++) {
-		s = s1->sections[i];
-		if (s->sh_type == SHT_RELX && !(s->sh_flags & SHF_ALLOC)) {
-			/* when generating a DLL, we include relocations but
-			   we may patch them */
-
-			if ((file_type & TCC_OUTPUT_DYN)
-			    && (s1->sections[s->sh_info]->sh_flags & SHF_ALLOC)) {
-				int count = prepare_dynamic_rel(s1, s);
-				if (count) {
-					/* allocate the section */
-
-					s->sh_flags |= SHF_ALLOC;
-					s->sh_size = count * sizeof(ElfW_Rel);
-					if (s1->sections[s->sh_info]->sh_flags & SHF_EXECINSTR)
-						textrel += count;
-				}
-			}
-		} else if ((s->sh_flags & SHF_ALLOC)
-			   || s1->do_debug) {
-			s->sh_size = s->data_offset;
-		}
-	}
-	return textrel;
-}
-
-/* various data used under elf_output_file() */
-
-struct dyn_inf {
-	Section *dynamic;
-	Section *dynstr;
-	struct {
-		/* Info to be copied in dynamic section */
-
-		unsigned long data_offset;
-		addr_t rel_addr;
-		addr_t rel_size;
-	};
-
-	ElfW(Phdr) *phdr;
-	int phnum;
-	int shnum;
-	Section *interp;
-	Section *note;
-	Section *gnu_hash;
-
-	/* read only segment mapping for GNU_RELRO */
-
-	Section _roinf, *roinf;
-};
-
-/* Decide the layout of sections loaded in memory. This must be done before
-   program headers are filled since they contain info about the layout.
-   We do the following ordering: interp, symbol tables, relocations, progbits,
-   nobits */
-
-static int sort_sections(TCCState *s1, int *sec_order, struct dyn_inf *d)
-{
-	Section *s;
-	int i, j, k, f, f0, n;
-	int nb_sections = s1->nb_sections;
-	int *sec_cls = sec_order + nb_sections;
-
-	for (i = 1; i < nb_sections; i++) {
-		s = s1->sections[i];
-		if (0 == s->sh_name) {
-			j = 0x900; /* no sh_name: won't go to file */
-
-		} else if (s->sh_flags & SHF_ALLOC) {
-			j = 0x100;
-			if (s->sh_flags & SHF_WRITE)
-				j = 0x200;
-			if (s->sh_flags & SHF_TLS)
-				j += 0x200;
-		} else {
-			j = 0x700;
-		}
-		if (j >= 0x700 && s1->output_format != TCC_OUTPUT_FORMAT_ELF)
-			s->sh_size = 0, j = 0x900;
-
-		if (s->sh_type == SHT_SYMTAB || s->sh_type == SHT_DYNSYM) {
-			k = 0x10;
-		} else if (s->sh_type == SHT_STRTAB && strcmp(s->name, ".stabstr")) {
-			k = 0x11;
-			if (i == nb_sections - 1) /* ".shstrtab" assumed to stay last */
-
-				k = 0xff;
-		} else if (s->sh_type == SHT_HASH || s->sh_type == SHT_GNU_HASH) {
-			k = 0x12;
-		} else if (s->sh_type == SHT_GNU_verdef
-			   || s->sh_type == SHT_GNU_verneed
-			   || s->sh_type == SHT_GNU_versym) {
-			k = 0x13;
-		} else if (s->sh_type == SHT_RELX) {
-			k = 0x20;
-			if (s1->plt && s == s1->plt->reloc)
-				k = 0x21;
-		} else if (s->sh_flags & SHF_EXECINSTR) {
-			k = 0x30;
-			/* RELRO sections --> */
-
-		} else if (s->sh_type == SHT_PREINIT_ARRAY) {
-			k = 0x41;
-		} else if (s->sh_type == SHT_INIT_ARRAY) {
-			k = 0x42;
-		} else if (s->sh_type == SHT_FINI_ARRAY) {
-			k = 0x43;
-		} else if (s->sh_type == SHT_DYNAMIC) {
-			k = 0x46;
-		} else if (s == s1->got) {
-			k = 0x47; /* .got as RELRO needs BIND_NOW in DT_FLAGS */
-
-		} else if (s->reloc && (s->reloc->sh_flags & SHF_ALLOC) && j == 0x100) {
-			k = 0x44;
-			/* <-- */
-
-		} else if (s->sh_type == SHT_NOTE) {
-			k = 0x60;
-		} else if (s->sh_type == SHT_NOBITS) {
-			k = 0x70; /* bss */
-
-		} else if (s == d->interp) {
-			k = 0x00;
-		} else {
-			k = 0x50; /* data */
-
-		}
-		k += j;
-
-		if ((k & 0xfff0) == 0x140) {
-			/* make RELRO section writable */
-
-			k += 0x100, s->sh_flags |= SHF_WRITE;
-		}
-		for (n = i; n > 1 && k < (f = sec_cls[n - 1]); --n)
-			sec_cls[n] = f, sec_order[n] = sec_order[n - 1];
-		sec_cls[n] = k, sec_order[n] = i;
-	}
-	sec_order[0] = 0;
-	d->shnum = 1;
-
-	/* count PT_LOAD headers needed */
-
-	n = f0 = 0;
-	for (i = 1; i < nb_sections; i++) {
-		s = s1->sections[sec_order[i]];
-		k = sec_cls[i];
-		f = 0;
-		if (k < 0x900)
-			++d->shnum;
-		if (k < 0x700) {
-			f = s->sh_flags & (SHF_ALLOC|SHF_WRITE|SHF_EXECINSTR|SHF_TLS);
-			if ((k & 0xfff0) == 0x240) /* RELRO sections */
-
-				f |= 1<<4;
-			/* start new header when flags changed or relro, but avoid zero memsz */
-
-			if (f != f0 && s->sh_size)
-				f0 = f, ++n, f |= 1<<8;
-		}
-		sec_cls[i] = f;
-		//printf("ph %d sec %02d : %3X %3X  %8.2X  %04X  %s\n", (f>0) * n, i, f, k, s->sh_type, (int)s->sh_size, s->name);
-
-	}
-	return n;
-}
-
-static ElfW(Phdr) *fill_phdr(ElfW(Phdr) *ph, int type, Section *s)
-{
-	if (s) {
-		ph->p_offset = s->sh_offset;
-		ph->p_vaddr = s->sh_addr;
-		ph->p_filesz = s->sh_size;
-		ph->p_align = s->sh_addralign;
-	}
-	ph->p_type = type;
-	ph->p_flags = PF_R;
-	ph->p_paddr = ph->p_vaddr;
-	ph->p_memsz = ph->p_filesz;
-	return ph;
-}
-
-/* Assign sections to segments and decide how are sections laid out when loaded
-   in memory. This function also fills corresponding program headers. */
-
-static int layout_sections(TCCState *s1, int *sec_order, struct dyn_inf *d)
-{
-	Section *s;
-	addr_t addr, tmp, align, s_align, base;
-	ElfW(Phdr) *ph = NULL;
-	int i, f, n, phnum, phfill;
-	int file_offset;
-
-	/* compute number of program headers */
-
-	phnum = sort_sections(s1, sec_order, d);
-	phfill = 0; /* set to 1 to have dll's with a PT_PHDR */
-
-	if (d->interp)
-		phfill = 2;
-	phnum += phfill;
-	if (d->note)
-		++phnum;
-	if (d->dynamic)
-		++phnum;
-	if (eh_frame_hdr_section)
-		++phnum;
-	if (d->roinf)
-		++phnum;
-	d->phnum = phnum;
-	d->phdr = tcc_mallocz(phnum * sizeof(ElfW(Phdr)));
-
-	file_offset = 0;
-	if (s1->output_format == TCC_OUTPUT_FORMAT_ELF) {
-		file_offset = (sizeof(ElfW(Ehdr)) + phnum * sizeof(ElfW(Phdr)) + 3) & -4;
-		file_offset += d->shnum * sizeof (ElfW(Shdr));
-	}
-
-	s_align = ELF_PAGE_SIZE;
-	if (s1->section_align)
-		s_align = s1->section_align;
-
-	addr = ELF_START_ADDR;
-	if (s1->output_type & TCC_OUTPUT_DYN)
-		addr = 0;
-
-	if (s1->has_text_addr) {
-		addr = s1->text_addr;
-		if (0) {
-			int a_offset, p_offset;
-			/* we ensure that (addr % ELF_PAGE_SIZE) == file_offset %
-			   ELF_PAGE_SIZE */
-
-			a_offset = (int) (addr & (s_align - 1));
-			p_offset = file_offset & (s_align - 1);
-			if (a_offset < p_offset)
-				a_offset += s_align;
-			file_offset += (a_offset - p_offset);
-		}
-	}
-	base = addr;
-	/* compute address after headers */
-
-	addr += file_offset;
-
-	n = 0;
-	for (i = 1; i < s1->nb_sections; i++) {
-		s = s1->sections[sec_order[i]];
-		f = sec_order[i + s1->nb_sections];
-		align = s->sh_addralign - 1;
-
-		if (f == 0) { /* no alloc */
-
-			file_offset = (file_offset + align) & ~align;
-			s->sh_offset = file_offset;
-			if (s->sh_type != SHT_NOBITS)
-				file_offset += s->sh_size;
-			continue;
-		}
-
-		if ((f & 1<<8) && n) {
-			/* different rwx section flags */
-
-			if (s1->output_format == TCC_OUTPUT_FORMAT_ELF) {
-				/* if in the middle of a page, w e duplicate the page in
-				   memory so that one copy is RX and the other is RW */
-
-				if ((addr & (s_align - 1)) != 0)
-					addr += s_align;
-			} else {
-				align = s_align - 1;
-			}
-		}
-
-		tmp = addr;
-		addr = (addr + align) & ~align;
-		file_offset += (int)(addr - tmp);
-		s->sh_offset = file_offset;
-		s->sh_addr = addr;
-
-		if (f & 1<<8) {
-			/* set new program header */
-
-			ph = &d->phdr[phfill + n];
-			ph->p_type = PT_LOAD;
-			ph->p_align = s_align;
-			ph->p_flags = PF_R;
-			if (f & SHF_WRITE)
-				ph->p_flags |= PF_W;
-			if (f & SHF_EXECINSTR)
-				ph->p_flags |= PF_X;
-			if (f & SHF_TLS) {
-				ph->p_type = PT_TLS;
-				ph->p_align = align + 1;
-			}
-
-			ph->p_offset = file_offset;
-			ph->p_vaddr = addr;
-			if (n == 0) {
-				/* Make the first PT_LOAD segment include the program
-				   headers itself (and the ELF header as well), it'll
-				   come out with same memory use but will make various
-				   tools like binutils strip work better.  */
-
-				ph->p_offset = 0;
-				ph->p_vaddr = base;
-			}
-			ph->p_paddr = ph->p_vaddr;
-			++n;
-		}
-
-		if (f & 1<<4) {
-			Section *roinf = &d->_roinf;
-			if (roinf->sh_size == 0) {
-				roinf->sh_offset = s->sh_offset;
-				roinf->sh_addr = s->sh_addr;
-				roinf->sh_addralign = 1;
-			}
-			roinf->sh_size = (addr - roinf->sh_addr) + s->sh_size;
-		}
-
-		addr += s->sh_size;
-		if (s->sh_type != SHT_NOBITS)
-			file_offset += s->sh_size;
-
-		ph->p_filesz = file_offset - ph->p_offset;
-		ph->p_memsz = addr - ph->p_vaddr;
-	}
-
-	/* Fill other headers */
-
-	if (d->note)
-		fill_phdr(++ph, PT_NOTE, d->note);
-	if (d->dynamic)
-		fill_phdr(++ph, PT_DYNAMIC, d->dynamic)->p_flags |= PF_W;
-	if (eh_frame_hdr_section)
-		fill_phdr(++ph, PT_GNU_EH_FRAME, eh_frame_hdr_section);
-	if (d->roinf)
-		fill_phdr(++ph, PT_GNU_RELRO, d->roinf)->p_flags |= PF_W;
-	if (d->interp)
-		fill_phdr(&d->phdr[1], PT_INTERP, d->interp);
-	if (phfill) {
-		ph = &d->phdr[0];
-		ph->p_offset = sizeof(ElfW(Ehdr));
-		ph->p_vaddr = base + ph->p_offset;
-		ph->p_filesz = phnum * sizeof(ElfW(Phdr));
-		ph->p_align = 4;
-		fill_phdr(ph, PT_PHDR, NULL);
-	}
-	return 0;
-}
-
-/* put dynamic tag */
-
-static void put_dt(Section *dynamic, int dt, addr_t val)
-{
-	ElfW(Dyn) *dyn;
-	dyn = section_ptr_add(dynamic, sizeof(ElfW(Dyn)));
-	dyn->d_tag = dt;
-	dyn->d_un.d_val = val;
-}
-
-/* Fill the dynamic section with tags describing the address and size of
-   sections */
-
-static void fill_dynamic(TCCState *s1, struct dyn_inf *dyninf)
-{
-	Section *dynamic = dyninf->dynamic;
-	Section *s;
-
-	/* put dynamic section entries */
-
-	put_dt(dynamic, DT_HASH, s1->dynsym->hash->sh_addr);
-	put_dt(dynamic, DT_GNU_HASH, dyninf->gnu_hash->sh_addr);
-	put_dt(dynamic, DT_STRTAB, dyninf->dynstr->sh_addr);
-	put_dt(dynamic, DT_SYMTAB, s1->dynsym->sh_addr);
-	put_dt(dynamic, DT_STRSZ, dyninf->dynstr->data_offset);
-	put_dt(dynamic, DT_SYMENT, sizeof(ElfW(Sym)));
-#if PTR_SIZE == 8
-	put_dt(dynamic, DT_RELA, dyninf->rel_addr);
-	put_dt(dynamic, DT_RELASZ, dyninf->rel_size);
-	put_dt(dynamic, DT_RELAENT, sizeof(ElfW_Rel));
-	if (s1->plt && s1->plt->reloc) {
-		put_dt(dynamic, DT_PLTGOT, s1->got->sh_addr);
-		put_dt(dynamic, DT_PLTRELSZ, s1->plt->reloc->data_offset);
-		put_dt(dynamic, DT_JMPREL, s1->plt->reloc->sh_addr);
-		put_dt(dynamic, DT_PLTREL, DT_RELA);
-	}
-	put_dt(dynamic, DT_RELACOUNT, 0);
-#else
-	put_dt(dynamic, DT_REL, dyninf->rel_addr);
-	put_dt(dynamic, DT_RELSZ, dyninf->rel_size);
-	put_dt(dynamic, DT_RELENT, sizeof(ElfW_Rel));
-	if (s1->plt && s1->plt->reloc) {
-		put_dt(dynamic, DT_PLTGOT, s1->got->sh_addr);
-		put_dt(dynamic, DT_PLTRELSZ, s1->plt->reloc->data_offset);
-		put_dt(dynamic, DT_JMPREL, s1->plt->reloc->sh_addr);
-		put_dt(dynamic, DT_PLTREL, DT_REL);
-	}
-	put_dt(dynamic, DT_RELCOUNT, 0);
-#endif
-	if (versym_section && verneed_section) {
-		/* The dynamic linker can not handle VERSYM without VERNEED */
-
-		put_dt(dynamic, DT_VERSYM, versym_section->sh_addr);
-		put_dt(dynamic, DT_VERNEED, verneed_section->sh_addr);
-		put_dt(dynamic, DT_VERNEEDNUM, dt_verneednum);
-	}
-	s = have_section(s1, ".preinit_array");
-	if (s && s->data_offset) {
-		put_dt(dynamic, DT_PREINIT_ARRAY, s->sh_addr);
-		put_dt(dynamic, DT_PREINIT_ARRAYSZ, s->data_offset);
-	}
-	s = have_section(s1, ".init_array");
-	if (s && s->data_offset) {
-		put_dt(dynamic, DT_INIT_ARRAY, s->sh_addr);
-		put_dt(dynamic, DT_INIT_ARRAYSZ, s->data_offset);
-	}
-	s = have_section(s1, ".fini_array");
-	if (s && s->data_offset) {
-		put_dt(dynamic, DT_FINI_ARRAY, s->sh_addr);
-		put_dt(dynamic, DT_FINI_ARRAYSZ, s->data_offset);
-	}
-	s = have_section(s1, ".init");
-	if (s && s->data_offset) {
-		put_dt(dynamic, DT_INIT, s->sh_addr);
-	}
-	s = have_section(s1, ".fini");
-	if (s && s->data_offset) {
-		put_dt(dynamic, DT_FINI, s->sh_addr);
-	}
-	if (s1->do_debug)
-		put_dt(dynamic, DT_DEBUG, 0);
-	put_dt(dynamic, DT_NULL, 0);
-}
-
-/* Remove gaps between RELX sections.
-   These gaps are a result of final_sections_reloc. Here some relocs are removed.
-   The gaps are then filled with 0 in tcc_output_elf. The 0 is intepreted as
-   R_...NONE reloc. This does work on most targets but on OpenBSD/arm64 this
-   is illegal. OpenBSD/arm64 does not support R_...NONE reloc. */
-
-static void update_reloc_sections(TCCState *s1, struct dyn_inf *dyninf)
-{
-	int i;
-	unsigned long file_offset = 0;
-	Section *s;
-	Section *relocplt = s1->plt ? s1->plt->reloc : NULL;
-
-	/* dynamic relocation table information, for .dynamic section */
-
-	dyninf->rel_addr = dyninf->rel_size = 0;
-
-	for (i = 1; i < s1->nb_sections; i++) {
-		s = s1->sections[i];
-		if (s->sh_type == SHT_RELX && s != relocplt) {
-			if (dyninf->rel_size == 0) {
-				dyninf->rel_addr = s->sh_addr;
-				file_offset = s->sh_offset;
-			} else {
-				s->sh_addr = dyninf->rel_addr + dyninf->rel_size;
-				s->sh_offset = file_offset + dyninf->rel_size;
-			}
-			dyninf->rel_size += s->sh_size;
-		}
-	}
-}
-#endif
 /* ndef ELF_OBJ_ONLY */
 /* Create an ELF file on disk.
    This function handle ELF specific layout requirements */
-// 2560 "tccelf.c"
+
 static int tcc_output_elf(TCCState *s1, FILE *f, int phnum, ElfW(Phdr) *phdr)
 {
 	int i, shnum, offset, size, file_type;
@@ -34144,7 +23838,6 @@ static int tcc_output_elf(TCCState *s1, FILE *f, int phnum, ElfW(Phdr) *phdr)
 	ehdr.e_ident[4] = ELFCLASSW;
 	ehdr.e_ident[5] = ELFDATA2LSB;
 	ehdr.e_ident[6] = EV_CURRENT;
-// 2599 "tccelf.c"
 	if (file_type == TCC_OUTPUT_OBJ) {
 		ehdr.e_type = ET_REL;
 	} else {
@@ -34267,236 +23960,9 @@ static int tcc_write_elf_file(TCCState *s1, const char *filename, int phnum,
 
 	return ret;
 }
-#ifndef ELF_OBJ_ONLY
-
-/* order sections according to sec_order, remove sections
-   that we aren't going to output. \ */
-
-static void reorder_sections(TCCState *s1, int *sec_order)
-{
-	int i, nnew, k, *backmap;
-	Section **snew, *s;
-	ElfW(Sym) *sym;
-
-	backmap = tcc_malloc(s1->nb_sections * sizeof(backmap[0]));
-	for (i = 0, nnew = 0, snew = NULL; i < s1->nb_sections; i++) {
-		k = sec_order[i];
-		s = s1->sections[k];
-		if (!i || s->sh_name) {
-			backmap[k] = nnew;
-			dynarray_add(&snew, &nnew, s);
-		} else {
-			backmap[k] = 0;
-			/* just remember to free them later */
-
-			dynarray_add(&s1->priv_sections, &s1->nb_priv_sections, s);
-		}
-	}
-	for (i = 1; i < nnew; i++) {
-		s = snew[i];
-		s->sh_num = i;
-		if (s->sh_type == SHT_RELX)
-			s->sh_info = backmap[s->sh_info];
-		else if (s->sh_type == SHT_SYMTAB || s->sh_type == SHT_DYNSYM)
-			for_each_elem(s, 1, sym, ElfW(Sym))
-			if (sym->st_shndx < s1->nb_sections)
-				sym->st_shndx = backmap[sym->st_shndx];
-	}
-	tcc_free(s1->sections);
-	s1->sections = snew;
-	s1->nb_sections = nnew;
-	tcc_free(backmap);
-}
-
-static void alloc_sec_names(TCCState *s1, int is_obj);
-
-/* Output an elf, coff or binary file */
-
-/* XXX: suppress unneeded sections */
-
-static int elf_output_file(TCCState *s1, const char *filename)
-{
-	int i, ret, file_type, *sec_order;
-	struct dyn_inf dyninf = {0};
-	Section *interp, *dynstr, *dynamic;
-	int textrel, got_sym, dt_flags_1;
-
-	file_type = s1->output_type;
-	s1->nb_errors = 0;
-	ret = -1;
-	interp = dynstr = dynamic = NULL;
-	sec_order = NULL;
-	dyninf.roinf = &dyninf._roinf;
-
-	/* if linking, also link in runtime libraries (libc, libgcc, etc.) */
-
-	tcc_add_runtime(s1);
-	resolve_common_syms(s1);
-
-	if (!s1->static_link) {
-		if (file_type & TCC_OUTPUT_EXE) {
-			char *ptr;
-			/* allow override the dynamic loader */
-
-			const char *elfint = s1->elfint;
-			if (elfint == NULL)
-				elfint = getenv("LD_SO");
-			if (elfint == NULL)
-				elfint = DEFAULT_ELFINTERP(s1);
-			/* add interpreter section only if executable */
-
-			interp = new_section(s1, ".interp", SHT_PROGBITS, SHF_ALLOC);
-			interp->sh_addralign = 1;
-			ptr = section_ptr_add(interp, 1 + strlen(elfint));
-			strcpy(ptr, elfint);
-			dyninf.interp = interp;
-		}
-
-		/* add dynamic symbol table */
-
-		s1->dynsym = new_symtab(s1, ".dynsym", SHT_DYNSYM, SHF_ALLOC,
-					".dynstr",
-					".hash", SHF_ALLOC);
-		/* Number of local symbols (readelf complains if not set) */
-
-		s1->dynsym->sh_info = 1;
-		dynstr = s1->dynsym->link;
-		/* add dynamic section */
-
-		dynamic = new_section(s1, ".dynamic", SHT_DYNAMIC,
-				      SHF_ALLOC | SHF_WRITE);
-		dynamic->link = dynstr;
-		dynamic->sh_entsize = sizeof(ElfW(Dyn));
-
-		got_sym = build_got(s1);
-		if (file_type & TCC_OUTPUT_EXE) {
-			bind_exe_dynsyms(s1, file_type & TCC_OUTPUT_DYN);
-			if (s1->nb_errors)
-				goto the_end;
-		}
-		build_got_entries(s1, got_sym);
-		if (file_type & TCC_OUTPUT_EXE) {
-			bind_libs_dynsyms(s1);
-		} else {
-			/* shared library case: simply export all global symbols */
-
-			export_global_syms(s1);
-		}
-#if TCC_EH_FRAME
-		/* fill with initial data */
-
-		tcc_eh_frame_hdr(s1, 0);
-#endif
-		dyninf.gnu_hash = create_gnu_hash(s1);
-	} else {
-		build_got_entries(s1, 0);
-	}
-	version_add (s1);
-
-	textrel = set_sec_sizes(s1);
-
-	if (!s1->static_link) {
-		/* add a list of needed dlls */
-
-		for (i = 0; i < s1->nb_loaded_dlls; i++) {
-			DLLReference *dllref = s1->loaded_dlls[i];
-			if (dllref->level == 0)
-				put_dt(dynamic, DT_NEEDED, put_elf_str(dynstr, dllref->name));
-		}
-
-		if (s1->rpath)
-			put_dt(dynamic, s1->enable_new_dtags ? DT_RUNPATH : DT_RPATH,
-			       put_elf_str(dynstr, s1->rpath));
-
-		dt_flags_1 = DF_1_NOW;
-		if (file_type & TCC_OUTPUT_DYN) {
-			if (s1->soname)
-				put_dt(dynamic, DT_SONAME, put_elf_str(dynstr, s1->soname));
-			/* XXX: currently, since we do not handle PIC code, we
-			   must relocate the readonly segments */
-
-			if (textrel)
-				put_dt(dynamic, DT_TEXTREL, 0);
-			if (file_type & TCC_OUTPUT_EXE)
-				dt_flags_1 = DF_1_NOW | DF_1_PIE;
-		}
-		put_dt(dynamic, DT_FLAGS, DF_BIND_NOW);
-		put_dt(dynamic, DT_FLAGS_1, dt_flags_1);
-		if (s1->symbolic)
-			put_dt(dynamic, DT_SYMBOLIC, 0);
-
-		dyninf.dynamic = dynamic;
-		dyninf.dynstr = dynstr;
-		/* remember offset and reserve space for 2nd call below */
-
-		dyninf.data_offset = dynamic->data_offset;
-		fill_dynamic(s1, &dyninf);
-		dynamic->sh_size = dynamic->data_offset;
-		dynstr->sh_size = dynstr->data_offset;
-	}
-
-	/* create and fill .shstrtab section */
-
-	alloc_sec_names(s1, 0);
-	/* this array is used to reorder sections in the output file */
-
-	sec_order = tcc_malloc(sizeof(int) * 2 * s1->nb_sections);
-	/* compute section to program header mapping */
-
-	layout_sections(s1, sec_order, &dyninf);
-
-	if (dynamic) {
-		/* put in GOT the dynamic section address and relocate PLT */
-
-		write32le(s1->got->data, dynamic->sh_addr);
-		if (file_type == TCC_OUTPUT_EXE
-		    || (RELOCATE_DLLPLT && (file_type & TCC_OUTPUT_DYN)))
-			relocate_plt(s1);
-		/* relocate symbols in .dynsym now that final addresses are known */
-
-		relocate_syms(s1, s1->dynsym, 2);
-	}
-
-	/* if building executable or DLL, then relocate each section
-	   except the GOT which is already relocated */
-
-	relocate_syms(s1, s1->symtab, 0);
-	if (s1->nb_errors != 0)
-		goto the_end;
-	relocate_sections(s1);
-	if (dynamic) {
-		update_reloc_sections (s1, &dyninf);
-		dynamic->data_offset = dyninf.data_offset;
-		fill_dynamic(s1, &dyninf);
-	}
-	/* Perform relocation to GOT or PLT entries */
-
-	if (file_type == TCC_OUTPUT_EXE && s1->static_link)
-		fill_got(s1);
-	else if (s1->got)
-		fill_local_got_entries(s1);
-
-	if (dyninf.gnu_hash)
-		update_gnu_hash(s1, dyninf.gnu_hash);
-
-	reorder_sections(s1, sec_order);
-#if TCC_EH_FRAME
-	/* fill with final data */
-
-	tcc_eh_frame_hdr(s1, 1);
-#endif
-	/* Create the ELF file with name 'filename' */
-
-	ret = tcc_write_elf_file(s1, filename, dyninf.phnum, dyninf.phdr);
-the_end:
-	tcc_free(sec_order);
-	tcc_free(dyninf.phdr);
-	return ret;
-}
-#endif
 /* ndef ELF_OBJ_ONLY */
 /* Allocate strings for section names */
-// 3006 "tccelf.c"
+
 static void alloc_sec_names(TCCState *s1, int is_obj)
 {
 	int i;
@@ -34519,7 +23985,6 @@ static int elf_output_obj(TCCState *s1, const char *filename)
 {
 	Section *s;
 	int i, ret, file_offset;
-	s1->nb_errors = 0;
 	/* Allocate strings for section names */
 
 	alloc_sec_names(s1, 1);
@@ -34540,6 +24005,7 @@ static int elf_output_obj(TCCState *s1, const char *filename)
 
 LIBTCCAPI int tcc_output_file(TCCState *s, const char *filename)
 {
+	s->nb_errors = 0;
 	if (s->test_coverage)
 		tcc_tcov_add_file(s, filename);
 	if (s->output_type == TCC_OUTPUT_OBJ)
@@ -34555,8 +24021,10 @@ ST_FUNC ssize_t full_read(int fd, void *buf, size_t count)
 	size_t rnum = 0;
 	while (1) {
 		ssize_t num = read(fd, cbuf, count-rnum);
-		if (num < 0) return num;
-		if (num == 0) return rnum;
+		if (num < 0)
+			return num;
+		if (num == 0)
+			return rnum;
 		rnum += num;
 		cbuf += num;
 	}
@@ -34693,7 +24161,6 @@ invalid:
 			   sh->sh_type != SHT_PREINIT_ARRAY &&
 			   sh->sh_type != SHT_INIT_ARRAY &&
 			   sh->sh_type != SHT_FINI_ARRAY
-// 3210 "tccelf.c"
 			  )
 			continue;
 
@@ -34709,6 +24176,9 @@ invalid:
 				continue;
 			if (sh->sh_type != s->sh_type
 			    && strcmp (s->name, ".eh_frame")
+			    /* some crt1.o seem to have two ".note.GNU-stack" (SHT_NOTE & SHT_PROGBITS) */
+
+			    && strcmp (s->name, ".note.GNU-stack")
 			   ) {
 				tcc_error_noabort("section type conflict: %s %02x <> %02x", s->name,
 						  sh->sh_type, s->sh_type);
@@ -34741,23 +24211,21 @@ invalid:
 		s->sh_entsize = sh->sh_entsize;
 		sm_table[i].new_section = 1;
 found:
+		size = sh->sh_size;
 		/* align start of section */
 
-		s->data_offset += -s->data_offset & (sh->sh_addralign - 1);
+		offset = section_add(s, size, sh->sh_addralign);
 		if (sh->sh_addralign > s->sh_addralign)
 			s->sh_addralign = sh->sh_addralign;
-		sm_table[i].offset = s->data_offset;
+		sm_table[i].offset = offset;
 		sm_table[i].s = s;
 		/* concatenate sections */
 
-		size = sh->sh_size;
-		if (sh->sh_type != SHT_NOBITS) {
+		if (sh->sh_type != SHT_NOBITS && size) {
 			unsigned char *ptr;
 			lseek(fd, file_offset + sh->sh_offset, SEEK_SET);
-			ptr = section_ptr_add(s, size);
+			ptr = s->data + offset;
 			full_read(fd, ptr, size);
-		} else {
-			s->data_offset += size;
 		}
 
 next: ;
@@ -34794,6 +24262,9 @@ next: ;
 			s1->sections[s->sh_info]->reloc = s;
 		}
 	}
+
+	if (!symtab)
+		goto done;
 	/* resolve symbols */
 
 	old_to_new_syms = tcc_mallocz(nb_syms * sizeof(int));
@@ -34877,15 +24348,15 @@ invalid_reloc:
 				/* offset the relocation offset */
 
 				rel->r_offset += offseti;
-// 3397 "tccelf.c"
 			}
 			break;
 		default:
 			break;
 		}
 	}
+done:
+	ret = !s1->nb_errors - 1;/* errors possibly from set_elf_sym() */
 
-	ret = 0;
 the_end:
 	tcc_free(symtab);
 	tcc_free(strtab);
@@ -35030,563 +24501,13 @@ ST_FUNC int tcc_load_archive(TCCState *s1, int fd, int alacarte)
 		file_offset = (file_offset + size + 1) & ~1;
 	}
 }
-#ifndef ELF_OBJ_ONLY
+/* ==================== tccrun.c ==================== */
 
-/* Set LV[I] to the global index of sym-version (LIB,VERSION).  Maybe resizes
-   LV, maybe create a new entry for (LIB,VERSION).  */
-
-static void set_ver_to_ver(TCCState *s1, int *n, int **lv, int i, char *lib,
-			   char *version)
-{
-	while (i >= *n) {
-		*lv = tcc_realloc(*lv, (*n + 1) * sizeof(**lv));
-		(*lv)[(*n)++] = -1;
-	}
-	if ((*lv)[i] == -1) {
-		int v, prev_same_lib = -1;
-		for (v = 0; v < nb_sym_versions; v++) {
-			if (strcmp(sym_versions[v].lib, lib))
-				continue;
-			prev_same_lib = v;
-			if (!strcmp(sym_versions[v].version, version))
-				break;
-		}
-		if (v == nb_sym_versions) {
-			sym_versions = tcc_realloc (sym_versions,
-						    (v + 1) * sizeof(*sym_versions));
-			sym_versions[v].lib = tcc_strdup(lib);
-			sym_versions[v].version = tcc_strdup(version);
-			sym_versions[v].out_index = 0;
-			sym_versions[v].prev_same_lib = prev_same_lib;
-			nb_sym_versions++;
-		}
-		(*lv)[i] = v;
-	}
-}
-
-/* Associates symbol SYM_INDEX (in dynsymtab) with sym-version index
-   VERNDX.  */
-
-static void
-set_sym_version(TCCState *s1, int sym_index, int verndx)
-{
-	if (sym_index >= nb_sym_to_version) {
-		int newelems = sym_index ? sym_index * 2 : 1;
-		sym_to_version = tcc_realloc(sym_to_version,
-					     newelems * sizeof(*sym_to_version));
-		memset(sym_to_version + nb_sym_to_version, -1,
-		       (newelems - nb_sym_to_version) * sizeof(*sym_to_version));
-		nb_sym_to_version = newelems;
-	}
-	if (sym_to_version[sym_index] < 0)
-		sym_to_version[sym_index] = verndx;
-}
-
-struct versym_info {
-	int nb_versyms;
-	ElfW(Verdef) *verdef;
-	ElfW(Verneed) *verneed;
-	ElfW(Half) *versym;
-	int nb_local_ver, *local_ver;
-};
-
-static void store_version(TCCState *s1, struct versym_info *v, char *dynstr)
-{
-	char *lib, *version;
-	uint32_t next;
-	int i;
-
-#define	DEBUG_VERSION 0
-
-	if (v->versym && v->verdef) {
-		ElfW(Verdef) *vdef = v->verdef;
-		lib = NULL;
-		do {
-			ElfW(Verdaux) *verdaux =
-				(ElfW(Verdaux) *) (((char *) vdef) + vdef->vd_aux);
-
-#if DEBUG_VERSION
-			printf ("verdef: version:%u flags:%u index:%u, hash:%u\n",
-				vdef->vd_version, vdef->vd_flags, vdef->vd_ndx,
-				vdef->vd_hash);
-#endif
-			if (vdef->vd_cnt) {
-				version = dynstr + verdaux->vda_name;
-
-				if (lib == NULL)
-					lib = version;
-				else
-					set_ver_to_ver(s1, &v->nb_local_ver, &v->local_ver, vdef->vd_ndx,
-						       lib, version);
-#if DEBUG_VERSION
-				printf ("  verdaux(%u): %s\n", vdef->vd_ndx, version);
-#endif
-			}
-			next = vdef->vd_next;
-			vdef = (ElfW(Verdef) *) (((char *) vdef) + next);
-		} while (next);
-	}
-	if (v->versym && v->verneed) {
-		ElfW(Verneed) *vneed = v->verneed;
-		do {
-			ElfW(Vernaux) *vernaux =
-				(ElfW(Vernaux) *) (((char *) vneed) + vneed->vn_aux);
-
-			lib = dynstr + vneed->vn_file;
-#if DEBUG_VERSION
-			printf ("verneed: %u %s\n", vneed->vn_version, lib);
-#endif
-			for (i = 0; i < vneed->vn_cnt; i++) {
-				if ((vernaux->vna_other & 0x8000) == 0) { /* hidden */
-
-					version = dynstr + vernaux->vna_name;
-					set_ver_to_ver(s1, &v->nb_local_ver, &v->local_ver, vernaux->vna_other,
-						       lib, version);
-#if DEBUG_VERSION
-					printf ("  vernaux(%u): %u %u %s\n",
-						vernaux->vna_other, vernaux->vna_hash,
-						vernaux->vna_flags, version);
-#endif
-				}
-				vernaux = (ElfW(Vernaux) *) (((char *) vernaux) + vernaux->vna_next);
-			}
-			next = vneed->vn_next;
-			vneed = (ElfW(Verneed) *) (((char *) vneed) + next);
-		} while (next);
-	}
-
-#if DEBUG_VERSION
-	for (i = 0; i < v->nb_local_ver; i++) {
-		if (v->local_ver[i] > 0) {
-			printf ("%d: lib: %s, version %s\n",
-				i, sym_versions[v->local_ver[i]].lib,
-				sym_versions[v->local_ver[i]].version);
-		}
-	}
-#endif
-}
-
-/* load a library / DLL
-   'level = 0' means that the DLL is referenced by the user
-   (so it should be added as DT_NEEDED in the generated ELF file) */
-
-ST_FUNC int tcc_load_dll(TCCState *s1, int fd, const char *filename, int level)
-{
-	ElfW(Ehdr) ehdr;
-	ElfW(Shdr) *shdr, *sh, *sh1;
-	int i, nb_syms, nb_dts, sym_bind, ret = -1;
-	ElfW(Sym) *sym, *dynsym;
-	ElfW(Dyn) *dt, *dynamic;
-
-	char *dynstr;
-	int sym_index;
-	const char *name, *soname;
-	struct versym_info v;
-
-	full_read(fd, &ehdr, sizeof(ehdr));
-
-	/* test CPU specific stuff */
-
-	if (ehdr.e_ident[5] != ELFDATA2LSB ||
-	    ehdr.e_machine != EM_TCC_TARGET) {
-		return tcc_error_noabort("bad architecture");
-	}
-
-	/* read sections */
-
-	shdr = load_data(fd, ehdr.e_shoff, sizeof(ElfW(Shdr)) * ehdr.e_shnum);
-
-	/* load dynamic section a\nd dynamic symbols */
-
-	nb_syms = 0;
-	nb_dts = 0;
-	dynamic = NULL;
-	dynsym = NULL; /* avoid warning */
-
-	dynstr = NULL; /* avoid warning */
-
-	memset(&v, 0, sizeof v);
-
-	for (i = 0, sh = shdr; i < ehdr.e_shnum; i++, sh++) {
-		switch (sh->sh_type) {
-		case SHT_DYNAMIC:
-			nb_dts = sh->sh_size sizeof(ElfW(Dyn));
-			dynamic = load_data(fd, sh->sh_offset, sh->sh_size);
-			break;
-		case SHT_DYNSYM:
-			nb_syms = sh->sh_size sizeof(ElfW(Sym));
-			dynsym = load_data(fd, sh->sh_offset, sh->sh_size);
-			sh1 = &shdr[sh->sh_link];
-			dynstr = load_data(fd, sh1->sh_offset, sh1->sh_size);
-			break;
-		case SHT_GNU_verdef:
-			v.verdef = load_data(fd, sh->sh_offset, sh->sh_size);
-			break;
-		case SHT_GNU_verneed:
-			v.verneed = load_data(fd, sh->sh_offset, sh->sh_size);
-			break;
-		case SHT_GNU_versym:
-			v.nb_versyms = sh->sh_size sizeof(ElfW(Half));
-			v.versym = load_data(fd, sh->sh_offset, sh->sh_size);
-			break;
-		default:
-			break;
-		}
-	}
-
-	if (!dynamic)
-		goto the_end;
-
-	/* compute the real library name */
-
-	soname = tcc_basename(filename);
-	for (i = 0, dt = dynamic; i < nb_dts; i++, dt++)
-		if (dt->d_tag == DT_SONAME)
-			soname = dynstr + dt->d_un.d_val;
-
-	/* if the dll is already loaded, do not load it */
-
-	if (tcc_add_dllref(s1, soname, level)->found)
-		goto ret_success;
-
-	if (v.nb_versyms != nb_syms)
-		tcc_free (v.versym), v.versym = NULL;
-	else
-		store_version(s1, &v, dynstr);
-
-	/* add dynamic symbols in dynsym_section */
-
-	for (i = 1, sym = dynsym + 1; i < nb_syms; i++, sym++) {
-		sym_bind = ELFW(ST_BIND)(sym->st_info);
-		if (sym_bind == STB_LOCAL)
-			continue;
-		name = dynstr + sym->st_name;
-		sym_index = set_elf_sym(s1->dynsymtab_section, sym->st_value, sym->st_size,
-					sym->st_info, sym->st_other, sym->st_shndx, name);
-		if (v.versym) {
-			ElfW(Half) vsym = v.versym[i];
-			if ((vsym & 0x8000) == 0 && vsym > 0 && vsym < v.nb_local_ver)
-				set_sym_version(s1, sym_index, v.local_ver[vsym]);
-		}
-	}
-
-	/* do not load all referenced libraries
-	   (recursive loading can break linking of libraries) */
-
-	/* following DT_NEEDED is needed for the dynamic loader (libdl.so),
-	   but it is no longer needed, when linking a library or a program.
-	   When tcc output mode is OUTPUT_MEM,
-	   tcc calls dlopen, which handles DT_NEEDED for us */
-
-ret_success:
-	ret = 0;
-the_end:
-	tcc_free(dynstr);
-	tcc_free(dynsym);
-	tcc_free(dynamic);
-	tcc_free(shdr);
-	tcc_free(v.local_ver);
-	tcc_free(v.verdef);
-	tcc_free(v.verneed);
-	tcc_free(v.versym);
-	return ret;
-}
-
-#define LD_TOK_NAME 256
-#define LD_TOK_EOF  (-1)
-static int ld_inp(TCCState *s1)
-{
-	int c = *s1->ld_p;
-	if (c == 0)
-		return CH_EOF;
-	++s1->ld_p;
-	return c;
-}
-#define ld_unget(s1, ch) if (ch != CH_EOF) --s1->ld_p
-
-/* return next ld script token */
-
-static int ld_next(TCCState *s1, char *name, int name_size)
-{
-	int c, d, ch;
-	char *q;
-
-redo:
-	ch = ld_inp(s1);
-	q = name, *q++ = ch;
-	switch (ch) {
-	case ' ':
-	case '\t':
-	case '\f':
-	case '\v':
-	case '\r':
-	case '\n':
-		goto redo;
-	case '/':
-		ch = ld_inp(s1);
-		if (ch == '*') { /* comment */
-
-			for (d = 0;; d = ch) {
-				ch = ld_inp(s1);
-				if (ch == CH_EOF || (ch == '/' && d == '*'))
-					break;
-			}
-			goto redo;
-		} else {
-			goto parse_name;
-		}
-		break;
-	case '\\':
-	/* case 'a' ... 'z': */
-
-	case 'a':
-	case 'b':
-	case 'c':
-	case 'd':
-	case 'e':
-	case 'f':
-	case 'g':
-	case 'h':
-	case 'i':
-	case 'j':
-	case 'k':
-	case 'l':
-	case 'm':
-	case 'n':
-	case 'o':
-	case 'p':
-	case 'q':
-	case 'r':
-	case 's':
-	case 't':
-	case 'u':
-	case 'v':
-	case 'w':
-	case 'x':
-	case 'y':
-	case 'z':
-	/* case 'A' ... 'z': */
-
-	case 'A':
-	case 'B':
-	case 'C':
-	case 'D':
-	case 'E':
-	case 'F':
-	case 'G':
-	case 'H':
-	case 'I':
-	case 'J':
-	case 'K':
-	case 'L':
-	case 'M':
-	case 'N':
-	case 'O':
-	case 'P':
-	case 'Q':
-	case 'R':
-	case 'S':
-	case 'T':
-	case 'U':
-	case 'V':
-	case 'W':
-	case 'X':
-	case 'Y':
-	case 'Z':
-	case '-':
-	case '_':
-	case '.':
-	case '$':
-	case '~':
-		for (;;) {
-			ch = ld_inp(s1);
-parse_name:
-			if (!((ch >= 'a' && ch <= 'z') ||
-			      (ch >= 'A' && ch <= 'Z') ||
-			      (ch >= '0' && ch <= '9') ||
-			      strchr("/.-_+=$:\\,~", ch)))
-				break;
-			if ((q - name) < name_size - 1) {
-				*q++ = ch;
-			}
-		}
-		ld_unget(s1, ch);
-		c = LD_TOK_NAME;
-		break;
-	case CH_EOF:
-		c = LD_TOK_EOF;
-		break;
-	default:
-		c = ch;
-		break;
-	}
-	*q = '\0';
-	return c;
-}
-
-static int ld_add_file(TCCState *s1, const char filename[])
-{
-	if (filename[0] == '-' && filename[1] == 'l')
-		return tcc_add_library(s1, filename + 2);
-	if (CONFIG_SYSROOT[0] != '\0') {
-		/* lookup via library paths */
-
-		int ret = tcc_add_dll(s1, tcc_basename(filename), 0);
-		if (ret != FILE_NOT_FOUND)
-			return ret;
-	}
-	return tcc_add_file_internal(s1, filename, AFF_PRINT_ERROR);
-}
-
-/* did static libraries add new undefined symbols? */
-
-static int new_undef_sym(TCCState *s1, int sym_offset)
-{
-	while (sym_offset < s1->symtab->data_offset) {
-		ElfW(Sym) *esym = (void*)(s1->symtab->data + sym_offset);
-		if (esym->st_shndx == SHN_UNDEF)
-			return 1;
-		sym_offset += sizeof (ElfW(Sym));
-	}
-	return 0;
-}
-
-static int ld_add_file_list(TCCState *s1, const char *cmd)
-{
-	char filename[1024];
-	int t, c, sym_offset, ret = 0;
-	unsigned char *pos = s1->ld_p;
-
-repeat:
-	s1->ld_p = pos;
-	sym_offset = s1->symtab->data_offset;
-	c = cmd[0];
-
-	t = ld_next(s1, filename, sizeof(filename));
-	if (t != '(')
-		return tcc_error_noabort("expected '(' after %s", cmd);
-	t = ld_next(s1, filename, sizeof(filename));
-	for (;;) {
-		if (t == LD_TOK_EOF) {
-			return tcc_error_noabort("unexpected end of file");
-		} else if (t == ')') {
-			break;
-		} else if (t != LD_TOK_NAME) {
-			return tcc_error_noabort("unexpected token '%c'", t);
-		} else if (!strcmp(filename, "AS_NEEDED")) {
-			ret = ld_add_file_list(s1, filename);
-		} else if (c == 'I' || c == 'G' || c == 'A') {
-			ret = ld_add_file(s1, filename);
-		}
-		if (ret)
-			return -1;
-		t = ld_next(s1, filename, sizeof(filename));
-		if (t == ',')
-			t = ld_next(s1, filename, sizeof(filename));
-	}
-	if (c == 'G' && new_undef_sym(s1, sym_offset))
-		goto repeat;
-	return 0;
-}
-
-/* interpret a subset of GNU ldscripts to handle the dummy libc.so
-   files */
-
-ST_FUNC int tcc_load_ldscript(TCCState *s1, int fd)
-{
-	char cmd[64];
-	int t, ret = FILE_NOT_RECOGNIZED;
-	unsigned char *text_ptr, *saved_ptr;
-
-	saved_ptr = s1->ld_p;
-	s1->ld_p = text_ptr = (void*)tcc_load_text(fd);
-	for (;;) {
-		t = ld_next(s1, cmd, sizeof(cmd));
-		if (t == LD_TOK_EOF)
-			break;
-		if (!strcmp(cmd, "INPUT") ||
-		    !strcmp(cmd, "GROUP")) {
-			ret = ld_add_file_list(s1, cmd);
-		} else if (!strcmp(cmd, "OUTPUT_FORMAT") ||
-			   !strcmp(cmd, "TARGET")) {
-			/* ignore some commands */
-
-			ret = ld_add_file_list(s1, cmd);
-		} else if (0 == ret) {
-			ret = tcc_error_noabort("unexpected '%s'", cmd);
-		}
-		if (ret)
-			break;
-	}
-	tcc_free(text_ptr);
-	s1->ld_p = saved_ptr;
-	return ret;
-}
-#endif
-/* !ELF_OBJ_ONLY */
-// 31 "libtcc.c" 2
-// 1 "tccrun.c" 1
-// 21 "tccrun.c"
-// 1 "tcc.h" 1
-#ifndef _TCC_H
 /* _TCC_H */
-#endif /* _TCC_H */
-// 1990 "tcc.h"
 #undef TCC_STATE_VAR
 #undef TCC_SET_STATE
-#ifdef USING_GLOBALS
-
-#define TCC_STATE_VAR(sym) tcc_state->sym
-#define TCC_SET_STATE(fn) fn
-#undef USING_GLOBALS
-#undef _tcc_error
-#else
-
-#define TCC_STATE_VAR(sym) s1->sym
 #define TCC_SET_STATE(fn) (tcc_enter_state(s1),fn)
-#define _tcc_error use_tcc_error_noabort
-#endif
-// 22 "tccrun.c" 2
 /* only native compiler supports -run */
-#ifdef CONFIG_TCC_BACKTRACE
-/* runtime debug info block */
-
-typedef struct rt_context {
-	/* tccelf.c:tcc_add_btstub() wants these in that order: */
-
-	union {
-		struct {
-			Stab_Sym *stab_sym;
-			Stab_Sym *stab_sym_end;
-			char *stab_str;
-		};
-		struct {
-			unsigned char *dwarf_line;
-			unsigned char *dwarf_line_end;
-			unsigned char *dwarf_line_str;
-		};
-	};
-	ElfW(Sym) *esym_start;
-	ElfW(Sym) *esym_end;
-	char *elf_str;
-// 6 * PTR_SIZE
-
-	addr_t prog_base;
-	void *bounds_start;
-	void *top_func;
-	struct rt_context *next;
-// 10 * PTR_SIZE
-
-	int num_callers;
-	int dwarf;
-} rt_context;
-/* linked list of rt_contexts */
-
-static rt_context *g_rc;
-static int signal_set;
-static void set_exception_handler(void);
-#endif
-/* def CONFIG_TCC_BACKTRACE */
 
 typedef struct rt_frame {
 	addr_t ip, fp, sp;
@@ -35608,36 +24529,27 @@ static int rt_get_caller_pc(addr_t *paddr, rt_frame *f, int level);
 static void rt_exit(rt_frame *f, int code);
 /* ------------------------------------------------------------- */
 /* defined when included from lib/bt-exe.c */
-#ifndef CONFIG_TCC_BACKTRACE_ONLY
-// 82 "tccrun.c"
 static int protect_pages(void *ptr, unsigned long length, int mode);
 static int tcc_relocate_ex(TCCState *s1, void *ptr, unsigned ptr_diff);
 static void st_link(TCCState *s1);
 static void st_unlink(TCCState *s1);
-#ifdef CONFIG_TCC_BACKTRACE
-
-static int _tcc_backtrace(rt_frame *f, const char *fmt, va_list ap);
-#endif
 
 static void *win64_add_function_table(TCCState *s1);
 static void win64_del_function_table(void *);
-#if !defined PAGESIZE
-#if defined _SC_PAGESIZE
-#define PAGESIZE sysconf(_SC_PAGESIZE)
-#else
 
 #define PAGESIZE 4096
-#endif
-#endif
 
 #define PAGEALIGN(n) ((addr_t)n + (-(addr_t)n & (PAGESIZE-1)))
-
+/* use VirtualAlloc() instead of tcc_malloc() */
 static int rt_mem(TCCState *s1, int size)
 {
 	void *ptr;
 	int ptr_diff = 0;
-// 133 "tccrun.c"
-	ptr = tcc_malloc(size += PAGESIZE);/* one extra page to align malloc memory */
+	/* always page-aligned */
+
+	ptr = VirtualAlloc(NULL, size, MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE);
+	if (!ptr)
+		return tcc_error_noabort("tccrun: could not allocate memory");
 
 	s1->run_ptr = ptr;
 	s1->run_size = size;
@@ -35653,12 +24565,6 @@ LIBTCCAPI int tcc_relocate(TCCState *s1)
 
 	if (s1->run_ptr)
 		exit(tcc_error_noabort("'tcc_relocate()' twice is no longer supported"));
-#ifdef CONFIG_TCC_BACKTRACE
-
-	if (s1->do_backtrace)
-		tcc_add_symbol(s1, "_tcc_backtrace", _tcc_backtrace);/* for bt-log.c */
-
-#endif
 
 	size = tcc_relocate_ex(s1, NULL, 0);
 	if (size < 0)
@@ -35692,15 +24598,10 @@ ST_FUNC void tcc_run_free(TCCState *s1)
 	if (NULL == ptr)
 		return;
 	st_unlink(s1);
-	size = s1->run_size;
-	/* unprotect memory to make it usable for malloc again */
-
-	protect_pages((void*)PAGEALIGN(ptr), size - PAGESIZE, 2/*rw*/
-		     );
 
 	win64_del_function_table(s1->run_function_table);
 
-	tcc_free(ptr);
+	size = s1->run_size;
 
 }
 /* passed from longjmp instead of '0' */
@@ -35713,44 +24614,46 @@ LIBTCCAPI int tcc_run(TCCState *s1, int argc, char **argv)
 	int (*prog_main)(int, char **, char **), ret;
 	const char *top_sym;
 	jmp_buf main_jb;
-#if defined(__APPLE__) || defined(__FreeBSD__)
-	char **envp = NULL;
-#elif defined(__OpenBSD__) || defined(__NetBSD__)
-
 	char **envp = environ;
-#else
-
-	char **envp = environ;
-#endif
 	/* tcc -dt -run ... nothing to do if no main() */
 
 	if ((s1->dflag & 16) && (addr_t)-1 == get_sym_addr(s1, "main", 0, 1))
 		return 0;
 
 	tcc_add_symbol(s1, "__rt_exit", rt_exit);
-	if (s1->nostdlib) {
-		s1->run_main = top_sym = s1->elf_entryname ? s1->elf_entryname : "_start";
-	} else {
-		tcc_add_support(s1, "runmain.o");
-		s1->run_main = "_runmain";
-		top_sym = "main";
-	}
+	s1->run_main = "_runmain", top_sym = "main";
+	if (s1->elf_entryname)
+		s1->run_main = top_sym = s1->elf_entryname;
+	tcc_add_support(s1, "runmain.o");
+
 	if (tcc_relocate(s1) < 0)
 		return -1;
 
-	prog_main = (void*)get_sym_addr(s1, s1->run_main, 1, 1);
+	prog_main = (void *)get_sym_addr(s1, s1->run_main, 1, 1);
 	if ((addr_t)-1 == (addr_t)prog_main)
 		return -1;
+	/* custom stdin for run_main, mainly if stdin is/was an input file.
+	     * fileno(stdin) should remain 0, as posix mandates to use the smallest
+	     * free fd, which is 0 after the initial fclose in freopen. windows too.
+	     * to set stdin to the tty, use /dev/tty (posix) or con (windows).
+	     */
+
+	if (s1->run_stdin && !freopen(s1->run_stdin, "r", stdin)) {
+		tcc_error_noabort("failed to reopen stdin from '%s'", s1->run_stdin);
+		return -1;
+	}
+
 	errno = 0;/* clean errno value */
 
 	fflush(stdout);
 	fflush(stderr);
 
 	ret = tcc_setjmp(s1, main_jb, tcc_get_symbol(s1, top_sym));
-	if (0 == ret)
+	if (0 == ret) {
 		ret = prog_main(argc, argv, envp);
-	else if (RT_EXIT_ZERO == ret)
+	} else if (RT_EXIT_ZERO == ret) {
 		ret = 0;
+	}
 
 	if (s1->dflag & 16 && ret)/* tcc -dt -run ... */
 
@@ -35788,7 +24691,7 @@ static void cleanup_sections(TCCState *s1)
 	struct {
 		Section **secs;
 		int nb_secs;
-	} *p = (void*)&s1->sections;
+	} *p = (void *)&s1->sections;
 	int i, f = 2;
 	do {
 		for (i = --f; i < p->nb_secs; i++) {
@@ -35802,14 +24705,13 @@ static void cleanup_sections(TCCState *s1)
 	} while (++p, f);
 }
 /* ------------------------------------------------------------- */
-/* 0 = .text rwx  other rw (memory >= 2 pages a 4096 bytes) */
+/* 0 = .text rwx  other rwx (memory >= 2 pages a 4096 bytes) */
 /* 1 = .text rx   other rw (memory >= 3 pages) */
 /* 2 = .text rx  .rdata ro  .data/.bss rw (memory >= 4 pages) */
 /* Some targets implement secutiry options that do not allow write in
    executable code. These targets need CONFIG_RUNMEM_RO=1.
    The disadvantage of this is that it requires a little bit more memory. */
 #ifndef CONFIG_RUNMEM_RO
-// 301 "tccrun.c"
 #define CONFIG_RUNMEM_RO 0
 #endif
 /* relocate code. Return -1 on error, required size if ptr is NULL,
@@ -35823,6 +24725,7 @@ static int tcc_relocate_ex(TCCState *s1, void *ptr, unsigned ptr_diff)
 	addr_t mem, addr;
 
 	if (NULL == ptr) {
+		s1->nb_errors = 0;
 
 		pe_output_file(s1, NULL);
 
@@ -35861,10 +24764,10 @@ redo:
 
 				if (s1->verbose == 2)
 					printf("%d: %-16s %p  len %05x  align %04x\n",
-					       k, s->name, (void*)s->sh_addr, length, s->sh_addralign);
-				ptr = (void*)s->sh_addr;
+					       k, s->name, (void *)s->sh_addr, length, s->sh_addralign);
+				ptr = (void *)s->sh_addr;
 				if (k == 0)
-					ptr = (void*)(s->sh_addr + ptr_diff);
+					ptr = (void *)(s->sh_addr + ptr_diff);
 				if (NULL == s->data || s->sh_type == SHT_NOBITS)
 					memset(ptr, 0, length);
 				else
@@ -35907,11 +24810,13 @@ redo:
 			n = PAGEALIGN(n);
 			if (s1->verbose == 2) {
 				printf("protect         %3s %p  len %05x\n",
-				       &"rx\0ro\0rw\0rwx"[f*3], (void*)addr, (unsigned)n);
+				       &"rx\0ro\0rw\0rwx"[f*3], (void *)addr, (unsigned)n);
 			}
-			if (protect_pages((void*)addr, n, f) < 0)
+			if (protect_pages((void *)addr, n, f) < 0)
 				return tcc_error_noabort(
-					       "mprotect failed (did you mean to configure --with-selinux?)");
+
+					       "VirtualProtect failed");
+
 		}
 	}
 
@@ -35933,6 +24838,8 @@ redo:
 	/* relocate symbols */
 
 	relocate_syms(s1, s1->symtab, 1);
+	if (s1->nb_errors)
+		goto redo;
 	/* relocate sections */
 
 	s1->pe_imagebase = mem;
@@ -35955,7 +24862,6 @@ static int protect_pages(void *ptr, unsigned long length, int mode)
 	DWORD old;
 	if (!VirtualProtect(ptr, length, protect[mode], &old))
 		return -1;
-// 467 "tccrun.c"
 	return 0;
 }
 
@@ -35963,10 +24869,10 @@ static void *win64_add_function_table(TCCState *s1)
 {
 	void *p = NULL;
 	if (s1->uw_pdata) {
-		p = (void*)s1->uw_pdata->sh_addr;
+		p = (void *)s1->uw_pdata->sh_addr;
 		RtlAddFunctionTable(
-			(RUNTIME_FUNCTION*)p,
-			s1->uw_pdata->data_offset / sizeof (RUNTIME_FUNCTION),
+			(RUNTIME_FUNCTION *)p,
+			s1->uw_pdata->data_offset sizeof (RUNTIME_FUNCTION),
 			s1->pe_imagebase
 		);
 		s1->uw_pdata = NULL;
@@ -35977,40 +24883,11 @@ static void *win64_add_function_table(TCCState *s1)
 static void win64_del_function_table(void *p)
 {
 	if (p) {
-		RtlDeleteFunctionTable((RUNTIME_FUNCTION*)p);
+		RtlDeleteFunctionTable((RUNTIME_FUNCTION *)p);
 	}
 }
-
 static void bt_link(TCCState *s1)
 {
-#ifdef CONFIG_TCC_BACKTRACE
-
-	rt_context *rc;
-	void *p;
-
-	if (!s1->do_backtrace)
-		return;
-	rc = tcc_get_symbol(s1, "__rt_info");
-	if (!rc)
-		return;
-	rc->esym_start = (ElfW(Sym) *)(symtab_section->data);
-	rc->esym_end = (ElfW(Sym) *)(symtab_section->data +
-				     symtab_section->data_offset);
-	rc->elf_str = (char *)symtab_section->link->data;
-	if (PTR_SIZE == 8 && !s1->dwarf)
-		rc->prog_base &= 0xffffffff00000000ULL;
-#ifdef CONFIG_TCC_BCHECK
-
-	if (s1->do_bounds_check) {
-		if ((p = tcc_get_symbol(s1, "__bound_init")))
-			((void(*)(void*,int))p)(rc->bounds_start, 1);
-	}
-#endif
-
-	rc->next = g_rc, g_rc = rc, s1->rc = rc;
-	if (0 == signal_set)
-		set_exception_handler(), signal_set = 1;
-#endif
 
 }
 
@@ -36027,7 +24904,7 @@ static void ptr_unlink(void *list, void *e, unsigned next)
 {
 	void **pp, **nn, *p;
 	for (pp = list; !!(p = *pp); pp = nn) {
-		nn = (void*)((char*)p + next);/* nn = &p->next; */
+		nn = (void *)((char *)p + next); /* nn = &p->next; */
 
 		if (p == e) {
 			*pp = *nn;
@@ -36039,10 +24916,6 @@ static void ptr_unlink(void *list, void *e, unsigned next)
 static void st_unlink(TCCState *s1)
 {
 	rt_wait_sem();
-#ifdef CONFIG_TCC_BACKTRACE
-
-	ptr_unlink(&g_rc, s1->rc, offsetof(rt_context, next));
-#endif
 
 	ptr_unlink(&g_s1, s1, offsetof(TCCState, next));
 	rt_post_sem();
@@ -36053,11 +24926,6 @@ LIBTCCAPI void *_tcc_setjmp(TCCState *s1, void *p_jmp_buf, void *func,
 {
 	s1->run_lj = p_longjmp;
 	s1->run_jb = p_jmp_buf;
-#ifdef CONFIG_TCC_BACKTRACE
-
-	if (s1->rc)
-		s1->rc->top_func = func;
-#endif
 
 	return p_jmp_buf;
 }
@@ -36099,662 +24967,16 @@ static void rt_exit(rt_frame *f, int code)
 	s = rt_find_state(f);
 	rt_post_sem();
 	if (s && s->run_lj) {
+
 		if (code == 0)
 			code = RT_EXIT_ZERO;
-		((void(*)(void*,int))s->run_lj)(s->run_jb, code);
+		((void(*)(void *,int))s->run_lj)(s->run_jb, code);
 	}
 	exit(code);
 }
 /* ------------------------------------------------------------- */
-#else
-// if defined CONFIG_TCC_BACKTRACE_ONLY
-
-static void rt_exit(rt_frame *f, int code)
-{
-	exit(code);
-}
-#endif
 //ndef CONFIG_TCC_BACKTRACE_ONLY
 /* ------------------------------------------------------------- */
-#ifdef CONFIG_TCC_BACKTRACE
-// 617 "tccrun.c"
-static int rt_vprintf(const char *fmt, va_list ap)
-{
-	int ret = vfprintf(stderr, fmt, ap);
-	fflush(stderr);
-	return ret;
-}
-
-static int rt_printf(const char *fmt, ...)
-{
-	va_list ap;
-	int r;
-	va_start(ap, fmt);
-	r = rt_vprintf(fmt, ap);
-	va_end(ap);
-	return r;
-}
-
-static char *rt_elfsym(rt_context *rc, addr_t wanted_pc, addr_t *func_addr)
-{
-	ElfW(Sym) *esym;
-	for (esym = rc->esym_start + 1; esym < rc->esym_end; ++esym) {
-		int type = ELFW(ST_TYPE)(esym->st_info);
-		if ((type == STT_FUNC || type == STT_GNU_IFUNC)
-		    && wanted_pc >= esym->st_value
-		    && wanted_pc < esym->st_value + esym->st_size) {
-			*func_addr = esym->st_value;
-			return rc->elf_str + esym->st_name;
-		}
-	}
-	return NULL;
-}
-
-typedef struct bt_info {
-	char file[100];
-	int line;
-	char func[100];
-	addr_t func_pc;
-} bt_info;
-/* print the position in the source file of PC value 'pc' by reading
-   the stabs debug information */
-
-static addr_t rt_printline (rt_context *rc, addr_t wanted_pc, bt_info *bi)
-{
-	char func_name[128];
-	addr_t func_addr, last_pc, pc;
-	const char *incl_files[INCLUDE_STACK_SIZE];
-	int incl_index, last_incl_index, len, last_line_num, i;
-	const char *str, *p;
-	Stab_Sym *sym;
-
-	func_name[0] = '\0';
-	func_addr = 0;
-	incl_index = 0;
-	last_pc = (addr_t)-1;
-	last_line_num = 1;
-	last_incl_index = 0;
-
-	for (sym = rc->stab_sym + 1; sym < rc->stab_sym_end; ++sym) {
-		str = rc->stab_str + sym->n_strx;
-		pc = sym->n_value;
-
-		switch (sym->n_type) {
-		case N_SLINE:
-			if (func_addr)
-				goto rel_pc;
-		case N_SO:
-		case N_SOL:
-			goto abs_pc;
-		case N_FUN:
-			if (sym->n_strx == 0)/* end of function */
-
-				goto rel_pc;
-abs_pc:
-#if PTR_SIZE == 8
-			/* Stab_Sym.n_value is only 32bits */
-
-			pc += rc->prog_base;
-#endif
-
-			goto check_pc;
-rel_pc:
-			pc += func_addr;
-check_pc:
-			if (pc >= wanted_pc && wanted_pc >= last_pc)
-				goto found;
-			break;
-		}
-
-		switch (sym->n_type) {
-		/* function start or end */
-
-		case N_FUN:
-			if (sym->n_strx == 0)
-				goto reset_func;
-			p = strchr(str, ':');
-			if (0 == p || (len = p - str + 1, len > sizeof func_name))
-				len = sizeof func_name;
-			pstrcpy(func_name, len, str);
-			func_addr = pc;
-			break;
-		/* line number info */
-
-		case N_SLINE:
-			last_pc = pc;
-			last_line_num = sym->n_desc;
-			last_incl_index = incl_index;
-			break;
-		/* include files */
-
-		case N_BINCL:
-			if (incl_index < INCLUDE_STACK_SIZE)
-				incl_files[incl_index++] = str;
-			break;
-		case N_EINCL:
-			if (incl_index > 1)
-				incl_index--;
-			break;
-		/* start/end of translation unit */
-
-		case N_SO:
-			incl_index = 0;
-			if (sym->n_strx) {
-				/* do not add path */
-
-				len = strlen(str);
-				if (len > 0 && str[len - 1] != '/')
-					incl_files[incl_index++] = str;
-			}
-reset_func:
-			func_name[0] = '\0';
-			func_addr = 0;
-			last_pc = (addr_t)-1;
-			break;
-		/* alternative file name (from #line or #include directives) */
-
-		case N_SOL:
-			if (incl_index)
-				incl_files[incl_index-1] = str;
-			break;
-		}
-	}
-	last_incl_index = 0, func_name[0] = 0, func_addr = 0;
-found:
-	i = last_incl_index;
-	if (i > 0) {
-		pstrcpy(bi->file, sizeof bi->file, incl_files[--i]);
-		bi->line = last_line_num;
-	}
-	pstrcpy(bi->func, sizeof bi->func, func_name);
-	bi->func_pc = func_addr;
-	return func_addr;
-}
-/* ------------------------------------------------------------- */
-/* rt_printline - dwarf version */
-
-#define DIR_TABLE_SIZE (64)
-#define FILE_TABLE_SIZE (512)
-/* timestamp/size/md5/... */
-// 777 "tccrun.c"
-#define dwarf_ignore_type(ln,end) switch (entry_format[j].form) { case DW_FORM_data1: (ln) += 1; break; case DW_FORM_data2: (ln) += 2; break; case DW_FORM_data4: (ln) += 3; break; case DW_FORM_data8: (ln) += 8; break; case DW_FORM_data16: (ln) += 16; break; case DW_FORM_udata: dwarf_read_uleb128(&(ln), (end)); break; default: goto next_line; }
-
-static addr_t rt_printline_dwarf (rt_context *rc, addr_t wanted_pc, bt_info *bi)
-{
-	unsigned char *ln;
-	unsigned char *cp;
-	unsigned char *end;
-	unsigned char *opcode_length;
-	unsigned long long size;
-	unsigned int length;
-	unsigned char version;
-	unsigned int min_insn_length;
-	unsigned int max_ops_per_insn;
-	int line_base;
-	unsigned int line_range;
-	unsigned int opcode_base;
-	unsigned int opindex;
-	unsigned int col;
-	unsigned int i;
-	unsigned int j;
-	unsigned int len;
-	unsigned long long value;
-	struct {
-		unsigned int type;
-		unsigned int form;
-	} entry_format[256];
-	unsigned int dir_size;
-
-	unsigned int filename_size;
-	struct { /*dwarf_filename_struct*/
-		unsigned int dir_entry;
-		char *name;
-	} filename_table[FILE_TABLE_SIZE];
-	addr_t last_pc;
-	addr_t pc;
-	addr_t func_addr;
-	int line;
-	char *filename;
-	char *function;
-
-	filename = NULL;
-	function = NULL;
-	func_addr = 0;
-	line = 0;
-
-	ln = rc->dwarf_line;
-	while (ln < rc->dwarf_line_end) {
-		dir_size = 0;
-		filename_size = 0;
-		last_pc = 0;
-		pc = 0;
-		func_addr = 0;
-		line = 1;
-		filename = NULL;
-		function = NULL;
-		length = 4;
-		size = dwarf_read_4(ln, rc->dwarf_line_end);
-		if (size == 0xffffffffu)// dwarf 64
-
-			length = 8, size = dwarf_read_8(ln, rc->dwarf_line_end);
-		end = ln + size;
-		if (end < ln || end > rc->dwarf_line_end)
-			break;
-		version = dwarf_read_2(ln, end);
-		if (version >= 5)
-			ln += length + 2;// address size, segment selector, prologue Length
-
-		else
-			ln += length;// prologue Length
-
-		min_insn_length = dwarf_read_1(ln, end);
-		if (version >= 4)
-			max_ops_per_insn = dwarf_read_1(ln, end);
-		else
-			max_ops_per_insn = 1;
-		ln++;// Initial value of 'is_stmt'
-
-		line_base = dwarf_read_1(ln, end);
-		line_base |= line_base >= 0x80 ? ~0xff : 0;
-		line_range = dwarf_read_1(ln, end);
-		opcode_base = dwarf_read_1(ln, end);
-		opcode_length = ln;
-		ln += opcode_base - 1;
-		opindex = 0;
-		if (version >= 5) {
-			col = dwarf_read_1(ln, end);
-			for (i = 0; i < col; i++) {
-				entry_format[i].type = dwarf_read_uleb128(&ln, end);
-				entry_format[i].form = dwarf_read_uleb128(&ln, end);
-			}
-			dir_size = dwarf_read_uleb128(&ln, end);
-			for (i = 0; i < dir_size; i++) {
-				for (j = 0; j < col; j++) {
-					if (entry_format[j].type == DW_LNCT_path) {
-						if (entry_format[j].form != DW_FORM_line_strp)
-							goto next_line;
-
-						length == 4 ? dwarf_read_4(ln, end)
-						: dwarf_read_8(ln, end);
-
-					} else
-						dwarf_ignore_type(ln, end);
-				}
-			}
-			col = dwarf_read_1(ln, end);
-			for (i = 0; i < col; i++) {
-				entry_format[i].type = dwarf_read_uleb128(&ln, end);
-				entry_format[i].form = dwarf_read_uleb128(&ln, end);
-			}
-			filename_size = dwarf_read_uleb128(&ln, end);
-			for (i = 0; i < filename_size; i++)
-				for (j = 0; j < col; j++) {
-					if (entry_format[j].type == DW_LNCT_path) {
-						if (entry_format[j].form != DW_FORM_line_strp)
-							goto next_line;
-						value = length == 4 ? dwarf_read_4(ln, end)
-							: dwarf_read_8(ln, end);
-						if (i < FILE_TABLE_SIZE)
-							filename_table[i].name =
-								(char *)rc->dwarf_line_str + value;
-					} else if (entry_format[j].type == DW_LNCT_directory_index) {
-						switch (entry_format[j].form) {
-						case DW_FORM_data1:
-							value = dwarf_read_1(ln, end);
-							break;
-						case DW_FORM_data2:
-							value = dwarf_read_2(ln, end);
-							break;
-						case DW_FORM_data4:
-							value = dwarf_read_4(ln, end);
-							break;
-						case DW_FORM_udata:
-							value = dwarf_read_uleb128(&ln, end);
-							break;
-						default:
-							goto next_line;
-						}
-						if (i < FILE_TABLE_SIZE)
-							filename_table[i].dir_entry = value;
-					} else
-						dwarf_ignore_type(ln, end);
-				}
-		} else {
-			while ((dwarf_read_1(ln, end))) {
-
-				while (dwarf_read_1(ln, end)) {}
-			}
-			while ((dwarf_read_1(ln, end))) {
-				if (++filename_size < FILE_TABLE_SIZE) {
-					filename_table[filename_size - 1].name = (char *)ln - 1;
-					while (dwarf_read_1(ln, end)) {}
-					filename_table[filename_size - 1].dir_entry =
-						dwarf_read_uleb128(&ln, end);
-				} else {
-					while (dwarf_read_1(ln, end)) {}
-					dwarf_read_uleb128(&ln, end);
-				}
-				dwarf_read_uleb128(&ln, end);// time
-
-				dwarf_read_uleb128(&ln, end);// size
-
-			}
-		}
-		if (filename_size >= 1)
-			filename = filename_table[0].name;
-		while (ln < end) {
-			last_pc = pc;
-			i = dwarf_read_1(ln, end);
-			if (i >= opcode_base) {
-				if (max_ops_per_insn == 1)
-					pc += ((i - opcode_base) / line_range) * min_insn_length;
-				else {
-					pc += (opindex + (i - opcode_base) / line_range) /
-					      max_ops_per_insn * min_insn_length;
-					opindex = (opindex + (i - opcode_base) / line_range) %
-						  max_ops_per_insn;
-				}
-				i = (int)((i - opcode_base) % line_range) + line_base;
-check_pc:
-				if (pc >= wanted_pc && wanted_pc >= last_pc)
-					goto found;
-				line += i;
-			} else {
-				switch (i) {
-				case 0:
-					len = dwarf_read_uleb128(&ln, end);
-					cp = ln;
-					ln += len;
-					if (len == 0)
-						goto next_line;
-					switch (dwarf_read_1(cp, end)) {
-					case DW_LNE_end_sequence:
-						break;
-					case DW_LNE_set_address:
-#if PTR_SIZE == 4
-						pc = dwarf_read_4(cp, end);
-#else
-
-						pc = dwarf_read_8(cp, end);
-#endif
-
-						opindex = 0;
-						break;
-					case DW_LNE_define_file:/* deprecated */
-
-						if (++filename_size < FILE_TABLE_SIZE) {
-							filename_table[filename_size - 1].name = (char *)ln - 1;
-							while (dwarf_read_1(ln, end)) {}
-							filename_table[filename_size - 1].dir_entry =
-								dwarf_read_uleb128(&ln, end);
-						} else {
-							while (dwarf_read_1(ln, end)) {}
-							dwarf_read_uleb128(&ln, end);
-						}
-						dwarf_read_uleb128(&ln, end);// time
-
-						dwarf_read_uleb128(&ln, end);// size
-
-						break;
-					case DW_LNE_hi_user - 1:
-						function = (char *)cp;
-						func_addr = pc;
-						break;
-					default:
-						break;
-					}
-					break;
-				case DW_LNS_advance_pc:
-					if (max_ops_per_insn == 1)
-						pc += dwarf_read_uleb128(&ln, end) * min_insn_length;
-					else {
-						unsigned long long off = dwarf_read_uleb128(&ln, end);
-
-						pc += (opindex + off) / max_ops_per_insn *
-						      min_insn_length;
-						opindex = (opindex + off) % max_ops_per_insn;
-					}
-					i = 0;
-					goto check_pc;
-				case DW_LNS_advance_line:
-					line += dwarf_read_sleb128(&ln, end);
-					break;
-				case DW_LNS_set_file:
-					i = dwarf_read_uleb128(&ln, end);
-					i -= i > 0 && version < 5;
-					if (i < FILE_TABLE_SIZE && i < filename_size)
-						filename = filename_table[i].name;
-					break;
-				case DW_LNS_const_add_pc:
-					if (max_ops_per_insn == 1)
-						pc += ((255 - opcode_base) / line_range) * min_insn_length;
-					else {
-						unsigned int off = (255 - opcode_base) / line_range;
-
-						pc += ((opindex + off) / max_ops_per_insn) *
-						      min_insn_length;
-						opindex = (opindex + off) % max_ops_per_insn;
-					}
-					i = 0;
-					goto check_pc;
-				case DW_LNS_fixed_advance_pc:
-					i = dwarf_read_2(ln, end);
-					pc += i;
-					opindex = 0;
-					i = 0;
-					goto check_pc;
-				default:
-					for (j = 0; j < opcode_length[i - 1]; j++)
-						dwarf_read_uleb128 (&ln, end);
-					break;
-				}
-			}
-		}
-next_line:
-		ln = end;
-	}
-	filename = function = NULL, func_addr = 0;
-found:
-	if (filename)
-		pstrcpy(bi->file, sizeof bi->file, filename), bi->line = line;
-	if (function)
-		pstrcpy(bi->func, sizeof bi->func, function);
-	bi->func_pc = func_addr;
-	return (addr_t)func_addr;
-}
-/* ------------------------------------------------------------- */
-#ifndef CONFIG_TCC_BACKTRACE_ONLY
-
-static
-#endif
-
-int _tcc_backtrace(rt_frame *f, const char *fmt, va_list ap)
-{
-	rt_context *rc, *rc2;
-	addr_t pc;
-	char skip[40], msg[200];
-	int i, level, ret, n, one;
-	const char *a, *b;
-	bt_info bi;
-	addr_t (*getinfo)(rt_context*, addr_t, bt_info*);
-
-	skip[0] = 0;
-	/* If fmt is like "^file.c^..." then skip calls from 'file.c' */
-
-	if (fmt[0] == '^' && (b = strchr(a = fmt + 1, fmt[0]))) {
-		memcpy(skip, a, b - a), skip[b - a] = 0;
-		fmt = b + 1;
-	}
-	one = 0;
-	/* hack for bcheck.c:dprintf(): one level, no newline */
-
-	if (fmt[0] == '\001')
-		++fmt, one = 1;
-	vsnprintf(msg, sizeof msg, fmt, ap);
-
-	rt_wait_sem();
-	rc = g_rc;
-	getinfo = rt_printline, n = 6;
-	if (rc) {
-		if (rc->dwarf)
-			getinfo = rt_printline_dwarf;
-		if (rc->num_callers)
-			n = rc->num_callers;
-	}
-
-	for (i = level = 0; level < n; i++) {
-		ret = rt_get_caller_pc(&pc, f, i);
-		if (ret == -1)
-			break;
-		memset(&bi, 0, sizeof bi);
-		for (rc2 = rc; rc2; rc2 = rc2->next) {
-			if (getinfo(rc2, pc, &bi))
-				break;
-			/* we try symtab symbols (no line number info) */
-
-			if (!!(a = rt_elfsym(rc2, pc, &bi.func_pc))) {
-				pstrcpy(bi.func, sizeof bi.func, a);
-				break;
-			}
-		}
-//fprintf(stderr, "%d rc %p %p\n", i, (void*)pcfunc, (void*)pc);
-
-		if (skip[0] && strstr(bi.file, skip))
-			continue;
-#ifndef CONFIG_TCC_BACKTRACE_ONLY
-
-		{
-			TCCState *s = rt_find_state(f);
-			if (s && s->bt_func) {
-				ret = s->bt_func(
-					      s->bt_data,
-					      (void*)pc,
-					      bi.file[0] ? bi.file : NULL,
-					      bi.line,
-					      bi.func[0] ? bi.func : NULL,
-					      level == 0 ? msg : NULL
-				      );
-				if (ret == 0)
-					break;
-				goto check_break;
-			}
-		}
-#endif
-
-		if (bi.file[0]) {
-			rt_printf("%s:%d", bi.file, bi.line);
-		} else {
-			rt_printf("0x%08llx", (long long)pc);
-		}
-		rt_printf(": %s %s", level ? "by" : "at", bi.func[0] ? bi.func : "???");
-		if (level == 0) {
-			rt_printf(": %s", msg);
-			if (one)
-				break;
-		}
-		rt_printf("\n");
-#ifndef CONFIG_TCC_BACKTRACE_ONLY
-
-check_break:
-#endif
-
-		if (rc2
-		    && bi.func_pc
-		    && bi.func_pc == (addr_t)rc2->top_func)
-			break;
-		++level;
-	}
-	rt_post_sem();
-	return 0;
-}
-/* emit a run time error at position 'pc' */
-
-static int rt_error(rt_frame *f, const char *fmt, ...)
-{
-	va_list ap;
-	char msg[200];
-	int ret;
-	va_start(ap, fmt);
-	snprintf(msg, sizeof msg, "RUNTIME ERROR: %s", fmt);
-	ret = _tcc_backtrace(f, msg, ap);
-	va_end(ap);
-	return ret;
-}
-/* ------------------------------------------------------------- */
-// 1178 "tccrun.c"
-#define ucontext_t CONTEXT
-/* translate from ucontext_t* to internal rt_context * */
-
-static void rt_getcontext(ucontext_t *uc, rt_frame *rc)
-{
-
-	rc->ip = uc->Rip;
-	rc->fp = uc->Rbp;
-	rc->sp = uc->Rsp;
-// 1268 "tccrun.c"
-}
-/* ------------------------------------------------------------- */
-/* WIN32 */
-/* signal handler for fatal errors */
-// 1351 "tccrun.c"
-static long __stdcall cpu_exception_handler(EXCEPTION_POINTERS *ex_info)
-{
-	rt_frame f;
-	unsigned code;
-	rt_getcontext(ex_info->ContextRecord, &f);
-
-	switch (code = ex_info->ExceptionRecord->ExceptionCode) {
-	case EXCEPTION_ACCESS_VIOLATION:
-		rt_error(&f, "invalid memory access");
-		break;
-	case EXCEPTION_STACK_OVERFLOW:
-		rt_error(&f, "stack overflow");
-		break;
-	case EXCEPTION_INT_DIVIDE_BY_ZERO:
-		rt_error(&f, "division by zero");
-		break;
-	case EXCEPTION_BREAKPOINT:
-	case EXCEPTION_SINGLE_STEP:
-		f.ip = *(addr_t*)f.sp;
-		rt_error(&f, "breakpoint/single-step exception:");
-		return EXCEPTION_CONTINUE_SEARCH;
-	default:
-		rt_error(&f, "caught exception %08x", code);
-		break;
-	}
-	rt_exit(&f, 255);
-	return EXCEPTION_EXECUTE_HANDLER;
-}
-/* Generate a stack backtrace when a CPU exception occurs. */
-
-static void set_exception_handler(void)
-{
-	SetUnhandledExceptionFilter(cpu_exception_handler);
-}
-/* ------------------------------------------------------------- */
-/* return the PC at frame level 'level'. Return negative if not found */
-
-static int rt_get_caller_pc(addr_t *paddr, rt_frame *rc, int level)
-{
-	if (level == 0) {
-		*paddr = rc->ip;
-	} else {
-		addr_t fp = rc->fp;
-		while (1) {
-			if (fp < 0x1000)
-				return -1;
-			if (0 == --level)
-				break;
-			/* XXX: check address validity with program info */
-
-			fp = ((addr_t *)fp)[0];
-		}
-		*paddr = ((addr_t *)fp)[1];
-	}
-	return 0;
-}
-/* XXX: only supports linux/bsd */
-#else
 // for runmain.c:exit(); when CONFIG_TCC_BACKTRACE == 0 */
 
 static int rt_get_caller_pc(addr_t *paddr, rt_frame *f, int level)
@@ -36764,226 +24986,25 @@ static int rt_get_caller_pc(addr_t *paddr, rt_frame *f, int level)
 	*paddr = f->ip;
 	return 0;
 }
-#endif
-/* CONFIG_TCC_BACKTRACE */
 /* ------------------------------------------------------------- */
-#ifdef CONFIG_TCC_STATIC
-
-/* dummy function for profiling */
-
-ST_FUNC void *dlopen(const char *filename, int flag)
-{
-	return NULL;
-}
-
-ST_FUNC void dlclose(void *p)
-{
-}
-
-ST_FUNC const char *dlerror(void)
-{
-	return "error";
-}
-
-typedef struct TCCSyms {
-	char *str;
-	void *ptr;
-} TCCSyms;
-
-/* add the symbol you want here if no dynamic linking is done */
-
-static TCCSyms tcc_syms[] = {
-#if !defined(CONFIG_TCCBOOT)
-#define TCCSYM(a) { a, &a, },
-	TCCSYM(printf)
-	TCCSYM(fprintf)
-	TCCSYM(fopen)
-	TCCSYM(fclose)
-#undef TCCSYM
-#endif
-	{ NULL, NULL },
-};
-
-ST_FUNC void *dlsym(void *handle, const char *symbol)
-{
-	TCCSyms *p;
-	p = tcc_syms;
-	while (p->str != NULL) {
-		if (!strcmp(p->str, symbol))
-			return p->ptr;
-		p++;
-	}
-	return NULL;
-}
-
-#endif
 /* CONFIG_TCC_STATIC */
 /* TCC_IS_NATIVE */
 /* ------------------------------------------------------------- */
-// 32 "libtcc.c" 2
-
-// 1 "x86_64-gen.c" 1
-/*
- *  x86-64 code generator for TCC
- *
- *  Copyright (c) 2008 Shinichiro Hamaji
- *
- *  Based on i386-gen.c by Fabrice Bellard
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- */
-#ifdef TARGET_DEFS_ONLY
-
-/* number of available registers */
-
-#define NB_REGS         25
-#define NB_ASM_REGS     16
-#define CONFIG_TCC_ASM
-
-/* a register can belong to several classes. The classes must be
-   sorted from more general to more precise (see gv2() code which does
-   assumptions on it). */
-
-#define RC_INT     0x0001 /* generic integer register */
-
-#define RC_FLOAT   0x0002 /* generic float register */
-
-#define RC_RAX     0x0004
-#define RC_RDX     0x0008
-#define RC_RCX     0x0010
-#define RC_RSI     0x0020
-#define RC_RDI     0x0040
-#define RC_ST0     0x0080 /* only for long double */
-
-#define RC_R8      0x0100
-#define RC_R9      0x0200
-#define RC_R10     0x0400
-#define RC_R11     0x0800
-#define RC_XMM0    0x1000
-#define RC_XMM1    0x2000
-#define RC_XMM2    0x4000
-#define RC_XMM3    0x8000
-#define RC_XMM4    0x10000
-#define RC_XMM5    0x20000
-#define RC_XMM6    0x40000
-#define RC_XMM7    0x80000
-#define RC_IRET    RC_RAX /* function return: integer register */
-
-#define RC_IRE2    RC_RDX /* function return: second integer register */
-
-#define RC_FRET    RC_XMM0 /* function return: float register */
-
-#define RC_FRE2    RC_XMM1 /* function return: second float register */
-
-/* pretty names for the registers */
-
-enum {
-	TREG_RAX = 0,
-	TREG_RCX = 1,
-	TREG_RDX = 2,
-	TREG_RSP = 4,
-	TREG_RSI = 6,
-	TREG_RDI = 7,
-
-	TREG_R8 = 8,
-	TREG_R9 = 9,
-	TREG_R10 = 10,
-	TREG_R11 = 11,
-
-	TREG_XMM0 = 16,
-	TREG_XMM1 = 17,
-	TREG_XMM2 = 18,
-	TREG_XMM3 = 19,
-	TREG_XMM4 = 20,
-	TREG_XMM5 = 21,
-	TREG_XMM6 = 22,
-	TREG_XMM7 = 23,
-
-	TREG_ST0 = 24,
-
-	TREG_MEM = 0x20
-};
-
-#define REX_BASE(reg) (((reg) >> 3) & 1)
-#define REG_VALUE(reg) ((reg) & 7)
-
-/* return registers for function */
-
-#define REG_IRET TREG_RAX /* single word int return register */
-
-#define REG_IRE2 TREG_RDX /* second word return register (for long long) */
-
-#define REG_FRET TREG_XMM0 /* float return register */
-
-#define REG_FRE2 TREG_XMM1 /* second float return register */
-
-/* defined if function parameters must be evaluated in reverse order */
-
-#define INVERT_FUNC_PARAMS
-
-/* pointer size, in bytes */
-
-#define PTR_SIZE 8
-
-/* long double size and alignment, in bytes */
-
-#define LDOUBLE_SIZE  16
-#define LDOUBLE_ALIGN 16
-/* maximum alignment (for aligned attribute support) */
-
-#define MAX_ALIGN     16
-
-/* define if return values need to be extended explicitely
-   at caller side (for interfacing with non-TCC compilers) */
-
-#define PROMOTE_RET
-
-#define TCC_TARGET_NATIVE_STRUCT_COPY
-ST_FUNC void gen_struct_copy(int size);
 
 /**/
 
-#else
-/* ! TARGET_DEFS_ONLY */
-/**/
-// 117 "x86_64-gen.c"
-#define USING_GLOBALS
-// 1 "tcc.h" 1
-#ifndef _TCC_H
 /* _TCC_H */
-#endif /* _TCC_H */
-// 1990 "tcc.h"
 #undef TCC_STATE_VAR
 #undef TCC_SET_STATE
-#ifdef USING_GLOBALS
 
 #define TCC_STATE_VAR(sym) tcc_state->sym
 #define TCC_SET_STATE(fn) fn
-#undef USING_GLOBALS
 #undef _tcc_error
-#else
-
-#define TCC_STATE_VAR(sym) s1->sym
-#define TCC_SET_STATE(fn) (tcc_enter_state(s1),fn)
-#define _tcc_error use_tcc_error_noabort
-#endif
-// 119 "x86_64-gen.c" 2
 #include <assert.h>
 
 ST_DATA const char *const target_machine_defs =
 	"__x86_64__\0"
+	"__x86_64\0"
 	"__amd64__\0"
 	;
 
@@ -37031,15 +25052,9 @@ ST_DATA const int reg_classes[NB_REGS] = {
 
 static unsigned long func_sub_sp_offset;
 static int func_ret_sub;
-#if defined(CONFIG_TCC_BCHECK)
-static addr_t func_bound_offset;
-static unsigned long func_bound_ind;
-ST_DATA int func_bound_add_epilog;
-#endif
-// 167 "x86_64-gen.c"
+
 static int func_scratch, func_alloca;
 /* XXX: make it faster ? */
-
 ST_FUNC void g(int c)
 {
 	int ind1;
@@ -37092,8 +25107,12 @@ static void orex(int ll, int r, int r2, int b)
 		r = 0;
 	if ((r2 & VT_VALMASK) >= VT_CONST)
 		r2 = 0;
-	if (ll || REX_BASE(r) || REX_BASE(r2))
+	if (ll || REX_BASE(r) || REX_BASE(r2)) {
+		if ((b & 0xff) == 0x66)/* output prefix before rex byte */
+
+			o(0x66), b >>= 8;
 		o(0x40 | REX_BASE(r) | (REX_BASE(r2) << 2) | (ll << 3));
+	}
 	o(b);
 }
 /* output a symbol and patch all calls to it */
@@ -37139,14 +25158,6 @@ ST_FUNC void gen_addr32(int r, Sym *sym, int c)
 }
 /* output constant with relocation if 'r & VT_SYM' is true */
 
-ST_FUNC void gen_addr64(int r, Sym *sym, int64_t c)
-{
-	if (r & VT_SYM)
-		greloca(cur_text_section, sym, ind, R_X86_64_64, c), c=0;
-	gen_le64(c);
-}
-/* output constant with relocation if 'r & VT_SYM' is true */
-
 ST_FUNC void gen_addrpc32(int r, Sym *sym, int c)
 {
 	if (r & VT_SYM)
@@ -37164,7 +25175,6 @@ static void gen_gotpcrel(int r, Sym *sym, int c)
 		  cur_text_section->data[ind-2],
 		  cur_text_section->data[ind-1]
 		 );
-
 	greloca(cur_text_section, sym, ind, R_X86_64_GOTPCREL, -4);
 	gen_le32(0);
 	if (c) {
@@ -37175,10 +25185,33 @@ static void gen_gotpcrel(int r, Sym *sym, int c)
 		gen_le32(c);
 	}
 }
+/* generate a modrm reference. 'op_reg' contains the additional 3
+   opcode rsp. second register bits */
 
-static void gen_modrm_impl(int op_reg, int r, Sym *sym, int c, int is_got)
+static void gen_modrm_impl(int opcode, int ll, int op_reg_0, int r, Sym *sym,
+			   int c)
 {
-	op_reg = REG_VALUE(op_reg) << 3;
+	int op_reg = REG_VALUE(op_reg_0) << 3;
+
+	if ((r & VT_SYM) && (sym->type.t & VT_TLS)) {
+
+		Sym *s2 = external_global_sym(TOK___tls_index, &int_type);
+		r = get_reg(RC_INT);
+		gen_modrm_impl(0x8B, 0, r, VT_SYM|VT_CONST, s2, 0);
+		o(0x03e0c148 | r << 16); /* shl 2,r */
+
+		o(0x4865), oad(0x250403 | r << 11, 11*PTR_SIZE); /* add gs:0x58,r */
+
+		gen_modrm_impl(0x8B, 1, r, r | VT_LVAL, 0, 0); /* mov (r),r */
+
+		orex(ll, r, op_reg_0, opcode), oad(0x80 | op_reg | r, 0);
+		greloca(cur_text_section, sym, ind - 4, R_X86_64_TPOFF32, c);
+
+		return;
+	}
+
+	orex(ll, r, op_reg_0, opcode);
+
 	if ((r & VT_VALMASK) == VT_CONST) {
 		/* constant memory reference */
 
@@ -37192,7 +25225,7 @@ static void gen_modrm_impl(int op_reg, int r, Sym *sym, int c, int is_got)
 		} else {
 			o(0x05 | op_reg);/* (%rip)+disp32 | destreg */
 
-			if (is_got) {
+			if (op_reg_0 & TREG_MEM) {
 				gen_gotpcrel(r, sym, c);
 			} else {
 				gen_addrpc32(r, sym, c);
@@ -37201,7 +25234,7 @@ static void gen_modrm_impl(int op_reg, int r, Sym *sym, int c, int is_got)
 	} else if ((r & VT_VALMASK) == VT_LOCAL) {
 		/* currently, we use only ebp as base */
 
-		if (c == (char)c) {
+		if (c == (signed char)c) {
 			/* short reference */
 
 			o(0x45 | op_reg);
@@ -37209,33 +25242,26 @@ static void gen_modrm_impl(int op_reg, int r, Sym *sym, int c, int is_got)
 		} else {
 			oad(0x85 | op_reg, c);
 		}
-	} else if ((r & VT_VALMASK) >= TREG_MEM) {
-		if (c) {
-			g(0x80 | op_reg | REG_VALUE(r));
-			gen_le32(c);
-		} else {
-			g(0x00 | op_reg | REG_VALUE(r));
-		}
-	} else {
+		/* 'c' (mostly from vtop->c.i) is not valid unless when TREG_MEM is set */
+
+	} else if ((r & TREG_MEM) && c) {
+		g(0x80 | op_reg | REG_VALUE(r));
+		gen_le32(c);
+	} else if (r & VT_LVAL) {
 		g(0x00 | op_reg | REG_VALUE(r));
+	} else {
+		g(0xc0 | op_reg | REG_VALUE(r));
 	}
 }
-/* generate a modrm reference. 'op_reg' contains the additional 3
-   opcode bits */
-
-static void gen_modrm(int op_reg, int r, Sym *sym, int c)
-{
-	gen_modrm_impl(op_reg, r, sym, c, 0);
-}
-/* generate a modrm reference. 'op_reg' contains the additional 3
-   opcode bits */
 
 static void gen_modrm64(int opcode, int op_reg, int r, Sym *sym, int c)
 {
-	int is_got;
-	is_got = (op_reg & TREG_MEM) && !(sym->type.t & VT_STATIC);
-	orex(1, r, op_reg, opcode);
-	gen_modrm_impl(op_reg, r, sym, c, is_got);
+	gen_modrm_impl(opcode, 1, op_reg, r, sym, c);
+}
+
+static void gen_modrm32(int opcode, int op_reg, int r, Sym *sym, int c)
+{
+	gen_modrm_impl(opcode, 0, op_reg, r, sym, c);
 }
 /* load 'r' from value 'sv' */
 
@@ -37245,13 +25271,12 @@ void load(int r, SValue *sv)
 	SValue v1;
 
 	fr = sv->r;
-	ft = sv->type.t & ~VT_DEFSIGN;
+	ft = sv->type.t & ~(VT_DEFSIGN|VT_VOLATILE|VT_CONSTANT);
 	fc = sv->c.i;
+
 	if (fc != sv->c.i && (fr & VT_SYM))
 		tcc_error("64 bit addend in load");
 
-	ft &= ~(VT_VOLATILE | VT_CONSTANT);
-// 392 "x86_64-gen.c"
 	v = fr & VT_VALMASK;
 	if (fr & VT_LVAL) {
 		int b, ll;
@@ -37259,10 +25284,12 @@ void load(int r, SValue *sv)
 			v1.type.t = VT_PTR;
 			v1.r = VT_LOCAL | VT_LVAL;
 			v1.c.i = fc;
+			v1.sym = NULL;
 			fr = r;
 			if (!(reg_classes[fr] & (RC_INT|RC_R11)))
 				fr = get_reg(RC_INT);
 			load(fr, &v1);
+			fr |= VT_LVAL;
 		}
 		if (fc != sv->c.i) {
 			/* If the addends doesn't fit into a 32bit signed
@@ -37272,6 +25299,7 @@ void load(int r, SValue *sv)
 			v1.type.t = VT_LLONG;
 			v1.r = VT_CONST;
 			v1.c.i = sv->c.i;
+			v1.sym = NULL;
 			fr = r;
 			if (!(reg_classes[fr] & (RC_INT|RC_R11)))
 				fr = get_reg(RC_INT);
@@ -37340,21 +25368,13 @@ void load(int r, SValue *sv)
 			ll = is64_type(ft);
 			b = 0x8b;
 		}
-		if (ll) {
-			gen_modrm64(b, r, fr, sv->sym, fc);
-		} else {
-			orex(ll, fr, r, b);
-			gen_modrm(r, fr, sv->sym, fc);
-		}
+		gen_modrm_impl(b, ll, r, fr, sv->sym, fc);
 	} else {
 		if (v == VT_CONST) {
 			if (fr & VT_SYM) {
 
-				orex(1,0,r,0x8d);
-				o(0x05 + REG_VALUE(r) * 8);/* lea xx(%rip), r */
+				gen_modrm64(0x8d, r, fr, sv->sym, fc);
 
-				gen_addrpc32(fr, sv->sym, fc);
-// 486 "x86_64-gen.c"
 			} else if (is64_type(ft)) {
 				if (sv->c.i >> 32) {
 					orex(1,r,0, 0xb8 + REG_VALUE(r));/* movabs $xx, r */
@@ -37365,8 +25385,9 @@ void load(int r, SValue *sv)
 
 					gen_le32(sv->c.i);
 				} else {
-					o(0xc031 + REG_VALUE(r) * 0x900);/* xor r, r */
+					orex(0, r, r, 0x31);/* xor r, r */
 
+					o(0xc0 + REG_VALUE(r) * 9);
 				}
 			} else {
 				orex(0,r,0, 0xb8 + REG_VALUE(r));/* mov $xx, r */
@@ -37374,9 +25395,7 @@ void load(int r, SValue *sv)
 				gen_le32(fc);
 			}
 		} else if (v == VT_LOCAL) {
-			orex(1,0,r,0x8d);/* lea xxx(%ebp), r */
-
-			gen_modrm(r, VT_LOCAL, sv->sym, fc);
+			gen_modrm64(0x8d, r, VT_LOCAL, sv->sym, fc);
 		} else if (v == VT_CMP) {
 			if (fc & 0x100) {
 				v = vtop->cmp_r;
@@ -37454,73 +25473,39 @@ void load(int r, SValue *sv)
 
 void store(int r, SValue *v)
 {
-	int fr, bt, ft, fc;
-	int op64 = 0;
+	int fr, bt, fc;
 	/* store the REX prefix in this variable when PIC is enabled */
 
-	int pic = 0;
+	int opc = 0, ll = 0;
 
-	fr = v->r & VT_VALMASK;
-	ft = v->type.t;
+	fr = v->r;
 	fc = v->c.i;
 	if (fc != v->c.i && (fr & VT_SYM))
 		tcc_error("64 bit addend in store");
-	ft &= ~(VT_VOLATILE | VT_CONSTANT);
-	bt = ft & VT_BTYPE;
+	bt = v->type.t & VT_BTYPE;
 	/* XXX: incorrect if float reg to reg */
-// 592 "x86_64-gen.c"
-	if (bt == VT_FLOAT) {
-		o(0x66);
-		o(pic);
-		o(0x7e0f);/* movd */
 
+	if (bt == VT_FLOAT) {
+		opc = 0x7e0f66;
 		r = REG_VALUE(r);
 	} else if (bt == VT_DOUBLE) {
-		o(0x66);
-		o(pic);
-		o(0xd60f);/* movq */
-
+		opc = 0xd60f66;
 		r = REG_VALUE(r);
 	} else if (bt == VT_LDOUBLE) {
 		o(0xc0d9);/* fld %st(0) */
 
-		o(pic);
-		o(0xdb);/* fstpt */
-
+		opc = 0xdb;
 		r = 7;
+	} else if (bt == VT_BYTE || bt == VT_BOOL) {
+		opc = 0x88;
 	} else {
+		opc = 0x89;
 		if (bt == VT_SHORT)
-			o(0x66);
-		o(pic);
-		if (bt == VT_BYTE || bt == VT_BOOL)
-			orex(0, 0, r, 0x88);
+			opc = 0x8966;
 		else if (is64_type(bt))
-			op64 = 0x89;
-		else
-			orex(0, 0, r, 0x89);
+			ll = 1;
 	}
-	if (pic) {
-		/* xxx r, (%r11) where xxx is mov, movq, fld, or etc */
-
-		if (op64)
-			o(op64);
-		o(3 + (r << 3));
-	} else if (op64) {
-		if (fr == VT_CONST || fr == VT_LOCAL || (v->r & VT_LVAL)) {
-			gen_modrm64(op64, r, v->r, v->sym, fc);
-		} else if (fr != r) {
-			orex(1, fr, r, op64);
-			o(0xc0 + fr + r * 8);/* mov r, fr */
-
-		}
-	} else {
-		if (fr == VT_CONST || fr == VT_LOCAL || (v->r & VT_LVAL)) {
-			gen_modrm(r, v->r, v->sym, fc);
-		} else if (fr != r) {
-			o(0xc0 + fr + r * 8);/* mov r, fr */
-
-		}
-	}
+	gen_modrm_impl(opc, ll, r, fr, v->sym, fc);
 }
 /* 'is_jmp' is '1' if it is a jump */
 
@@ -37547,94 +25532,12 @@ static void gcall_or_jmp(int is_jmp)
 		o(0xd0 + REG_VALUE(r) + (is_jmp << 4));
 	}
 }
-#if defined(CONFIG_TCC_BCHECK)
 
-static void gen_bounds_call(int v)
-{
-	Sym *sym = external_helper_sym(v);
-	oad(0xe8, 0);
-	greloca(cur_text_section, sym, ind-4, R_X86_64_PLT32, -4);
-}
-
-#define TREG_FASTCALL_1 TREG_RCX
-
-static void gen_bounds_prolog(void)
-{
-	/* leave some room for bound checking code */
-
-	func_bound_offset = lbounds_section->data_offset;
-	func_bound_ind = ind;
-	func_bound_add_epilog = 0;
-	o(0x0d8d48 + ((TREG_FASTCALL_1 == TREG_RDI) *
-		      0x300000)); /*lbound section pointer */
-
-	gen_le32 (0);
-	oad(0xb8, 0); /* call to function */
-
-}
-
-static void gen_bounds_epilog(void)
-{
-	addr_t saved_ind;
-	addr_t *bounds_ptr;
-	Sym *sym_data;
-	int offset_modified = func_bound_offset != lbounds_section->data_offset;
-
-	if (!offset_modified && !func_bound_add_epilog)
-		return;
-
-	/* add end of table info */
-
-	bounds_ptr = section_ptr_add(lbounds_section, sizeof(addr_t));
-	*bounds_ptr = 0;
-
-	sym_data = get_sym_ref(&char_pointer_type, lbounds_section,
-			       func_bound_offset, PTR_SIZE);
-
-	/* generate bound local allocation */
-
-	if (offset_modified) {
-		saved_ind = ind;
-		ind = func_bound_ind;
-		greloca(cur_text_section, sym_data, ind + 3, R_X86_64_PC32, -4);
-		ind = ind + 7;
-		gen_bounds_call(TOK___bound_local_new);
-		ind = saved_ind;
-	}
-
-	/* generate bound check local freeing */
-
-	o(0x5250); /* save returned value, if any */
-
-	o(0x20ec8348); /* sub $32,%rsp */
-
-	o(0x290f); /* movaps %xmm0,0x10(%rsp) */
-
-	o(0x102444);
-	o(0x240c290f); /* movaps %xmm1,(%rsp) */
-
-	greloca(cur_text_section, sym_data, ind + 3, R_X86_64_PC32, -4);
-	o(0x0d8d48 + ((TREG_FASTCALL_1 == TREG_RDI) *
-		      0x300000)); /* lea xxx(%rip), %rcx/rdi */
-
-	gen_le32 (0);
-	gen_bounds_call(TOK___bound_local_delete);
-	o(0x280f); /* movaps 0x10(%rsp),%xmm0 */
-
-	o(0x102444);
-	o(0x240c280f); /* movaps (%rsp),%xmm1 */
-
-	o(0x20c48348); /* add $32,%rsp */
-
-	o(0x585a); /* restore returned value, if any */
-
-}
-#endif
-// 731 "x86_64-gen.c"
 #define REGN 4
 static const uint8_t arg_regs[REGN] = {
 	TREG_RCX, TREG_RDX, TREG_R8, TREG_R9
 };
+
 /* Prepare arguments in R10 and R11 rather than RCX and RDX
    because gv() will not ever use these */
 
@@ -37647,6 +25550,7 @@ static int arg_prepare_reg(int idx)
 	else
 		return idx >= 0 && idx < REGN ? arg_regs[idx] : 0;
 }
+
 /* Generate function call. The function address is pushed first, then
    all the parameters in call order. This functions pops all the
    parameters and the function address. */
@@ -37654,7 +25558,7 @@ static int arg_prepare_reg(int idx)
 static void gen_offs_sp(int b, int r, int d)
 {
 	orex(1,0,r & 0x100 ? 0 : r, b);
-	if (d == (char)d) {
+	if (d == (signed char)d) {
 		o(0x2444 | (REG_VALUE(r) << 3));
 		g(d);
 	} else {
@@ -37667,6 +25571,7 @@ static int using_regs(int size)
 {
 	return !(size > 8 || (size & (size - 1)));
 }
+
 /* Return the number of registers needed to return the struct, or 0 if
    returning via struct pointer. */
 
@@ -37674,7 +25579,7 @@ ST_FUNC int gfunc_sret(CType *vt, int variadic, CType *ret, int *ret_align,
 		       int *regsize)
 {
 	int size, align;
-	*ret_align = 1;// Never have to re-align return values for x86-64
+	*ret_align = 1; // Never have to re-align return values for x86-64
 
 	*regsize = 8;
 	size = type_size(vt, &align);
@@ -37711,17 +25616,15 @@ void gfunc_call(int nb_args)
 {
 	int size, r, args_size, i, d, bt, struct_size;
 	int arg;
-#ifdef CONFIG_TCC_BCHECK
 
-	if (tcc_state->do_bounds_check)
-		gbound_args(nb_args);
-#endif
+	save_regs(nb_args);
 
 	args_size = (nb_args < REGN ? REGN : nb_args) * PTR_SIZE;
 	arg = nb_args;
+
 	/* for struct arguments, we need to call memcpy and the function
-	       call breaks register passing arguments we are preparing.
-	       So, we process arguments which will be passed by stack first. */
+	   call breaks register passing arguments we are preparing.
+	   So, we process arguments which will be passed by stack first. */
 
 	struct_size = args_size;
 	for (i = 0; i < nb_args; i++) {
@@ -37733,7 +25636,7 @@ void gfunc_call(int nb_args)
 		size = gfunc_arg_size(&sv->type);
 
 		if (using_regs(size))
-			continue;/* arguments smaller than 8 bytes passed in registers or on stack */
+			continue; /* arguments smaller than 8 bytes passed in registers or on stack */
 
 		if (bt == VT_STRUCT) {
 			/* align to stack align size */
@@ -37744,6 +25647,7 @@ void gfunc_call(int nb_args)
 			r = get_reg(RC_INT);
 			gen_offs_sp(0x8d, r, struct_size);
 			struct_size += size;
+
 			/* generate memcpy call */
 
 			vset(&sv->type, r | VT_LVAL, 0);
@@ -37813,7 +25717,7 @@ void gfunc_call(int nb_args)
 					gen_offs_sp(0x89, r, arg*8);
 				} else {
 					d = arg_prepare_reg(arg);
-					orex(1,d,r,0x89);/* mov */
+					orex(1,d,r,0x89); /* mov */
 
 					o(0xc0 + REG_VALUE(r) * 8 + REG_VALUE(d));
 				}
@@ -37821,14 +25725,14 @@ void gfunc_call(int nb_args)
 		}
 		vtop--;
 	}
-	save_regs(0);
+
 	/* Copy R10 and R11 into RCX and RDX, respectively */
 
 	if (nb_args > 0) {
-		o(0xd1894c);/* mov %r10, %rcx */
+		o(0xd1894c); /* mov %r10, %rcx */
 
 		if (nb_args > 1) {
-			o(0xda894c);/* mov %r11, %rdx */
+			o(0xda894c); /* mov %r11, %rdx */
 
 		}
 	}
@@ -37839,20 +25743,14 @@ void gfunc_call(int nb_args)
 		/* need to add the "func_scratch" area after alloca */
 
 		o(0x48);
-		func_alloca = oad(0x05, func_alloca);/* add $NN, %rax */
-
-#ifdef CONFIG_TCC_BCHECK
-
-		if (tcc_state->do_bounds_check)
-			gen_bounds_call(TOK___bound_alloca_nr); /* new region */
-
-#endif
+		func_alloca = oad(0x05, func_alloca); /* add $NN, %rax */
 
 	}
 	vtop--;
 }
 
 #define FUNC_PROLOG_SIZE 11
+
 /* generate function prolog of type 't' */
 
 void gfunc_prolog(Sym *func_sym)
@@ -37873,8 +25771,9 @@ void gfunc_prolog(Sym *func_sym)
 	reg_param_index = 0;
 
 	sym = func_type->ref;
+
 	/* if the function returns a structure, then add an
-	       implicit pointer parameter */
+	   implicit pointer parameter */
 
 	size = gfunc_arg_size(&func_vt);
 	if (!using_regs(size)) {
@@ -37883,6 +25782,7 @@ void gfunc_prolog(Sym *func_sym)
 		reg_param_index++;
 		addr += 8;
 	}
+
 	/* define parameters */
 
 	while ((sym = sym->next) != NULL) {
@@ -37893,8 +25793,7 @@ void gfunc_prolog(Sym *func_sym)
 			if (reg_param_index < REGN) {
 				gen_modrm64(0x89, arg_regs[reg_param_index], VT_LOCAL, NULL, addr);
 			}
-			sym_push(sym->v & ~SYM_FIELD, type,
-				 VT_LLOCAL | VT_LVAL, addr);
+			gfunc_set_param(sym, addr, 1);
 		} else {
 			if (reg_param_index < REGN) {
 				/* save arguments passed by register */
@@ -37902,15 +25801,14 @@ void gfunc_prolog(Sym *func_sym)
 				if ((bt == VT_FLOAT) || (bt == VT_DOUBLE)) {
 					if (tcc_state->nosse)
 						tcc_error("SSE disabled");
-					o(0xd60f66);/* movq */
+					/* movq */
 
-					gen_modrm(reg_param_index, VT_LOCAL, NULL, addr);
+					gen_modrm32(0xd60f66, reg_param_index, VT_LOCAL, NULL, addr);
 				} else {
 					gen_modrm64(0x89, arg_regs[reg_param_index], VT_LOCAL, NULL, addr);
 				}
 			}
-			sym_push(sym->v & ~SYM_FIELD, type,
-				 VT_LOCAL | VT_LVAL, addr);
+			gfunc_set_param(sym, addr, 0);
 		}
 		addr += 8;
 		reg_param_index++;
@@ -37923,35 +25821,26 @@ void gfunc_prolog(Sym *func_sym)
 		}
 		reg_param_index++;
 	}
-#ifdef CONFIG_TCC_BCHECK
-
-	if (tcc_state->do_bounds_check)
-		gen_bounds_prolog();
-#endif
-
 }
+
 /* generate function epilog */
 
 void gfunc_epilog(void)
 {
 	int v, start;
+
 	/* align local size to word & save local variables */
 
 	func_scratch = (func_scratch + 15) & -16;
 	loc = (loc & -16) - func_scratch;
-#ifdef CONFIG_TCC_BCHECK
 
-	if (tcc_state->do_bounds_check)
-		gen_bounds_epilog();
-#endif
-
-	o(0xc9);/* leave */
+	o(0xc9); /* leave */
 
 	if (func_ret_sub == 0) {
-		o(0xc3);/* ret */
+		o(0xc3); /* ret */
 
 	} else {
-		o(0xc2);/* ret n */
+		o(0xc2); /* ret n */
 
 		g(func_ret_sub);
 		g(func_ret_sub >> 8);
@@ -37965,27 +25854,27 @@ void gfunc_epilog(void)
 	ind = start;
 	if (v >= 4096) {
 		Sym *sym = external_helper_sym(TOK___chkstk);
-		oad(0xb8, v);/* mov stacksize, %eax */
+		oad(0xb8, v); /* mov stacksize, %eax */
 
-		oad(0xe8, 0);/* call __chkstk, (does the stackframe too) */
+		oad(0xe8, 0); /* call __chkstk, (does the stackframe too) */
 
 		greloca(cur_text_section, sym, ind-4, R_X86_64_PLT32, -4);
-		o(0x90);/* fill for FUNC_PROLOG_SIZE = 11 bytes */
+		o(0x90); /* fill for FUNC_PROLOG_SIZE = 11 bytes */
 
 	} else {
-		o(0xe5894855);/* push %rbp, mov %rsp, %rbp */
+		o(0xe5894855);  /* push %rbp, mov %rsp, %rbp */
 
-		o(0xec8148);/* sub rsp, stacksize */
+		o(0xec8148);  /* sub rsp, stacksize */
 
 		gen_le32(v);
 	}
 	ind = cur_text_section->data_offset;
+
 	/* add the "func_scratch" area after each alloca seen */
 
 	gsym_addr(func_alloca, -func_scratch);
 }
-/* not PE */
-// 1631 "x86_64-gen.c"
+
 ST_FUNC void gen_fill_nops(int bytes)
 {
 	while (bytes--)
@@ -38003,7 +25892,7 @@ void gjmp_addr(int a)
 {
 	int r;
 	r = a - ind - 2;
-	if (r == (char)r) {
+	if (r == (signed char)r) {
 		g(0xeb);
 		g(r);
 	} else {
@@ -38076,7 +25965,7 @@ gen_op8:
 			r = gv(RC_INT);
 			vswap();
 			c = vtop->c.i;
-			if (c == (char)c) {
+			if (c == (signed char)c) {
 				/* XXX: generate inc and dec for smaller code ? */
 
 				orex(ll, r, 0, 0x83);
@@ -38203,7 +26092,7 @@ void gen_opl(int op)
 
 void gen_opf(int op)
 {
-	int a, ft, fc, swapped, r;
+	int a, ft, fc, swapped, r, opc;
 	int bt = vtop->type.t & VT_BTYPE;
 	int float_type = bt == VT_LDOUBLE ? RC_ST0 : RC_FLOAT;
 
@@ -38215,10 +26104,12 @@ void gen_opf(int op)
 
 		} else {
 			save_reg(vtop->r);
-			o(0x80);/* xor $0x80, $n(rbp) */
+			/* xor $0x80, $n(rbp) */
 
-			gen_modrm(6, vtop->r, NULL, vtop->c.i + (bt == VT_DOUBLE ? 7 : 3));
+			gen_modrm32(0x80, 6, vtop->r, NULL, vtop->c.i + (bt == VT_DOUBLE ? 7 : 3));
 			o(0x80);
+			gv(float_type);/* -n is not a lvalue */
+
 		}
 		return;
 	}
@@ -38335,6 +26226,7 @@ void gen_opf(int op)
 				v1.type.t = VT_PTR;
 				v1.r = VT_LOCAL | VT_LVAL;
 				v1.c.i = fc;
+				v1.sym = NULL;
 				load(r, &v1);
 				fc = 0;
 				vtop->r = r = r | VT_LVAL;
@@ -38360,20 +26252,16 @@ void gen_opf(int op)
 			}
 			assert(!(vtop[-1].r & VT_LVAL));
 
-			if ((vtop->type.t & VT_BTYPE) == VT_DOUBLE)
-				o(0x66);
 			if (op == TOK_EQ || op == TOK_NE)
-				o(0x2e0f);/* ucomisd */
+				opc = 0x2e0f;/* ucomisd */
 
 			else
-				o(0x2f0f);/* comisd */
+				opc = 0x2f0f;/* comisd */
 
-			if (vtop->r & VT_LVAL) {
-				gen_modrm(vtop[-1].r, r, vtop->sym, fc);
-			} else {
-				o(0xc0 + REG_VALUE(vtop[0].r) + REG_VALUE(vtop[-1].r)*8);
-			}
+			if ((vtop->type.t & VT_BTYPE) == VT_DOUBLE)
+				opc = opc << 8 | 0x66;
 
+			gen_modrm32(opc, vtop[-1].r, vtop->r, vtop->sym, fc);
 			vtop--;
 			vset_VT_CMP(op | 0x100);
 			vtop->cmp_r = op;
@@ -38397,8 +26285,6 @@ void gen_opf(int op)
 			ft = vtop->type.t;
 			fc = vtop->c.i;
 			assert((ft & VT_BTYPE) != VT_LDOUBLE);
-
-			r = vtop->r;
 			/* if saved lvalue, then we must reload it */
 
 			if ((vtop->r & VT_VALMASK) == VT_LLOCAL) {
@@ -38407,9 +26293,10 @@ void gen_opf(int op)
 				v1.type.t = VT_PTR;
 				v1.r = VT_LOCAL | VT_LVAL;
 				v1.c.i = fc;
+				v1.sym = NULL;
 				load(r, &v1);
 				fc = 0;
-				vtop->r = r = r | VT_LVAL;
+				vtop->r = r | VT_LVAL;
 			}
 
 			assert(!(vtop[-1].r & VT_LVAL));
@@ -38427,14 +26314,9 @@ void gen_opf(int op)
 				o(0xf3);
 			}
 			o(0x0f);
-			o(0x58 + a);
+			opc = 0x58 + a;
 
-			if (vtop->r & VT_LVAL) {
-				gen_modrm(vtop[-1].r, r, vtop->sym, fc);
-			} else {
-				o(0xc0 + REG_VALUE(vtop[0].r) + REG_VALUE(vtop[-1].r)*8);
-			}
-
+			gen_modrm32(opc, vtop[-1].r, vtop->r, vtop->sym, fc);
 			vtop--;
 		}
 	}
@@ -38580,6 +26462,15 @@ void gen_cvt_ftoi(int t)
 	ft = vtop->type.t;
 	bt = ft & VT_BTYPE;
 	if (bt == VT_LDOUBLE) {
+		if (t != VT_INT) {
+			vpush_helper_func(TOK___fixxfdi);
+			vswap();
+			gfunc_call(1);
+			vpushi(0);
+			vtop->r = REG_IRET;
+			vtop->r2 = REG_IRE2;
+			return;
+		}
 		gen_cvt_ftof(VT_DOUBLE);
 		bt = VT_DOUBLE;
 	}
@@ -38659,6 +26550,7 @@ ST_FUNC void gen_vla_sp_restore(int addr)
 {
 	gen_modrm64(0x8b, TREG_RSP, VT_LOCAL, NULL, addr);
 }
+
 /* Save result of gen_vla_alloc onto the stack */
 
 ST_FUNC void gen_vla_result(int addr)
@@ -38668,13 +26560,9 @@ ST_FUNC void gen_vla_result(int addr)
 	gen_modrm64(0x89, TREG_RAX, VT_LOCAL, NULL, addr);
 }
 /* Subtract from the stack pointer, and push the resulting value onto the stack */
-
 ST_FUNC void gen_vla_alloc(CType *type, int align)
 {
 	int use_call = 0;
-#if defined(CONFIG_TCC_BCHECK)
-	use_call = tcc_state->do_bounds_check;
-#endif
 	/* alloca does more than just adjust %rsp on Windows */
 
 	use_call = 1;
@@ -38708,7 +26596,7 @@ ST_FUNC void gen_struct_copy(int size)
 {
 	int n = size / PTR_SIZE;
 
-	o(0x5756);/* push rsi, rdi */
+	o(0x5756); /* push rsi, rdi */
 
 	gv2(RC_RDI, RC_RSI);
 	if (n <= 4) {
@@ -38727,64 +26615,21 @@ ST_FUNC void gen_struct_copy(int size)
 	if (size & 0x01)
 		o(0xa4);
 
-	o(0x5e5f);/* pop rdi, rsi */
+	o(0x5e5f); /* pop rdi, rsi */
 
 	vpop();
 	vpop();
 }
 /* end of x86-64 code generator */
 /**/
-#endif
-/* ! TARGET_DEFS_ONLY */
 /**/
-// 50 "libtcc.c" 2
-// 1 "x86_64-link.c" 1
-#ifdef TARGET_DEFS_ONLY
 
-#define EM_TCC_TARGET EM_X86_64
-
-/* relocation type for 32 bit data relocation */
-
-#define R_DATA_32   R_X86_64_32S
-#define R_DATA_PTR  R_X86_64_64
-#define R_JMP_SLOT  R_X86_64_JUMP_SLOT
-#define R_GLOB_DAT  R_X86_64_GLOB_DAT
-#define R_COPY      R_X86_64_COPY
-#define R_RELATIVE  R_X86_64_RELATIVE
-
-#define R_NUM       R_X86_64_NUM
-
-#define ELF_START_ADDR 0x400000
-#define ELF_PAGE_SIZE  0x200000
-
-#define PCRELATIVE_DLLPLT 1
-#define RELOCATE_DLLPLT 1
-
-#else
-/* !TARGET_DEFS_ONLY */
-// 23 "x86_64-link.c"
-// 1 "tcc.h" 1
-#ifndef _TCC_H
 /* _TCC_H */
-#endif /* _TCC_H */
-// 1990 "tcc.h"
 #undef TCC_STATE_VAR
 #undef TCC_SET_STATE
-#ifdef USING_GLOBALS
-
-#define TCC_STATE_VAR(sym) tcc_state->sym
-#define TCC_SET_STATE(fn) fn
-#undef USING_GLOBALS
-#undef _tcc_error
-#else
 
 #define TCC_STATE_VAR(sym) s1->sym
 #define TCC_SET_STATE(fn) (tcc_enter_state(s1),fn)
-#define _tcc_error use_tcc_error_noabort
-#endif
-// 24 "x86_64-link.c" 2
-#ifdef NEED_RELOC_TYPE
-
 /* Returns 1 for a code relocation, 0 for a data relocation. For unknown
    relocations, returns -1. */
 
@@ -38823,7 +26668,6 @@ ST_FUNC int code_reloc (int reloc_type)
 	}
 	return -1;
 }
-
 /* Returns an enumerator to describe whether and when the relocation needs a
    GOT and/or PLT entry to be created. See tcc.h for a description of the
    different values. */
@@ -38836,10 +26680,9 @@ ST_FUNC int gotplt_entry_type (int reloc_type)
 	case R_X86_64_COPY:
 	case R_X86_64_RELATIVE:
 		return NO_GOTPLT_ENTRY;
-
 	/* The following relocs wouldn't normally need GOT or PLT
-	   slots, but we need them for simplicity in the link
-	   editor part.  See our caller for comments.  */
+		   slots, but we need them for simplicity in the link
+		   editor part.  See our caller for comments.  */
 
 	case R_X86_64_32:
 	case R_X86_64_32S:
@@ -38861,19 +26704,20 @@ ST_FUNC int gotplt_entry_type (int reloc_type)
 	case R_X86_64_TLSGD:
 	case R_X86_64_TLSLD:
 	case R_X86_64_DTPOFF32:
-	case R_X86_64_TPOFF32:
 	case R_X86_64_DTPOFF64:
-	case R_X86_64_TPOFF64:
 	case R_X86_64_REX_GOTPCRELX:
 	case R_X86_64_PLT32:
 	case R_X86_64_PLTOFF64:
 		return ALWAYS_GOTPLT_ENTRY;
+
+	case R_X86_64_TPOFF32:
+	case R_X86_64_TPOFF64:
+		return NO_GOTPLT_ENTRY;
 	}
 
 	return -1;
 }
 
-#ifdef NEED_BUILD_GOT
 ST_FUNC unsigned create_plt_entry(TCCState *s1, unsigned got_offset,
 				  struct sym_attr *attr)
 {
@@ -38883,48 +26727,44 @@ ST_FUNC unsigned create_plt_entry(TCCState *s1, unsigned got_offset,
 	unsigned plt_offset, relofs;
 
 	modrm = 0x25;
-
 	/* empty PLT: create PLT0 entry that pushes the library identifier
-	   (GOT + PTR_SIZE) and jumps to ld.so resolution routine
-	   (GOT + 2 * PTR_SIZE) */
+	       (GOT + PTR_SIZE) and jumps to ld.so resolution routine
+	       (GOT + 2 * PTR_SIZE) */
 
 	if (plt->data_offset == 0) {
 		p = section_ptr_add(plt, 16);
-		p[0] = 0xff; /* pushl got + PTR_SIZE */
+		p[0] = 0xff;/* pushl got + PTR_SIZE */
 
 		p[1] = modrm + 0x10;
 		write32le(p + 2, PTR_SIZE);
-		p[6] = 0xff; /* jmp *(got + PTR_SIZE * 2) */
+		p[6] = 0xff;/* jmp *(got + PTR_SIZE * 2) */
 
 		p[7] = modrm;
 		write32le(p + 8, PTR_SIZE * 2);
 	}
 	plt_offset = plt->data_offset;
-
 	/* The PLT slot refers to the relocation entry it needs via offset.
-	   The reloc entry is created below, so its offset is the current
-	   data_offset */
+	       The reloc entry is created below, so its offset is the current
+	       data_offset */
 
 	relofs = s1->plt->reloc ? s1->plt->reloc->data_offset : 0;
-
 	/* Jump to GOT entry where ld.so initially put the address of ip + 4 */
 
 	p = section_ptr_add(plt, 16);
-	p[0] = 0xff; /* jmp *(got + x) */
+	p[0] = 0xff;/* jmp *(got + x) */
 
 	p[1] = modrm;
 	write32le(p + 2, got_offset);
-	p[6] = 0x68; /* push $xxx */
+	p[6] = 0x68;/* push $xxx */
 
 	/* On x86-64, the relocation is referred to by _index_ */
 
-	write32le(p + 7, relofs sizeof (ElfW_Rel) - 1);
-	p[11] = 0xe9; /* jmp plt_start */
+	write32le(p + 7, relofs / sizeof (ElfW_Rel) - 1);
+	p[11] = 0xe9;/* jmp plt_start */
 
 	write32le(p + 12, -(plt->data_offset));
 	return plt_offset;
 }
-
 /* relocate the PLT: compute addresses and offsets in the PLT now that final
    address for PLT and GOT are known (see fill_program_header) */
 
@@ -38959,9 +26799,7 @@ ST_FUNC void relocate_plt(TCCState *s1)
 		}
 	}
 }
-#endif
-#endif
-// 189 "x86_64-link.c"
+
 ST_FUNC void relocate(TCCState *s1, ElfW_Rel *rel, int type, unsigned char *ptr,
 		      addr_t addr, addr_t val)
 {
@@ -39000,6 +26838,14 @@ ST_FUNC void relocate(TCCState *s1, ElfW_Rel *rel, int type, unsigned char *ptr,
 			qrel->r_addend = (int)read32le(ptr) + val;
 			qrel++;
 		}
+		if ((type == R_X86_64_32 ? val != (unsigned)val : val != (int)val)
+		    /* ignore relocation check for stab section */
+
+		    && (stab_section == NULL ||
+			addr < stab_section->sh_addr ||
+			addr >= (stab_section->sh_addr + stab_section->data_offset))) {
+			tcc_error_noabort("relocation 'R_X86_64_32[S]' out of range");
+		}
 		add32le(ptr, val);
 		break;
 
@@ -39027,11 +26873,12 @@ plt32pc32: {
 			long long diff;
 			diff = (long long)val - addr;
 			if (diff < -2147483648LL || diff > 2147483647LL) {
+
 				/* ignore overflow with undefined weak symbols */
 
-				if (((ElfW(Sym)*)symtab_section->data)[sym_index].st_shndx != SHN_UNDEF)
+				if (((ElfW(Sym) *)symtab_section->data)[sym_index].st_shndx != SHN_UNDEF)
 
-					tcc_error_noabort("internal error: relocation failed");
+					tcc_error_noabort("relocation '%d' out of range", type);
 			}
 			add32le(ptr, diff);
 		}
@@ -39150,28 +26997,28 @@ plt32pc32: {
 			tcc_error_noabort("unexpected R_X86_64_TLSLD pattern");
 	}
 	break;
-	case R_X86_64_DTPOFF32:
-	case R_X86_64_TPOFF32: {
-		ElfW(Sym) *sym;
-		Section *sec;
-		int32_t x;
 
-		sym = &((ElfW(Sym) *)symtab_section->data)[sym_index];
-		sec = s1->sections[sym->st_shndx];
-		x = val - sec->sh_addr - sec->data_offset;
-		add32le(ptr, x);
-	}
-	break;
+	case R_X86_64_DTPOFF32:
+	case R_X86_64_TPOFF32:
 	case R_X86_64_DTPOFF64:
 	case R_X86_64_TPOFF64: {
-		ElfW(Sym) *sym;
-		Section *sec;
 		int32_t x;
-
-		sym = &((ElfW(Sym) *)symtab_section->data)[sym_index];
-		sec = s1->sections[sym->st_shndx];
-		x = val - sec->sh_addr - sec->data_offset;
-		add64le(ptr, x);
+		if (s1->tls_end) {
+			x = val - s1->tls_end;
+		} else {
+			ElfW(Sym) *sym = &((ElfW(Sym) *)symtab_section->data)[sym_index];
+			Section *sec = s1->sections[sym->st_shndx];
+			x = val - sec->sh_addr - sec->data_offset;
+		}
+		switch (type) {
+		case R_X86_64_DTPOFF64:
+		case R_X86_64_TPOFF64:
+			add64le(ptr, x);
+			break;
+		default:
+			add32le(ptr, x);
+			break;
+		}
 	}
 	break;
 	case R_X86_64_NONE:
@@ -39188,52 +27035,15 @@ plt32pc32: {
 		break;
 	}
 }
-#endif
-/* !TARGET_DEFS_ONLY */
-// 51 "libtcc.c" 2
-// 1 "i386-asm.c" 1
-/*
- *  i386 specific functions for TCC assembler
- *
- *  Copyright (c) 2001, 2002 Fabrice Bellard
- *  Copyright (c) 2009 Frédéric Feret (x86_64 support)
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- */
-// 22 "i386-asm.c"
-#define USING_GLOBALS
-// 1 "tcc.h" 1
-#ifndef _TCC_H
+/* ==================== i386-asm.c ==================== */
+
 /* _TCC_H */
-#endif /* _TCC_H */
-// 1990 "tcc.h"
 #undef TCC_STATE_VAR
 #undef TCC_SET_STATE
-#ifdef USING_GLOBALS
 
 #define TCC_STATE_VAR(sym) tcc_state->sym
 #define TCC_SET_STATE(fn) fn
-#undef USING_GLOBALS
 #undef _tcc_error
-#else
-
-#define TCC_STATE_VAR(sym) s1->sym
-#define TCC_SET_STATE(fn) (tcc_enter_state(s1),fn)
-#define _tcc_error use_tcc_error_noabort
-#endif
-// 24 "i386-asm.c" 2
 
 #define MAX_OPERANDS 3
 
@@ -39377,7 +27187,7 @@ enum {
 #define OP_IM64 (1 << OPT_IM64)
 #define OP_EA32 (OP_EA << 1)
 
-#define OP_EA 0x40000000
+#define OP_EA 0x40000000u
 #define OP_REG (OP_REG8 | OP_REG16 | OP_REG32 | OP_REG64)
 
 #define TREG_XAX TREG_RAX
@@ -39413,7 +27223,6 @@ static const uint8_t reg_to_size[9] = {
 	    [OP_REG64] = 3,
 	#endif
 	*/
-// 179 "i386-asm.c"
 	0, 0, 1, 0, 2, 0, 0, 0, 3
 };
 
@@ -39511,7 +27320,6 @@ static const ASMInstr asm_instrs[] = {
 #define DEF_ASM_OP2(name,opcode,group,instr_type,op0,op1) { TOK_ASM_ ## name, O(opcode), T(opcode, instr_type, group), 2, { op0, op1 }},
 #define DEF_ASM_OP3(name,opcode,group,instr_type,op0,op1,op2) { TOK_ASM_ ## name, O(opcode), T(opcode, instr_type, group), 3, { op0, op1, op2 }},
 
-// 1 "x86_64-asm.h" 1
 	DEF_ASM_OP0(clc, 0xf8)/* must be first OP0 */
 
 	DEF_ASM_OP0(cld, 0xfc)
@@ -40028,7 +27836,12 @@ static const ASMInstr asm_instrs[] = {
 	DEF_ASM_OP2(addps, 0x0f58, 0, OPC_MODRM, OPT_EA | OPT_SSE, OPT_SSE )
 	DEF_ASM_OP2(cvtpi2ps, 0x0f2a, 0, OPC_MODRM, OPT_EA | OPT_MMX, OPT_SSE )
 	DEF_ASM_OP2(cvtps2pi, 0x0f2d, 0, OPC_MODRM, OPT_EA | OPT_SSE, OPT_MMX )
+	DEF_ASM_OP2(cvtss2si, 0xf30f2d, 0, OPC_MODRM, OPT_EA | OPT_SSE, OPT_REG32 )
+	ALT(DEF_ASM_OP2(cvtss2si, 0xf30f2d, 0, OPC_MODRM | OPC_48, OPT_EA | OPT_SSE, OPT_REG64 ))
+	DEF_ASM_OP2(cvtsd2si, 0xf20f2d, 0, OPC_MODRM, OPT_EA | OPT_SSE, OPT_REG32 )
+	ALT(DEF_ASM_OP2(cvtsd2si, 0xf20f2d, 0, OPC_MODRM | OPC_48, OPT_EA | OPT_SSE, OPT_REG64 ))
 	DEF_ASM_OP2(cvttps2pi, 0x0f2c, 0, OPC_MODRM, OPT_EA | OPT_SSE, OPT_MMX )
+	DEF_ASM_OP2(andps, 0x0f54, 0, OPC_MODRM, OPT_EA | OPT_SSE, OPT_SSE )
 	DEF_ASM_OP2(divps, 0x0f5e, 0, OPC_MODRM, OPT_EA | OPT_SSE, OPT_SSE )
 	DEF_ASM_OP2(maxps, 0x0f5f, 0, OPC_MODRM, OPT_EA | OPT_SSE, OPT_SSE )
 	DEF_ASM_OP2(minps, 0x0f5d, 0, OPC_MODRM, OPT_EA | OPT_SSE, OPT_SSE )
@@ -40042,7 +27855,12 @@ static const ASMInstr asm_instrs[] = {
 	DEF_ASM_OP2(rcpss, 0x0f53, 0, OPC_MODRM, OPT_EA | OPT_SSE, OPT_SSE )
 	DEF_ASM_OP2(rsqrtps, 0x0f52, 0, OPC_MODRM, OPT_EA | OPT_SSE, OPT_SSE )
 	DEF_ASM_OP2(sqrtps, 0x0f51, 0, OPC_MODRM, OPT_EA | OPT_SSE, OPT_SSE )
+	DEF_ASM_OP2(sqrtss, 0xf30f51, 0, OPC_MODRM, OPT_EA | OPT_SSE, OPT_SSE )
 	DEF_ASM_OP2(subps, 0x0f5c, 0, OPC_MODRM, OPT_EA | OPT_SSE, OPT_SSE )
+	/* sse2 */
+
+	DEF_ASM_OP2(andpd, 0x660f54, 0, OPC_MODRM, OPT_EA | OPT_SSE, OPT_SSE)
+	DEF_ASM_OP2(sqrtsd, 0xf20f51, 0, OPC_MODRM, OPT_EA | OPT_SSE, OPT_SSE)
 	/* movnti should only accept REG32 and REG64, we accept more */
 
 	DEF_ASM_OP2(movnti, 0x0fc3, 0, OPC_MODRM, OPT_REG, OPT_EA)
@@ -40066,10 +27884,11 @@ static const ASMInstr asm_instrs[] = {
 #undef DEF_ASM_OP1
 #undef DEF_ASM_OP2
 #undef DEF_ASM_OP3
-// 239 "i386-asm.c" 2
 	/* last operation */
 
-	{ 0, },
+	{
+		0,
+	}
 };
 
 static const uint16_t op0_codes[] = {
@@ -40078,9 +27897,7 @@ static const uint16_t op0_codes[] = {
 #define DEF_ASM_OP0L(name,opcode,group,instr_type)
 #define DEF_ASM_OP1(name,opcode,group,instr_type,op0)
 #define DEF_ASM_OP2(name,opcode,group,instr_type,op0,op1)
-#define DEF_ASM_OP3(name,opcode,group,instr_type,op0,op1,op2)
 
-// 1 "x86_64-asm.h" 1
 	DEF_ASM_OP0(clc, 0xf8)/* must be first OP0 */
 
 	DEF_ASM_OP0(cld, 0xfc)
@@ -40597,7 +28414,12 @@ static const uint16_t op0_codes[] = {
 	DEF_ASM_OP2(addps, 0x0f58, 0, OPC_MODRM, OPT_EA | OPT_SSE, OPT_SSE )
 	DEF_ASM_OP2(cvtpi2ps, 0x0f2a, 0, OPC_MODRM, OPT_EA | OPT_MMX, OPT_SSE )
 	DEF_ASM_OP2(cvtps2pi, 0x0f2d, 0, OPC_MODRM, OPT_EA | OPT_SSE, OPT_MMX )
+	DEF_ASM_OP2(cvtss2si, 0xf30f2d, 0, OPC_MODRM, OPT_EA | OPT_SSE, OPT_REG32 )
+	ALT(DEF_ASM_OP2(cvtss2si, 0xf30f2d, 0, OPC_MODRM | OPC_48, OPT_EA | OPT_SSE, OPT_REG64 ))
+	DEF_ASM_OP2(cvtsd2si, 0xf20f2d, 0, OPC_MODRM, OPT_EA | OPT_SSE, OPT_REG32 )
+	ALT(DEF_ASM_OP2(cvtsd2si, 0xf20f2d, 0, OPC_MODRM | OPC_48, OPT_EA | OPT_SSE, OPT_REG64 ))
 	DEF_ASM_OP2(cvttps2pi, 0x0f2c, 0, OPC_MODRM, OPT_EA | OPT_SSE, OPT_MMX )
+	DEF_ASM_OP2(andps, 0x0f54, 0, OPC_MODRM, OPT_EA | OPT_SSE, OPT_SSE )
 	DEF_ASM_OP2(divps, 0x0f5e, 0, OPC_MODRM, OPT_EA | OPT_SSE, OPT_SSE )
 	DEF_ASM_OP2(maxps, 0x0f5f, 0, OPC_MODRM, OPT_EA | OPT_SSE, OPT_SSE )
 	DEF_ASM_OP2(minps, 0x0f5d, 0, OPC_MODRM, OPT_EA | OPT_SSE, OPT_SSE )
@@ -40611,7 +28433,12 @@ static const uint16_t op0_codes[] = {
 	DEF_ASM_OP2(rcpss, 0x0f53, 0, OPC_MODRM, OPT_EA | OPT_SSE, OPT_SSE )
 	DEF_ASM_OP2(rsqrtps, 0x0f52, 0, OPC_MODRM, OPT_EA | OPT_SSE, OPT_SSE )
 	DEF_ASM_OP2(sqrtps, 0x0f51, 0, OPC_MODRM, OPT_EA | OPT_SSE, OPT_SSE )
+	DEF_ASM_OP2(sqrtss, 0xf30f51, 0, OPC_MODRM, OPT_EA | OPT_SSE, OPT_SSE )
 	DEF_ASM_OP2(subps, 0x0f5c, 0, OPC_MODRM, OPT_EA | OPT_SSE, OPT_SSE )
+	/* sse2 */
+
+	DEF_ASM_OP2(andpd, 0x660f54, 0, OPC_MODRM, OPT_EA | OPT_SSE, OPT_SSE)
+	DEF_ASM_OP2(sqrtsd, 0xf20f51, 0, OPC_MODRM, OPT_EA | OPT_SSE, OPT_SSE)
 	/* movnti should only accept REG32 and REG64, we accept more */
 
 	DEF_ASM_OP2(movnti, 0x0fc3, 0, OPC_MODRM, OPT_REG, OPT_EA)
@@ -40635,7 +28462,6 @@ static const uint16_t op0_codes[] = {
 #undef DEF_ASM_OP1
 #undef DEF_ASM_OP2
 #undef DEF_ASM_OP3
-// 255 "i386-asm.c" 2
 
 };
 
@@ -40880,11 +28706,6 @@ ST_FUNC void gen_expr32(ExprValue *pe)
 	else
 		gen_addr32(pe->sym ? VT_SYM : 0, pe->sym, pe->v);
 }
-
-ST_FUNC void gen_expr64(ExprValue *pe)
-{
-	gen_addr64(pe->sym ? VT_SYM : 0, pe->sym, pe->v);
-}
 /* XXX: unify with C code output ? */
 
 static void gen_disp32(ExprValue *pe)
@@ -40970,8 +28791,6 @@ static inline int asm_modrm(int reg, Operand *op)
 	}
 	return 0;
 }
-
-#define REX_W 0x48
 #define REX_R 0x44
 #define REX_X 0x42
 #define REX_B 0x41
@@ -41117,7 +28936,7 @@ ST_FUNC void asm_opcode(TCCState *s1, int opcode)
 		}
 		parse_operand(s1, pop);
 		if (tok == ':') {
-			if (pop->type != OP_SEG || seg_prefix)
+			if (!(pop->type & OP_SEG) || seg_prefix)
 				tcc_error("incorrect prefix");
 			seg_prefix = segment_prefixes[pop->reg];
 			next();
@@ -41432,13 +29251,13 @@ next: ;
 	modrm_index = -1;
 	modreg_index = -1;
 	if (pa->instr_type & OPC_MODRM) {
-
 		if (!nb_ops) {
 			/* A modrm opcode without operands is a special case (e.g. mfence).
 				       It has a group and acts as if there's an register operand 0 */
 
 			i = 0;
 			ops[i].type = OP_REG;
+
 			if (pa->sym == TOK_ASM_endbr64)
 				ops[i].reg = 2;// dx
 
@@ -41461,10 +29280,6 @@ next: ;
 			if (op_type[i] & (OP_REG | OP_MMX | OP_SSE | OP_INDIR))
 				goto modrm_found;
 		}
-#ifdef ASM_DEBUG
-
-		tcc_error("bad op table");
-#endif
 
 modrm_found:
 		modrm_index = i;
@@ -41561,7 +29376,6 @@ no_short_jump:
 		pc = asm_modrm(reg, &ops[modrm_index]);
 	}
 	/* emit constants */
-// 1134 "i386-asm.c"
 	for (i = 0; i < nb_ops; i++) {
 		v = op_type[i];
 		if (v & (OP_IM8 | OP_IM16 | OP_IM32 | OP_IM64 | OP_IM8S | OP_ADDR)) {
@@ -41661,8 +29475,8 @@ static const char *skip_constraint_modifiers(const char *p)
 		p++;
 	return p;
 }
-/* If T (a token) is of the form "%reg" returns the register
-   number and type, otherwise return -1.  */
+/* If t (a token) is of the form "%reg" or "reg" return the register number and
+   type, otherwise return -1. With GCC the % is optional, too. */
 
 ST_FUNC int asm_parse_regvar (int t)
 {
@@ -41671,13 +29485,15 @@ ST_FUNC int asm_parse_regvar (int t)
 	if (t < TOK_IDENT || (t & SYM_FIELD))
 		return -1;
 	s = table_ident[t - TOK_IDENT]->str;
-	if (s[0] != '%')
-		return -1;
-	t = tok_alloc_const(s + 1);
+	if (s[0] == '%')
+		++s;
+	t = tok_alloc_const(s);
 	unget_tok(t);
+	/* Internally the % prefix is required. */
+
 	unget_tok('%');
 	parse_operand(tcc_state, &op);
-	/* Accept only integer regs for now.  */
+	/* Accept only integer regs for now. */
 
 	if (op.type & OP_REG)
 		return op.reg;
@@ -41844,7 +29660,8 @@ alloc_reg:
 			if (op->reg >= 0) {
 				if ((reg = op->reg) < 4)
 					goto reg_found;
-			} else for (reg = 0; reg < 4; reg++) {
+			} else
+				for (reg = 0; reg < 4; reg++) {
 					if (!is_reg_allocated(reg))
 						goto reg_found;
 				}
@@ -41857,7 +29674,8 @@ alloc_reg:
 
 			if ((reg = op->reg) >= 0)
 				goto reg_found;
-			else for (reg = 0; reg < 8; reg++) {
+			else
+				for (reg = 0; reg < NB_ASM_REGS; reg++) {
 					if (!is_reg_allocated(reg))
 						goto reg_found;
 				}
@@ -41890,12 +29708,11 @@ reg_found:
 			               in a register, so we reserve the register in the
 			               input registers and a load will be generated
 			               later */
-// 1448 "i386-asm.c"
 			if (j < nb_outputs || c == 'm') {
 				if ((op->vt->r & VT_VALMASK) == VT_LLOCAL) {
 					/* any general register */
 
-					for (reg = 0; reg < 8; reg++) {
+					for (reg = 0; reg < NB_ASM_REGS; reg++) {
 						if (!(regs_allocated[reg] & REG_IN_MASK))
 							goto reg_found1;
 					}
@@ -41930,7 +29747,7 @@ reg_found1:
 		if (op->reg >= 0 &&
 		    (op->vt->r & VT_VALMASK) == VT_LLOCAL &&
 		    !op->is_memory) {
-			for (reg = 0; reg < 8; reg++) {
+			for (reg = 0; reg < NB_ASM_REGS; reg++) {
 				if (!(regs_allocated[reg] & REG_OUT_MASK))
 					goto reg_found2;
 			}
@@ -41941,22 +29758,6 @@ reg_found2:
 		}
 	}
 	/* print sorted constraints */
-#ifdef ASM_DEBUG
-
-	for (i=0; i<nb_operands; i++) {
-		j = sorted_op[i];
-		op = &operands[j];
-		printf("%%%d [%s]: \"%s\" r=0x%04x reg=%d\n",
-		       j,
-		       op->id ? get_tok_str(op->id, NULL) : "",
-		       op->constraint,
-		       op->vt->r,
-		       op->reg);
-	}
-	if (*pout_reg >= 0)
-		printf("out_reg=%d\n", *pout_reg);
-#endif
-// 1510 "i386-asm.c"
 }
 
 ST_FUNC void subst_asm_operand(CString *add_str,
@@ -41990,7 +29791,7 @@ ST_FUNC void subst_asm_operand(CString *add_str,
 		val = sv->c.i;
 		if (modifier == 'n')
 			val = -val;
-		cstr_printf(add_str, "%d", (int)sv->c.i);
+		cstr_printf(add_str, "%d", val);
 no_offset:;
 
 		if (r & VT_LVAL)
@@ -42045,6 +29846,11 @@ no_offset:;
 
 		}
 
+		if (reg >= 8) {
+			cstr_printf(add_str, "%%r%d%c", reg,
+				    (size == 1) ? 'b' : ((size == 2) ? 'w' : ((size == 4) ? 'd' : ' ')));
+			return;
+		}
 		switch (size) {
 		case -1:
 			reg = TOK_ASM_ah + reg;
@@ -42078,11 +29884,11 @@ ST_FUNC void asm_gen_code(ASMOperand *operands, int nb_operands,
 	ASMOperand *op;
 	int i, reg;
 	/* Strictly speaking %Xbp and %Xsp should be included in the
-	       call-preserved registe\rs, but currently it doesn't matter.  */
+	       call-preserved registers, but currently it doesn't matter.  */
 
 	static const uint8_t reg_saved[] = { 3, 6, 7, 12, 13, 14, 15 };
 	/* mark all used registers */
-// 1641 "i386-asm.c"
+
 	memcpy(regs_allocated, clobber_regs, sizeof(regs_allocated));
 	for (i = 0; i < nb_operands; i++) {
 		op = &operands[i];
@@ -42196,65 +30002,37 @@ ST_FUNC void asm_clobber(uint8_t *clobber_regs, const char *str)
 	}
 	clobber_regs[reg] = 1;
 }
-// 52 "libtcc.c" 2
 
-// 1 "tccpe.c" 1
-/*
- *  TCCPE.C - PE file output for the Tiny C Compiler
- *
- *  Copyright (c) 2005-2007 grischka
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- */
-// 21 "tccpe.c"
-// 1 "tcc.h" 1
-#ifndef _TCC_H
+/* ==================== tccpe.c ==================== */
+
 /* _TCC_H */
-#endif /* _TCC_H */
-// 1990 "tcc.h"
 #undef TCC_STATE_VAR
 #undef TCC_SET_STATE
-#ifdef USING_GLOBALS
-
-#define TCC_STATE_VAR(sym) tcc_state->sym
-#define TCC_SET_STATE(fn) fn
-#undef USING_GLOBALS
-#undef _tcc_error
-#else
 
 #define TCC_STATE_VAR(sym) s1->sym
 #define TCC_SET_STATE(fn) (tcc_enter_state(s1),fn)
-#define _tcc_error use_tcc_error_noabort
-#endif
-// 22 "tccpe.c" 2
 
 #define PE_MERGE_DATA 1
 #define PE_PRINT_SECTIONS 0
-// 33 "tccpe.c"
-#define ADDR3264 ULONGLONG
-#define PE_IMAGE_REL IMAGE_REL_BASED_DIR64
+
 #define REL_TYPE_DIRECT R_X86_64_64
 #define R_XXX_THUNKFIX R_X86_64_PC32
 #define R_XXX_RELATIVE R_X86_64_RELATIVE
-#define R_XXX_FUNCCALL R_X86_64_PLT32
-#define IMAGE_FILE_MACHINE 0x8664
 #define RSRC_RELTYPE 3
+#define IMAGE_FILE_MACHINE 0x8664
+#define CHARACTERISTICS_EXE 0x022F
+#define CHARACTERISTICS_DLL 0x222E
+#define IMAGE_BASE_EXE 0x00400000
+#define IMAGE_BASE_DLL 0x10000000
+#define DLLCHARACTERISTICS 0
+#define OS_VER 0x0400
+#define ADDR3264 ULONGLONG
+#define PE_MAGIC 0x020B
+#define PE_IMAGE_REL IMAGE_REL_BASED_DIR64
 #ifndef IMAGE_NT_SIGNATURE
+/* cross compiler: windows.h was not included */
 /* ----------------------------------------------------------- */
 /* definitions below are from winnt.h */
-// 69 "tccpe.c"
 typedef unsigned char BYTE;
 typedef unsigned short WORD;
 typedef unsigned int DWORD;
@@ -42305,7 +30083,6 @@ typedef struct _IMAGE_DOS_HEADER {/* DOS .EXE header */
 /* PE00 */
 
 #define IMAGE_NT_SIGNATURE 0x00004550
-#define SIZE_OF_NT_SIGNATURE 4
 
 typedef struct _IMAGE_FILE_HEADER {
 	WORD Machine;
@@ -42375,7 +30152,7 @@ typedef struct _IMAGE_OPTIONAL_HEADER {
 #define IMAGE_DIRECTORY_ENTRY_BASERELOC 5
 /* Debug Directory */
 #define IMAGE_DIRECTORY_ENTRY_DEBUG 6
-/*      IMAGE_DIRECTORY_ENTRY_COPYRIGHT       7      (X86 usage) */
+
 /* Architecture Specific Data */
 
 #define IMAGE_DIRECTORY_ENTRY_ARCHITECTURE 7
@@ -42429,6 +30206,15 @@ typedef struct _IMAGE_EXPORT_DIRECTORY {
 	DWORD AddressOfNameOrdinals;
 } IMAGE_EXPORT_DIRECTORY, *PIMAGE_EXPORT_DIRECTORY;
 
+typedef struct _IMAGE_TLS_DIRECTORY {
+	ADDR3264 StartAddressOfRawData;
+	ADDR3264 EndAddressOfRawData;
+	ADDR3264 AddressOfIndex;
+	ADDR3264 AddressOfCallBacks;
+	DWORD SizeOfZeroFill;
+	DWORD Characteristics;
+} IMAGE_TLS_DIRECTORY;
+
 typedef struct _IMAGE_IMPORT_DESCRIPTOR {
 	union {
 		DWORD Characteristics;
@@ -42467,17 +30253,25 @@ typedef struct _IMAGE_BASE_RELOCATION {
 #define IMAGE_SCN_MEM_EXECUTE 0x20000000
 #define IMAGE_SCN_MEM_READ 0x40000000
 #define IMAGE_SCN_MEM_WRITE 0x80000000
+
+#define IMAGE_DLLCHARACTERISTICS_HIGH_ENTROPY_VA 0x0020
+#define IMAGE_DLLCHARACTERISTICS_DYNAMIC_BASE 0x0040
+#define IMAGE_DLLCHARACTERISTICS_NX_COMPAT 0x0100
+#define IMAGE_DLLCHARACTERISTICS_TERMINAL_SERVER_AWARE 0x8000
+
+#define IMAGE_FILE_RELOCS_STRIPPED 0x0001
 #pragma  pack(pop)
 /* ----------------------------------------------------------- */
 #endif
 /* ndef IMAGE_NT_SIGNATURE */
 /* ----------------------------------------------------------- */
-#ifndef IMAGE_REL_BASED_DIR64
+#ifndef IMAGE_DLLCHARACTERISTICS_DYNAMIC_BASE
 
-#define IMAGE_REL_BASED_DIR64 10
+/* allow self-host build with tcc 0.9.27 - doesn't have this in winnt.h */
+
+#define IMAGE_DLLCHARACTERISTICS_DYNAMIC_BASE 0x0040
 #endif
 #pragma  pack(push, 1)
-// 258 "tccpe.c"
 struct pe_header {
 	IMAGE_DOS_HEADER doshdr;
 	BYTE dosstub[0x40];
@@ -42514,13 +30308,13 @@ enum {
 	sec_bss,
 	sec_idata,
 	sec_pdata,
+	sec_tls,
 	sec_other,
 	sec_rsrc,
 	sec_debug,
 	sec_reloc,
 	sec_last
 };
-// 323 "tccpe.c"
 struct section_info {
 	int cls;
 	char name[32];
@@ -42548,6 +30342,8 @@ struct pe_info {
 	TCCState *s1;
 	Section *reloc;
 	Section *thunk;
+	Section *coffsym;
+	Section *coffstr;
 	const char *filename;
 	int type;
 	DWORD sizeofheaders;
@@ -42560,6 +30356,9 @@ struct pe_info {
 	DWORD iat_size;
 	DWORD exp_offs;
 	DWORD exp_size;
+	DWORD tls_dir;
+	DWORD tls_data;
+	DWORD tls_size;
 	int subsystem;
 	DWORD section_align;
 	DWORD file_align;
@@ -42567,9 +30366,12 @@ struct pe_info {
 	int sec_count;
 	struct pe_import_info **imp_info;
 	int imp_count;
-};
+	/* output */
 
-#define PE_NUL 0
+	FILE *op;
+	DWORD sum;
+	unsigned pos;
+};
 #define PE_DLL 1
 #define PE_GUI 2
 #define PE_EXE 3
@@ -42578,7 +30380,7 @@ struct pe_info {
 
 static const char *pe_export_name(TCCState *s1, ElfW(Sym) *sym)
 {
-	const char *name = (char*)symtab_section->link->data + sym->st_name;
+	const char *name = (char *)symtab_section->link->data + sym->st_name;
 	if (s1->leading_underscore && name[0] == '_'
 	    && !(sym->st_other & ST_PE_STDCALL))
 		return name + 1;
@@ -42628,74 +30430,113 @@ static void pe_set_datadir(struct pe_header *hdr, int dir, DWORD addr,
 	hdr->opthdr.DataDirectory[dir].Size = size;
 }
 
-struct pe_file {
-	FILE *op;
-	DWORD sum;
-	unsigned pos;
-};
-
-static int pe_fwrite(const void *data, int len, struct pe_file *pf)
+static int pe_fwrite(struct pe_info *pe, const void *data, int len)
 {
 	const WORD *p = data;
 	DWORD sum;
 	int ret, i;
-	pf->pos += (ret = fwrite(data, 1, len, pf->op));
-	sum = pf->sum;
+	pe->pos += (ret = fwrite(data, 1, len, pe->op));
+	sum = pe->sum;
 	for (i = len; i > 0; i -= 2) {
-		sum += (i >= 2) ? *p++ : *(BYTE*)p;
+		sum += (i >= 2) ? *p++ : *(BYTE *)p;
 		sum = (sum + (sum >> 16)) & 0xFFFF;
 	}
-	pf->sum = sum;
+	pe->sum = sum;
 	return len == ret ? 0 : -1;
 }
 
-static void pe_fpad(struct pe_file *pf, DWORD new_pos)
+static void pe_fpad(struct pe_info *pe, DWORD new_pos)
 {
 	char buf[256];
-	int n, diff = new_pos - pf->pos;
+	int n, diff = new_pos - pe->pos;
 	memset(buf, 0, sizeof buf);
 	while (diff > 0) {
 		diff -= n = umin(diff, sizeof buf);
-		fwrite(buf, n, 1, pf->op);
+		fwrite(buf, n, 1, pe->op);
 	}
-	pf->pos = new_pos;
+	pe->pos = new_pos;
 }
 /*----------------------------------------------------------------------------*/
-/* PE-DWARF/COFF support
-   does not work with a mingw-gdb really but works with cv2pdb
-   (https://github.com/rainers/cv2pdb) */
+/* some DWARF support with COFF symbol/string table for gdb */
+#pragma  pack(push, 1)
 
-#define N_COFF_SYMS 0
+struct syment {
+	union {
+		char n_name[8];/* old COFF version */
 
-static const char dwarf_secs[] = {
-	".debug_info\0"
-	".debug_abbrev\0"
-	".debug_line\0"
-	".debug_aranges\0"
-	".debug_str\0"
-	".debug_line_str\0"
+		struct {
+			int32_t n_zeroes;/* new == 0 */
+
+			int32_t n_offset;/* offset into string table */
+
+		};
+	};
+	int32_t n_value;/* value of symbol */
+
+	short n_scnum;/* section number */
+
+	unsigned short n_type;/* type and derived type */
+
+	char n_sclass;/* storage class */
+
+	char n_numaux;/* number of aux. entries */
+
 };
+#pragma  pack(pop)
 
-static const unsigned coff_strtab_size = 4 + sizeof dwarf_secs - 1;
+#define SHF_PRIVATE 0x80000000
 
-static int pe_put_long_secname(char *secname, const char *name)
+static void pe_add_coffsym(struct pe_info *pe)
 {
-	const char *d = dwarf_secs;
-	do {
-		if (0 == strcmp(d, name)) {
-			snprintf(secname, 8, "/%d", (int)(d - dwarf_secs + 4));
-			return 1;
+	TCCState *s1 = pe->s1;
+	ElfSym *esym;
+	struct syment *se;
+	int n;
+
+	if (NULL == pe->coffsym) {
+		pe->coffsym = new_section(s1, ".coffsym", SHT_PROGBITS, SHF_PRIVATE);
+		pe->coffstr = new_section(s1, ".coffstr", SHT_PROGBITS, SHF_PRIVATE);
+		section_ptr_add(pe->coffstr, 4);/* coff string table size */
+
+		return;
+	}
+	esym = (ElfSym *)s1->symtab->data;
+	for (n = s1->symtab->data_offset / sizeof *esym; ++esym, --n;) {
+		int sym_bind = ELFW(ST_BIND)(esym->st_info);
+		if (sym_bind == STB_GLOBAL) {
+			char *name = esym->st_name + (char *)s1->symtab->link->data;
+			int nl = strlen(name);
+			addr_t value = esym->st_value;
+			int shnum = esym->st_shndx;
+			if (shnum != SHN_UNDEF && shnum < s1->nb_sections) {
+				Section *s = s1->sections[shnum];
+				shnum = s->sh_info;
+				value = value - s->sh_addr;
+			}
+			se = section_ptr_add(pe->coffsym, sizeof *se);
+			se->n_value = value;
+			se->n_scnum = shnum;
+			se->n_sclass = 2;// C_EXT
+
+			if (nl <= 8)
+				memcpy(se->n_name, name, nl);
+			else
+				se->n_offset = put_elf_str(pe->coffstr, name);
 		}
-		d = strchr(d, 0) + 1;
-	} while (*d);
-	return 0;
+	}
+
+	write32le(pe->coffstr->data,
+		  pe->coffstr->data_offset);/* coff string table size */
+
 }
+/* Run cv2pdb, available at https://github.com/rainers/cv2pdb.  It reads
+   and strips the dwarf info and creates a <exename>.pdb file instead */
 
 static void pe_create_pdb(TCCState *s1, const char *exename)
 {
 	char buf[300];
 	int r;
-	snprintf(buf, sizeof buf, "cv2pdb.exe %s", exename);
+	snprintf(buf, sizeof buf, "cv2pdb.exe \"%s\"", exename);
 	r = system(buf);
 	strcpy(tcc_fileextension(strcpy(buf, exename)), ".pdb");
 	if (r) {
@@ -42758,7 +30599,7 @@ static int pe_write(struct pe_info *pe)
 			0x0e,0x1f,0xba,0x0e,0x00,0xb4,0x09,0xcd,0x21,0xb8,0x01,0x4c,0xcd,0x21,0x54,0x68,
 			0x69,0x73,0x20,0x70,0x72,0x6f,0x67,0x72,0x61,0x6d,0x20,0x63,0x61,0x6e,0x6e,0x6f,
 			0x74,0x20,0x62,0x65,0x20,0x72,0x75,0x6e,0x20,0x69,0x6e,0x20,0x44,0x4f,0x53,0x20,
-			0x6d,0x6f,0x64,0x65,0x2e,0x0d,0x0d,0x0a,0x24,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
+			0x6d,0x6f,0x64,0x65,0x2e,0x0d,0x0d,0x0a,0x24,0x00,0x00,0x00,0x00,0x00,0x00,0x00
 		},
 		0x00004550,/* DWORD nt_sig = IMAGE_NT_SIGNATURE */
 
@@ -42771,21 +30612,19 @@ static int pe_write(struct pe_info *pe)
 
 			0x00000000,/*DWORD   TimeDateStamp; */
 
-			0x00000000,/*DWORD   PointerT\oSymbolTable; */
+			0x00000000,/*DWORD   PointerToSymbolTable; */
 
 			0x00000000,/*DWORD   NumberOfSymbols; */
 
-			0x00F0,/*WORD    SizeOfOptionalHeader; */
+			0x00E0 + (PTR_SIZE-4)*4,/*WORD    SizeOfOptionalHeader; */
 
-			0x022F/*WORD    Characteristics; */
+			CHARACTERISTICS_EXE,/*WORD    Characteristics; */
 
-#define CHARACTERISTICS_DLL 0x222E
-// 564 "tccpe.c"
 		},{
 			/* IMAGE_OPTIONAL_HEADER opthdr */
 			/* Standard fields. */
 
-			0x020B,/*WORD    Magic; */
+			PE_MAGIC,/*WORD    Magic; */
 
 			0x06,/*BYTE    MajorLinkerVersion; */
 
@@ -42803,49 +30642,49 @@ static int pe_write(struct pe_info *pe)
 
 			/* NT additional fields. */
 
-			0x00400000,/*DWORD   ImageBase; */
+			0x00000000,/*ADDR3264   ImageBase; */
 
 			0x00001000,/*DWORD   SectionAlignment; */
 
 			0x00000200,/*DWORD   FileAlignment; */
 
-			0x0004,/*WORD    MajorOperatingSystemVersion; */
+			OS_VER >> 8,/*WORD    MajorOperatingSystemVersion; */
 
-			0x0000,/*WORD    MinorOperatingSystemVersion; */
+			       OS_VER & 255,/*WORD    MinorOperatingSystemVersion; */
 
-			0x0000,/*WORD    MajorImageVersion; */
+			       0x0000,/*WORD    MajorImageVersion; */
 
-			0x0000,/*WORD    MinorImageVersion; */
+			       0x0000,/*WORD    MinorImageVersion; */
 
-			0x0004,/*WORD    MajorSubsystemVersion; */
+			       OS_VER >> 8,/*WORD    MajorSubsystemVersion; */
 
-			0x0000,/*WORD    MinorSubsystemVersion; */
+			       OS_VER & 255,/*WORD    MinorSubsystemVersion; */
 
-			0x00000000,/*DWORD   Win32VersionValue; */
+			       0x00000000,/*DWORD   Win32VersionValue; */
 
-			0x00000000,/*DWORD   SizeOfImage; */
+			       0x00000000,/*DWORD   SizeOfImage; */
 
-			0x00000200,/*DWORD   SizeOfHeaders; */
+			       0x00000200,/*DWORD   SizeOfHeaders; */
 
-			0x00000000,/*DWORD   CheckSum; */
+			       0x00000000,/*DWORD   CheckSum; */
 
-			0x0002,/*WORD    Subsystem; */
+			       0x0002,/*WORD    Subsystem; */
 
-			0x0000,/*WORD    DllCharacteristics; */
+			       DLLCHARACTERISTICS,/*WORD    DllCharacteristics; */
 
-			0x00100000,/*DWORD   SizeOfStackReserve; */
+			       0x00100000,/*ADDR3264 SizeOfStackReserve; */
 
-			0x00001000,/*DWORD   SizeOfStackCommit; */
+			       0x00001000,/*ADDR3264 SizeOfStackCommit; */
 
-			0x00100000,/*DWORD   SizeOfHeapReserve; */
+			       0x00100000,/*ADDR3264 SizeOfHeapReserve; */
 
-			0x00001000,/*DWORD   SizeOfHeapCommit; */
+			       0x00001000,/*ADDR3264 SizeOfHeapCommit; */
 
-			0x00000000,/*DWORD   LoaderFlags; */
+			       0x00000000,/*DWORD   LoaderFlags; */
 
-			0x00000010,/*DWORD   NumberOfRvaAndSizes; */
+			       0x00000010,/*DWORD   NumberOfRvaAndSizes; */
 
-			/* IMAGE_DATA_DIRECTORY DataDirectory[16]; */
+			       /* IMAGE_DATA_DIRECTORY DataDirectory[16]; */
 
 			{	{0,0}, {0,0}, {0,0}, {0,0}, {0,0}, {0,0}, {0,0}, {0,0},
 				{0,0}, {0,0}, {0,0}, {0,0}, {0,0}, {0,0}, {0,0}, {0,0}
@@ -42856,15 +30695,16 @@ static int pe_write(struct pe_info *pe)
 	struct pe_header pe_header = pe_template;
 
 	int i;
-	struct pe_file pf = {0};
 	DWORD file_offset;
 	struct section_info *si;
 	IMAGE_SECTION_HEADER *psh;
 	TCCState *s1 = pe->s1;
-	int need_strtab = 0;
 
-	pf.op = fopen(pe->filename, "wb");
-	if (NULL == pf.op)
+	if (s1->do_debug)
+		pe_add_coffsym(pe);
+
+	pe->op = fopen(pe->filename, "wb");
+	if (NULL == pe->op)
 		return tcc_error_noabort("could not write '%s': %s", pe->filename,
 					 strerror(errno));
 
@@ -42875,7 +30715,7 @@ static int pe_write(struct pe_info *pe)
 
 	file_offset = pe->sizeofheaders;
 
-	if (2 == pe->s1->verbose)
+	if (2 == s1->verbose)
 		printf("-------------------------------"
 		       "\n  virt   file   size  section" "\n");
 	for (i = 0; i < pe->sec_count; ++i) {
@@ -42888,7 +30728,7 @@ static int pe_write(struct pe_info *pe)
 		size = si->sh_size;
 		psh = &si->ish;
 
-		if (2 == pe->s1->verbose)
+		if (2 == s1->verbose)
 			printf("%6x %6x %6x  %s\n",
 			       (unsigned)addr, (unsigned)file_offset, (unsigned)size, sh_name);
 
@@ -42928,10 +30768,17 @@ static int pe_write(struct pe_info *pe)
 			pe_set_datadir(&pe_header, IMAGE_DIRECTORY_ENTRY_EXPORT,
 				       pe->exp_offs, pe->exp_size);
 		}
+		if (pe->tls_size) {
+			pe_set_datadir(&pe_header, IMAGE_DIRECTORY_ENTRY_TLS,
+				       pe->tls_dir + (pe->thunk->sh_addr - pe->imagebase), pe->tls_size);
+		}
 
 		memcpy(psh->Name, sh_name, umin(strlen(sh_name), sizeof psh->Name));
-		if (si->cls == sec_debug)
-			need_strtab += pe_put_long_secname((char*)psh->Name, sh_name);
+		if (pe->coffstr && strlen(sh_name) > 8) {
+			/* long section name, for example ".debug_info" */
+
+			snprintf((char *)psh->Name, 8, "/%d", put_elf_str(pe->coffstr, sh_name));
+		}
 
 		psh->Characteristics = si->pe_flags;
 		psh->VirtualAddress = addr;
@@ -42956,18 +30803,25 @@ static int pe_write(struct pe_info *pe)
 	pe_header.opthdr.SizeOfHeaders = pe->sizeofheaders;
 	pe_header.opthdr.ImageBase = pe->imagebase;
 	pe_header.opthdr.Subsystem = pe->subsystem;
-	if (pe->s1->pe_stack_size)
-		pe_header.opthdr.SizeOfStackReserve = pe->s1->pe_stack_size;
+	pe_header.opthdr.DllCharacteristics = s1->pe_dll_characteristics;
+	if (s1->pe_stack_size)
+		pe_header.opthdr.SizeOfStackReserve = s1->pe_stack_size;
 	if (PE_DLL == pe->type)
 		pe_header.filehdr.Characteristics = CHARACTERISTICS_DLL;
-	pe_header.filehdr.Characteristics |= pe->s1->pe_characteristics;
-	if (need_strtab) {
+	pe_header.filehdr.Characteristics |= s1->pe_characteristics;
+	if (pe->reloc)
+		pe_header.filehdr.Characteristics &= ~IMAGE_FILE_RELOCS_STRIPPED;
+
+	if (pe->coffsym) {
+		pe_add_coffsym(pe);
 		pe_header.filehdr.PointerToSymbolTable = file_offset;
-		pe_header.filehdr.NumberOfSymbols = N_COFF_SYMS;
+		pe_header.filehdr.NumberOfSymbols
+			= pe->coffsym->data_offset / sizeof (struct syment);
 	}
-	pe_fwrite(&pe_header, sizeof pe_header, &pf);
+
+	pe_fwrite(pe, &pe_header, sizeof pe_header);
 	for (i = 0; i < pe->sec_count; ++i)
-		pe_fwrite(&pe->sec_info[i]->ish, sizeof(IMAGE_SECTION_HEADER), &pf);
+		pe_fwrite(pe, &pe->sec_info[i]->ish, sizeof(IMAGE_SECTION_HEADER));
 
 	file_offset = pe->sizeofheaders;
 	for (i = 0; i < pe->sec_count; ++i) {
@@ -42976,32 +30830,30 @@ static int pe_write(struct pe_info *pe)
 		if (!si->data_size)
 			continue;
 		for (s = si->sec; s; s = s->prev) {
-			pe_fpad(&pf, file_offset);
-			pe_fwrite(s->data, s->data_offset, &pf);
+			pe_fpad(pe, file_offset);
+			pe_fwrite(pe, s->data, s->data_offset);
 			if (s->prev)
 				file_offset += s->prev->sh_addr - s->sh_addr;
 		}
 		file_offset = si->ish.PointerToRawData + si->ish.SizeOfRawData;
-		pe_fpad(&pf, file_offset);
+		pe_fpad(pe, file_offset);
 	}
 
-	if (need_strtab) {
-		/* create a tiny COFF string table with the long section names */
-
-		pe_fwrite(&coff_strtab_size, sizeof coff_strtab_size, &pf);
-		pe_fwrite(dwarf_secs, sizeof dwarf_secs - 1, &pf);
-		file_offset = pf.pos;
+	if (pe->coffsym) {
+		pe_fwrite(pe, pe->coffsym->data, pe->coffsym->data_offset);
+		pe_fwrite(pe, pe->coffstr->data, pe->coffstr->data_offset);
+		file_offset = pe->pos;
 	}
 
-	pf.sum += file_offset;
-	fseek(pf.op, offsetof(struct pe_header, opthdr.CheckSum), SEEK_SET);
-	pe_fwrite(&pf.sum, sizeof (DWORD), &pf);
+	pe->sum += file_offset;
+	fseek(pe->op, offsetof(struct pe_header, opthdr.CheckSum), SEEK_SET);
+	pe_fwrite(pe, &pe->sum, sizeof (DWORD));
 
-	fclose (pf.op);
+	fclose (pe->op);
 
-	if (2 == pe->s1->verbose)
+	if (2 == s1->verbose)
 		printf("-------------------------------\n");
-	if (pe->s1->verbose)
+	if (s1->verbose)
 		printf("<- %s (%u bytes)\n", pe->filename, (unsigned)file_offset);
 
 	if (s1->do_debug & 16)
@@ -43021,7 +30873,7 @@ static struct import_symbol *pe_add_import(struct pe_info *pe, int sym_index)
 	isym = (ElfW(Sym) *)pe->s1->dynsymtab_section->data + sym_index;
 	dll_index = isym->st_size;
 
-	i = dynarray_assoc ((void**)pe->imp_info, pe->imp_count, dll_index);
+	i = dynarray_assoc ((void **)pe->imp_info, pe->imp_count, dll_index);
 	if (-1 != i) {
 		p = pe->imp_info[i];
 		goto found_dll;
@@ -43031,7 +30883,7 @@ static struct import_symbol *pe_add_import(struct pe_info *pe, int sym_index)
 	dynarray_add(&pe->imp_info, &pe->imp_count, p);
 
 found_dll:
-	i = dynarray_assoc ((void**)p->symbols, p->sym_count, sym_index);
+	i = dynarray_assoc ((void **)p->symbols, p->sym_count, sym_index);
 	if (-1 != i)
 		return p->symbols[i];
 
@@ -43085,13 +30937,13 @@ static void pe_build_imports(struct pe_info *pe)
 
 		dllindex = p->dll_index;
 		if (dllindex)
-			name = tcc_basename((dllref = pe->s1->loaded_dlls[dllindex-1])->name);
+			name = tcc_basename((dllref = s1->loaded_dlls[dllindex-1])->name);
 		else
 			name = "", dllref = NULL;
 		/* put the dll name into the import header */
 
 		v = put_elf_str(pe->thunk, name);
-		hdr = (IMAGE_IMPORT_DESCRIPTOR*)(pe->thunk->data + dll_ptr);
+		hdr = (IMAGE_IMPORT_DESCRIPTOR *)(pe->thunk->data + dll_ptr);
 		hdr->FirstThunk = thk_ptr + rva_base;
 		hdr->OriginalFirstThunk = ent_ptr + rva_base;
 		hdr->Name = v + rva_base;
@@ -43100,9 +30952,8 @@ static void pe_build_imports(struct pe_info *pe)
 			if (k < n) {
 				int iat_index = p->symbols[k]->iat_index;
 				int sym_index = p->symbols[k]->sym_index;
-				ElfW(Sym) *imp_sym = (ElfW(Sym) *)pe->s1->dynsymtab_section->data + sym_index;
-				const char *name = (char*)pe->s1->dynsymtab_section->link->data +
-						   imp_sym->st_name;
+				ElfW(Sym) *imp_sym = (ElfW(Sym) *)s1->dynsymtab_section->data + sym_index;
+				const char *name = (char *)s1->dynsymtab_section->link->data + imp_sym->st_name;
 				int ordinal;
 				/* patch symbol (and possibly its underscored alias) */
 
@@ -43123,7 +30974,7 @@ static void pe_build_imports(struct pe_info *pe)
 					if (dllref) {
 						if ( !dllref->handle )
 							dllref->handle = LoadLibraryA(dllref->name);
-						v = (ADDR3264)GetProcAddress(dllref->handle, ordinal?(char*)0+ordinal:name);
+						v = (ADDR3264)GetProcAddress(dllref->handle, ordinal?(char *)0+ordinal:name);
 					}
 					if (!v)
 						tcc_error_noabort("could not resolve symbol '%s'", name);
@@ -43143,8 +30994,8 @@ static void pe_build_imports(struct pe_info *pe)
 
 			}
 
-			*(ADDR3264*)(pe->thunk->data+thk_ptr) =
-				*(ADDR3264*)(pe->thunk->data+ent_ptr) = v;
+			*(ADDR3264 *)(pe->thunk->data+thk_ptr) =
+				*(ADDR3264 *)(pe->thunk->data+ent_ptr) = v;
 			thk_ptr += sizeof (ADDR3264);
 			ent_ptr += sizeof (ADDR3264);
 		}
@@ -43160,8 +31011,8 @@ struct pe_sort_sym {
 
 static int sym_cmp(const void *va, const void *vb)
 {
-	const char *ca = (*(struct pe_sort_sym**)va)->name;
-	const char *cb = (*(struct pe_sort_sym**)vb)->name;
+	const char *ca = (*(struct pe_sort_sym **)va)->name;
+	const char *cb = (*(struct pe_sort_sym **)vb)->name;
 	return strcmp(ca, cb);
 }
 
@@ -43185,8 +31036,8 @@ static void pe_build_exports(struct pe_info *pe)
 
 	sym_end = symtab_section->data_offset / sizeof(ElfW(Sym));
 	for (sym_index = 1; sym_index < sym_end; ++sym_index) {
-		sym = (ElfW(Sym)*)symtab_section->data + sym_index;
-		name = pe_export_name(pe->s1, sym);
+		sym = (ElfW(Sym) *)symtab_section->data + sym_index;
+		name = pe_export_name(s1, sym);
 		if (sym->st_other & ST_PE_EXPORT) {
 			p = tcc_malloc(sizeof *p);
 			p->index = sym_index;
@@ -43229,7 +31080,7 @@ static void pe_build_exports(struct pe_info *pe)
 		tcc_error_noabort("could not create '%s': %s", buf, strerror(errno));
 	} else {
 		fprintf(op, "LIBRARY %s\n\nEXPORTS\n", dllname);
-		if (pe->s1->verbose)
+		if (s1->verbose)
 			printf("<- %s (%d symbol%s)\n", buf, sym_count, &"s"[sym_count < 2]);
 	}
 
@@ -43239,9 +31090,9 @@ static void pe_build_exports(struct pe_info *pe)
 
 		put_elf_reloc(symtab_section, pe->thunk,
 			      func_o, R_XXX_RELATIVE, sym_index);
-		*(DWORD*)(pe->thunk->data + name_o)
+		*(DWORD *)(pe->thunk->data + name_o)
 			= pe->thunk->data_offset + rva_base;
-		*(WORD*)(pe->thunk->data + ord_o)
+		*(WORD *)(pe->thunk->data + ord_o)
 			= ord;
 		put_elf_str(pe->thunk, name);
 		func_o += sizeof (DWORD);
@@ -43266,6 +31117,8 @@ static void pe_build_reloc (struct pe_info *pe)
 	ElfW_Rel *rel, *rel_end;
 	Section *s = NULL, *sr;
 	struct pe_reloc_header *hdr;
+	TCCState *s1 = pe->s1;
+	int dwarf = 0, n;
 
 	sh_addr = offset = block_ptr = count = i = 0;
 	rel = rel_end = NULL;
@@ -43277,6 +31130,12 @@ static void pe_build_reloc (struct pe_info *pe)
 			++ rel;
 			if (type != REL_TYPE_DIRECT)
 				continue;
+			if (dwarf) {/* don't runtime-relocate dwarf-to-dwarf */
+
+				n = ((ElfSym *)s1->symtab->data + ELFW(R_SYM)(rel[-1].r_info))->st_shndx;
+				if (n >= s1->dwlo && n < s1->dwhi)
+					continue;
+			}
 			if (count == 0) {/* new block */
 
 				block_ptr = pe->reloc->data_offset;
@@ -43298,6 +31157,7 @@ static void pe_build_reloc (struct pe_info *pe)
 				rel = (ElfW_Rel *)sr->data;
 				rel_end = (ElfW_Rel *)(sr->data + sr->data_offset);
 				sh_addr = s->sh_addr;
+				dwarf = s->sh_num >= s1->dwlo && s->sh_num < s1->dwhi;
 			}
 			s = s->prev;
 			continue;
@@ -43321,6 +31181,43 @@ static void pe_build_reloc (struct pe_info *pe)
 }
 /* ------------------------------------------------------------- */
 
+static void pe_build_tls(struct pe_info *pe, Section *s)
+{
+	TCCState *s1 = pe->s1;
+	IMAGE_TLS_DIRECTORY *d;
+	int c, n;
+
+	if (0 == s) {
+		pe->tls_dir = section_add(pe->thunk, pe->tls_size, 16);
+		pe->tls_data = section_add(data_section, PTR_SIZE * (1+3), 16);
+		/* put relocations on entries */
+
+		c = put_elf_sym(symtab_section, 0, 0, 0, 0, data_section->sh_num, 0);
+		for (n = 0; n < 4; ++n)
+			put_elf_reloc(symtab_section, pe->thunk, pe->tls_dir + PTR_SIZE*n,
+				      REL_TYPE_DIRECT, c);
+		/* for generators */
+
+		set_elf_sym(symtab_section, pe->tls_data, PTR_SIZE * 4,
+			    ELFW(ST_INFO)(STB_GLOBAL, STT_OBJECT),
+			    0, data_section->sh_num, "__tls_index");
+		return;
+	}
+	if (0 == s1->tls_start)
+		s1->tls_start = s->sh_addr;
+	d = (void *)(pe->thunk->data + pe->tls_dir);
+	d->StartAddressOfRawData = s1->tls_start - data_section->sh_addr;
+	d->EndAddressOfRawData = s->sh_addr + s->data_offset - data_section->sh_addr;
+	d->AddressOfIndex = pe->tls_data;
+	d->AddressOfCallBacks = pe->tls_data + PTR_SIZE;
+	d->SizeOfZeroFill = 0;
+	d->Characteristics = 0;
+	/* to reuse logic from linux in xxx-link.c */
+
+	s1->tls_end = s1->tls_start;
+}
+/* ------------------------------------------------------------- */
+
 static int pe_section_class(Section *s)
 {
 	int type, flags;
@@ -43332,6 +31229,8 @@ static int pe_section_class(Section *s)
 	if (0 == memcmp(name, ".stab", 5) || 0 == memcmp(name, ".debug_", 7)) {
 		return sec_debug;
 	} else if (flags & SHF_ALLOC) {
+		if (flags & SHF_TLS)
+			return sec_tls;
 		if (type == SHT_PROGBITS
 		    || type == SHT_INIT_ARRAY
 		    || type == SHT_FINI_ARRAY) {
@@ -43366,9 +31265,10 @@ static int pe_assign_addresses (struct pe_info *pe)
 	Section *s;
 	TCCState *s1 = pe->s1;
 
-	if (PE_DLL == pe->type)
-		pe->reloc = new_section(pe->s1, ".reloc", SHT_PROGBITS, 0);
-//pe->thunk = new_section(pe->s1, ".iedat", SHT_PROGBITS, SHF_ALLOC);
+	if (PE_DLL == pe->type
+	    || (s1->pe_dll_characteristics & IMAGE_DLLCHARACTERISTICS_DYNAMIC_BASE))
+		pe->reloc = new_section(s1, ".reloc", SHT_PROGBITS, 0);
+//pe->thunk = new_section(s1, ".iedat", SHT_PROGBITS, SHF_ALLOC);
 
 	nbs = s1->nb_sections;
 	sec_order = tcc_mallocz(2 * sizeof (int) * nbs);
@@ -43379,6 +31279,8 @@ static int pe_assign_addresses (struct pe_info *pe)
 		for (n = i; n > 1 && k < (c = sec_cls[n - 1]); --n)
 			sec_cls[n] = c, sec_order[n] = sec_order[n - 1];
 		sec_cls[n] = k, sec_order[n] = i;
+		if (k == sec_tls)
+			pe->tls_size = sizeof (IMAGE_TLS_DIRECTORY);
 	}
 	si = NULL;
 	addr = pe->imagebase + 1;
@@ -43405,7 +31307,10 @@ static int pe_assign_addresses (struct pe_info *pe)
 		if (s == pe->thunk) {
 			pe_build_imports(pe);
 			pe_build_exports(pe);
+			if (pe->tls_size)
+				pe_build_tls(pe, NULL);
 		}
+
 		if (s == pe->reloc)
 			pe_build_reloc (pe);
 
@@ -43425,7 +31330,7 @@ static int pe_assign_addresses (struct pe_info *pe)
 		si->pe_flags = IMAGE_SCN_MEM_READ;
 		if (s->sh_flags & SHF_EXECINSTR)
 			si->pe_flags |= IMAGE_SCN_MEM_EXECUTE | IMAGE_SCN_CNT_CODE;
-		else if (s->sh_type == SHT_NOBITS)
+		else if (s->sh_type == SHT_NOBITS && !(s->sh_flags & SHF_TLS))
 			si->pe_flags |= IMAGE_SCN_CNT_UNINITIALIZED_DATA;
 		else
 			si->pe_flags |= IMAGE_SCN_CNT_INITIALIZED_DATA;
@@ -43435,6 +31340,8 @@ static int pe_assign_addresses (struct pe_info *pe)
 			si->pe_flags |= IMAGE_SCN_MEM_DISCARDABLE;
 
 add_section:
+		s->sh_info = pe->sec_count;/* section number for coff syms */
+
 		addr += s->data_offset;
 		si->sh_size = addr - si->sh_addr;
 		if (s->sh_type != SHT_NOBITS) {
@@ -43444,10 +31351,14 @@ add_section:
 			*ps = s, s->prev = NULL;
 			si->data_size = si->sh_size;
 		}
+
+		if (s->sh_flags & SHF_TLS) {
+			strcpy(si->name, ".tls");
+			pe_build_tls(pe, s);
+		}
 //printf("%08x %05x %08x %s\n", si->sh_addr, si->sh_size, si->pe_flags, s->name);
 
 	}
-// 1238 "tccpe.c"
 	tcc_free(sec_order);
 	return 0;
 }
@@ -43465,9 +31376,9 @@ static int pe_check_symbols(struct pe_info *pe)
 	for (sym_index = 1; sym_index < sym_end; ++sym_index) {
 		ElfW(Sym) *sym = (ElfW(Sym) *)symtab_section->data + sym_index;
 		if (sym->st_shndx == SHN_UNDEF) {
-			const char *name = (char*)symtab_section->link->data + sym->st_name;
+			const char *name = (char *)symtab_section->link->data + sym->st_name;
 			unsigned type = ELFW(ST_TYPE)(sym->st_info);
-			int imp_sym;
+			int imp_sym = 0;
 			struct import_symbol *is;
 
 			int _imp_, n;
@@ -43533,7 +31444,6 @@ static int pe_check_symbols(struct pe_info *pe)
 					offset = text_section->data_offset;
 					is->thk_offset = offset;
 					/* add the 'jmp IAT[x]' instruction */
-// 1324 "tccpe.c"
 					p = section_ptr_add(text_section, 8);
 					write16le(p, 0x25FF);
 
@@ -43563,7 +31473,7 @@ static int pe_check_symbols(struct pe_info *pe)
 				is->iat_index = sym_index;
 			}
 
-		} else if (pe->s1->rdynamic
+		} else if (s1->rdynamic
 			   && ELFW(ST_BIND)(sym->st_info) != STB_LOCAL) {
 			/* if -rdynamic option, then export all non local symbols */
 
@@ -43711,7 +31621,6 @@ static void pe_print_sections(TCCState *s1, const char *fname)
 }
 #endif
 /* ------------------------------------------------------------- */
-// 1498 "tccpe.c"
 ST_FUNC int pe_putimport(TCCState *s1, int dllindex, const char *name,
 			 addr_t value)
 {
@@ -43761,7 +31670,7 @@ static int get_dllexports(int fd, char **pp)
 	if (!read_mem(fd, pef_hdroffset, &ih, sizeof ih))
 		goto the_end;
 	opt_hdroffset = pef_hdroffset + sizeof ih;
-	if (ih.Machine == 0x014C) {
+	if (ih.Machine == 0x014C || ih.Machine == 0x01C0) {
 		IMAGE_OPTIONAL_HEADER32 oh;
 		sec_hdroffset = opt_hdroffset + sizeof oh;
 		if (!read_mem(fd, opt_hdroffset, &oh, sizeof oh))
@@ -43769,7 +31678,7 @@ static int get_dllexports(int fd, char **pp)
 		if (IMAGE_DIRECTORY_ENTRY_EXPORT >= oh.NumberOfRvaAndSizes)
 			goto the_end_0;
 		addr = oh.DataDirectory[IMAGE_DIRECTORY_ENTRY_EXPORT].VirtualAddress;
-	} else if (ih.Machine == 0x8664) {
+	} else if (ih.Machine == 0x8664 || ih.Machine == 0xAA64) {
 		IMAGE_OPTIONAL_HEADER64 oh;
 		sec_hdroffset = opt_hdroffset + sizeof oh;
 		if (!read_mem(fd, opt_hdroffset, &oh, sizeof oh))
@@ -43842,7 +31751,7 @@ static int pe_load_res(TCCState *s1, int fd)
 
 	if (hdr.filehdr.Machine != IMAGE_FILE_MACHINE
 	    || hdr.filehdr.NumberOfSections != 1
-	    || strcmp((char*)hdr.sectionhdr.Name, ".rsrc") != 0)
+	    || strcmp((char *)hdr.sectionhdr.Name, ".rsrc") != 0)
 		goto quit;
 
 	rsrc_section = new_section(s1, ".rsrc", SHT_PROGBITS, SHF_ALLOC);
@@ -43885,16 +31794,24 @@ static char *trimback(char *a, char *e)
     *e = 0;;
     return a;
 }*/
-// 1671 "tccpe.c"
 static char *get_token(char **s, char *f)
 {
-	char *p = *s, *e;
-	p = e = trimfront(p);
-	while ((unsigned char)*e > ' ')
-		++e;
+	char *p, *e;
+	int q;
+
+	p = trimfront(*s);
+	q = *p;
+	if (q == '"')/* support quoted LIBRARY "xyz.dll" */
+
+		++p;
+	else
+		q = ' ';
+	for (e = p; (unsigned char)*e >= ' ' && *e != q; ++e)
+		;
+	if (*e == '"')
+		*e++ = 0;
 	*s = trimfront(e);
-	*f = **s;
-	*e = 0;
+	*f = **s, *e = 0;
 	return p;
 }
 
@@ -43916,6 +31833,8 @@ static int pe_load_def(TCCState *s1, int fd)
 			if (0 != stricmp(p, "LIBRARY") || next == '\n')
 				goto quit;
 			pstrcpy(dllname, sizeof dllname, get_token(&line, &next));
+			if (!*tcc_fileextension(dllname))
+				pstrcat(dllname, sizeof dllname, ".dll");
 			++state;
 			break;
 		case 1:
@@ -43994,7 +31913,7 @@ PUB_FUNC int tcc_get_dllexports(const char *filename, char **pp)
 }
 /* ------------------------------------------------------------- */
 
-static unsigned pe_add_uwwind_info(TCCState *s1)
+static unsigned pe_add_unwind_info(TCCState *s1)
 {
 	if (NULL == s1->uw_pdata) {
 		s1->uw_pdata = find_section(s1, ".pdata");
@@ -44049,7 +31968,7 @@ ST_FUNC void pe_add_unwind_data(unsigned start, unsigned end, unsigned stack)
 		DWORD UnwindData;
 	} *p;
 
-	d = pe_add_uwwind_info(s1);
+	d = pe_add_unwind_info(s1);
 	pd = s1->uw_pdata;
 	o = pd->data_offset;
 	p = section_ptr_add(pd, sizeof *p);
@@ -44064,7 +31983,6 @@ ST_FUNC void pe_add_unwind_data(unsigned start, unsigned end, unsigned stack)
 		put_elf_reloc(symtab_section, pd, o, R_XXX_RELATIVE, s1->uw_sym);
 }
 /* ------------------------------------------------------------- */
-
 #define PE_STDSYM(n,s) n
 
 static void pe_add_runtime(TCCState *s1, struct pe_info *pe)
@@ -44107,24 +32025,6 @@ static void pe_add_runtime(TCCState *s1, struct pe_info *pe)
 		if (!s1->leading_underscore || strchr(start_symbol, '@'))
 			++start_symbol;
 	}
-#ifdef CONFIG_TCC_BACKTRACE
-
-	if (s1->do_backtrace) {
-#ifdef CONFIG_TCC_BCHECK
-
-		if (s1->do_bounds_check && s1->output_type != TCC_OUTPUT_DLL)
-			tcc_add_support(s1, "bcheck.o");
-#endif
-
-		if (s1->output_type == TCC_OUTPUT_EXE)
-			tcc_add_support(s1, "bt-exe.o");
-		if (s1->output_type == TCC_OUTPUT_DLL)
-			tcc_add_support(s1, "bt-dll.o");
-		if (s1->output_type != TCC_OUTPUT_DLL)
-			tcc_add_support(s1, "bt-log.o");
-		tcc_add_btstub(s1);
-	}
-#endif
 	/* grab the startup code from libtcc1.a */
 
 	if (TCC_OUTPUT_MEMORY != s1->output_type || s1->run_main)
@@ -44154,16 +32054,44 @@ static void pe_add_runtime(TCCState *s1, struct pe_info *pe)
 	pe->type = pe_type;
 }
 
+ST_FUNC int pe_setsubsy(TCCState *s1, const char *arg)
+{
+	static const struct subsy {
+		const char *p;
+		int v;
+	} x[] = {
+
+		{ "native", 1 },
+		{ "gui", 2 },
+		{ "windows", 2 },
+		{ "console", 3 },
+		{ "posix", 7 },
+		{ "efiapp", 10 },
+		{ "efiboot", 11 },
+		{ "efiruntime", 12 },
+		{ "efirom", 13 },
+
+		{ 0, -1 }
+	};
+	const struct subsy *y;
+	for (y = x;; ++y) {
+		if (!y->p)
+			return -1;
+		if (0 == strcmp(y->p, arg)) {
+			s1->pe_subsystem = y->v;
+			return 0;
+		}
+	}
+}
+
 static void pe_set_options(TCCState * s1, struct pe_info *pe)
 {
 	if (PE_DLL == pe->type) {
 		/* XXX: check if is correct for arm-pe target */
 
-		pe->imagebase = 0x10000000;
+		pe->imagebase = IMAGE_BASE_DLL;
 	} else {
-
-		pe->imagebase = 0x00400000;
-
+		pe->imagebase = IMAGE_BASE_EXE;
 	}
 
 	if (PE_DLL == pe->type || PE_GUI == pe->type)
@@ -44204,30 +32132,28 @@ ST_FUNC int pe_output_file(TCCState *s1, const char *filename)
 	pe.filename = filename;
 	pe.s1 = s1;
 	s1->filetype = 0;
-#ifdef CONFIG_TCC_BCHECK
-
-	tcc_add_bcheck(s1);
-#endif
 
 	tcc_add_pragma_libs(s1);
 	pe_add_runtime(s1, &pe);
 	resolve_common_syms(s1);
 	pe_set_options(s1, &pe);
 	pe_check_symbols(&pe);
-
 	if (s1->nb_errors)
-		;
-	else if (filename) {
+		goto done;
+	if (filename) {
 		pe_assign_addresses(&pe);
 		relocate_syms(s1, s1->symtab, 0);
+		if (s1->nb_errors)
+			goto done;
 		s1->pe_imagebase = pe.imagebase;
 		relocate_sections(s1);
 		pe.start_addr = (DWORD)
 				(get_sym_addr(s1, pe.start_symbol, 1, 1) - pe.imagebase);
-		if (0 == s1->nb_errors)
-			pe_write(&pe);
-		dynarray_reset(&pe.sec_info, &pe.sec_count);
+		if (s1->nb_errors)
+			goto done;
+		pe_write(&pe);
 	} else {
+		/* -run */
 
 		pe.thunk = data_section;
 		pe_build_imports(&pe);
@@ -44236,6 +32162,8 @@ ST_FUNC int pe_output_file(TCCState *s1, const char *filename)
 		s1->uw_pdata = find_section(s1, ".pdata");
 
 	}
+done:
+	dynarray_reset(&pe.sec_info, &pe.sec_count);
 	pe_free_imports(&pe);
 #if PE_PRINT_SECTIONS
 	if (g_debug & 8)
@@ -44245,29 +32173,14 @@ ST_FUNC int pe_output_file(TCCState *s1, const char *filename)
 	return s1->nb_errors ? -1 : 0;
 }
 /* ------------------------------------------------------------- */
-// 61 "libtcc.c" 2
 /* ONE_SOURCE */
 
-// 1 "tcc.h" 1
-#ifndef _TCC_H
 /* _TCC_H */
-#endif /* _TCC_H */
-// 1990 "tcc.h"
 #undef TCC_STATE_VAR
 #undef TCC_SET_STATE
-#ifdef USING_GLOBALS
-
-#define TCC_STATE_VAR(sym) tcc_state->sym
-#define TCC_SET_STATE(fn) fn
-#undef USING_GLOBALS
-#undef _tcc_error
-#else
 
 #define TCC_STATE_VAR(sym) s1->sym
 #define TCC_SET_STATE(fn) (tcc_enter_state(s1),fn)
-#define _tcc_error use_tcc_error_noabort
-#endif
-// 68 "libtcc.c" 2
 /**/
 /* global variables */
 /* XXX: get rid of this ASAP (or maybe not) */
@@ -44291,6 +32204,7 @@ ST_FUNC char *normalize_slashes(char *path)
 			*p = '/';
 	return path;
 }
+
 #if defined LIBTCC_AS_DLL && !defined CONFIG_TCCDIR
 static HMODULE tcc_module;
 BOOL WINAPI DllMain (HINSTANCE hDll, DWORD dwReason, LPVOID lpReserved)
@@ -44300,10 +32214,10 @@ BOOL WINAPI DllMain (HINSTANCE hDll, DWORD dwReason, LPVOID lpReserved)
 	return TRUE;
 }
 #else
-/* NULL means executable itself */
-// 101 "libtcc.c"
-#define tcc_module NULL
+#define tcc_module NULL /* NULL means executable itself */
+
 #endif
+
 #ifndef CONFIG_TCCDIR
 /* on win32, we suppose the lib and includes are at the location of 'tcc.exe' */
 
@@ -44326,8 +32240,18 @@ static void tcc_add_systemdir(TCCState *s)
 	GetSystemDirectoryA(buf, sizeof buf);
 	tcc_add_library_path(s, normalize_slashes(buf));
 }
-/**/
+/* for tcc -E : On windows (depending on compiler) a FILE*
+   must be created by the same module where it is used. */
 
+PUB_FUNC FILE *tcc_fopen(const char *f, const char *m)
+{
+	return fopen(f, m);
+}
+PUB_FUNC int tcc_fclose(FILE *f)
+{
+	return fclose(f);
+}
+/**/
 PUB_FUNC void tcc_enter_state(TCCState *s1)
 {
 	if (s1->error_set_jmp_enabled)
@@ -44387,7 +32311,7 @@ ST_FUNC char *pstrncpy(char *out, size_t buf_size, const char *s, size_t num)
 
 PUB_FUNC char *tcc_basename(const char *name)
 {
-	char *p = strchr(name, 0);
+	char *p = (char *)strchr(name, 0);
 	while (p > name && !IS_DIRSEP(p[-1]))
 		--p;
 	return p;
@@ -44424,7 +32348,8 @@ static void tcc_concat_str(char **pp, const char *str, int sep)
 {
 	int l = *pp ? strlen(*pp) + !!sep : 0;
 	*pp = tcc_realloc(*pp, l + strlen(str) + 1);
-	if (l && sep) ((*pp)[l - 1] = sep);
+	if (l && sep)
+		((*pp)[l - 1] = sep);
 	strcpy(*pp + l, str);
 }
 /**/
@@ -44443,7 +32368,7 @@ static void *default_reallocator(void *ptr, unsigned long size)
 	} else {
 		ptr1 = realloc(ptr, size);
 		if (!ptr1) {
-			fprintf(stderr, "memory full\n");
+			fprintf(stderr, "tcc: memory full\n");
 			exit (1);
 		}
 	}
@@ -44454,16 +32379,13 @@ ST_FUNC void libc_free(void *ptr)
 {
 	free(ptr);
 }
-
-#define free(p) use_tcc_free(p)
-#define realloc(p,s) use_tcc_realloc(p, s)
 /* global so that every tcc_alloc()/tcc_free() call doesn't need to be changed */
 
-static void *(*reallocator)(void*, unsigned long) = default_reallocator;
+static void *(*reallocator)(void *, unsigned long) = default_reallocator;
 
-LIBTCCAPI void tcc_set_realloc(TCCReallocFunc *realloc)
+LIBTCCAPI void tcc_set_realloc(TCCReallocFunc *my_realloc)
 {
-	reallocator = realloc ? realloc : default_reallocator;
+	reallocator = my_realloc ? my_realloc : default_reallocator;
 }
 /* in case MEM_DEBUG is #defined */
 
@@ -44504,186 +32426,10 @@ PUB_FUNC char *tcc_strdup(const char *str)
 	strcpy(ptr, str);
 	return ptr;
 }
-#ifdef MEM_DEBUG
-
-#define MEM_DEBUG_MAGIC1 0xFEEDDEB1
-#define MEM_DEBUG_MAGIC2 0xFEEDDEB2
-#define MEM_DEBUG_MAGIC3 0xFEEDDEB3
-#define MEM_DEBUG_FILE_LEN 40
-#define MEM_DEBUG_CHECK3(header)     ((mem_debug_header_t*)((char*)header + header->size))->magic3
-#define MEM_USER_PTR(header)     ((char *)header + offsetof(mem_debug_header_t, magic3))
-#define MEM_HEADER_PTR(ptr)     (mem_debug_header_t *)((char*)ptr - offsetof(mem_debug_header_t, magic3))
-
-struct mem_debug_header {
-	unsigned magic1;
-	unsigned size;
-	struct mem_debug_header *prev;
-	struct mem_debug_header *next;
-	int line_num;
-	char file_name[MEM_DEBUG_FILE_LEN + 1];
-	unsigned magic2;
-	ALIGNED(16) unsigned char magic3[4];
-};
-
-typedef struct mem_debug_header mem_debug_header_t;
-
-TCC_SEM(static mem_sem);
-static mem_debug_header_t *mem_debug_chain;
-static unsigned mem_cur_size;
-static unsigned mem_max_size;
-static int nb_states;
-
-static mem_debug_header_t *malloc_check(void *ptr, const char *msg)
-{
-	mem_debug_header_t *header = MEM_HEADER_PTR(ptr);
-	if (header->magic1 != MEM_DEBUG_MAGIC1 ||
-	    header->magic2 != MEM_DEBUG_MAGIC2 ||
-	    read32le(MEM_DEBUG_CHECK3(header)) != MEM_DEBUG_MAGIC3 ||
-	    header->size == (unsigned)-1) {
-		fprintf(stderr, "%s check failed\n", msg);
-		if (header->magic1 == MEM_DEBUG_MAGIC1)
-			fprintf(stderr, "%s:%u: block allocated here.\n",
-				header->file_name, header->line_num);
-		exit(1);
-	}
-	return header;
-}
-
-PUB_FUNC void *tcc_malloc_debug(unsigned long size, const char *file, int line)
-{
-	int ofs;
-	mem_debug_header_t *header;
-	if (!size)
-		return NULL;
-	header = tcc_malloc(sizeof(mem_debug_header_t) + size);
-	header->magic1 = MEM_DEBUG_MAGIC1;
-	header->magic2 = MEM_DEBUG_MAGIC2;
-	header->size = size;
-	write32le(MEM_DEBUG_CHECK3(header), MEM_DEBUG_MAGIC3);
-	header->line_num = line;
-	ofs = strlen(file) - MEM_DEBUG_FILE_LEN;
-	strncpy(header->file_name, file + (ofs > 0 ? ofs : 0), MEM_DEBUG_FILE_LEN);
-	header->file_name[MEM_DEBUG_FILE_LEN] = 0;
-	WAIT_SEM(&mem_sem);
-	header->next = mem_debug_chain;
-	header->prev = NULL;
-	if (header->next)
-		header->next->prev = header;
-	mem_debug_chain = header;
-	mem_cur_size += size;
-	if (mem_cur_size > mem_max_size)
-		mem_max_size = mem_cur_size;
-	POST_SEM(&mem_sem);
-	return MEM_USER_PTR(header);
-}
-
-PUB_FUNC void tcc_free_debug(void *ptr)
-{
-	mem_debug_header_t *header;
-	if (!ptr)
-		return;
-	header = malloc_check(ptr, "tcc_free");
-	WAIT_SEM(&mem_sem);
-	mem_cur_size -= header->size;
-	header->size = (unsigned)-1;
-	if (header->next)
-		header->next->prev = header->prev;
-	if (header->prev)
-		header->prev->next = header->next;
-	if (header == mem_debug_chain)
-		mem_debug_chain = header->next;
-	POST_SEM(&mem_sem);
-	tcc_free(header);
-}
-
-PUB_FUNC void *tcc_mallocz_debug(unsigned long size, const char *file, int line)
-{
-	void *ptr;
-	ptr = tcc_malloc_debug(size,file,line);
-	if (size)
-		memset(ptr, 0, size);
-	return ptr;
-}
-
-PUB_FUNC void *tcc_realloc_debug(void *ptr, unsigned long size,
-				 const char *file, int line)
-{
-	mem_debug_header_t *header;
-	int mem_debug_chain_update = 0;
-
-	if (!ptr)
-		return tcc_malloc_debug(size, file, line);
-	if (!size) {
-		tcc_free_debug(ptr);
-		return NULL;
-	}
-	header = malloc_check(ptr, "tcc_realloc");
-	WAIT_SEM(&mem_sem);
-	mem_cur_size -= header->size;
-	mem_debug_chain_update = (header == mem_debug_chain);
-	header = tcc_realloc(header, sizeof(mem_debug_header_t) + size);
-	header->size = size;
-	write32le(MEM_DEBUG_CHECK3(header), MEM_DEBUG_MAGIC3);
-	if (header->next)
-		header->next->prev = header;
-	if (header->prev)
-		header->prev->next = header;
-	if (mem_debug_chain_update)
-		mem_debug_chain = header;
-	mem_cur_size += size;
-	if (mem_cur_size > mem_max_size)
-		mem_max_size = mem_cur_size;
-	POST_SEM(&mem_sem);
-	return MEM_USER_PTR(header);
-}
-
-PUB_FUNC char *tcc_strdup_debug(const char *str, const char *file, int line)
-{
-	char *ptr;
-	ptr = tcc_malloc_debug(strlen(str) + 1, file, line);
-	strcpy(ptr, str);
-	return ptr;
-}
-
-PUB_FUNC void tcc_memcheck(int d)
-{
-	WAIT_SEM(&mem_sem);
-	nb_states += d;
-	if (0 == nb_states && mem_cur_size) {
-		mem_debug_header_t *header = mem_debug_chain;
-		fflush(stdout);
-		fprintf(stderr, "MEM_DEBUG: mem_leak= %d bytes, mem_max_size= %d bytes\n",
-			mem_cur_size, mem_max_size);
-		while (header) {
-			fprintf(stderr, "%s:%u: error: %u bytes leaked\n",
-				header->file_name, header->line_num, header->size);
-			header = header->next;
-		}
-		fflush(stderr);
-		mem_cur_size = 0;
-		mem_max_size = 0;
-		mem_debug_chain = NULL;
-#if MEM_DEBUG-0 == 2
-		exit(2);
-#endif
-	}
-	POST_SEM(&mem_sem);
-}
-
-/* restore the debug versions */
-
-#define tcc_free(ptr)           tcc_free_debug(ptr)
-#define tcc_malloc(size)        tcc_malloc_debug(size, __FILE__, __LINE__)
-#define tcc_mallocz(size)       tcc_mallocz_debug(size, __FILE__, __LINE__)
-#define tcc_realloc(ptr,size)   tcc_realloc_debug(ptr, size, __FILE__, __LINE__)
-#define tcc_strdup(str)         tcc_strdup_debug(str, __FILE__, __LINE__)
-
-#endif
 /* MEM_DEBUG */
-// 488 "libtcc.c"
-#define realpath(file,buf) _fullpath(buf, file, 260)
-/* for #pragma once */
 
+#define realpath(file, buf) _fullpath(buf, file, 260)
+/* for #pragma once */
 ST_FUNC int normalized_PATHCMP(const char *f1, const char *f2)
 {
 	char *p1, *p2;
@@ -44716,7 +32462,7 @@ ST_FUNC void dynarray_add(void *ptab, int *nb_ptr, void *data)
 		else
 			nb_alloc = nb * 2;
 		pp = tcc_realloc(pp, nb_alloc * sizeof(void *));
-		*(void***)ptab = pp;
+		*(void ***)ptab = pp;
 	}
 	pp[nb++] = data;
 	*nb_ptr = nb;
@@ -44725,11 +32471,11 @@ ST_FUNC void dynarray_add(void *ptab, int *nb_ptr, void *data)
 ST_FUNC void dynarray_reset(void *pp, int *n)
 {
 	void **p;
-	for (p = *(void***)pp; *n; ++p, --*n)
+	for (p = *(void ***)pp; *n; ++p, --*n)
 		if (*p)
 			tcc_free(*p);
-	tcc_free(*(void**)pp);
-	*(void**)pp = NULL;
+	tcc_free(*(void **)pp);
+	*(void **)pp = NULL;
 }
 
 static void dynarray_split(char ***argv, int *argc, const char *p, int sep)
@@ -44817,7 +32563,7 @@ static void tcc_split_path(TCCState *s, void *p_ary, int *p_nb_ary,
 #define WARN_ERR 2
 /* warning is not an error (-Wno-error=option) */
 #define WARN_NOE 4
-/* error1() modes */
+/* error1() mode\s */
 
 enum { ERROR_WARN, ERROR_NOABORT, ERROR_ERROR };
 
@@ -44886,18 +32632,18 @@ static void error1(int mode, const char *fmt, va_list ap)
 
 		fflush(stdout);/* flush -v output */
 
-		fprintf(stderr, "%s\n", (char*)cs.data);
+		fprintf(stderr, "%s\n", (char *)cs.data);
 		fflush(stderr);/* print error/warning now (win32) */
 
 	} else {
-		s1->error_func(s1->error_opaque, (char*)cs.data);
+		s1->error_func(s1->error_opaque, (char *)cs.data);
 	}
 	cstr_free(&cs);
 	if (mode != ERROR_WARN)
 		s1->nb_errors++;
 	if (mode == ERROR_ERROR && s1->error_set_jmp_enabled) {
 		while (nb_stk_data)
-			tcc_free(*(void**)stk_data[--nb_stk_data]);
+			tcc_free(*(void **)stk_data[--nb_stk_data]);
 		longjmp(s1->error_jmp_buf, 1);
 	}
 }
@@ -44927,7 +32673,6 @@ PUB_FUNC void _tcc_error(const char *fmt, ...)
 	error1(ERROR_ERROR, fmt, ap);
 	exit(1);
 }
-#define _tcc_error use_tcc_error_noabort
 
 PUB_FUNC void _tcc_warning(const char *fmt, ...)
 {
@@ -45015,7 +32760,6 @@ static int tcc_compile(TCCState *s1, int filetype, const char *str, int fd)
 	s1->error_set_jmp_enabled = 1;
 
 	if (setjmp(s1->error_jmp_buf) == 0) {
-		s1->nb_errors = 0;
 
 		if (fd == -1) {
 			int len = strlen(str);
@@ -45076,10 +32820,6 @@ LIBTCCAPI TCCState *tcc_new(void)
 	TCCState *s;
 
 	s = tcc_mallocz(sizeof(TCCState));
-#ifdef MEM_DEBUG
-
-	tcc_memcheck(1);
-#endif
 
 #undef gnu_ext
 	s->gnu_ext = 1;
@@ -45093,27 +32833,13 @@ LIBTCCAPI TCCState *tcc_new(void)
 	s->warn_discarded_qualifiers = 1;
 	s->ms_extensions = 1;
 	s->unwind_tables = 1;
-#ifdef CHAR_IS_UNSIGNED
-
-	s->char_is_unsigned = 1;
-#endif
 	/* enable this if you want symbols with leading underscore on windows: */
-#ifdef CONFIG_NEW_DTAGS
-
-	s->enable_new_dtags = 1;
-#endif
-// 899 "libtcc.c"
 	s->ppfp = stdout;
 	/* might be used in error() before preprocess_start() */
 
 	s->include_stack_ptr = s->include_stack;
 
 	tcc_set_lib_path(s, CONFIG_TCCDIR);
-#ifdef CONFIG_TCC_SWITCHES
-	/* predefined options */
-
-	tcc_set_options(s, CONFIG_TCC_SWITCHES);
-#endif
 
 	return s;
 }
@@ -45158,20 +32884,11 @@ LIBTCCAPI void tcc_delete(TCCState *s1)
 
 	dynarray_reset(&s1->loaded_dlls, &s1->nb_loaded_dlls);
 	tcc_free(s1);
-#ifdef MEM_DEBUG
-
-	tcc_memcheck(-1);
-#endif
 
 }
 
 LIBTCCAPI int tcc_set_output_type(TCCState *s, int output_type)
 {
-#ifdef CONFIG_TCC_PIE
-
-	if (output_type == TCC_OUTPUT_EXE)
-		output_type |= TCC_OUTPUT_DYN;
-#endif
 
 	s->output_type = output_type;
 
@@ -45199,11 +32916,12 @@ LIBTCCAPI int tcc_set_output_type(TCCState *s, int output_type)
 
 	if (!s->nostdlib_paths)
 		tcc_add_library_path(s, CONFIG_TCC_LIBPATHS);
+
 	/* allow linking with system dll's directly */
 
 	tcc_add_systemdir(s);
-// 1002 "libtcc.c"
-	return 0;
+
+	return s->nb_errors ? -1 : 0;
 }
 
 LIBTCCAPI int tcc_add_include_path(TCCState *s, const char *pathname)
@@ -45276,12 +32994,11 @@ static int tcc_add_binary(TCCState *s1, int flags, const char *filename, int fd)
 	case AFF_BINTYPE_AR:
 		ret = tcc_load_archive(s1, fd, !(flags & AFF_WHOLE_ARCHIVE));
 		break;
-// 1137 "libtcc.c"
+
 	default:
 		if (pe_load_file(s1, fd, filename))
 			ret = FILE_NOT_RECOGNIZED;
 		break;
-
 	}
 
 	close(fd);
@@ -45384,11 +33101,10 @@ ST_FUNC int tcc_add_support(TCCState *s1, const char *filename)
 	return tcc_add_dll(s1, filename, AFF_PRINT_ERROR);
 }
 /* the library name is the same as the argument of the '-l' option */
-// 1288 "libtcc.c"
+
 LIBTCCAPI int tcc_add_library(TCCState *s, const char *libraryname)
 {
 	static const char *const libs[] = {
-
 		"%s/%s.def", "%s/lib%s.def", "%s/%s.dll", "%s/lib%s.dll",
 
 		"%s/lib%s.a",
@@ -45452,14 +33168,27 @@ struct lopt {
 
 static int link_option(struct lopt *o, const char *q)
 {
-	const char *p = o->opt;
-	int c;
+	const char *p;
+	int c, r;
+redo:
 	/* there should be 1 or 2 dashes */
 
+	p = o->opt;
 	if (*p++ != '-')
 		return 0;
 	if (*p == '-')
 		p++;
+	r = 1;
+	if (q[0] == '?') {/* check for no-/disable- prefix */
+
+		++q;
+		if (p[0] == 'n' && p[1] == 'o' && p[2] == '-')
+			p += 3, r = -1;
+
+		else if (0 == memcmp(p, "disable-", 8))
+			p += 8, r = -1;
+
+	}
 	while ((c = *q) == *p) {
 		if (c == '\0')
 			goto succ;/* -Wl,-opt */
@@ -45470,8 +33199,10 @@ static int link_option(struct lopt *o, const char *q)
 
 		++q;
 	}
-	if (c == '=' || c == ':') {
-		if (*p == '\0') {
+	if (*p == '\0') {
+		if (c == '|')
+			goto succ;
+		if (c == '=' || c == ':') {
 			if (o->s->link_optind + 1 < o->s->link_argc) {
 				p = o->s->link_argv[++o->s->link_optind];
 				goto succ;/* -Wl,-opt,arg */
@@ -45479,20 +33210,27 @@ static int link_option(struct lopt *o, const char *q)
 			}
 			o->match = 1;/* -Wl,-opt -Wl,arg */
 
-		} else if (c == ':')
-			goto succ;/* -Wl,-Iarg */
+			return 0;
+		}
+	} else if (c == ':')
+		goto succ;/* -Wl,-Iarg */
 
-	}
+	while (*q)
+		if (*q++ == '|')
+			goto redo;
 	return 0;
 succ:
 	o->arg = p;
 //printf("set %s '%s'\n", o->opt, o->arg);
 
-	return 1;
+	return r;
 }
 
-static void args_parser_add_file(TCCState *s, const char* filename,
+static void args_parser_add_file(TCCState *s, const char *filename,
 				 int filetype);
+
+#define SET_OR_CLEAR(v,f) (v = r > 0 ? v | f : v & ~f)
+#define SET_OR_CLEAR_2(v,f1,f2) (v = r > 0 ? v | f1 : v & ~f2)
 /* set linker options */
 
 static int tcc_set_linker(TCCState *s, const char *optarg)
@@ -45505,6 +33243,7 @@ static int tcc_set_linker(TCCState *s, const char *optarg)
 		char *end = NULL;
 		int ignoring = 0;
 		struct lopt o = {0};
+		int r;
 		o.s = s;
 		o.opt = s->link_argv[s->link_optind];
 
@@ -45512,9 +33251,9 @@ static int tcc_set_linker(TCCState *s, const char *optarg)
 			s->symbolic = 1;
 		} else if (link_option(&o, "nostdlib")) {
 			s->nostdlib_paths = 1;
-		} else if (link_option(&o, "e=") || link_option(&o, "entry=")) {
+		} else if (link_option(&o, "e=|entry=")) {
 			tcc_set_str(&s->elf_entryname, o.arg);
-		} else if (link_option(&o, "image-base=") || link_option(&o, "Ttext=")) {
+		} else if (link_option(&o, "image-base=|Ttext=")) {
 			s->text_addr = strtoull(o.arg, &end, 16);
 			s->has_text_addr = 1;
 		} else if (link_option(&o, "init=")) {
@@ -45527,7 +33266,6 @@ static int tcc_set_linker(TCCState *s, const char *optarg)
 			tcc_set_str(&s->mapfile, o.arg);
 			ignoring = 1;
 		} else if (link_option(&o, "oformat=")) {
-
 			if (0 == strncmp("pe-", o.arg, 3))
 
 				s->output_format = TCC_OUTPUT_FORMAT_ELF;
@@ -45536,53 +33274,40 @@ static int tcc_set_linker(TCCState *s, const char *optarg)
 
 			else
 				goto err;
-		} else if (link_option(&o, "export-all-symbols")
-			   || link_option(&o, "export-dynamic")) {
+		} else if (link_option(&o, "export-all-symbols|export-dynamic|E")) {
 			s->rdynamic = 1;
 		} else if (link_option(&o, "rpath=")) {
 			tcc_concat_str(&s->rpath, o.arg, ':');
-		} else if (link_option(&o, "dynamic-linker=") || link_option(&o, "I:")) {
+		} else if (link_option(&o, "dynamic-linker=|I:")) {
 			tcc_set_str(&s->elfint, o.arg);
 		} else if (link_option(&o, "enable-new-dtags")) {
 			s->enable_new_dtags = 1;
 		} else if (link_option(&o, "section-alignment=")) {
 			s->section_align = strtoul(o.arg, &end, 16);
-		} else if (link_option(&o, "soname=") || link_option(&o, "install_name=")) {
+		} else if (link_option(&o, "soname=|install_name=")) {
 			tcc_set_str(&s->soname, o.arg);
-		} else if (link_option(&o, "whole-archive")) {
-			s->filetype |= AFF_WHOLE_ARCHIVE;
-		} else if (link_option(&o, "no-whole-archive")) {
-			s->filetype &= ~AFF_WHOLE_ARCHIVE;
+		} else if (!!(r = link_option(&o, "?whole-archive"))) {
+			SET_OR_CLEAR(s->filetype, AFF_WHOLE_ARCHIVE);
+		} else if (link_option(&o, "znodelete")) {
+			s->znodelete = 1;
 
 		} else if (link_option(&o, "large-address-aware")) {
 			s->pe_characteristics |= 0x20;
+		} else if (!!(r = link_option(&o, "?dynamicbase"))) {
+			SET_OR_CLEAR_2(s1->pe_dll_characteristics, 0x40, 0x60);
+		} else if (!!(r = link_option(&o, "?high-entropy-va"))) {
+			SET_OR_CLEAR_2(s1->pe_dll_characteristics, 0x60, 0x20);
+		} else if (!!(r = link_option(&o, "?nxcompat"))) {
+			SET_OR_CLEAR(s1->pe_dll_characteristics, 0x100);
+		} else if (!!(r = link_option(&o, "?tsaware"))) {
+			SET_OR_CLEAR(s1->pe_dll_characteristics, 0x8000);
 		} else if (link_option(&o, "file-alignment=")) {
 			s->pe_file_align = strtoul(o.arg, &end, 16);
 		} else if (link_option(&o, "stack=")) {
 			s->pe_stack_size = strtoul(o.arg, &end, 10);
 		} else if (link_option(&o, "subsystem=")) {
-
-			if (0==strcmp("native", o.arg)) {
-				s->pe_subsystem = 1;
-			} else if (0==strcmp("console", o.arg)) {
-				s->pe_subsystem = 3;
-			} else if (0==strcmp("gui", o.arg) || 0==strcmp("windows", o.arg)) {
-				s->pe_subsystem = 2;
-			} else if (0==strcmp("posix", o.arg)) {
-				s->pe_subsystem = 7;
-			} else if (0==strcmp("efiapp", o.arg)) {
-				s->pe_subsystem = 10;
-			} else if (0==strcmp("efiboot", o.arg)) {
-				s->pe_subsystem = 11;
-			} else if (0==strcmp("efiruntime", o.arg)) {
-				s->pe_subsystem = 12;
-			} else if (0==strcmp("efirom", o.arg)) {
-				s->pe_subsystem = 13;
-
-			} else
+			if (pe_setsubsy(s, o.arg) < 0)
 				goto err;
-			/* PE */
-// 1500 "libtcc.c"
 		} else if (link_option(&o, "as-needed")) {
 			ignoring = 1;
 		} else if (link_option(&o, "O")) {
@@ -45655,6 +33380,7 @@ enum {
 	TCC_OPTION_rdynamic,
 	TCC_OPTION_pthread,
 	TCC_OPTION_run,
+	TCC_OPTION_rstdin,
 	TCC_OPTION_w,
 	TCC_OPTION_E,
 	TCC_OPTION_M,
@@ -45674,7 +33400,7 @@ enum {
 	TCC_OPTION_undefined,
 	TCC_OPTION_install_name,
 	TCC_OPTION_compatibility_version,
-	TCC_OPTION_current_version,
+	TCC_OPTION_current_version
 };
 
 #define TCC_OPTION_HAS_ARG 0x0001
@@ -45697,17 +33423,8 @@ static const TCCOption tcc_options[] = {
 	{ "B", TCC_OPTION_B, TCC_OPTION_HAS_ARG },
 	{ "l", TCC_OPTION_l, TCC_OPTION_HAS_ARG },
 	{ "bench", TCC_OPTION_bench, 0 },
-#ifdef CONFIG_TCC_BACKTRACE
-
-	{ "bt", TCC_OPTION_bt, TCC_OPTION_HAS_ARG | TCC_OPTION_NOSEP },
-#endif
-#ifdef CONFIG_TCC_BCHECK
-
-	{ "b", TCC_OPTION_b, 0 },
-#endif
 
 	{ "g", TCC_OPTION_g, TCC_OPTION_HAS_ARG | TCC_OPTION_NOSEP },
-// 1626 "libtcc.c"
 	{ "c", TCC_OPTION_c, 0 },
 	{ "dumpmachine", TCC_OPTION_dumpmachine, 0},
 	{ "dumpversion", TCC_OPTION_dumpversion, 0},
@@ -45719,6 +33436,7 @@ static const TCCOption tcc_options[] = {
 	{ "o", TCC_OPTION_o, TCC_OPTION_HAS_ARG },
 	{ "pthread", TCC_OPTION_pthread, 0},
 	{ "run", TCC_OPTION_run, TCC_OPTION_HAS_ARG | TCC_OPTION_NOSEP },
+	{ "rstdin", TCC_OPTION_rstdin, TCC_OPTION_HAS_ARG },
 	{ "rdynamic", TCC_OPTION_rdynamic, 0 },
 	{ "r", TCC_OPTION_r, 0 },
 	{ "Wl,", TCC_OPTION_Wl, TCC_OPTION_HAS_ARG | TCC_OPTION_NOSEP },
@@ -45736,10 +33454,10 @@ static const TCCOption tcc_options[] = {
 	{ "w", TCC_OPTION_w, 0 },
 	{ "E", TCC_OPTION_E, 0},
 	{ "M", TCC_OPTION_M, 0},
-	{ "MD", TCC_OPTION_MD, 0},
-	{ "MF", TCC_OPTION_MF, TCC_OPTION_HAS_ARG },
 	{ "MM", TCC_OPTION_MM, 0},
-	{ "MMD", TCC_OPTION_MMD, 0},
+	{ "MD", TCC_OPTION_MD, TCC_OPTION_HAS_ARG | TCC_OPTION_NOSEP },
+	{ "MMD", TCC_OPTION_MMD, TCC_OPTION_HAS_ARG | TCC_OPTION_NOSEP },
+	{ "MF", TCC_OPTION_MF, TCC_OPTION_HAS_ARG },
 	{ "MP", TCC_OPTION_MP, 0},
 	{ "x", TCC_OPTION_x, TCC_OPTION_HAS_ARG },
 	/* tcctools */
@@ -45753,10 +33471,12 @@ static const TCCOption tcc_options[] = {
 	{ "C", 0, 0 },
 	{ "-param", 0, TCC_OPTION_HAS_ARG },
 	{ "pedantic", 0, 0 },
+	{ "pie", 0, 0 },
+	{ "no-pie", 0, 0 },
 	{ "pipe", 0, 0 },
 	{ "s", 0, 0 },
 	{ "traditional", 0, 0 },
-	{ NULL, 0, 0 },
+	{ NULL, 0, 0 }
 };
 
 typedef struct FlagDef {
@@ -45840,14 +33560,12 @@ static const char dumpmachine_str[] =
 	/* this is a best guess, please refine as necessary */
 
 	"x86_64-pc"
-// 1768 "libtcc.c"
 	"-"
 
 	"mingw32"
-// 1784 "libtcc.c"
+
 	;
 /* insert args from 'p' (separated by sep or ' ') into argv at position 'optind' */
-// 1807 "libtcc.c"
 static void insert_args(TCCState *s1, char ***pargv, int *pargc, int optind,
 			const char *p, int sep)
 {
@@ -45864,7 +33582,7 @@ static void insert_args(TCCState *s1, char ***pargv, int *pargc, int optind,
 	*pargv = s1->argv = argv;
 }
 
-static void args_parser_add_file(TCCState *s, const char* filename,
+static void args_parser_add_file(TCCState *s, const char *filename,
 				 int filetype)
 {
 	struct filespec *f = tcc_malloc(sizeof *f + strlen(filename));
@@ -45882,8 +33600,7 @@ PUB_FUNC int tcc_parse_args(TCCState *s, int *pargc, char ***pargv)
 	const TCCOption *popt;
 	const char *optarg, *r;
 	const char *run = NULL;
-	int x;
-	int tool = 0, arg_start = 0, not_empty = 0, optind = 1;
+	int optind = 1, empty = 1, x;
 	char **argv = *pargv;
 	int argc = *pargc;
 
@@ -45904,26 +33621,13 @@ PUB_FUNC int tcc_parse_args(TCCState *s, int *pargc, char ***pargv)
 			continue;
 		}
 		optind++;
-		if (tool) {/* ignore all except -v and @listfile */
-
-			s->verbose += !strcmp(r, "-v");
-			continue;
-		}
-
 		if (r[0] != '-' || r[1] == '\0') {/* file or '-' (stdin) */
 
 			args_parser_add_file(s, r, s->filetype);
-			not_empty = 1;
+			empty = 0;
 dorun:
-			if (run) {
-				/* tcc -run <file> <args...> */
-
-				if (tcc_set_options(s, run))
-					return -1;
-				arg_start = optind - 1;/* argv[0] will be <file> */
-
+			if (run)
 				break;
-			}
 			continue;
 		}
 		/* Also allow "tcc <files...> -run -- <args...>" */
@@ -45978,38 +33682,21 @@ dorun:
 		case TCC_OPTION_bench:
 			s->do_bench = 1;
 			break;
-#ifdef CONFIG_TCC_BACKTRACE
-
-		case TCC_OPTION_bt:
-			s->rt_num_callers = atoi(optarg);/* zero = default (6) */
-
-			goto enable_backtrace;
-enable_backtrace:
-			s->do_backtrace = 1;
-			if (0 == s->do_debug)
-				s->do_debug = 1;
-			s->dwarf = CONFIG_DWARF_VERSION;
-			break;
-#ifdef CONFIG_TCC_BCHECK
-
-		case TCC_OPTION_b:
-			s->do_bounds_check = 1;
-			goto enable_backtrace;
-#endif
-#endif
 
 		case TCC_OPTION_g:
 			s->do_debug = 2;
 			s->dwarf = CONFIG_DWARF_VERSION;
+g_redo:
 			if (strstart("dwarf", &optarg)) {
 				s->dwarf = (*optarg) ? (0 - atoi(optarg)) : DEFAULT_DWARF_VERSION;
 			} else if (0 == strcmp("stabs", optarg)) {
 				s->dwarf = 0;
 			} else if (isnum(*optarg)) {
-				x = *optarg - '0';
+				x = *optarg++ - '0';
 				/* -g0 = no info, -g1 = lines/functions only, -g2 = full info */
 
 				s->do_debug = x > 2 ? 2 : x == 0 && s->do_backtrace ? 1 : x;
+				goto g_redo;
 
 			} else if (0 == strcmp(".pdb", optarg)) {
 				s->dwarf = 5, s->do_debug |= 16;
@@ -46051,7 +33738,6 @@ set_output_type:
 		case TCC_OPTION_o:
 			if (s->outfile) {
 				tcc_warning("multiple -o option");
-				tcc_free(s->outfile);
 			}
 			tcc_set_str(&s->outfile, optarg);
 			break;
@@ -46081,15 +33767,21 @@ set_output_type:
 			x = TCC_OUTPUT_MEMORY;
 			goto set_output_type;
 
+		case TCC_OPTION_rstdin:
+			/* custom stdin for run_main */
+
+			s->run_stdin = optarg;
+			break;
+
 		case TCC_OPTION_v:
-			do ++s->verbose;
+			do
+				++s->verbose;
 			while (*optarg++ == 'v');
 			continue;
 		case TCC_OPTION_f:
 			if (set_flag(s, options_f, optarg) < 0)
 				goto unsupported_option;
 			break;
-// 2044 "libtcc.c"
 		case TCC_OPTION_m:
 			if (set_flag(s, options_m, optarg) < 0) {
 				if (x = atoi(optarg), x != 32 && x != 64)
@@ -46100,7 +33792,6 @@ set_output_type:
 			}
 			break;
 		case TCC_OPTION_W:
-			s->warn_none = 0;
 			if (optarg[0] && set_flag(s, options_W, optarg) < 0)
 				goto unsupported_option;
 			break;
@@ -46125,35 +33816,45 @@ set_output_type:
 		case TCC_OPTION_P:
 			s->Pflag = atoi(optarg) + 1;
 			break;
+
 		case TCC_OPTION_M:
 			s->include_sys_deps = 1;
 // fall through
 
 		case TCC_OPTION_MM:
 			s->just_deps = 1;
+			s->gen_deps = 1;
 			if (!s->deps_outfile)
 				tcc_set_str(&s->deps_outfile, "-");
+			break;
+		case TCC_OPTION_MD:
+			s->include_sys_deps = 1;
 // fall through
 
 		case TCC_OPTION_MMD:
 			s->gen_deps = 1;
-			break;
-		case TCC_OPTION_MD:
-			s->gen_deps = 1;
-			s->include_sys_deps = 1;
-			break;
+			/* usually, only "-MMD" is used */
+			/* but the Linux Kernel uses "-MMD,depfile" */
+
+			if (*optarg != ',')
+				break;
+			++optarg;
+// fall through
+
 		case TCC_OPTION_MF:
 			tcc_set_str(&s->deps_outfile, optarg);
 			break;
 		case TCC_OPTION_MP:
 			s->gen_phony_deps = 1;
 			break;
+
 		case TCC_OPTION_dumpmachine:
 			printf("%s\n", dumpmachine_str);
 			exit(0);
 		case TCC_OPTION_dumpversion:
 			printf ("%s\n", TCC_VERSION);
 			exit(0);
+
 		case TCC_OPTION_x:
 			x = 0;
 			if (*optarg == 'c')
@@ -46172,7 +33873,6 @@ set_output_type:
 			s->optimize = isnum(optarg[0]) ? optarg[0]-'0' : 1/* -O -Os */
 				      ;
 			break;
-// 2142 "libtcc.c"
 		case TCC_OPTION_HELP:
 			x = OPT_HELP;
 			goto extra_action;
@@ -46188,31 +33888,32 @@ set_output_type:
 		case TCC_OPTION_ar:
 			x = OPT_AR;
 extra_action:
-			arg_start = optind - 1;
-			if (not_empty)
+			if (NULL == argv[0])/* from tcc_set_options() */
+
+				return -1;
+			if (!empty && x)
 				return tcc_error_noabort("cannot parse %s here", r);
-			tool = x;
-			break;
+			--optind;
+			*pargc = argc - optind;
+			*pargv = argv + optind;
+			return x;
 		default:
 unsupported_option:
 			tcc_warning_c(warn_unsupported)("unsupported option '%s'", r);
 			break;
 		}
-		not_empty = 1;
+		empty = 0;
 	}
-
 	if (s->link_optind < s->link_argc)
 		return tcc_error_noabort("argument to '-Wl,%s' is missing",
 					 s->link_argv[s->link_optind]);
-	if (NULL == argv[0])/* from tcc_set_options() */
-
-		return 0;
-	if (arg_start) {
-		*pargc = argc - arg_start;
-		*pargv = argv + arg_start;
-		return tool;
+	if (run) {
+		if (*run && tcc_set_options(s, run) < 0)
+			return -1;
+		x = 0, r = 0;
+		goto extra_action;
 	}
-	if (not_empty)
+	if (!empty)
 		return 0;
 	if (s->verbose == 2)
 		return OPT_PRINT_DIRS;
@@ -46248,66 +33949,22 @@ PUB_FUNC void tcc_print_stats(TCCState *s1, unsigned total_time)
 		s1->total_output[2],
 		s1->total_output[3]
 	       );
-#ifdef MEM_DEBUG
-
-	fprintf(stderr, "# memory usage");
-	if (s1->run_size) {
-		Section *s = s1->symtab;
-		unsigned ms = s->data_offset + s->link->data_offset + s->hash->data_offset;
-		unsigned rs = s1->run_size;
-		fprintf(stderr, ": %d to run, %d symbols, %d other,",
-			rs, ms, mem_cur_size - rs - ms);
-	}
-	fprintf(stderr, " %d max (bytes)\n", mem_max_size);
-#endif
-// 2228 "libtcc.c"
 }
-// 28 "tcc.c" 2
 
-// 1 "tcctools.c" 1
-/* -------------------------------------------------------------- */
+/* ==================== tcctools.c ==================== */
 /* -------------------------------------------------------------- */
 /*
- * This program is for making libtcc1.a without ar
- * tiny_libmaker - tiny elf lib maker
- * usage: tiny_libmaker [lib] files...
- * Copyright (c) 2007 Timppa
+ *  TCC - Tiny C Compiler
  *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2 of the License, or (at your option) any later version.
+ *  tcctools.c - extra tools and and -m32/64 support
  *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
  */
-// 31 "tcctools.c"
-// 1 "tcc.h" 1
-#ifndef _TCC_H
+/* -------------------------------------------------------------- */
+
 /* _TCC_H */
-#endif /* _TCC_H */
-// 1990 "tcc.h"
 #undef TCC_STATE_VAR
 #undef TCC_SET_STATE
-#ifdef USING_GLOBALS
-
-#define TCC_STATE_VAR(sym) tcc_state->sym
-#define TCC_SET_STATE(fn) fn
-#undef USING_GLOBALS
-#undef _tcc_error
-#else
-
-#define TCC_STATE_VAR(sym) s1->sym
 #define TCC_SET_STATE(fn) (tcc_enter_state(s1),fn)
-#define _tcc_error use_tcc_error_noabort
-#endif
-// 32 "tcctools.c" 2
 //#define ARMAG  "!<arch>\n"
 
 #define ARFMAG "`\n"
@@ -46335,7 +33992,7 @@ static int ar_usage(int ret)
 	return ret;
 }
 
-ST_FUNC int tcc_tool_ar(TCCState *s1, int argc, char **argv)
+ST_FUNC int tcc_tool_ar(int argc, char **argv)
 {
 	static const ArHdr arhdr_init = {
 		"/               ",
@@ -46629,28 +34286,8 @@ the_end:
 	return ret;
 }
 /* -------------------------------------------------------------- */
-/*
- * tiny_impdef creates an export definition file (.def) from a dll
- * on MS-Windows. Usage: tiny_impdef library.dll [-o outputfile]"
- *
- *  Copyright (c) 2005,2007 grischka
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
- */
-// 363 "tcctools.c"
-ST_FUNC int tcc_tool_impdef(TCCState *s1, int argc, char **argv)
+
+ST_FUNC int tcc_tool_impdef(int argc, char **argv)
 {
 	int ret, v, i;
 	char infile[260];
@@ -46703,10 +34340,8 @@ usage:
 	}
 
 	file = infile;
-
 	if (SearchPath(NULL, file, ".dll", sizeof path, path, NULL))
 		file = path;
-
 	ret = tcc_get_dllexports(file, &p);
 	if (ret || !p) {
 		fprintf(stderr, "tcc: impdef: %s '%s'\n",
@@ -46747,9 +34382,11 @@ the_end:
 		fclose(op);
 	return ret;
 }
-/* TCC_TARGET_PE */
+
 /* -------------------------------------------------------------- */
+
 /* re-execute the i386/x86_64 cross-compilers with tcc -m32/-m64: */
+
 #include <process.h>
 /* - Empty argument or with space/tab (not newline) requires quoting.
  * - Double-quotes at the value require '\'-escape, regardless of quoting.
@@ -46761,7 +34398,6 @@ the_end:
  *
  * https://learn.microsoft.com/en-us/cpp/c-language/parsing-c-command-line-arguments
  */
-// 510 "tcctools.c"
 static char *quote_win32(const char *s)
 {
 	char *o, *r = tcc_malloc(2 * strlen(s) + 3);/* max-esc, quotes, \0 */
@@ -46797,16 +34433,15 @@ static int execvp_win32(const char *prog, char **argv)
 
 	for (p = argv; *p; ++p)
 		*p = quote_win32(*p);
-	ret = _spawnvp(P_NOWAIT, prog, (const char *const*)argv);
+	ret = _spawnvp(P_NOWAIT, prog, (const char *const *)argv);
 	if (-1 == ret)
 		return ret;
 	_cwait(&ret, ret, WAIT_CHILD);
 	exit(ret);
 }
 #define execvp execvp_win32
-/* _WIN32 */
 
-ST_FUNC int tcc_tool_cross(TCCState *s1, char **argv, int target)
+ST_FUNC int tcc_tool_cross(char **argv, int target)
 {
 	char program[4096];
 	char *a0 = argv[0];
@@ -46825,7 +34460,7 @@ ST_FUNC int tcc_tool_cross(TCCState *s1, char **argv, int target)
 
 	if (strcmp(a0, program))
 		execvp(argv[0] = program, argv);
-	tcc_error_noabort("could not run '%s'", program);
+	fprintf(stderr, "tcc: could not run '%s'\n", program);
 	return 1;
 }
 /* TCC_TARGET_I386 && TCC_TARGET_X86_64 */
@@ -46834,12 +34469,10 @@ ST_FUNC int tcc_tool_cross(TCCState *s1, char **argv, int target)
 
 const int _CRT_glob = 1;
 #ifndef _CRT_glob
-
 const int _dowildcard = 1;
 #endif
 /* -------------------------------------------------------------- */
 /* generate xxx.d file */
-
 static char *escape_target_dep(const char *s)
 {
 	char *res = tcc_malloc(strlen(s) * 2 + 1);
@@ -46909,7 +34542,6 @@ next:;
 	return 0;
 }
 /* -------------------------------------------------------------- */
-// 30 "tcc.c" 2
 
 static const char help[] =
 	"Tiny C Compiler "TCC_VERSION" - Copyright (C) 2001-2006 Fabrice Bellard\n"
@@ -46948,14 +34580,6 @@ static const char help[] =
 	"  -gdwarf[-x]  generate dwarf runtime debug info\n"
 
 	"  -g.pdb       create .pdb debug database\n"
-#ifdef CONFIG_TCC_BCHECK
-
-	"  -b           compile with built-in memory and bounds checker (implies -g)\n"
-#endif
-#ifdef CONFIG_TCC_BACKTRACE
-
-	"  -bt[N]       link with backtrace (stack dump) support [show max N callers]\n"
-#endif
 
 	"Misc. options:\n"
 	"  -std=version define __STDC_VERSION__ according to version (c11/gnu11)\n"
@@ -46972,6 +34596,8 @@ static const char help[] =
 
 	"  create def file : tcc -impdef lib.dll [-v] [-o lib.def]\n"
 
+	"Discussion & bug reports:\n"
+	"  https://lists.nongnu.org/mailman/listinfo/tinycc-devel\n"
 	;
 
 static const char help2[] =
@@ -46988,6 +34614,7 @@ static const char help2[] =
 	"  -static                       link to static libraries (not recommended)\n"
 	"  -dumpversion                  print version\n"
 	"  -print-search-dirs            print search paths\n"
+	"  -rstdin file                  with -run: use 'file' as custom stdin\n"
 	"  -dt                           with -run/-E: auto-define 'test_...' macros\n"
 	"Ignored options:\n"
 	"  -arch -C --param -pedantic -pipe -s -traditional\n"
@@ -47029,23 +34656,19 @@ static const char help2[] =
 	"  -oformat=[pe-* binary]        set executable output format\n"
 	"Predefined macros:\n"
 	"  tcc -E -dM - < nul\n"
-// 165 "tcc.c"
+
 	"See also the manual for more details.\n"
 	;
 
 static const char version[] =
 	"tcc version "TCC_VERSION
-#ifdef TCC_GITHASH
-
-	" "TCC_GITHASH
-#endif
 
 	" ("
 
 	"x86_64"
-// 194 "tcc.c"
+
 	" Windows"
-// 206 "tcc.c"
+
 	")\n"
 	;
 
@@ -47104,12 +34727,11 @@ static char *default_outputfile(TCCState *s, const char *first_file)
 		strcpy(ext, ".dll");
 	else if (s->output_type == TCC_OUTPUT_EXE)
 		strcpy(ext, ".exe");
+	else if ((s->just_deps || s->output_type == TCC_OUTPUT_OBJ) && !s->option_r
+		 && *ext)
+		strcpy(ext, ".o");
 	else
-
-		if ((s->just_deps || s->output_type == TCC_OUTPUT_OBJ) && !s->option_r && *ext)
-			strcpy(ext, ".o");
-		else
-			strcpy(buf, "a.out");
+		strcpy(buf, "a.out");
 	return tcc_strdup(buf);
 }
 
@@ -47120,60 +34742,59 @@ static unsigned getclock_ms(void)
 
 }
 
-int main(int argc0, char **argv0)
+int main(int argc, char **argv)
 {
 	TCCState *s, *s1;
 	int ret, opt, n = 0, t = 0, done;
 	unsigned start_time = 0, end_time = 0;
 	const char *first_file;
-	int argc;
-	char **argv;
-	FILE *ppfp = stdout;
+	int argc0 = argc;
+	char **argv0 = argv;
+	FILE *ppfp = NULL;
 
 redo:
 	argc = argc0, argv = argv0;
 	s = s1 = tcc_new();
 	opt = tcc_parse_args(s, &argc, &argv);
-	if (opt < 0)
-		return 1;
 
 	if (n == 0) {
+		ret = 0;
 		if (opt == OPT_HELP) {
 			fputs(help, stdout);
-			if (!s->verbose)
-				return 0;
-			++opt;
-		}
-		if (opt == OPT_HELP2) {
-			fputs(help2, stdout);
-			return 0;
-		}
-		if (opt == OPT_M32 || opt == OPT_M64)
-			return tcc_tool_cross(s, argv, opt);
-		if (s->verbose)
+			if (s->verbose)
+				goto help2;
+		} else if (opt == OPT_HELP2) {
+help2: fputs(help2, stdout);
+		} else if (opt == OPT_M32 || opt == OPT_M64) {
+			ret = tcc_tool_cross(argv, opt);
+		} else if (s->verbose)
 			printf("%s", version);
+
 		if (opt == OPT_AR)
-			return tcc_tool_ar(s, argc, argv);
+			ret = tcc_tool_ar(argc, argv);
 
 		if (opt == OPT_IMPDEF)
-			return tcc_tool_impdef(s, argc, argv);
+			ret = tcc_tool_impdef(argc, argv);
 
-		if (opt == OPT_V)
-			return 0;
 		if (opt == OPT_PRINT_DIRS) {
 			/* initialize search dirs */
 
 			set_environment(s);
 			tcc_set_output_type(s, TCC_OUTPUT_MEMORY);
 			print_search_dirs(s);
-			return 0;
 		}
-
+		if (opt) {
+			if (opt < 0)
+err:
+				ret = 1;
+			tcc_delete(s);
+			return ret;
+		}
 		if (s->nb_files == 0) {
 			tcc_error_noabort("no input files");
 		} else if (s->output_type == TCC_OUTPUT_PREPROCESS) {
 			if (s->outfile && 0!=strcmp("-",s->outfile)) {
-				ppfp = fopen(s->outfile, "wb");
+				ppfp = tcc_fopen(s->outfile, "wb");
 				if (!ppfp)
 					tcc_error_noabort("could not write '%s'", s->outfile);
 			}
@@ -47184,7 +34805,7 @@ redo:
 				tcc_error_noabort("cannot specify output file with -c many files");
 		}
 		if (s->nb_errors)
-			return 1;
+			goto err;
 		if (s->do_bench)
 			start_time = getclock_ms();
 	}
@@ -47192,8 +34813,9 @@ redo:
 	set_environment(s);
 	if (s->output_type == 0)
 		s->output_type = TCC_OUTPUT_EXE;
-	tcc_set_output_type(s, s->output_type);
-	s->ppfp = ppfp;
+	ret = tcc_set_output_type(s, s->output_type);
+	if (ppfp)
+		s->ppfp = ppfp;
 
 	if ((s->output_type == TCC_OUTPUT_MEMORY
 	     || s->output_type == TCC_OUTPUT_PREPROCESS)
@@ -47208,7 +34830,7 @@ redo:
 	/* compile or add each files or library */
 
 	first_file = NULL;
-	do {
+	while (0 == ret) {
 		struct filespec *f = s->files[n];
 		s->filetype = f->type;
 		if (f->type & AFF_TYPE_LIB) {
@@ -47220,9 +34842,11 @@ redo:
 				first_file = f->name;
 			ret = tcc_add_file(s, f->name);
 		}
-	} while (++n < s->nb_files
-		 && 0 == ret
-		 && (s->output_type != TCC_OUTPUT_OBJ || s->option_r));
+		if (++n == s->nb_files)
+			break;
+		if (s->output_type == TCC_OUTPUT_OBJ && !s->option_r)
+			break;
+	}
 
 	if (s->do_bench)
 		end_time = getclock_ms();
@@ -47262,11 +34886,10 @@ redo:
 		tcc_print_stats(s, end_time - start_time);
 
 	tcc_delete(s);
-
 	if (!done)
 		goto redo;
-	if (ppfp && ppfp != stdout)
-		fclose(ppfp);
+	if (ppfp)
+		tcc_fclose(ppfp);
 	return ret;
 }
 /* TCC runtime library.
@@ -47299,9 +34922,6 @@ the Free Software Foundation, 59 Temple Place - Suite 330,
 Boston, MA 02111-1307, USA.
 */
 
-#define W_TYPE_SIZE   32
-#define BITS_PER_UNIT 8
-
 typedef int Wtype;
 typedef unsigned int UWtype;
 typedef unsigned int USItype;
@@ -47318,8 +34938,6 @@ typedef union {
 } DWunion;
 
 typedef long double XFtype;
-#define WORD_SIZE (sizeof (Wtype) * BITS_PER_UNIT)
-#define HIGH_WORD_COEFF (((UDWtype) 1) << WORD_SIZE)
 
 /* the following deal with IEEE single-precision numbers */
 #define EXCESS		126
@@ -47328,18 +34946,13 @@ typedef long double XFtype;
 #define SIGN(fp)	((fp) & SIGNBIT)
 #define EXP(fp)		(((fp) >> 23) & 0xFF)
 #define MANT(fp)	(((fp) & 0x7FFFFF) | HIDDEN)
-#define PACK(s,e,m)	((s) | ((e) << 23) | (m))
 
 /* the following deal with IEEE double-precision numbers */
 #define EXCESSD		1022
-#define HIDDEND		(1 << 20)
 #define EXPD(fp)	(((fp.l.upper) >> 20) & 0x7FF)
 #define SIGND(fp)	((fp.l.upper) & SIGNBIT)
-#define MANTD(fp)	(((((fp.l.upper) & 0xFFFFF) | HIDDEND) << 10) | \
-				(fp.l.lower >> 22))
 #define HIDDEND_LL	((long long)1 << 52)
 #define MANTD_LL(fp)	((fp.ll & (HIDDEND_LL-1)) | HIDDEND_LL)
-#define PACKD_LL(s,e,m)	(((long long)((s)+((e)<<20))<<32)|(m))
 
 /* the following deal with x86 long double-precision numbers */
 #define EXCESSLD	16382
@@ -47518,12 +35131,8 @@ long long __fixxfdi (long double a1)
 	return s ? ret : -ret;
 }
 
-/* MSVC x64 intrinsic */
-void __faststorefence(void)
-{
-	__asm__("lock; orl $0,(%rsp)");
-}
-
+/* runtime bits libtcc1.a would otherwise provide, needed only when this file
+   is compiled by tcc itself.  x86_64 PE only. */
 #ifdef __TINYC__
 
 __asm__
@@ -47554,10 +35163,10 @@ __asm__
 (
 	".globl __chkstk\n"
 	"__chkstk:\n"
-	"xchg    (%rsp),%rbp\n" /* store ebp, get ret.addr */
-	"push    %rbp\n" /* push ret.addr */
-	"lea     8(%rsp),%rbp\n" /* setup frame ptr */
-	"push    %rcx\n" /* save ecx */
+	"xchg    (%rsp),%rbp\n"     /* store ebp, get ret.addr */
+	"push    %rbp\n"            /* push ret.addr */
+	"lea     8(%rsp),%rbp\n"    /* setup frame ptr */
+	"push    %rcx\n"            /* save ecx */
 	"mov     %rbp,%rcx\n"
 	"movslq  %eax,%rax\n"
 	"P0:\n"
@@ -47570,11 +35179,10 @@ __asm__
 	"test    %rax,(%rcx)\n"
 	"mov     %rsp,%rax\n"
 	"mov     %rcx,%rsp\n"
-	"mov     (%rax),%rcx\n" /* restore ecx */
+	"mov     (%rax),%rcx\n"     /* restore ecx */
 	"jmp     *8(%rax)\n"
 );
 
-/* ---------------------------------------------- */
 /* setjmp/longjmp support */
 __asm__
 (
@@ -47594,7 +35202,7 @@ typedef struct {
 	int newmode;
 } _startupinfo;
 extern int __cdecl __getmainargs(int *pargc, _TCHAR ***pargv, _TCHAR ***penv,
-				 int globb, _startupinfo*);
+				 int globb, _startupinfo *);
 
 int _start()
 {
