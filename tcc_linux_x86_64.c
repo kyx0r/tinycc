@@ -42,6 +42,7 @@
 #include <sys/time.h>
 #include <dlfcn.h>
 /* XXX: need to define this to use them in non ISOC99 context */
+
 extern float strtof (const char *__nptr, char **__endptr);
 extern long double strtold (const char *__nptr, char **__endptr);
 #ifndef O_BINARY
@@ -4857,7 +4858,6 @@ dwarf_read_sleb128(unsigned char **ln, unsigned char *end)
 #define R_DATA_32DW R_X86_64_32
 /**/
 #include <semaphore.h>
-
 typedef struct {
 	int init;
 	sem_t sem;
@@ -26612,6 +26612,7 @@ static void rt_exit(rt_frame *f, int code);
 /* ------------------------------------------------------------- */
 /* defined when included from lib/bt-exe.c */
 #include <sys/mman.h>
+
 static int protect_pages(void *ptr, unsigned long length, int mode);
 static int tcc_relocate_ex(TCCState *s1, void *ptr, unsigned ptr_diff);
 static void st_link(TCCState *s1);
