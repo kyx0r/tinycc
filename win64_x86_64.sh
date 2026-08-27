@@ -1,5 +1,7 @@
 #!/bin/sh
 
+IFS=$(printf ' \t\n@'); IFS=${IFS%@}
+
 amal -DONE_SOURCE -E tcc.c > all.c
 # cleanup multiline macros for compat with unifdef
 EXINIT="$(printf '$?\\%%s/(defined[^\n]*?)[ \t]*[\\\\]\n[ \t]*/\\1 /gm:wq')" vi -e all.c
@@ -309,7 +311,7 @@ mv $out.2 $out                    # changed something, so never chain on it
 grep -q "^#.*\(TARGET_DEFS_ONLY\|USING_GLOBALS\)" $out &&
 	{ echo "double-inclusion left unresolved in $out" >&2; exit 1; }
 
-$CC -E -P -DNDEBUG $CPPFLAGS $out >/dev/null ||
+$CC -E -P -w -DNDEBUG $CPPFLAGS $out >/dev/null ||
 	{ echo "preprocessing broke $out" >&2; exit 1; }
 
 # Now drop what the fixed target made unreachable.  Three oracles, no guessing:

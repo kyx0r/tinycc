@@ -1,5 +1,7 @@
 #!/bin/sh
 
+IFS=$(printf ' \t\n@'); IFS=${IFS%@}
+
 amal -DONE_SOURCE -E tcc.c > all.c
 # cleanup multiline macros for compat with unifdef
 EXINIT="$(printf '$?\\%%s/(defined[^\n]*?)[ \t]*[\\\\]\n[ \t]*/\\1 /gm:wq')" vi -e all.c
