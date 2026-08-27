@@ -13,6 +13,10 @@ cat lib/libtcc1.c >> __all.c
 EXINIT="1,#>/\*>-1d:0i #define TCC_VERSION \"$(git rev-parse --verify HEAD)\"
 :g/if \(TCC_LIBTCC1\[0\]\)/.,.+1d:wq" vi -e __all.c
 
+# tcc's x86_64 SysV __builtin_va_arg macro (tccdefs.h) expands to a call to
+# __va_arg, a helper normally provided by lib/va_list.c in libtcc1.a.  Embed
+# it, under the same __TINYC__ guard as the other runtime bits, so tcc can
+# compile and link this file (and anything it compiles) without libtcc1.a.
 cat <<\EOF >> __all.c
 
 /* runtime bits libtcc1.a would otherwise provide, needed only when this file
@@ -20,6 +24,9 @@ cat <<\EOF >> __all.c
    stack-probe helper (tcc never emits a call to it here) and _start/<tchar.h>
    are the msvcrt entry point, so neither belongs in a linux amalgamation. */
 #ifdef __TINYC__
+EOF
+cat lib/va_list.c >> __all.c
+cat <<\EOF >> __all.c
 
 __asm__
 (
