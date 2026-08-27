@@ -213,9 +213,15 @@ DEFS="\
 # undecided region untouched, so these need a second round.  No _SC_PAGESIZE
 # on PE, so tccrun.c falls back to its flat 4096 PAGESIZE like a real
 # Windows build does.
+# NEED_RELOC_TYPE and NEED_BUILD_GOT are defined by tcc.h only under
+# `#ifndef TCC_TARGET_PE', so a real Windows build never sees them: the whole
+# ELF GOT/PLT machinery in tccelf.c and x86_64-link.c is compiled out, along
+# with the prototypes and the gotplt_entry enum.  The linux amalgamation has
+# to force them true; here forcing them true kept code calling declarations
+# that had been folded away.  Unlike the linux script, these are -U.
 DEFS2="\
--DNEED_RELOC_TYPE \
--DNEED_BUILD_GOT \
+-UNEED_RELOC_TYPE \
+-UNEED_BUILD_GOT \
 -DSHT_RELX=4 \
 -DSHT_RELA=4 \
 -DRC_IRE2 \
