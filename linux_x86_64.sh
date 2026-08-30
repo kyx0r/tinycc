@@ -2,6 +2,41 @@
 
 IFS=$(printf ' \t\n@'); IFS=${IFS%@}
 
+# With any argument, skip the amalgamation regeneration and build the existing
+# $out for real instead, then stop.  The plain optimized build proves the file
+# compiles standalone; the pgobuild then rebuilds it with the profile of the
+# freshly built tcc compiling itself -- $out, which is tcc's own full source
+# plus the embedded runtime, so no libtcc1.a or include path beyond ./include
+# (tccdefs.h) is needed.
+if [ $# -gt 0 ]; then
+	CC=${CC:-gcc}
+	out=tcc_linux_x86_64.c
+	CFLAGS=${CFLAGS:--O2}
+
+	$CC $CFLAGS -o tcc $out || exit
+
+	# gcc derives the .gcda name from the -o basename (tcc-tcc_linux_x86_64.gcda),
+	# so the instrumented and the profile-consuming build must share the output
+	# name `tcc': a differently named instrumented binary makes -fprofile-use
+	# silently miss the profile (-Wmissing-profile) and optimize blind.
+	$CC $CFLAGS -fprofile-generate -o tcc $out || exit
+
+	# the workload: the instrumented tcc compiling itself, once to an object
+	# (codegen of the output path) and once to a full executable (its own
+	# linker); both runs merge into the one .gcda
+	./tcc -I./include -c $out -o tcc.self.o || exit
+	./tcc -I./include $out -o tcc.self || exit
+	./tcc.self -v || exit
+
+	# -fprofile-correction: the merged runs occasionally disagree on edge
+	# counters; without it gcc aborts the rebuild instead of merging
+	$CC $CFLAGS -fprofile-use -fprofile-correction -o tcc $out || exit
+	./tcc -v
+
+	rm -f tcc.self tcc.self.o tcc-tcc_linux_x86_64.gcda
+	exit 0
+fi
+
 # ./configure's config.h is host-specific and absent from a fresh checkout, so
 # hide it to keep the output the same either way.  TCC_VERSION comes from the
 # VERSION file below.  First line recovers it after a run killed before its trap.
@@ -337,3 +372,4 @@ else
 fi
 
 rm -f $out.ref $out.prev $out.ex $out.once $out.alt $out.v.c $out.v.*.o
+
