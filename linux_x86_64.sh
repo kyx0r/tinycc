@@ -100,17 +100,19 @@ EOF
 out=tcc_linux_x86_64.c
 CC=${CC:-gcc}
 
-# Upstream bakes the loader path in at build time (./configure --config-musl);
-# an amalgamation travels between machines, so it decides at run time instead.
+# Upstream bakes the loader path in at build time (./configure --config-musl)
 G="/lib64/ld-linux-x86-64.so.2"
 M="/lib/ld-musl-x86_64.so.1"
-EXINIT="%s@^#define CONFIG_TCC_ELFINTERP \"$G\"\$@\
-/* glibc's loader, or musl's when that is the only one present */$NL\
-#define ELFINTERP_GLIBC \"$G\"$NL\
-#define ELFINTERP_MUSL \"$M\"$NL\
-#define CONFIG_TCC_ELFINTERP (0 == access(ELFINTERP_MUSL, F_OK) \&\& 0 \!= access(ELFINTERP_GLIBC, F_OK) ? ELFINTERP_MUSL \: ELFINTERP_GLIBC)@:wq" vi -e __all.c
-grep -q "^#define CONFIG_TCC_ELFINTERP (" __all.c ||
-	{ echo "ELFINTERP rewrite missed in __all.c" >&2; exit 1; }
+vi -s __all.c <<EOF || exit 1
+%f>^#define CONFIG_TCC_ELFINTERP "$G"\$:??!p ELFINTERP anchor missing in __all.c\:2q 1
+c
+/* glibc's loader, or musl's when that is the only one present */
+#define ELFINTERP_GLIBC "$G"
+#define ELFINTERP_MUSL "$M"
+#define CONFIG_TCC_ELFINTERP (0 == access(ELFINTERP_MUSL, F_OK) && 0 != access(ELFINTERP_GLIBC, F_OK) ? ELFINTERP_MUSL : ELFINTERP_GLIBC)
+.
+wq
+EOF
 
 # Symbols a fixed linux/x86_64 build decides; values matter (-DPTR_SIZE=8 folds
 # `#if PTR_SIZE == 8 ...`).  CONFIG_TCC_MUSL stays undecided for -dumpmachine.
