@@ -2,34 +2,31 @@
 
 IFS=$(printf ' \t\n@'); IFS=${IFS%@}
 
-# With any argument, skip the amalgamation regeneration and build the existing
-# $out for real instead, then stop.  The plain optimized build proves the file
-# compiles standalone; the pgobuild then rebuilds it with the profile of the
-# freshly built tcc compiling itself -- $out, which is tcc's own full source
-# plus the embedded runtime, so no libtcc1.a or include path beyond ./include
-# (tccdefs.h) is needed.
+# With any argument: build the existing $out instead of regenerating it.  A
+# plain -O2 build, then a pgo rebuild profiled by that tcc compiling itself.
 if [ $# -gt 0 ]; then
 	CC=${CC:-gcc}
 	out=tcc_linux_x86_64.c
 	CFLAGS=${CFLAGS:--O2}
 
+	# $out picks the loader at run time; CONFIG_TCC_MUSL only names the
+	# -dumpmachine triplet.  musl has no macro: probe, MUSL=0/1 overrides.
+	[ -n "${MUSL-}" ] || { [ -f /lib/ld-musl-x86_64.so.1 ] && MUSL=1 || MUSL=0; }
+	[ "$MUSL" = 1 ] && CFLAGS="$CFLAGS -DCONFIG_TCC_MUSL=1"
+
 	$CC $CFLAGS -o tcc $out || exit
 
-	# gcc derives the .gcda name from the -o basename (tcc-tcc_linux_x86_64.gcda),
-	# so the instrumented and the profile-consuming build must share the output
-	# name `tcc': a differently named instrumented binary makes -fprofile-use
-	# silently miss the profile (-Wmissing-profile) and optimize blind.
+	# gcc names the .gcda after the -o basename, so both builds write `tcc'
+	# or -fprofile-use finds no profile (-Wmissing-profile).
 	$CC $CFLAGS -fprofile-generate -o tcc $out || exit
 
-	# the workload: the instrumented tcc compiling itself, once to an object
-	# (codegen of the output path) and once to a full executable (its own
-	# linker); both runs merge into the one .gcda
+	# workload: instrumented tcc compiling itself to an object and to an
+	# executable; both runs merge into the one .gcda
 	./tcc -I./include -c $out -o tcc.self.o || exit
 	./tcc -I./include $out -o tcc.self || exit
 	./tcc.self -v || exit
 
-	# -fprofile-correction: the merged runs occasionally disagree on edge
-	# counters; without it gcc aborts the rebuild instead of merging
+	# -fprofile-correction: the merged runs disagree on some edge counters
 	$CC $CFLAGS -fprofile-use -fprofile-correction -o tcc $out || exit
 	./tcc -v
 
@@ -37,9 +34,8 @@ if [ $# -gt 0 ]; then
 	exit 0
 fi
 
-# ./configure's config.h is host-specific and absent from a fresh checkout, so
-# hide it to keep the output the same either way.  TCC_VERSION comes from the
-# VERSION file below.  First line recovers it after a run killed before its trap.
+# config.h is host-specific and absent from a fresh checkout; hide it.  First
+# line recovers it after a run killed before its trap.
 [ -f config.h.amalhidden ] && [ ! -f config.h ] && mv config.h.amalhidden config.h
 if [ -f config.h ]; then
 	mv config.h config.h.amalhidden || exit 1
@@ -60,10 +56,8 @@ NL='
 '
 EXINIT="1,#>/\*>-1d:1s@^@#define TCC_VERSION \"$(head -n1 VERSION)\"$NL#define TCC_GITHASH \"$(git rev-parse --verify HEAD)\"$NL:g/if \(TCC_LIBTCC1\[0\]\)/.,.+1d:wq" vi -e __all.c
 
-# tcc's x86_64 SysV __builtin_va_arg macro (tccdefs.h) expands to a call to
-# __va_arg, a helper normally provided by lib/va_list.c in libtcc1.a.  Embed
-# it, under the same __TINYC__ guard as the other runtime bits, so tcc can
-# compile and link this file (and anything it compiles) without libtcc1.a.
+# __builtin_va_arg (tccdefs.h) calls __va_arg from lib/va_list.c in libtcc1.a;
+# embed it under the __TINYC__ guard with the other runtime bits.
 cat <<\EOF >> __all.c
 
 /* runtime bits libtcc1.a would otherwise provide, needed only when this file
@@ -106,10 +100,20 @@ EOF
 out=tcc_linux_x86_64.c
 CC=${CC:-gcc}
 
-# Symbols a fixed linux/x86_64 build decides.  Values matter as much as the
-# plain -D/-U: without -DPTR_SIZE=8, unifdef cannot fold `#if PTR_SIZE == 8 &&
-# !defined TCC_TARGET_PE` and keeps the whole region -- including every #ifdef
-# nested inside it, which is why TCC_TARGET_PE used to survive its own -U.
+# Upstream bakes the loader path in at build time (./configure --config-musl);
+# an amalgamation travels between machines, so it decides at run time instead.
+G="/lib64/ld-linux-x86-64.so.2"
+M="/lib/ld-musl-x86_64.so.1"
+EXINIT="%s@^#define CONFIG_TCC_ELFINTERP \"$G\"\$@\
+/* glibc's loader, or musl's when that is the only one present */$NL\
+#define ELFINTERP_GLIBC \"$G\"$NL\
+#define ELFINTERP_MUSL \"$M\"$NL\
+#define CONFIG_TCC_ELFINTERP (0 == access(ELFINTERP_MUSL, F_OK) \&\& 0 \!= access(ELFINTERP_GLIBC, F_OK) ? ELFINTERP_MUSL \: ELFINTERP_GLIBC)@:wq" vi -e __all.c
+grep -q "^#define CONFIG_TCC_ELFINTERP (" __all.c ||
+	{ echo "ELFINTERP rewrite missed in __all.c" >&2; exit 1; }
+
+# Symbols a fixed linux/x86_64 build decides; values matter (-DPTR_SIZE=8 folds
+# `#if PTR_SIZE == 8 ...`).  CONFIG_TCC_MUSL stays undecided for -dumpmachine.
 DEFS="\
 -DTCC_TARGET_X86_64 \
 -D__x86_64__ \
@@ -160,7 +164,6 @@ DEFS="\
 -UTARGETOS_NetBSD \
 -UTARGETOS_FreeBSD_kernel \
 -UTARGETOS_ANDROID \
--UCONFIG_TCC_MUSL \
 -UCONFIG_SELINUX \
 -UCONFIG_RUNMEM_VIRTUALALLOC \
 -UCONFIG_TCC_PIE \
@@ -190,9 +193,8 @@ DEFS="\
 -U__GNU_STAB__ \
 -ULIBTCC_H"
 
-# Symbols that only become decidable after the TARGET_DEFS_ONLY / USING_GLOBALS
-# double inclusions below are gone -- unifdef leaves everything nested in an
-# undecided region untouched, so these need a second round.
+# Decidable only after the TARGET_DEFS_ONLY / USING_GLOBALS double inclusions
+# below are gone: unifdef leaves undecided regions untouched.
 DEFS2="\
 -DNEED_RELOC_TYPE \
 -DNEED_BUILD_GOT \
@@ -222,30 +224,21 @@ GONE="TARGET_DEFS_ONLY|USING_GLOBALS|NEED_BUILD_GOT|NEED_RELOC_TYPE|SHT_RELX\
 |TCC_TARGET_C67|TCC_TARGET_COFF|CONFIG_TCC_BCHECK|CONFIG_TCC_BACKTRACE\
 |ELF_OBJ_ONLY"
 
-# Nextvi regex has no \t or \n escapes, and <:> is the ex separator, so a
-# non-capturing group is written (?\:...) -- and the parity rule applies once
-# per parsing level, so inside a `$?` loop argument it needs (?\\\:...), which
-# is what NC is for.  X is a scratch marker; it never survives a step.
+# Nextvi has no \t or \n escapes and <:> is the ex separator: a non-capturing
+# group is (?\:...), or (?\\\:...) inside a `$?` argument (NC).  X is scratch.
 NL='
 '
 TAB=$(printf '\t')
 X=$(printf '\001')
-# one line that is blank or holds a single-line comment.  a comment spanning
-# lines deliberately does not match: that is what keeps the licence header.
+# one blank line or single-line comment; multiline ones keep the licence header
 NC='(?\\\:'
 BC="[ $TAB]*$NC/\*[^$NL]*\*/)?[ $TAB]*"
-# a doomed line, its \-continuations, and the doc comment sitting on top of it.
-# anchored on the preceding newline because in multiline mode ^ only asserts at
-# the start of the whole region, not at every line.
+# a doomed line, its \-continuations and the doc comment above it, anchored on
+# the preceding newline: in multiline mode ^ asserts only at the region start
 DOOMED="$NL$NC$BC$NL)*$X$NC[^$NL]*\\\\$NL)*[^$NL]*"
 
-# Run an ex script over $out and abort if a command in it reported an error.
-# `:??!p EXFAIL` prints only when the command before it failed.  A command that
-# fails *inside* a :g aborts the whole global, and that is the dangerous case:
-# the leftover dead text still passes the object comparison at the bottom, so
-# the run would report success having skipped most of its work.  Catching it
-# here needs ec_glob to forward the inner status; without that fix this still
-# catches a :g whose own pattern matched nothing.
+# Run an ex script over $out and abort on an error in it: `:??!p EXFAIL` prints
+# when the previous command failed.  A failure inside a :g needs ec_glob.
 ex() {
 	EXINIT="$1" vi -e $out </dev/null 2>&1 | tr -d '\r' | grep -q EXFAIL &&
 		{ echo "ex failed: $2" >&2; exit 1; }
@@ -258,11 +251,8 @@ rm -f $out.prev $out.ex $out.once $out.alt
 unifdef -k $DEFS __all.c > $out
 cp $out $out.ref
 
-# ONE_SOURCE pulls tcc.h, x86_64-gen.c and x86_64-link.c in twice -- once under
-# TARGET_DEFS_ONLY, once not -- and flips USING_GLOBALS about ten times on the
-# way.  unifdef cannot follow a symbol the file defines and undefines itself, so
-# it keeps both copies.  Rename each #ifdef after the state it actually sees,
-# then let round two fold them.
+# ONE_SOURCE pulls tcc.h, x86_64-gen.c and x86_64-link.c in twice and flips
+# USING_GLOBALS repeatedly: rename each #ifdef after the state it sees.
 ex ">^#define TARGET_DEFS_ONLY\$>,>^#undef TARGET_DEFS_ONLY\$>s/^#ifdef TARGET_DEFS_ONLY\$/#ifdef TARGET_DEFS_ONLY_ON/:??!p EXFAIL\
 :%g/^#define USING_GLOBALS\$/>^#ifdef USING_GLOBALS\$>s/\$/_ON/:??!p EXFAIL\
 :%g/^#(?\:define|undef) (?\:TARGET_DEFS_ONLY|USING_GLOBALS)\$/d:??!p EXFAIL:wq" "resolving the double inclusion"
@@ -270,28 +260,19 @@ ex ">^#define TARGET_DEFS_ONLY\$>,>^#undef TARGET_DEFS_ONLY\$>s/^#ifdef TARGET_D
 unifdef -k $DEFS2 $out > $out.2   # unifdef exits 1 whenever it
 mv $out.2 $out                    # changed something, so never chain on it
 
-# An error in any command inside a :g stops the whole global, so one failed
-# search would quietly skip every later match -- and the object-code check at
-# the bottom cannot see that, because text left behind is still dead text.
-# Every pass therefore states a post-condition.
+# An error inside a :g stops the whole global and leaves dead text the object
+# check still accepts; every pass states a post-condition.
 grep -q "^#.*\(TARGET_DEFS_ONLY\|USING_GLOBALS\)" $out &&
 	{ echo "double-inclusion left unresolved in $out" >&2; exit 1; }
 
-# Now drop what the fixed target made unreachable.  Three oracles, no guessing:
-#
-#   macros        $CC -Wunused-macros, which knows about expansion and #ifdef
-#                 tests, so ElfW()-style ## pasting cannot be missed
-#   types/enums   an identifier occurring exactly once in the *preprocessed*
-#                 text is only its own definition.  preprocessed, because
-#                 Elf64_Shdr is never written literally -- ElfW(Shdr) pastes it
-#
-# repeated until the file stops shrinking.
+# Drop what the fixed target made unreachable, until the file stops shrinking.
+# Oracles: -Wunused-macros; identifiers occurring once in *preprocessed* text.
 $CC -fsyntax-only -w $out || { echo "folding broke $out" >&2; exit 1; }
 until cmp -s $out $out.prev 2>/dev/null; do
 	cp $out $out.prev
 
-	# --- macros: ~2100 elf.h/dwarf.h/stab.h defines for architectures this
-	# build dropped, plus every debug scaffold unifdef just switched off
+	# --- macros: elf.h/dwarf.h/stab.h defines for the dropped architectures,
+	# plus the debug scaffolds unifdef switched off
 	$CC -fsyntax-only -Wunused-macros $out 2>&1 |
 		sed -n "s/^[^:]*:\([0-9][0-9]*\):.*-Wunused-macros.*/\1s@^@$X@/p" |
 		tr '\n' ':' > $out.ex
@@ -312,12 +293,8 @@ until cmp -s $out $out.prev 2>/dev/null; do
 			"deleting unused typedefs"
 	fi
 
-	# --- enum constants: DW_TAG_*, DW_AT_*, ...  Only ones written `= value`
-	# whose successor is also `= value` (or the closing brace) are cut, so no
-	# implicit numbering can shift.  The guard is a captured group put back by
-	# \1.  A leading (?=...) asserting the same span plus the next line is the
-	# cleaner spelling and gives the same result, but it re-scans the whole span
-	# at every position: 0.1s here versus over a minute on this file.
+	# --- enum constants: only ones written `= value` whose successor is also
+	# `= value` (or `}`) are cut, keeping implicit numbering intact
 	sed -n "s/^[ $TAB]*\([A-Za-z_][A-Za-z0-9_]*\)[ $TAB]*=.*/\1/p" $out |
 		sort -u | comm -12 - $out.once | tr '\n' '|' | sed 's/|$//' > $out.alt
 	if [ -s $out.alt ]; then
@@ -338,8 +315,8 @@ sed -n "s/^}[ $TAB]*\([A-Za-z_][A-Za-z0-9_]*\);\$/\1/p" $out |
 	sort -u | comm -12 - $out.once > $out.alt
 [ -s $out.alt ] &&
 	{ echo "unused typedefs left in $out: $(tr '\n' ' ' <$out.alt)" >&2; exit 1; }
-# enum constants are not asserted empty: the numbering guard keeps a few on
-# purpose, e.g. TOK_LAST, whose successor is a #define rather than a member.
+# enum constants are not asserted empty: the numbering guard keeps a few, e.g.
+# TOK_LAST, whose successor is a #define rather than a member.
 
 # cpp line markers -> one banner per source file; `#endif` trailers orphaned by
 # the folding above; the emptied `#define`/`#undef` shells unifdef leaves.
@@ -356,9 +333,8 @@ ex "%g@^// [0-9]* \"[^\"]*\"[ 0-9]*\$@d:??!p EXFAIL\
 astyle -xb -n -H --style=linux --max-code-length=80 --indent=force-tab=8 \
 	--squeeze-ws --squeeze-lines=1 --align-pointer=name $out
 
-# Prove none of it changed the program: compile the untouched round-one output
-# and the finished file and compare the objects byte for byte.  __LINE__ and
-# assert() bake source positions into .rodata, so neutralise both first.
+# Prove the program is unchanged: compile round-one output and the finished
+# file, compare objects.  __LINE__ and assert() bake in source positions.
 for f in $out.ref $out; do
 	sed 's/\([^A-Za-z0-9_]\)__LINE__\([^A-Za-z0-9_]\)/\10\2/g' $f > $out.v.c
 	$CC -c -DNDEBUG -w $out.v.c -o $out.v.$$.o || exit 1

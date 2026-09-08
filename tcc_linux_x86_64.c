@@ -121,7 +121,10 @@ extern long double strtold (const char *__nptr, char **__endptr);
 #endif
 /* name of ELF interpreter */
 #ifndef CONFIG_TCC_ELFINTERP
-#define CONFIG_TCC_ELFINTERP "/lib64/ld-linux-x86-64.so.2"
+/* glibc's loader, or musl's when that is the only one present */
+#define ELFINTERP_GLIBC "/lib64/ld-linux-x86-64.so.2"
+#define ELFINTERP_MUSL "/lib/ld-musl-x86_64.so.1"
+#define CONFIG_TCC_ELFINTERP (0 == access(ELFINTERP_MUSL, F_OK) && 0 != access(ELFINTERP_GLIBC, F_OK) ? ELFINTERP_MUSL : ELFINTERP_GLIBC)
 #endif
 /* (target specific) libtcc1.a */
 #ifndef TCC_LIBTCC1
@@ -33678,7 +33681,11 @@ static const char dumpmachine_str[] =
 
 	"x86_64-pc"
 	"-"
+#if   CONFIG_TCC_MUSL
+	"linux-musl"
+#else
 	"linux-gnu"
+#endif
 
 	;
 /* insert args from 'p' (separated by sep or ' ') into argv at position 'optind' */
