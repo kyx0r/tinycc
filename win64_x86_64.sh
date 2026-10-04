@@ -24,7 +24,7 @@ cat lib/libtcc1.c >> __all.c
 # carrying a real newline in the replacement instead
 NL='
 '
-EXINIT="1,#>/\*>-1d:1s@^@#define TCC_VERSION \"$(head -n1 VERSION)\"$NL#define TCC_GITHASH \"$(git rev-parse --verify HEAD)\"$NL:g/if \(TCC_LIBTCC1\[0\]\)/.,.+1d:wq" vi -e __all.c
+EXINIT="1,#>/\*>-1d:1s@^@#define TCC_VERSION \"$(head -n1 VERSION)\"$NL#define TCC_GITHASH \"$(git rev-parse --verify HEAD)\"$NL:g/if \(TCC_LIBTCC1\[0\]\)/.,.+3d:wq" vi -e __all.c
 grep -q '^#define TCC_VERSION "' __all.c ||
 	{ echo "TCC_VERSION header not inserted" >&2; exit 1; }
 
@@ -379,7 +379,7 @@ else
 	# everything the passes deleted, snapshot before astyle muddies the diff
 	diff $out.ref $out > $out.gone 2>/dev/null
 	[ $? -le 1 ] || { echo "diff of $out.ref failed" >&2; exit 1; }
-	grep '^< ' $out.gone | tr -c 'A-Za-z0-9_' '\n' |
+	grep '^-' $out.gone | grep -v '^---' | tr -c 'A-Za-z0-9_' '\n' |
 		grep -v '^$' | sort -u > $out.gt
 	[ -s $out.gt ] || echo 0GONE > $out.gt
 	awk '

@@ -1,5 +1,5 @@
 #define TCC_VERSION "0.9.28rc"
-#define TCC_GITHASH "2ba12e83b3599ca8f5d50c179fe5138fe956f0c9"
+#define TCC_GITHASH "43c7708b85681a2fd4451c8a541af4494a8919b2"
 /*
  *  TCC - Tiny C Compiler
  *
@@ -51,6 +51,7 @@
 #include <malloc.h> /* alloca */
 /* alloca */
 #include <stdint.h>
+
 #define inline __inline
 #define snprintf _snprintf
 #define vsnprintf _vsnprintf
@@ -256,9 +257,8 @@ LIBTCCAPI void *_tcc_setjmp(TCCState *s1, void *jmp_buf, void *top_func,
 /* custom error printer for runtime exceptions. Returning 0 stops backtrace */
 
 typedef int TCCBtFunc(void *udata, void *pc, const char *file, int line,
-		      const char *func, const char *msg);
-LIBTCCAPI void tcc_set_backtrace_func(TCCState *s1, void *userdata,
-				      TCCBtFunc *);
+		      const char* func, const char *msg);
+LIBTCCAPI void tcc_set_backtrace_func(TCCState *s1, void* userdata, TCCBtFunc*);
 /* ==================== elf.h ==================== */
 
 #ifndef __int8_t_defined
@@ -2204,23 +2204,26 @@ struct filespec {
 #define VT_CONSTANT 0x0100
 /* volatile modifier */
 #define VT_VOLATILE 0x0200
+/* restrict modifier */
+#define VT_RESTRICT 0x0400
+#define VT_QUAL (VT_CONSTANT | VT_VOLATILE | VT_RESTRICT)
 /* VLA type (also has VT_PTR and VT_ARRAY) */
-#define VT_VLA 0x0400
+#define VT_VLA 0x0800
 /* long type (also has VT_INT rsp. VT_LLONG) */
-#define VT_LONG 0x0800
+#define VT_LONG 0x1000
 /* storage */
 /* extern definition */
 
-#define VT_EXTERN 0x00001000
+#define VT_EXTERN 0x00002000
 /* static variable */
-#define VT_STATIC 0x00002000
+#define VT_STATIC 0x00004000
 /* typedef definition */
-#define VT_TYPEDEF 0x00004000
+#define VT_TYPEDEF 0x00008000
 /* inline definition */
-#define VT_INLINE 0x00008000
+#define VT_INLINE 0x00010000
 /* thread-local storage */
-#define VT_TLS 0x00010000
-/* currently unused: 0x000[248]0000  */
+#define VT_TLS 0x00020000
+/* currently unused: 0x000[48]0000  */
 /* shift for bitfield shift values (32 - 2*6) */
 
 #define VT_STRUCT_SHIFT 20
@@ -6651,7 +6654,7 @@ static void tal_free_impl(TinyAlloc **pal, void *p TAL_DEBUG_PARAMS)
 		return;
 	header = (tal_header_t *)p - 1;
 	al = *pal;
-	while ((uint8_t *)p < al->buffer || (uint8_t *)p > al->bufend)
+	while ((uint8_t*)p < al->buffer || (uint8_t*)p > al->bufend)
 		al = *(pal = &al->next);
 	if (0 == --al->nb_allocs) {
 		*pal = al->next;
@@ -6665,8 +6668,8 @@ static void tal_free_impl(TinyAlloc **pal, void *p TAL_DEBUG_PARAMS)
 			al->p = al->buffer;
 			al->next = *top, *top = al;
 		}
-	} else if ((uint8_t *)p + header->size == al->p) {
-		al->p = (uint8_t *)header;
+	} else if ((uint8_t*)p + header->size == al->p) {
+		al->p = (uint8_t*)header;
 	}
 }
 
@@ -6681,19 +6684,19 @@ static void *tal_realloc_impl(TinyAlloc **pal, void *p,
 	if (p) {
 		/* reallpc case */
 
-		while ((uint8_t *)p < al->buffer || (uint8_t *)p > al->bufend)
+		while ((uint8_t*)p < al->buffer || (uint8_t*)p > al->bufend)
 			al = al->next;
 		header = (tal_header_t *)p - 1;
-		if ((uint8_t *)p + header->size == al->p)
-			al->p = (uint8_t *)header; /* maybe reuse */
+		if ((uint8_t*)p + header->size == al->p)
+			al->p = (uint8_t*)header;/* maybe reuse */
 
 		if (al->p + adj_size > al->bufend) {
 			ret = tal_realloc(pal, 0, size);
 			memcpy(ret, p, header->size);
 			tal_free(pal, p);
 			return ret;
-		} else if (al->p != (uint8_t *)header) {
-			memcpy((tal_header_t *)al->p + 1, p, header->size);
+		} else if (al->p != (uint8_t*)header) {
+			memcpy((tal_header_t*)al->p + 1, p, header->size);
 
 		}
 	} else {
@@ -6962,7 +6965,7 @@ ST_FUNC const char *get_tok_str(int v, CValue *cv)
 		break;
 	case TOK_PPNUM:
 	case TOK_PPSTR:
-		return (char *)cv->str.data;
+		return (char*)cv->str.data;
 	case TOK_LSTR:
 		cstr_ccat(&cstr_buf, 'L');
 	case TOK_STR:
@@ -7566,7 +7569,7 @@ static inline void tok_get(int *t, const int **pp, CValue *cv)
 	case TOK_PPNUM:
 	case TOK_PPSTR:
 		cv->str.size = *p++;
-		cv->str.data = (char *)p;
+		cv->str.data = (char*)p;
 		p += (cv->str.size + sizeof(int) - 1) / sizeof(int);
 		break;
 	case TOK_CDOUBLE:
@@ -9202,8 +9205,8 @@ parse_num:
 				       && !(parse_flags & PARSE_FLAG_ASM_FILE
 					    /* 0xe+1 is 3 tokens in asm */
 
-					    && ((char *)tokcstr.data)[0] == '0'
-					    && toup(((char *)tokcstr.data)[1]) == 'X'))
+					    && ((char*)tokcstr.data)[0] == '0'
+					    && toup(((char*)tokcstr.data)[1]) == 'X'))
 				      || t == 'p' || t == 'P'))))
 				break;
 			t = c;
@@ -9883,7 +9886,7 @@ static int macro_subst(
 				goto no_subst;
 			}
 			str = tok_str_alloc();
-			str->str = (int *)macro_str; /* setup stream for possible arguments */
+			str->str = (int*)macro_str;/* setup stream for possible arguments */
 
 			begin_macro(str, 2);
 			nosubst = macro_subst_tok(tok_str, nested_list, s);
@@ -10509,6 +10512,9 @@ static void block(int flags);
 static void gen_cast(CType *type);
 static void gen_cast_s(int t);
 static inline CType *pointed_type(CType *type);
+static void check_restrict_type(CType *type);
+static int type_qualifiers(CType *type);
+static void parse_btype_qualify(CType *type, int qualifiers);
 static int is_compatible_types(CType *type1, CType *type2);
 static int parse_btype(CType *type, AttributeDef *ad, int ignore_label);
 static CType *type_decl(CType *type, AttributeDef *ad, int *v, int td);
@@ -11138,7 +11144,7 @@ ST_FUNC void label_pop(Sym **ptop, Sym *slast, int keep)
 		s1 = s->prev;
 		if (s->r == LABEL_DECLARED) {
 			tcc_warning_c(warn_all)("label '%s' declared but not used", get_tok_str(s->v,
-					NULL));
+						NULL));
 		} else if (s->r == LABEL_FORWARD) {
 			tcc_error("label '%s' used but not defined",
 				  get_tok_str(s->v, NULL));
@@ -11959,7 +11965,7 @@ static void load_packed_bf(CType *type, int bit_pos, int bit_size)
 		vpushi(n), gen_op(TOK_SAR);
 	}
 }
-/* single-byte store mode for packed or otherwise unaligned bitfields */
+/* single-byte store mode for pac\ked or otherwise unaligned bitfields */
 
 static void store_packed_bf(int bit_pos, int bit_size)
 {
@@ -12518,7 +12524,7 @@ static void gen_opif(int op)
 				if (!CONST_WANTED)
 					goto general_case;
 				/* the run-time result of 0.0/0.0 on x87, also of other compilers
-				                   when used t\o compile the f1 /= f2 below, would be -nan */
+				                   when used to compile the f1 /= f2 below, would be -nan */
 
 				x1.f = f1, x2.f = f2;
 				if (f1 == 0.0)
@@ -12607,6 +12613,8 @@ static void type_to_str(char *buf, int buf_size,
 	if (t & VT_INLINE)
 		pstrcat(buf, buf_size, "inline ");
 	if (bt != VT_PTR) {
+		if (t & VT_RESTRICT)
+			pstrcat(buf, buf_size, "restrict ");
 		if (t & VT_VOLATILE)
 			pstrcat(buf, buf_size, "volatile ");
 		if (t & VT_CONSTANT)
@@ -12679,7 +12687,7 @@ tstruct:
 			pstrcat(buf1, sizeof(buf1), varstr);
 			pstrcat(buf1, sizeof(buf1), ")");
 		}
-		pstrcat(buf1, buf_size, "(");
+		pstrcat(buf1, sizeof(buf1), "(");
 		sa = s->next;
 		while (sa != NULL) {
 			char buf2[256];
@@ -12705,10 +12713,12 @@ tstruct:
 			goto no_var;
 		}
 		pstrcpy(buf1, sizeof(buf1), "*");
+		if (t & VT_RESTRICT)
+			pstrcat(buf1, sizeof(buf1), "restrict ");
 		if (t & VT_CONSTANT)
-			pstrcat(buf1, buf_size, "const ");
+			pstrcat(buf1, sizeof(buf1), "const ");
 		if (t & VT_VOLATILE)
-			pstrcat(buf1, buf_size, "volatile ");
+			pstrcat(buf1, sizeof(buf1), "volatile ");
 		if (varstr)
 			pstrcat(buf1, sizeof(buf1), varstr);
 		type_to_str(buf, buf_size, &s->type, buf1);
@@ -12721,7 +12731,7 @@ tstruct:
 no_var: ;
 }
 
-static void type_incompatibility_error(CType* st, CType* dt, const char *fmt)
+static void type_incompatibility_error(CType* st, CType* dt, const char* fmt)
 {
 	char buf1[256], buf2[256];
 	type_to_str(buf1, sizeof(buf1), st, NULL);
@@ -12729,7 +12739,7 @@ static void type_incompatibility_error(CType* st, CType* dt, const char *fmt)
 	tcc_error(fmt, buf1, buf2);
 }
 
-static void type_incompatibility_warning(CType* st, CType* dt, const char *fmt)
+static void type_incompatibility_warning(CType* st, CType* dt, const char* fmt)
 {
 	char buf1[256], buf2[256];
 	type_to_str(buf1, sizeof(buf1), st, NULL);
@@ -12752,7 +12762,7 @@ static inline int is_null_pointer(SValue *p)
 	       ((p->type.t & VT_BTYPE) == VT_PTR &&
 		(PTR_SIZE == 4 ? (uint32_t)p->c.i == 0 : p->c.i == 0) &&
 		((pointed_type(&p->type)->t & VT_BTYPE) == VT_VOID) &&
-		0 == (pointed_type(&p->type)->t & (VT_CONSTANT | VT_VOLATILE))
+		0 == (pointed_type(&p->type)->t & VT_QUAL)
 	       );
 }
 /* compare function types. OLD functions match any new functions */
@@ -12802,10 +12812,10 @@ static int compare_types(CType *type1, CType *type2, int unqualified)
 	if (unqualified) {
 		/* strip qualifiers before comparing */
 
-		t1 &= ~(VT_CONSTANT | VT_VOLATILE);
-		t2 &= ~(VT_CONSTANT | VT_VOLATILE);
+		t1 &= ~VT_QUAL;
+		t2 &= ~VT_QUAL;
 	}
-	/* Default Vs explicit signedness only matters for char */
+	/* Default Vs explicit signedness only matte\rs for char */
 
 	if ((t1 & VT_BTYPE) != VT_BYTE) {
 		t1 &= ~VT_DEFSIGN;
@@ -12827,6 +12837,8 @@ static int compare_types(CType *type1, CType *type2, int unqualified)
 	if (bt1 == VT_PTR) {
 		type1 = pointed_type(type1);
 		type2 = pointed_type(type2);
+		if (unqualified && (t1 & VT_ARRAY))
+			return compare_types(type1, type2, 1);
 		return is_compatible_types(type1, type2);
 	} else if (bt1 == VT_STRUCT) {
 		return (type1->ref == type2->ref);
@@ -12912,15 +12924,14 @@ static int combine_types(CType *dest, SValue *op1, SValue *op2, int op)
 				type = *((pbt1 == VT_VOID) ? type1 : type2);
 				/* combine qualifs */
 
-				newquals = ((pt1->t | pt2->t) & (VT_CONSTANT | VT_VOLATILE));
-				if ((~pointed_type(&type)->t & (VT_CONSTANT | VT_VOLATILE))
-				    & newquals) {
+				newquals = type_qualifiers(pt1) | type_qualifiers(pt2);
+				if ((~type_qualifiers(pointed_type(&type))) & newquals) {
 					/* copy the pointer target symbol */
 
 					type.ref = sym_push(SYM_FIELD, &type.ref->type,
 							    0, type.ref->c);
 					copied = 1;
-					pointed_type(&type)->t |= newquals;
+					parse_btype_qualify(pointed_type(&type), newquals);
 				}
 				/* pointers to incomplete arrays get converted to
 				                   pointers to completed ones if possible */
@@ -13298,7 +13309,7 @@ error:
 
 			goto done;
 		}
-		/* non constant case: generate code */
+		/* non constant case: generate co\de */
 
 		if (dbt == VT_BOOL) {
 			gen_test_zero(TOK_NE);
@@ -13409,7 +13420,7 @@ error:
 	}
 done:
 	vtop->type = *type;
-	vtop->type.t &= ~ ( VT_CONSTANT | VT_VOLATILE | VT_ARRAY | VT_TLS );
+	vtop->type.t &= ~ ( VT_QUAL | VT_ARRAY | VT_TLS );
 }
 /* return type size as known at compile time. Put alignment at 'a' */
 
@@ -13486,6 +13497,26 @@ static inline CType *pointed_type(CType *type)
 {
 	return &type->ref->type;
 }
+
+static void check_restrict_type(CType *type)
+{
+	while ((type->t & VT_BTYPE) == VT_PTR) {
+		if ((type->t & VT_RESTRICT)
+		    && (pointed_type(type)->t & VT_BTYPE) == VT_FUNC)
+			tcc_error("restrict-qualified type must be a pointer to object or incomplete type");
+		type = pointed_type(type);
+	}
+	if (type->t & VT_RESTRICT)
+		tcc_error("restrict-qualified type must be a pointer to object or incomplete type");
+}
+/* Array qualifiers are represented on the element type. */
+
+static int type_qualifiers(CType *type)
+{
+	while (type->t & VT_ARRAY)
+		type = pointed_type(type);
+	return type->t & VT_QUAL;
+}
 /* modify type so that its it is a pointer to type. */
 
 ST_FUNC void mk_pointer(CType *type)
@@ -13549,15 +13580,14 @@ static void verify_assign_cast(CType *dt)
 		if (sbt == VT_PTR)
 			type2 = pointed_type(st);
 		else if (sbt == VT_FUNC)
-			type2 = st;/* a function is implicitly a function pointer */
+			type2 = st;/* a function is implicitly a function po\inter */
 
 		else
 			goto error;
 		if (is_compatible_types(type1, type2))
 			break;
 		for (qualwarn = lvl = 0;; ++lvl) {
-			if (((type2->t & VT_CONSTANT) && !(type1->t & VT_CONSTANT)) ||
-			    ((type2->t & VT_VOLATILE) && !(type1->t & VT_VOLATILE)))
+			if ((type2->t & ~type1->t) & VT_QUAL)
 				qualwarn = 1;
 			dbt = type1->t & (VT_BTYPE|VT_LONG);
 			sbt = type2->t & (VT_BTYPE|VT_LONG);
@@ -14339,7 +14369,7 @@ static int in_range(long long n, int t)
 		return n <= (m << 1) + 1;
 	return n >= -(long long)m - 1 && n <= (long long)m;
 }
-/* enum/struct/union declaration. u is VT_ENUM/VT_STRUCT/VT_UNION */
+/* enum\/struct/union declaration. u is VT_ENUM/VT_STRUCT/VT_UNION */
 
 static void struct_decl(CType *type, int u)
 {
@@ -14578,7 +14608,7 @@ enum_done:
 
 						c = 1;
 					}
-					/* If member is a struct or bit-field, enforce
+					/* If\ member is a struct or bit-field, enforce
 							       placing into the struct (as anonymous).  */
 
 					if (v == 0 &&
@@ -14626,6 +14656,8 @@ static void parse_btype_qualify(CType *type, int qualifiers)
 		type->ref = sym_push(SYM_FIELD, &type->ref->type, 0, type->ref->c);
 		type = &type->ref->type;
 	}
+	if (qualifiers & VT_RESTRICT)
+		check_restrict_type(type);
 	type->t |= qualifiers;
 }
 /* return 0 if no type declaration. otherwise, return the basic type
@@ -14786,11 +14818,14 @@ basic_type2:
 			next();
 			typespec_found = 1;
 			break;
-		case TOK_REGISTER:
-		case TOK_AUTO:
 		case TOK_RESTRICT1:
 		case TOK_RESTRICT2:
 		case TOK_RESTRICT3:
+			t |= VT_RESTRICT;
+			next();
+			break;
+		case TOK_REGISTER:
+		case TOK_AUTO:
 			next();
 			break;
 		case TOK_UNSIGNED:
@@ -14876,7 +14911,7 @@ storage:
 			}
 
 			t &= ~(VT_BTYPE|VT_LONG);
-			u = t & ~(VT_CONSTANT | VT_VOLATILE), t ^= u;
+			u = t & ~VT_QUAL, t ^= u;
 			type->t = (s->type.t & ~VT_TYPEDEF) | u;
 			type->ref = s->type.ref;
 			if (t)
@@ -14908,6 +14943,7 @@ the_end:
 		t = (t & ~(VT_BTYPE|VT_LONG)) | (VT_DOUBLE|VT_LONG);
 
 	type->t = t;
+	check_restrict_type(type);
 	return type_found;
 }
 /* convert a function parameter type (array to pointer and function to
@@ -14915,16 +14951,19 @@ the_end:
 
 static inline void convert_parameter_type(CType *pt)
 {
-	/* remove const and volatile qualifiers (XXX: const could be used
-	       to indicate a const function parameter */
-
-	pt->t &= ~(VT_CONSTANT | VT_VOLATILE);
 	/* array must be transformed to pointer according to ANSI C */
 
 	pt->t &= ~(VT_ARRAY | VT_VLA);
 	if ((pt->t & VT_BTYPE) == VT_FUNC) {
 		mk_pointer(pt);
 	}
+}
+/* apply the conversions required for an expression value */
+
+static inline void convert_expression_type(CType *pt)
+{
+	pt->t &= ~VT_QUAL;
+	convert_parameter_type(pt);
 }
 
 ST_FUNC CString *parse_asm_str(void)
@@ -15029,10 +15068,10 @@ static int post_type(CType *type, AttributeDef *ad, int storage, int td)
 
 			l = FUNC_OLD;
 		skip(')');
-		/* NOTE: const is ignored in returned type as it has a special
-		           meaning in gcc / C++ */
+		/* A function return value has the unqualified version of its
+		           declared type. */
 
-		type->t &= ~VT_CONSTANT;
+		type->t &= ~VT_QUAL;
 		/* some ancient pre-K&R C allows a function to return an array
 		           and the array brackets to be put after the arguments, such
 		           that "int c()[]" means something like "int[] c()" */
@@ -15058,6 +15097,7 @@ static int post_type(CType *type, AttributeDef *ad, int storage, int td)
 
 	} else if (tok == '[') {
 		int saved_nocode_wanted = nocode_wanted;
+		int array_qualifiers = 0;
 		/* array definition */
 
 		next();
@@ -15070,11 +15110,24 @@ static int post_type(CType *type, AttributeDef *ad, int storage, int td)
 					       in prototypes (not function defs).  */
 
 				switch (tok) {
+				case TOK_CONST1:
+				case TOK_CONST2:
+				case TOK_CONST3:
+					array_qualifiers |= VT_CONSTANT;
+					next();
+					continue;
+				case TOK_VOLATILE1:
+				case TOK_VOLATILE2:
+				case TOK_VOLATILE3:
+					array_qualifiers |= VT_VOLATILE;
+					next();
+					continue;
 				case TOK_RESTRICT1:
 				case TOK_RESTRICT2:
 				case TOK_RESTRICT3:
-				case TOK_CONST1:
-				case TOK_VOLATILE1:
+					array_qualifiers |= VT_RESTRICT;
+					next();
+					continue;
 				case TOK_STATIC:
 				case '*':
 					next();
@@ -15161,6 +15214,7 @@ check:
 		s = sym_push(SYM_FIELD, type, 0, n);
 		type->t = (t1 ? VT_VLA : VT_ARRAY) | VT_PTR;
 		type->ref = s;
+		type->t |= array_qualifiers;
 
 		if (vla_array_str) {
 			/* for function args, the top dimension is converted to pointer */
@@ -15211,6 +15265,7 @@ redo:
 		case TOK_RESTRICT1:
 		case TOK_RESTRICT2:
 		case TOK_RESTRICT3:
+			qualifiers |= VT_RESTRICT;
 			goto redo;
 		/* XXX: clarify attribute handling */
 
@@ -15255,6 +15310,7 @@ abstract:
 	}
 	post_type(post, ad, post != ret ? 0 : storage,
 		  td & ~(TYPE_DIRECT|TYPE_ABSTRACT));
+	check_restrict_type(type);
 	parse_attribute(ad);
 	type->t |= storage;
 	return ret;
@@ -15414,7 +15470,7 @@ static void parse_atomic(int atok)
 		         * b bool
 		         * a atomic
 		         * A read-only atomic
-		         * p pointer to memory
+		         * p\ pointer to memory
 		         * v value
 		         * l load pointer
 		         * s save pointer
@@ -15712,7 +15768,7 @@ str_init:
 		next();
 		unary();
 		/* functions names must be treated as function pointers,
-		           except for unary '&' and sizeof. Since we consider that
+		         \  except for unary '&' and sizeof. Since we consider that
 		           functions are not lvalues, we only have to handle it
 		           there and in function calls. */
 		/* arrays can also be used although they are not lvalues */
@@ -15782,9 +15838,7 @@ str_init:
 		break;
 	case TOK_builtin_types_compatible_p:
 		parse_builtin_params(0, "tt");
-		vtop[-1].type.t &= ~(VT_CONSTANT | VT_VOLATILE);
-		vtop[0].type.t &= ~(VT_CONSTANT | VT_VOLATILE);
-		n = is_compatible_types(&vtop[-1].type, &vtop[0].type);
+		n = compare_types(&vtop[-1].type, &vtop[0].type, 1);
 		vtop -= 2;
 		vpushi(n);
 		break;
@@ -15949,7 +16003,7 @@ str_init:
 		next();
 		skip('(');
 		expr_type(&controlling_type, expr_eq);
-		convert_parameter_type (&controlling_type);
+		convert_expression_type(&controlling_type);
 
 		nocode_wanted = saved_nocode_wanted;
 
@@ -16076,7 +16130,7 @@ tok_identifier:
 
 			if (tok == TOK_ARROW)
 				indir();
-			qualifiers = vtop->type.t & (VT_CONSTANT | VT_VOLATILE);
+			qualifiers = vtop->type.t & VT_QUAL;
 			test_lvalue();
 			/* expect pointer on structure */
 
@@ -16226,7 +16280,7 @@ error_func:
 				while (n > 1) {
 					int rc = reg_classes[ret.r] & ~(RC_INT | RC_FLOAT);
 					/* We assume that when a structure is returned in multiple
-					                       registers, their classes are consecutive values of the
+					                       \registers, their classes are consecutive values of the
 					                       suite s(n) = 2^n */
 
 					rc <<= --n;
@@ -16473,7 +16527,7 @@ static void expr_cond(void)
 		if (c < 0 && is_cond_bool(vtop) && is_cond_bool(&sv)) {
 			/* optimize "if (f ? a > b : c || d) ..." for example, where normally
 			               "a < b" and "c || d" would be forced to "(int)0/1" first, whereas
-			               this code jumps directly to the if's then/else branches. */
+			               this code\ jumps directly to the if's then/else branches. */
 
 			t1 = gvtst(0, 0);
 			t2 = gjmp(0);
@@ -16518,7 +16572,7 @@ static void expr_cond(void)
 		gsym(u);
 		if (c == 1)
 			nocode_wanted--;
-		/* this is horrible, but we mu\st also convert first
+		/* this is horrible, but we must also convert first
 		           operand */
 
 		if (c != 0) {
@@ -16574,7 +16628,7 @@ ST_FUNC void gexpr(void)
 		} while (tok == ',');
 		/* convert array & function to pointer */
 
-		convert_parameter_type(&vtop->type);
+		convert_expression_type(&vtop->type);
 		/* make builtin_constant_p((1,2)) return 0 (like on gcc) */
 
 		if ((vtop->r & VT_VALMASK) == VT_CONST && nocode_wanted && !CONST_WANTED)
@@ -16714,7 +16768,7 @@ static int case_cmp(uint64_t a, uint64_t b)
 
 static int case_cmp_qs(const void *pa, const void *pb)
 {
-	return case_cmp((*(struct case_t **)pa)->v1, (*(struct case_t **)pb)->v1);
+	return case_cmp((*(struct case_t**)pa)->v1, (*(struct case_t**)pb)->v1);
 }
 
 static void case_sort(struct switch_t *sw)
@@ -17471,8 +17525,8 @@ static void decl_design_delrels(Section *sec, int c, int size)
 	ElfW_Rel *rel, *rel2, *rel_end;
 	if (!sec || !sec->reloc)
 		return;
-	rel = rel2 = (ElfW_Rel *)sec->reloc->data;
-	rel_end = (ElfW_Rel *)(sec->reloc->data + sec->reloc->data_offset);
+	rel = rel2 = (ElfW_Rel*)sec->reloc->data;
+	rel_end = (ElfW_Rel*)(sec->reloc->data + sec->reloc->data_offset);
 	while (rel < rel_end) {
 		if (rel->r_offset >= c && rel->r_offset < c + size) {
 			sec->reloc->data_offset -= sizeof *rel;
@@ -17637,7 +17691,7 @@ static void write_ldouble(unsigned char *d, void *s)
 	if (sizeof (long double) == 8 && LDOUBLE_SIZE >= 10) {
 		/* our 'long double' is a double really (_WIN32, __APPLE__) */
 
-		uint64_t m = *(uint64_t *)s;
+		uint64_t m = *(uint64_t*)s;
 		int e = m >> 48;
 		int f = e >> 4 & 0x7FF;
 		m <<= 11;
@@ -17730,7 +17784,7 @@ static void init_putv(init_params *p, CType *type, unsigned long c)
 				unsigned long relofs = ssec->reloc->data_offset;
 				while (relofs >= sizeof(*rel)) {
 					relofs -= sizeof(*rel);
-					rel = (ElfW_Rel *)(ssec->reloc->data + relofs);
+					rel = (ElfW_Rel*)(ssec->reloc->data + relofs);
 					if (rel->r_offset >= esym->st_value + size)
 						continue;
 					if (rel->r_offset < esym->st_value)
@@ -17751,7 +17805,7 @@ static void init_putv(init_params *p, CType *type, unsigned long c)
 				unsigned char *p, v, m;
 				bit_pos = BIT_POS(vtop->type.t);
 				bit_size = BIT_SIZE(vtop->type.t);
-				p = (unsigned char *)ptr + (bit_pos >> 3);
+				p = (unsigned char*)ptr + (bit_pos >> 3);
 				bit_pos &= 7, bits = 0;
 				while (bit_size) {
 					n = 8 - bit_pos;
@@ -18444,7 +18498,7 @@ static void gen_function(Sym *sym)
 	label_pop(&global_label_stack, NULL, 0);
 	sym_pop(&all_cleanups, NULL, 0);
 	local_scope = 0;
-	/* It's bette\r to crash than to generate wrong code */
+	/* It's better to crash than to generate wrong code */
 
 	cur_text_section = NULL;
 	funcname = "";/* for safety */
@@ -19259,7 +19313,7 @@ ST_FUNC void tcc_debug_new(TCCState *s1)
 	} else {
 		stab_section = new_section(s1, ".stab", SHT_PROGBITS, shf);
 		stab_section->sh_entsize = sizeof(Stab_Sym);
-		stab_section->sh_addralign = sizeof ((Stab_Sym *)0)->n_value;
+		stab_section->sh_addralign = sizeof ((Stab_Sym*)0)->n_value;
 		stab_section->link = new_section(s1, ".stabstr", SHT_STRTAB, shf);
 		/* put first entry */
 
@@ -19277,7 +19331,7 @@ static int put_stabs(TCCState *s1, const char *str, int type, int other,
 	unsigned offset;
 	if (type == N_SLINE
 	    && (offset = stab_section->data_offset)
-	    && (sym = (Stab_Sym *)(stab_section->data + offset) - 1)
+	    && (sym = (Stab_Sym*)(stab_section->data + offset) - 1)
 	    && sym->n_type == type
 	    && sym->n_value == value) {
 		/* just update line_number in previous entry */
@@ -19306,7 +19360,7 @@ static void put_stabs_r(TCCState *s1, const char *str, int type, int other,
 	if (put_stabs(s1, str, type, other, desc, value))
 		put_elf_reloc(symtab_section, stab_section,
 			      stab_section->data_offset - 4,
-			      sizeof ((Stab_Sym *)0)->n_value == PTR_SIZE ? R_DATA_PTR : R_DATA_32,
+			      sizeof ((Stab_Sym*)0)->n_value == PTR_SIZE ? R_DATA_PTR : R_DATA_32,
 			      sym_index);
 }
 
@@ -19706,7 +19760,7 @@ ST_FUNC void tcc_debug_start(TCCState *s1)
 				*undo = 0;
 			dwarf_line.dir_size = 1 + (undo != NULL);
 			dwarf_line.dir_table = (char **) tcc_malloc(sizeof (char *) *
-				dwarf_line.dir_size);
+					       dwarf_line.dir_size);
 			dwarf_line.dir_table[0] = tcc_strdup(buf);
 			if (undo)
 				dwarf_line.dir_table[1] = tcc_strdup(filename);
@@ -20268,7 +20322,7 @@ static int stabs_struct_find(TCCState *s1, Sym *t, int *p_id)
 
 static int remove_type_info(int type)
 {
-	type &= ~(VT_STORAGE | VT_CONSTANT | VT_VOLATILE | VT_VLA);
+	type &= ~(VT_STORAGE | VT_QUAL | VT_VLA);
 	if ((type & VT_BTYPE) != VT_BYTE)
 		type &= ~VT_DEFSIGN;
 	if (!(type & VT_BITFIELD) && (type & VT_STRUCT_MASK) > VT_ENUM)
@@ -20585,7 +20639,7 @@ static int tcc_get_dwarf_info(TCCState *s1, Sym *s)
 				dwarf_data4(dwarf_info_section, sub_type - dwarf_info.start);
 				dwarf_uleb128(dwarf_info_section, t->type.ref->c - 1);
 				s = t->type.ref;
-				type = s->type.t & ~(VT_STORAGE | VT_CONSTANT | VT_VOLATILE);
+				type = s->type.t & ~(VT_STORAGE | VT_QUAL);
 				if (type != (VT_PTR | VT_ARRAY))
 					break;
 				t = s;
@@ -22650,7 +22704,7 @@ ST_FUNC void tccelf_end_file(TCCState *s1)
 	tr = tcc_mallocz(nb_syms * sizeof *tr);
 
 	for (i = 0; i < nb_syms; ++i) {
-		ElfSym *sym = (ElfSym *)s->data + first_sym + i;
+		ElfSym *sym = (ElfSym*)s->data + first_sym + i;
 		if (sym->st_shndx == SHN_UNDEF) {
 			int sym_bind = ELFW(ST_BIND)(sym->st_info);
 			int sym_type = ELFW(ST_TYPE)(sym->st_info);
@@ -22660,7 +22714,7 @@ ST_FUNC void tccelf_end_file(TCCState *s1)
 			sym->st_info = ELFW(ST_INFO)(sym_bind, sym_type);
 		}
 		tr[i] = set_elf_sym(s, sym->st_value, sym->st_size, sym->st_info,
-				    sym->st_other, sym->st_shndx, (char *)s->link->data + sym->st_name);
+				    sym->st_other, sym->st_shndx, (char*)s->link->data + sym->st_name);
 	}
 	/* now update relocations */
 
@@ -22852,7 +22906,7 @@ static void rebuild_hash(Section *s, unsigned int nb_buckets)
 	nb_syms = s->data_offset / sizeof(ElfW(Sym));
 
 	if (!nb_buckets)
-		nb_buckets = ((int *)s->hash->data)[0];
+		nb_buckets = ((int*)s->hash->data)[0];
 
 	s->hash->data_offset = 0;
 	ptr = section_ptr_add(s->hash, (2 + nb_buckets + nb_syms) * sizeof(int));
@@ -22984,7 +23038,7 @@ ST_FUNC addr_t get_sym_addr(TCCState *s1, const char *name, int err, int forc)
 LIBTCCAPI void *tcc_get_symbol(TCCState *s, const char *name)
 {
 	addr_t addr = get_sym_addr(s, name, 0, 1);
-	return addr == -1 ? NULL : (void *)(uintptr_t)addr;
+	return addr == -1 ? NULL : (void*)(uintptr_t)addr;
 }
 
 LIBTCCAPI int tcc_add_symbol(TCCState *s1, const char *name, const void *val)
@@ -23017,7 +23071,7 @@ ST_FUNC void list_elf_symbols(TCCState *s, void *ctx,
 			sym_bind = ELFW(ST_BIND)(sym->st_info);
 			sym_vis = ELFW(ST_VISIBILITY)(sym->st_other);
 			if (sym_bind == STB_GLOBAL && sym_vis == STV_DEFAULT)
-				symbol_cb(ctx, name, (void *)(uintptr_t)sym->st_value);
+				symbol_cb(ctx, name, (void*)(uintptr_t)sym->st_value);
 		}
 	}
 }
@@ -23029,6 +23083,14 @@ LIBTCCAPI void tcc_list_symbols(TCCState *s, void *ctx,
 	list_elf_symbols(s, ctx, symbol_cb);
 }
 /* ndef ELF_OBJ_ONLY */
+/* catch .tbss also */
+
+static int IS_BSS(TCCState *s1, int ndx)
+{
+	return ndx == SHN_COMMON
+	       || (ndx < s1->nb_sections
+		   && s1->sections[ndx]->sh_type == SHT_NOBITS);
+}
 /* add an elf symbol : check if it is already defined and patch
    it. Return symbol index. NOTE that sh_num can be SHN_UNDEF. */
 
@@ -23089,14 +23151,11 @@ ST_FUNC int set_elf_sym(Section *s, addr_t value, unsigned long size,
 			} else if (s->sh_flags & SHF_DYNSYM) {
 				/* we accept that two DLL define the same symbol */
 
-			} else if ((esym->st_shndx == SHN_COMMON
-				    || esym->st_shndx == bss_section->sh_num)
-				   && (shndx < SHN_LORESERVE
-				       && shndx != bss_section->sh_num)) {
+			} else if (!IS_BSS(s1, shndx) && IS_BSS(s1, esym->st_shndx)) {
 				/* data symbol gets precedence over common/bss */
 
 				goto do_patch;
-			} else if (shndx == SHN_COMMON || shndx == bss_section->sh_num) {
+			} else if (IS_BSS(s1, shndx)) {
 				/* data symbol keeps precedence over common/bss */
 
 			} else if (esym->st_other & ST_ASM_SET) {
@@ -23407,7 +23466,7 @@ static void set_local_sym(TCCState *s1, const char *name, Section *s,
 {
 	int c = find_elf_sym(s1->symtab, name);
 	if (c) {
-		ElfW(Sym) *esym = (ElfW(Sym) *)s1->symtab->data + c;
+		ElfW(Sym) *esym = (ElfW(Sym)*)s1->symtab->data + c;
 		esym->st_info = ELFW(ST_INFO)(STB_LOCAL, STT_NOTYPE);
 		esym->st_value = offset;
 		esym->st_shndx = s->sh_num;
@@ -23957,7 +24016,7 @@ invalid:
 			}
 			goto found;
 		}
-		/* not found: create new section */
+		/* not found: create\ new section */
 
 		s = new_section(s1, sh_name, sh->sh_type, sh->sh_flags & ~SHF_GROUP);
 		/* take as much info as possible from the section. sh_link and
@@ -24285,6 +24344,7 @@ static int rt_get_caller_pc(addr_t *paddr, rt_frame *f, int level);
 static void rt_exit(rt_frame *f, int code);
 /* ------------------------------------------------------------- */
 /* defined when included from lib/bt-exe.c */
+
 static int protect_pages(void *ptr, unsigned long length, int mode);
 static int tcc_relocate_ex(TCCState *s1, void *ptr, unsigned ptr_diff);
 static void st_link(TCCState *s1);
@@ -24386,7 +24446,7 @@ LIBTCCAPI int tcc_run(TCCState *s1, int argc, char **argv)
 	if (tcc_relocate(s1) < 0)
 		return -1;
 
-	prog_main = (void *)get_sym_addr(s1, s1->run_main, 1, 1);
+	prog_main = (void*)get_sym_addr(s1, s1->run_main, 1, 1);
 	if ((addr_t)-1 == (addr_t)prog_main)
 		return -1;
 	/* custom stdin for run_main, mainly if stdin is/was an input file.
@@ -24448,7 +24508,7 @@ static void cleanup_sections(TCCState *s1)
 	struct {
 		Section **secs;
 		int nb_secs;
-	} *p = (void *)&s1->sections;
+	} *p = (void*)&s1->sections;
 	int i, f = 2;
 	do {
 		for (i = --f; i < p->nb_secs; i++) {
@@ -24521,16 +24581,19 @@ redo:
 
 				if (s1->verbose == 2)
 					printf("%d: %-16s %p  len %05x  align %04x\n",
-					       k, s->name, (void *)s->sh_addr, length, s->sh_addralign);
-				ptr = (void *)s->sh_addr;
+					       k, s->name, (void*)s->sh_addr, length, s->sh_addralign);
+				ptr = (void*)s->sh_addr;
 				if (k == 0)
-					ptr = (void *)(s->sh_addr + ptr_diff);
+					ptr = (void*)(s->sh_addr + ptr_diff);
 				if (NULL == s->data || s->sh_type == SHT_NOBITS)
 					memset(ptr, 0, length);
 				else
 					memcpy(ptr, s->data, length);
 				continue;
 			}
+
+			if ((s->sh_flags & SHF_TLS) && length)
+				return tcc_error_noabort("thread-local storage not supported with -run");
 
 			align = s->sh_addralign;
 			if (++n == 1) {
@@ -24567,9 +24630,9 @@ redo:
 			n = PAGEALIGN(n);
 			if (s1->verbose == 2) {
 				printf("protect         %3s %p  len %05x\n",
-				       &"rx\0ro\0rw\0rwx"[f*3], (void *)addr, (unsigned)n);
+				       &"rx\0ro\0rw\0rwx"[f*3], (void*)addr, (unsigned)n);
 			}
-			if (protect_pages((void *)addr, n, f) < 0)
+			if (protect_pages((void*)addr, n, f) < 0)
 				return tcc_error_noabort(
 
 					       "VirtualProtect failed");
@@ -24619,6 +24682,7 @@ static int protect_pages(void *ptr, unsigned long length, int mode)
 	DWORD old;
 	if (!VirtualProtect(ptr, length, protect[mode], &old))
 		return -1;
+	/* XXX: BSD sometimes dump core with bad system call */
 	return 0;
 }
 
@@ -24626,9 +24690,9 @@ static void *win64_add_function_table(TCCState *s1)
 {
 	void *p = NULL;
 	if (s1->uw_pdata) {
-		p = (void *)s1->uw_pdata->sh_addr;
+		p = (void*)s1->uw_pdata->sh_addr;
 		RtlAddFunctionTable(
-			(RUNTIME_FUNCTION *)p,
+			(RUNTIME_FUNCTION*)p,
 			s1->uw_pdata->data_offset / sizeof (RUNTIME_FUNCTION),
 			s1->pe_imagebase
 		);
@@ -24640,7 +24704,7 @@ static void *win64_add_function_table(TCCState *s1)
 static void win64_del_function_table(void *p)
 {
 	if (p) {
-		RtlDeleteFunctionTable((RUNTIME_FUNCTION *)p);
+		RtlDeleteFunctionTable((RUNTIME_FUNCTION*)p);
 	}
 }
 static void bt_link(TCCState *s1)
@@ -24661,7 +24725,7 @@ static void ptr_unlink(void *list, void *e, unsigned next)
 {
 	void **pp, **nn, *p;
 	for (pp = list; !!(p = *pp); pp = nn) {
-		nn = (void *)((char *)p + next); /* nn = &p->next; */
+		nn = (void*)((char*)p + next);/* nn = &p->next; */
 
 		if (p == e) {
 			*pp = *nn;
@@ -24727,7 +24791,7 @@ static void rt_exit(rt_frame *f, int code)
 
 		if (code == 0)
 			code = RT_EXIT_ZERO;
-		((void(*)(void *,int))s->run_lj)(s->run_jb, code);
+		((void(*)(void*,int))s->run_lj)(s->run_jb, code);
 	}
 	exit(code);
 }
@@ -25028,7 +25092,7 @@ void load(int r, SValue *sv)
 	SValue v1;
 
 	fr = sv->r;
-	ft = sv->type.t & ~(VT_DEFSIGN|VT_VOLATILE|VT_CONSTANT);
+	ft = sv->type.t & ~(VT_DEFSIGN|VT_QUAL);
 	fc = sv->c.i;
 
 	if (fc != sv->c.i && (fr & VT_SYM))
@@ -26464,7 +26528,7 @@ plt32pc32: {
 
 				/* ignore overflow with undefined weak symbols */
 
-				if (((ElfW(Sym) *)symtab_section->data)[sym_index].st_shndx != SHN_UNDEF)
+				if (((ElfW(Sym)*)symtab_section->data)[sym_index].st_shndx != SHN_UNDEF)
 
 					tcc_error_noabort("relocation '%d' out of range", type);
 			}
@@ -29625,7 +29689,7 @@ typedef unsigned char BYTE;
 typedef unsigned short WORD;
 typedef unsigned int DWORD;
 typedef unsigned long long ULONGLONG;
-#pragma  pack(push, 1)
+#pragma pack(push, 1)
 
 typedef struct _IMAGE_DOS_HEADER {/* DOS .EXE header */
 
@@ -29848,7 +29912,7 @@ typedef struct _IMAGE_BASE_RELOCATION {
 #define IMAGE_DLLCHARACTERISTICS_TERMINAL_SERVER_AWARE 0x8000
 
 #define IMAGE_FILE_RELOCS_STRIPPED 0x0001
-#pragma  pack(pop)
+#pragma pack(pop)
 /* ----------------------------------------------------------- */
 #endif
 /* ndef IMAGE_NT_SIGNATURE */
@@ -29859,7 +29923,7 @@ typedef struct _IMAGE_BASE_RELOCATION {
 
 #define IMAGE_DLLCHARACTERISTICS_DYNAMIC_BASE 0x0040
 #endif
-#pragma  pack(push, 1)
+#pragma pack(push, 1)
 struct pe_header {
 	IMAGE_DOS_HEADER doshdr;
 	BYTE dosstub[0x40];
@@ -29885,7 +29949,7 @@ struct pe_rsrc_reloc {
 	DWORD size;
 	WORD type;
 };
-#pragma  pack(pop)
+#pragma pack(pop)
 /* ------------------------------------------------------------- */
 /* internal temporary structures */
 
@@ -29896,7 +29960,8 @@ enum {
 	sec_bss,
 	sec_idata,
 	sec_pdata,
-	sec_tls,
+	sec_tdata,
+	sec_tbss,
 	sec_other,
 	sec_rsrc,
 	sec_debug,
@@ -29968,7 +30033,7 @@ struct pe_info {
 
 static const char *pe_export_name(TCCState *s1, ElfW(Sym) *sym)
 {
-	const char *name = (char *)symtab_section->link->data + sym->st_name;
+	const char *name = (char*)symtab_section->link->data + sym->st_name;
 	if (s1->leading_underscore && name[0] == '_'
 	    && !(sym->st_other & ST_PE_STDCALL))
 		return name + 1;
@@ -30026,7 +30091,7 @@ static int pe_fwrite(struct pe_info *pe, const void *data, int len)
 	pe->pos += (ret = fwrite(data, 1, len, pe->op));
 	sum = pe->sum;
 	for (i = len; i > 0; i -= 2) {
-		sum += (i >= 2) ? *p++ : *(BYTE *)p;
+		sum += (i >= 2) ? *p++ : *(BYTE*)p;
 		sum = (sum + (sum >> 16)) & 0xFFFF;
 	}
 	pe->sum = sum;
@@ -30046,8 +30111,7 @@ static void pe_fpad(struct pe_info *pe, DWORD new_pos)
 }
 /*----------------------------------------------------------------------------*/
 /* some DWARF support with COFF symbol/string table for gdb */
-#pragma  pack(push, 1)
-
+#pragma pack(push, 1)
 struct syment {
 	union {
 		char n_name[8];/* old COFF version */
@@ -30070,7 +30134,7 @@ struct syment {
 	char n_numaux;/* number of aux. entries */
 
 };
-#pragma  pack(pop)
+#pragma pack(pop)
 
 #define SHF_PRIVATE 0x80000000
 
@@ -30088,11 +30152,11 @@ static void pe_add_coffsym(struct pe_info *pe)
 
 		return;
 	}
-	esym = (ElfSym *)s1->symtab->data;
+	esym = (ElfSym*)s1->symtab->data;
 	for (n = s1->symtab->data_offset / sizeof *esym; ++esym, --n;) {
 		int sym_bind = ELFW(ST_BIND)(esym->st_info);
 		if (sym_bind == STB_GLOBAL) {
-			char *name = esym->st_name + (char *)s1->symtab->link->data;
+			char *name = esym->st_name + (char*)s1->symtab->link->data;
 			int nl = strlen(name);
 			addr_t value = esym->st_value;
 			int shnum = esym->st_shndx;
@@ -30365,7 +30429,7 @@ static int pe_write(struct pe_info *pe)
 		if (pe->coffstr && strlen(sh_name) > 8) {
 			/* long section name, for example ".debug_info" */
 
-			snprintf((char *)psh->Name, 8, "/%d", put_elf_str(pe->coffstr, sh_name));
+			snprintf((char*)psh->Name, 8, "/%d", put_elf_str(pe->coffstr, sh_name));
 		}
 
 		psh->Characteristics = si->pe_flags;
@@ -30461,7 +30525,7 @@ static struct import_symbol *pe_add_import(struct pe_info *pe, int sym_index)
 	isym = (ElfW(Sym) *)pe->s1->dynsymtab_section->data + sym_index;
 	dll_index = isym->st_size;
 
-	i = dynarray_assoc ((void **)pe->imp_info, pe->imp_count, dll_index);
+	i = dynarray_assoc ((void**)pe->imp_info, pe->imp_count, dll_index);
 	if (-1 != i) {
 		p = pe->imp_info[i];
 		goto found_dll;
@@ -30471,7 +30535,7 @@ static struct import_symbol *pe_add_import(struct pe_info *pe, int sym_index)
 	dynarray_add(&pe->imp_info, &pe->imp_count, p);
 
 found_dll:
-	i = dynarray_assoc ((void **)p->symbols, p->sym_count, sym_index);
+	i = dynarray_assoc ((void**)p->symbols, p->sym_count, sym_index);
 	if (-1 != i)
 		return p->symbols[i];
 
@@ -30531,7 +30595,7 @@ static void pe_build_imports(struct pe_info *pe)
 		/* put the dll name into the import header */
 
 		v = put_elf_str(pe->thunk, name);
-		hdr = (IMAGE_IMPORT_DESCRIPTOR *)(pe->thunk->data + dll_ptr);
+		hdr = (IMAGE_IMPORT_DESCRIPTOR*)(pe->thunk->data + dll_ptr);
 		hdr->FirstThunk = thk_ptr + rva_base;
 		hdr->OriginalFirstThunk = ent_ptr + rva_base;
 		hdr->Name = v + rva_base;
@@ -30541,7 +30605,7 @@ static void pe_build_imports(struct pe_info *pe)
 				int iat_index = p->symbols[k]->iat_index;
 				int sym_index = p->symbols[k]->sym_index;
 				ElfW(Sym) *imp_sym = (ElfW(Sym) *)s1->dynsymtab_section->data + sym_index;
-				const char *name = (char *)s1->dynsymtab_section->link->data + imp_sym->st_name;
+				const char *name = (char*)s1->dynsymtab_section->link->data + imp_sym->st_name;
 				int ordinal;
 				/* patch symbol (and possibly its underscored alias) */
 
@@ -30562,7 +30626,7 @@ static void pe_build_imports(struct pe_info *pe)
 					if (dllref) {
 						if ( !dllref->handle )
 							dllref->handle = LoadLibraryA(dllref->name);
-						v = (ADDR3264)GetProcAddress(dllref->handle, ordinal?(char *)0+ordinal:name);
+						v = (ADDR3264)GetProcAddress(dllref->handle, ordinal?(char*)0+ordinal:name);
 					}
 					if (!v)
 						tcc_error_noabort("could not resolve symbol '%s'", name);
@@ -30582,8 +30646,8 @@ static void pe_build_imports(struct pe_info *pe)
 
 			}
 
-			*(ADDR3264 *)(pe->thunk->data+thk_ptr) =
-				*(ADDR3264 *)(pe->thunk->data+ent_ptr) = v;
+			*(ADDR3264*)(pe->thunk->data+thk_ptr) =
+				*(ADDR3264*)(pe->thunk->data+ent_ptr) = v;
 			thk_ptr += sizeof (ADDR3264);
 			ent_ptr += sizeof (ADDR3264);
 		}
@@ -30599,8 +30663,8 @@ struct pe_sort_sym {
 
 static int sym_cmp(const void *va, const void *vb)
 {
-	const char *ca = (*(struct pe_sort_sym **)va)->name;
-	const char *cb = (*(struct pe_sort_sym **)vb)->name;
+	const char *ca = (*(struct pe_sort_sym**)va)->name;
+	const char *cb = (*(struct pe_sort_sym**)vb)->name;
 	return strcmp(ca, cb);
 }
 
@@ -30624,7 +30688,7 @@ static void pe_build_exports(struct pe_info *pe)
 
 	sym_end = symtab_section->data_offset / sizeof(ElfW(Sym));
 	for (sym_index = 1; sym_index < sym_end; ++sym_index) {
-		sym = (ElfW(Sym) *)symtab_section->data + sym_index;
+		sym = (ElfW(Sym)*)symtab_section->data + sym_index;
 		name = pe_export_name(s1, sym);
 		if (sym->st_other & ST_PE_EXPORT) {
 			p = tcc_malloc(sizeof *p);
@@ -30678,9 +30742,9 @@ static void pe_build_exports(struct pe_info *pe)
 
 		put_elf_reloc(symtab_section, pe->thunk,
 			      func_o, R_XXX_RELATIVE, sym_index);
-		*(DWORD *)(pe->thunk->data + name_o)
+		*(DWORD*)(pe->thunk->data + name_o)
 			= pe->thunk->data_offset + rva_base;
-		*(WORD *)(pe->thunk->data + ord_o)
+		*(WORD*)(pe->thunk->data + ord_o)
 			= ord;
 		put_elf_str(pe->thunk, name);
 		func_o += sizeof (DWORD);
@@ -30776,6 +30840,7 @@ static void pe_build_tls(struct pe_info *pe, Section *s)
 	int c, n;
 
 	if (0 == s) {
+		pe->tls_size = sizeof (IMAGE_TLS_DIRECTORY);
 		pe->tls_dir = section_add(pe->thunk, pe->tls_size, 16);
 		pe->tls_data = section_add(data_section, PTR_SIZE * (1+3), 16);
 		/* put relocations on entries */
@@ -30791,9 +30856,10 @@ static void pe_build_tls(struct pe_info *pe, Section *s)
 			    0, data_section->sh_num, "__tls_index");
 		return;
 	}
+
 	if (0 == s1->tls_start)
 		s1->tls_start = s->sh_addr;
-	d = (void *)(pe->thunk->data + pe->tls_dir);
+	d = (void*)(pe->thunk->data + pe->tls_dir);
 	d->StartAddressOfRawData = s1->tls_start - data_section->sh_addr;
 	d->EndAddressOfRawData = s->sh_addr + s->data_offset - data_section->sh_addr;
 	d->AddressOfIndex = pe->tls_data;
@@ -30818,7 +30884,7 @@ static int pe_section_class(Section *s)
 		return sec_debug;
 	} else if (flags & SHF_ALLOC) {
 		if (flags & SHF_TLS)
-			return sec_tls;
+			return sec_tdata + (type == SHT_NOBITS);
 		if (type == SHT_PROGBITS
 		    || type == SHT_INIT_ARRAY
 		    || type == SHT_FINI_ARRAY) {
@@ -30856,6 +30922,7 @@ static int pe_assign_addresses (struct pe_info *pe)
 	if (PE_DLL == pe->type
 	    || (s1->pe_dll_characteristics & IMAGE_DLLCHARACTERISTICS_DYNAMIC_BASE))
 		pe->reloc = new_section(s1, ".reloc", SHT_PROGBITS, 0);
+	pe->thunk = rodata_section;
 //pe->thunk = new_section(s1, ".iedat", SHT_PROGBITS, SHF_ALLOC);
 
 	nbs = s1->nb_sections;
@@ -30867,36 +30934,31 @@ static int pe_assign_addresses (struct pe_info *pe)
 		for (n = i; n > 1 && k < (c = sec_cls[n - 1]); --n)
 			sec_cls[n] = c, sec_order[n] = sec_order[n - 1];
 		sec_cls[n] = k, sec_order[n] = i;
-		if (k == sec_tls)
-			pe->tls_size = sizeof (IMAGE_TLS_DIRECTORY);
+		if ((s->sh_flags & SHF_TLS) && 0 == pe->tls_size)
+			pe_build_tls(pe, NULL);
 	}
 	si = NULL;
 	addr = pe->imagebase + 1;
-
 	for (i = 1; (c = sec_cls[i]) < sec_last; ++i) {
 		s = s1->sections[sec_order[i]];
 
 		if (PE_MERGE_DATA && c == sec_bss)
 			c = sec_data;
+		if (c == sec_tbss)
+			c = sec_tdata;
 
 		if (si && c == si->cls && c != sec_debug) {
 			/* merge with previous section */
 
-			s->sh_addr = addr = ((addr - 1) | (16 - 1)) + 1;
+			s->sh_addr = addr = ((addr - 1) | (s->sh_addralign - 1)) + 1;
 		} else {
 			si = NULL;
 			s->sh_addr = addr = pe_virtual_align(pe, addr);
 		}
 
-		if (NULL == pe->thunk
-		    && c == (data_section == rodata_section ? sec_data : sec_rdata))
-			pe->thunk = s;
-
 		if (s == pe->thunk) {
 			pe_build_imports(pe);
 			pe_build_exports(pe);
-			if (pe->tls_size)
-				pe_build_tls(pe, NULL);
 		}
 
 		if (s == pe->reloc)
@@ -30964,7 +31026,7 @@ static int pe_check_symbols(struct pe_info *pe)
 	for (sym_index = 1; sym_index < sym_end; ++sym_index) {
 		ElfW(Sym) *sym = (ElfW(Sym) *)symtab_section->data + sym_index;
 		if (sym->st_shndx == SHN_UNDEF) {
-			const char *name = (char *)symtab_section->link->data + sym->st_name;
+			const char *name = (char*)symtab_section->link->data + sym->st_name;
 			unsigned type = ELFW(ST_TYPE)(sym->st_info);
 			int imp_sym = 0;
 			struct import_symbol *is;
@@ -31339,7 +31401,7 @@ static int pe_load_res(TCCState *s1, int fd)
 
 	if (hdr.filehdr.Machine != IMAGE_FILE_MACHINE
 	    || hdr.filehdr.NumberOfSections != 1
-	    || strcmp((char *)hdr.sectionhdr.Name, ".rsrc") != 0)
+	    || strcmp((char*)hdr.sectionhdr.Name, ".rsrc") != 0)
 		goto quit;
 
 	rsrc_section = new_section(s1, ".rsrc", SHT_PROGBITS, SHF_ALLOC);
@@ -31624,8 +31686,6 @@ static void pe_add_runtime(TCCState *s1, struct pe_info *pe)
 			"msvcrt", "kernel32", "", "user32", "gdi32", NULL
 		};
 		const char *const *pp, *p;
-		s1->static_link = 0;/* no static crt for tcc */
-
 		for (pp = libs; 0 != (p = *pp); ++pp) {
 			if (*p)
 				tcc_add_library(s1, p);
@@ -31969,7 +32029,7 @@ ST_FUNC void libc_free(void *ptr)
 }
 /* global so that every tcc_alloc()/tcc_free() call doesn't need to be changed */
 
-static void *(*reallocator)(void *, unsigned long) = default_reallocator;
+static void *(*reallocator)(void*, unsigned long) = default_reallocator;
 
 LIBTCCAPI void tcc_set_realloc(TCCReallocFunc *my_realloc)
 {
@@ -32050,7 +32110,7 @@ ST_FUNC void dynarray_add(void *ptab, int *nb_ptr, void *data)
 		else
 			nb_alloc = nb * 2;
 		pp = tcc_realloc(pp, nb_alloc * sizeof(void *));
-		*(void ***)ptab = pp;
+		*(void***)ptab = pp;
 	}
 	pp[nb++] = data;
 	*nb_ptr = nb;
@@ -32059,11 +32119,11 @@ ST_FUNC void dynarray_add(void *ptab, int *nb_ptr, void *data)
 ST_FUNC void dynarray_reset(void *pp, int *n)
 {
 	void **p;
-	for (p = *(void ***)pp; *n; ++p, --*n)
+	for (p = *(void***)pp; *n; ++p, --*n)
 		if (*p)
 			tcc_free(*p);
-	tcc_free(*(void **)pp);
-	*(void **)pp = NULL;
+	tcc_free(*(void**)pp);
+	*(void**)pp = NULL;
 }
 
 static void dynarray_split(char ***argv, int *argc, const char *p, int sep)
@@ -32220,18 +32280,18 @@ static void error1(int mode, const char *fmt, va_list ap)
 
 		fflush(stdout);/* flush -v output */
 
-		fprintf(stderr, "%s\n", (char *)cs.data);
+		fprintf(stderr, "%s\n", (char*)cs.data);
 		fflush(stderr);/* print error/warning now (win32) */
 
 	} else {
-		s1->error_func(s1->error_opaque, (char *)cs.data);
+		s1->error_func(s1->error_opaque, (char*)cs.data);
 	}
 	cstr_free(&cs);
 	if (mode != ERROR_WARN)
 		s1->nb_errors++;
 	if (mode == ERROR_ERROR && s1->error_set_jmp_enabled) {
 		while (nb_stk_data)
-			tcc_free(*(void **)stk_data[--nb_stk_data]);
+			tcc_free(*(void**)stk_data[--nb_stk_data]);
 		longjmp(s1->error_jmp_buf, 1);
 	}
 }
@@ -32813,7 +32873,7 @@ succ:
 	return r;
 }
 
-static void args_parser_add_file(TCCState *s, const char *filename,
+static void args_parser_add_file(TCCState *s, const char* filename,
 				 int filetype);
 
 #define SET_OR_CLEAR(v,f) (v = r > 0 ? v | f : v & ~f)
@@ -33169,7 +33229,7 @@ static void insert_args(TCCState *s1, char ***pargv, int *pargc, int optind,
 	*pargv = s1->argv = argv;
 }
 
-static void args_parser_add_file(TCCState *s, const char *filename,
+static void args_parser_add_file(TCCState *s, const char* filename,
 				 int filetype)
 {
 	struct filespec *f = tcc_malloc(sizeof *f + strlen(filename));
@@ -34020,7 +34080,7 @@ static int execvp_win32(const char *prog, char **argv)
 
 	for (p = argv; *p; ++p)
 		*p = quote_win32(*p);
-	ret = _spawnvp(P_NOWAIT, prog, (const char *const *)argv);
+	ret = _spawnvp(P_NOWAIT, prog, (const char *const*)argv);
 	if (-1 == ret)
 		return ret;
 	_cwait(&ret, ret, WAIT_CHILD);
@@ -34793,7 +34853,7 @@ typedef struct {
 	int newmode;
 } _startupinfo;
 extern int __cdecl __getmainargs(int *pargc, _TCHAR ***pargv, _TCHAR ***penv,
-				 int globb, _startupinfo *);
+				 int globb, _startupinfo*);
 
 int _start()
 {

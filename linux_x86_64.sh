@@ -54,7 +54,7 @@ cp all.c __all.c
 cat lib/libtcc1.c >> __all.c
 NL='
 '
-EXINIT="1,#>/\*>-1d:1s@^@#define TCC_VERSION \"$(head -n1 VERSION)\"$NL#define TCC_GITHASH \"$(git rev-parse --verify HEAD)\"$NL:g/if \(TCC_LIBTCC1\[0\]\)/.,.+1d:wq" vi -e __all.c
+EXINIT="1,#>/\*>-1d:1s@^@#define TCC_VERSION \"$(head -n1 VERSION)\"$NL#define TCC_GITHASH \"$(git rev-parse --verify HEAD)\"$NL:g/if \(TCC_LIBTCC1\[0\]\)/.,.+3d:wq" vi -e __all.c
 
 # __builtin_va_arg (tccdefs.h) calls __va_arg from lib/va_list.c in libtcc1.a;
 # embed it under the __TINYC__ guard with the other runtime bits.
