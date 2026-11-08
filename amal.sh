@@ -545,7 +545,10 @@ re..:
 ?0?
 %f+ 			if \(c == '\''\\n'\'' \|\| c == '\''\*'\'' \|\| c == '\''\\\\'\''\)
 				break;
-		}1??0?
+		}
+		/\* now we can handle all the cases \*/
+
+1??0?
 1??+1m 151q0?
 %f+ 			if \(c == '\''\\n'\'' \|\| c == '\''\*'\'' \|\| c == '\''\\\\'\''\)
 				break;4??0?
@@ -564,40 +567,38 @@ re..:
 grp 09??-116m 15220reg p OK tcc_linux_x86_64.c:7384:a92sc %? %@2152sc!'\''00?
 1;4;8;9??!219reg tcc_linux_x86_64.c:73842sc %? %@2132sc!0?
 ?0?
-%f+ 		}
-		/\* now we can handle all the cases \*/
+%f+ 		/\* now we can handle all the cases \*/
 
-		if \(c == '\''\\n'\''\) \{1??0?
-1??m 161q0?
-;0fr.,$f+ ^		}$4??0?
-4??m 16220reg p OK tcc_linux_x86_64.c:7385:a42sc %? %@2152sc!fr 981qfr 980?
+		if \(c == '\''\\n'\''\) \{
+			file->line_num\+\+;1??0?
+1??+2m 161q0?
+%f+ 		/\* now we can handle all the cases \*/
+
+		if \(c == '\''\\n'\''\) \{4??0?
+4??+2m 16220reg p OK tcc_linux_x86_64.c:7388:a42sc %? %@2152sc!1q0?
+grp 1%f+ 		/\* now we can handle all the cases \*/.*?
+.*?
+(		if \(c == '\''\\n'\''\) \{)7??0?
+grp 07??m 16220reg p OK tcc_linux_x86_64.c:7388:a72sc %? %@2152sc!1q0?
 m 01;0grp 1%f> 	--file->buf_ptr;
 	do \{
 		ch = ninp\(\);.*(redo_start:)
 	start_of_line = 1;
 	in_warn_or_error = 0;8??0?
-grp 08??-101m 16220reg p OK tcc_linux_x86_64.c:7385:a82sc %? %@2152sc!'\''08??1q0?
+grp 08??-98m 16220reg p OK tcc_linux_x86_64.c:7388:a82sc %? %@2152sc!'\''08??1q0?
 m 01;0grp 1%f> static int skip_spaces\(void\)
 \{
 	int ch;.*(			file->line_num\+\+;)
 			p\+\+;
 			goto redo_start;9??0?
-grp 09??-115m 16220reg p OK tcc_linux_x86_64.c:7385:a92sc %? %@2152sc!'\''00?
-1;4;8;9??!219reg tcc_linux_x86_64.c:73852sc %? %@2132sc!0?
+grp 09??-112m 16220reg p OK tcc_linux_x86_64.c:7388:a92sc %? %@2152sc!'\''00?
+1;4;7;8;9??!219reg tcc_linux_x86_64.c:73882sc %? %@2132sc!0?
 ?0?
-%f+ 
-		if \(c == '\''\\n'\''\) \{
-			file->line_num\+\+;
+%f+ 			file->line_num\+\+;
 		} else if \(c == '\''\*'\''\) \{1??0?
-1??+2m 171q0?
-%f+ 
-		if \(c == '\''\\n'\''\) \{
-			file->line_num\+\+;4??0?
-4??+2m 17220reg p OK tcc_linux_x86_64.c:7389:a42sc %? %@2152sc!1q0?
-grp 1%f+ .*?
-		if \(c == '\''\\n'\''\) \{.*?
-(			file->line_num\+\+;)7??0?
-grp 07??m 17220reg p OK tcc_linux_x86_64.c:7389:a72sc %? %@2152sc!1q0?
+1??m 171q0?
+;0fr.,$f+ ^			file->line_num\+\+;$4??0?
+4??m 17220reg p OK tcc_linux_x86_64.c:7389:a42sc %? %@2152sc!fr 981qfr 980?
 m 01;0grp 1%f> 	--file->buf_ptr;
 	do \{
 		ch = ninp\(\);.*(redo_start:)
@@ -610,7 +611,7 @@ re..:
 			p\+\+;
 			goto redo_start;9??0?
 grp 09??-111m 17220reg p OK tcc_linux_x86_64.c:7389:a92sc %? %@2152sc!'\''00?
-1;4;7;8;9??!219reg tcc_linux_x86_64.c:73892sc %? %@2132sc!0?
+1;4;8;9??!219reg tcc_linux_x86_64.c:73892sc %? %@2132sc!0?
 ?0?
 %f+ 		} else if \(c == '\''\*'\''\) \{
 			do \{
@@ -3687,22 +3688,28 @@ static int dstrlen(const uint8_t *s, char delim)
 
 ??!219reg tcc_linux_x86_64.c:7343:m42sc %? %@2142sc!0?
 '\''5s/p\)/p, int print)/??!219reg tcc_linux_x86_64.c:7346:m52sc %? %@2142sc!0?
-'\''6i 
+'\''6i 	int echo = print && pp_echo;
+
 	p++;
-	if (print && pp_echo)
+	if (echo)
 		fprintf(tcc_state->ppfp, "//");
 ??!219reg tcc_linux_x86_64.c:7348:m62sc %? %@2142sc!0?
 '\''7,#+1c 		c = *p;
-		if (print && pp_echo)
-			fprintf(tcc_state->ppfp, "%c", c);
 ??!219reg tcc_linux_x86_64.c:7350:m72sc %? %@2142sc!0?
 '\''8,#+9c 		if (c == '\''\n'\'' || c == CH_EOF) {
+			if (echo && c == '\''\n'\'')
+				fprintf(tcc_state->ppfp, "%c", c);
 ??!219reg tcc_linux_x86_64.c:7353:m82sc %? %@2142sc!0?
 '\''9,#+1c 		} else if (c == '\''\\'\'') {
 			file->buf_ptr = p;
 			c = handle_eob();
 			p = file->buf_ptr;
 			if (c == '\''\\'\'') {
+				/* real stray: keep it, it may splice the
+				   next line into this comment. The CH_EOB
+				   marker never gets here. */
+				if (echo)
+					fprintf(tcc_state->ppfp, "\\");
 				PEEKC_EOB(c, p);
 				if (c == '\''\n'\'') {
 					file->line_num++;
@@ -3718,37 +3725,44 @@ static int dstrlen(const uint8_t *s, char delim)
 				goto redo;
 			}
 		} else {
+			if (echo)
+				fprintf(tcc_state->ppfp, "%c", c);
 			p++;
 		}
 ??!219reg tcc_linux_x86_64.c:7364:m92sc %? %@2142sc!0?
 '\''10i 
 ??!219reg tcc_linux_x86_64.c:7368:m102sc %? %@2142sc!0?
 '\''11s/p\)/p, int print)/??!219reg tcc_linux_x86_64.c:7371:m112sc %? %@2142sc!0?
-'\''12i 
-	if (print && pp_echo)
+'\''12i 	int echo = print && pp_echo;
+
+	if (echo)
 		fprintf(tcc_state->ppfp, "/*");
 	p++;
 ??!219reg tcc_linux_x86_64.c:7373:m122sc %? %@2142sc!0?
 '\''13,#+1c 			c = *p;
 ??!219reg tcc_linux_x86_64.c:7378:m132sc %? %@2142sc!0?
-'\''14c 			if (print && pp_echo)
+'\''14c 			if (echo)
 				fprintf(tcc_state->ppfp, "%c", c);
 			p++;
 			c = *p;
 ??!219reg tcc_linux_x86_64.c:7382:m142sc %? %@2142sc!0?
-'\''15i 			if (print && pp_echo)
+'\''15i 			if (echo)
 				fprintf(tcc_state->ppfp, "%c", c);
 			p++;
 ??!219reg tcc_linux_x86_64.c:7384:m152sc %? %@2142sc!0?
-'\''16i 		if (print && pp_echo)
-			fprintf(tcc_state->ppfp, "%c", c);
-??!219reg tcc_linux_x86_64.c:7385:m162sc %? %@2142sc!0?
+'\''16i 			if (echo)
+				fprintf(tcc_state->ppfp, "\n");
+??!219reg tcc_linux_x86_64.c:7388:m162sc %? %@2142sc!0?
 '\''17i 			p++;
 ??!219reg tcc_linux_x86_64.c:7389:m172sc %? %@2142sc!0?
-'\''18,#+7c 			p++;
+'\''18,#+7c 			if (echo)
+				fprintf(tcc_state->ppfp, "*");
+			p++;
 			for (;;) {
 				c = *p;
 				if (c == '\''*'\'') {
+					if (echo)
+						fprintf(tcc_state->ppfp, "*");
 					p++;
 				} else if (c == '\''/'\'') {
 					goto end_of_comment;
@@ -3762,6 +3776,8 @@ static int dstrlen(const uint8_t *s, char delim)
 						/* skip '\''\[\r]\n'\'', otherwise just skip the stray */
 
 						while (c == '\''\\'\'') {
+							if (echo && p[1] != '\''\n'\'' && p[1] != '\''\r'\'')
+								fprintf(tcc_state->ppfp, "\\");
 							PEEKC_EOB(c, p);
 							if (c == '\''\n'\'') {
 								file->line_num++;
@@ -3784,7 +3800,9 @@ static int dstrlen(const uint8_t *s, char delim)
 after_star:
 			;
 ??!219reg tcc_linux_x86_64.c:7391:m182sc %? %@2142sc!0?
-'\''19,#+2c 			/* stray, eob or eof */
+'\''19,#+2c 			/* stray, eob or eof: echo only what is really comment
+			   text, the CH_EOB marker is a fake '\''\\'\'' and the
+			   backslash of a '\''\newline'\'' splice is spliced away */
 
 			file->buf_ptr = p;
 			c = handle_eob();
@@ -3792,12 +3810,15 @@ after_star:
 			if (c == CH_EOF) {
 ??!219reg tcc_linux_x86_64.c:7400:m192sc %? %@2142sc!0?
 '\''20,#+1c 			} else if (c == '\''\\'\'') {
+				if (echo && p[1] != '\''\n'\'' && p[1] != '\''\r'\'')
+					fprintf(tcc_state->ppfp, "\\");
 				p++;
 			}
 ??!219reg tcc_linux_x86_64.c:7404:m202sc %? %@2142sc!0?
-'\''21c end_of_comment:
+'\''21c 
+end_of_comment:
 	p++;
-	if (print && pp_echo)
+	if (echo)
 		fprintf(tcc_state->ppfp, "/\n");
 	return p;
 ??!219reg tcc_linux_x86_64.c:7408:m212sc %? %@2142sc!0?
@@ -4565,7 +4586,10 @@ re..:
 ?0?
 %f+ 			if \(c == '\''\\n'\'' \|\| c == '\''\*'\'' \|\| c == '\''\\\\'\''\)
 				break;
-		}1??0?
+		}
+		/\* now we can handle all the cases \*/
+
+1??0?
 1??+1m 151q0?
 %f+ 			if \(c == '\''\\n'\'' \|\| c == '\''\*'\'' \|\| c == '\''\\\\'\''\)
 				break;4??0?
@@ -4584,40 +4608,38 @@ re..:
 grp 09??-116m 15220reg p OK tcc_win64_x86_64.c:7195:a92sc %? %@2152sc!'\''00?
 1;4;8;9??!219reg tcc_win64_x86_64.c:71952sc %? %@2132sc!0?
 ?0?
-%f+ 		}
-		/\* now we can handle all the cases \*/
+%f+ 		/\* now we can handle all the cases \*/
 
-		if \(c == '\''\\n'\''\) \{1??0?
-1??m 161q0?
-;0fr.,$f+ ^		}$4??0?
-4??m 16220reg p OK tcc_win64_x86_64.c:7196:a42sc %? %@2152sc!fr 981qfr 980?
+		if \(c == '\''\\n'\''\) \{
+			file->line_num\+\+;1??0?
+1??+2m 161q0?
+%f+ 		/\* now we can handle all the cases \*/
+
+		if \(c == '\''\\n'\''\) \{4??0?
+4??+2m 16220reg p OK tcc_win64_x86_64.c:7199:a42sc %? %@2152sc!1q0?
+grp 1%f+ 		/\* now we can handle all the cases \*/.*?
+.*?
+(		if \(c == '\''\\n'\''\) \{)7??0?
+grp 07??m 16220reg p OK tcc_win64_x86_64.c:7199:a72sc %? %@2152sc!1q0?
 m 01;0grp 1%f> 	--file->buf_ptr;
 	do \{
 		ch = ninp\(\);.*(redo_start:)
 	start_of_line = 1;
 	in_warn_or_error = 0;8??0?
-grp 08??-101m 16220reg p OK tcc_win64_x86_64.c:7196:a82sc %? %@2152sc!'\''08??1q0?
+grp 08??-98m 16220reg p OK tcc_win64_x86_64.c:7199:a82sc %? %@2152sc!'\''08??1q0?
 m 01;0grp 1%f> static int skip_spaces\(void\)
 \{
 	int ch;.*(			file->line_num\+\+;)
 			p\+\+;
 			goto redo_start;9??0?
-grp 09??-115m 16220reg p OK tcc_win64_x86_64.c:7196:a92sc %? %@2152sc!'\''00?
-1;4;8;9??!219reg tcc_win64_x86_64.c:71962sc %? %@2132sc!0?
+grp 09??-112m 16220reg p OK tcc_win64_x86_64.c:7199:a92sc %? %@2152sc!'\''00?
+1;4;7;8;9??!219reg tcc_win64_x86_64.c:71992sc %? %@2132sc!0?
 ?0?
-%f+ 
-		if \(c == '\''\\n'\''\) \{
-			file->line_num\+\+;
+%f+ 			file->line_num\+\+;
 		} else if \(c == '\''\*'\''\) \{1??0?
-1??+2m 171q0?
-%f+ 
-		if \(c == '\''\\n'\''\) \{
-			file->line_num\+\+;4??0?
-4??+2m 17220reg p OK tcc_win64_x86_64.c:7200:a42sc %? %@2152sc!1q0?
-grp 1%f+ .*?
-		if \(c == '\''\\n'\''\) \{.*?
-(			file->line_num\+\+;)7??0?
-grp 07??m 17220reg p OK tcc_win64_x86_64.c:7200:a72sc %? %@2152sc!1q0?
+1??m 171q0?
+;0fr.,$f+ ^			file->line_num\+\+;$4??0?
+4??m 17220reg p OK tcc_win64_x86_64.c:7200:a42sc %? %@2152sc!fr 981qfr 980?
 m 01;0grp 1%f> 	--file->buf_ptr;
 	do \{
 		ch = ninp\(\);.*(redo_start:)
@@ -4630,7 +4652,7 @@ re..:
 			p\+\+;
 			goto redo_start;9??0?
 grp 09??-111m 17220reg p OK tcc_win64_x86_64.c:7200:a92sc %? %@2152sc!'\''00?
-1;4;7;8;9??!219reg tcc_win64_x86_64.c:72002sc %? %@2132sc!0?
+1;4;8;9??!219reg tcc_win64_x86_64.c:72002sc %? %@2132sc!0?
 ?0?
 %f+ 		} else if \(c == '\''\*'\''\) \{
 			do \{
@@ -7685,22 +7707,28 @@ static int dstrlen(const uint8_t *s, char delim)
 
 ??!219reg tcc_win64_x86_64.c:7154:m42sc %? %@2142sc!0?
 '\''5s/p\)/p, int print)/??!219reg tcc_win64_x86_64.c:7157:m52sc %? %@2142sc!0?
-'\''6i 
+'\''6i 	int echo = print && pp_echo;
+
 	p++;
-	if (print && pp_echo)
+	if (echo)
 		fprintf(tcc_state->ppfp, "//");
 ??!219reg tcc_win64_x86_64.c:7159:m62sc %? %@2142sc!0?
 '\''7,#+1c 		c = *p;
-		if (print && pp_echo)
-			fprintf(tcc_state->ppfp, "%c", c);
 ??!219reg tcc_win64_x86_64.c:7161:m72sc %? %@2142sc!0?
 '\''8,#+9c 		if (c == '\''\n'\'' || c == CH_EOF) {
+			if (echo && c == '\''\n'\'')
+				fprintf(tcc_state->ppfp, "%c", c);
 ??!219reg tcc_win64_x86_64.c:7164:m82sc %? %@2142sc!0?
 '\''9,#+1c 		} else if (c == '\''\\'\'') {
 			file->buf_ptr = p;
 			c = handle_eob();
 			p = file->buf_ptr;
 			if (c == '\''\\'\'') {
+				/* real stray: keep it, it may splice the
+				   next line into this comment. The CH_EOB
+				   marker never gets here. */
+				if (echo)
+					fprintf(tcc_state->ppfp, "\\");
 				PEEKC_EOB(c, p);
 				if (c == '\''\n'\'') {
 					file->line_num++;
@@ -7716,37 +7744,44 @@ static int dstrlen(const uint8_t *s, char delim)
 				goto redo;
 			}
 		} else {
+			if (echo)
+				fprintf(tcc_state->ppfp, "%c", c);
 			p++;
 		}
 ??!219reg tcc_win64_x86_64.c:7175:m92sc %? %@2142sc!0?
 '\''10i 
 ??!219reg tcc_win64_x86_64.c:7179:m102sc %? %@2142sc!0?
 '\''11s/p\)/p, int print)/??!219reg tcc_win64_x86_64.c:7182:m112sc %? %@2142sc!0?
-'\''12i 
-	if (print && pp_echo)
+'\''12i 	int echo = print && pp_echo;
+
+	if (echo)
 		fprintf(tcc_state->ppfp, "/*");
 	p++;
 ??!219reg tcc_win64_x86_64.c:7184:m122sc %? %@2142sc!0?
 '\''13,#+1c 			c = *p;
 ??!219reg tcc_win64_x86_64.c:7189:m132sc %? %@2142sc!0?
-'\''14c 			if (print && pp_echo)
+'\''14c 			if (echo)
 				fprintf(tcc_state->ppfp, "%c", c);
 			p++;
 			c = *p;
 ??!219reg tcc_win64_x86_64.c:7193:m142sc %? %@2142sc!0?
-'\''15i 			if (print && pp_echo)
+'\''15i 			if (echo)
 				fprintf(tcc_state->ppfp, "%c", c);
 			p++;
 ??!219reg tcc_win64_x86_64.c:7195:m152sc %? %@2142sc!0?
-'\''16i 		if (print && pp_echo)
-			fprintf(tcc_state->ppfp, "%c", c);
-??!219reg tcc_win64_x86_64.c:7196:m162sc %? %@2142sc!0?
+'\''16i 			if (echo)
+				fprintf(tcc_state->ppfp, "\n");
+??!219reg tcc_win64_x86_64.c:7199:m162sc %? %@2142sc!0?
 '\''17i 			p++;
 ??!219reg tcc_win64_x86_64.c:7200:m172sc %? %@2142sc!0?
-'\''18,#+7c 			p++;
+'\''18,#+7c 			if (echo)
+				fprintf(tcc_state->ppfp, "*");
+			p++;
 			for (;;) {
 				c = *p;
 				if (c == '\''*'\'') {
+					if (echo)
+						fprintf(tcc_state->ppfp, "*");
 					p++;
 				} else if (c == '\''/'\'') {
 					goto end_of_comment;
@@ -7760,6 +7795,8 @@ static int dstrlen(const uint8_t *s, char delim)
 						/* skip '\''\[\r]\n'\'', otherwise just skip the stray */
 
 						while (c == '\''\\'\'') {
+							if (echo && p[1] != '\''\n'\'' && p[1] != '\''\r'\'')
+								fprintf(tcc_state->ppfp, "\\");
 							PEEKC_EOB(c, p);
 							if (c == '\''\n'\'') {
 								file->line_num++;
@@ -7782,7 +7819,9 @@ static int dstrlen(const uint8_t *s, char delim)
 after_star:
 			;
 ??!219reg tcc_win64_x86_64.c:7202:m182sc %? %@2142sc!0?
-'\''19,#+2c 			/* stray, eob or eof */
+'\''19,#+2c 			/* stray, eob or eof: echo only what is really comment
+			   text, the CH_EOB marker is a fake '\''\\'\'' and the
+			   backslash of a '\''\newline'\'' splice is spliced away */
 
 			file->buf_ptr = p;
 			c = handle_eob();
@@ -7790,12 +7829,15 @@ after_star:
 			if (c == CH_EOF) {
 ??!219reg tcc_win64_x86_64.c:7211:m192sc %? %@2142sc!0?
 '\''20,#+1c 			} else if (c == '\''\\'\'') {
+				if (echo && p[1] != '\''\n'\'' && p[1] != '\''\r'\'')
+					fprintf(tcc_state->ppfp, "\\");
 				p++;
 			}
 ??!219reg tcc_win64_x86_64.c:7215:m202sc %? %@2142sc!0?
-'\''21c end_of_comment:
+'\''21c 
+end_of_comment:
 	p++;
-	if (print && pp_echo)
+	if (echo)
 		fprintf(tcc_state->ppfp, "/\n");
 	return p;
 ??!219reg tcc_win64_x86_64.c:7219:m212sc %? %@2142sc!0?
@@ -8063,7 +8105,7 @@ fi
 exit 0
 === PATCH2VI PATCH ===
 diff --git a/tcc_linux_x86_64.c b/tcc_linux_x86_64.c
-index 8537681..ca97266 100644
+index 8537681..9087ebc 100644
 --- a/tcc_linux_x86_64.c
 +++ b/tcc_linux_x86_64.c
 @@ -7239,6 +7239,38 @@ addv:
@@ -8140,7 +8182,7 @@ index 8537681..ca97266 100644
  static int skip_spaces(void)
  {
  	int ch;
-@@ -7341,142 +7394,229 @@ static int skip_spaces(void)
+@@ -7341,142 +7394,249 @@ static int skip_spaces(void)
  	} while (isidnum_table[ch - CH_EOF] & IS_SPC);
  	return ch;
  }
@@ -8164,16 +8206,15 @@ index 8537681..ca97266 100644
 +static uint8_t *parse_line_comment(uint8_t *p, int print)
  {
  	int c;
++	int echo = print && pp_echo;
 +
 +	p++;
-+	if (print && pp_echo)
++	if (echo)
 +		fprintf(tcc_state->ppfp, "//");
  	for (;;) {
 -		for (;;) {
 -			c = *++p;
 +		c = *p;
-+		if (print && pp_echo)
-+			fprintf(tcc_state->ppfp, "%c", c);
  redo:
 -			if (c == '\n' || c == '\\')
 -				break;
@@ -8186,6 +8227,8 @@ index 8537681..ca97266 100644
 -		c = handle_bs(&p);
 -		if (c == CH_EOF)
 +		if (c == '\n' || c == CH_EOF) {
++			if (echo && c == '\n')
++				fprintf(tcc_state->ppfp, "%c", c);
  			break;
 -		if (c != '\\')
 -			goto redo;
@@ -8194,6 +8237,11 @@ index 8537681..ca97266 100644
 +			c = handle_eob();
 +			p = file->buf_ptr;
 +			if (c == '\\') {
++				/* real stray: keep it, it may splice the
++				   next line into this comment. The CH_EOB
++				   marker never gets here. */
++				if (echo)
++					fprintf(tcc_state->ppfp, "\\");
 +				PEEKC_EOB(c, p);
 +				if (c == '\n') {
 +					file->line_num++;
@@ -8209,6 +8257,8 @@ index 8537681..ca97266 100644
 +				goto redo;
 +			}
 +		} else {
++			if (echo)
++				fprintf(tcc_state->ppfp, "%c", c);
 +			p++;
 +		}
  	}
@@ -8221,8 +8271,9 @@ index 8537681..ca97266 100644
 +static uint8_t *parse_comment(uint8_t *p, int print)
  {
  	int c;
++	int echo = print && pp_echo;
 +
-+	if (print && pp_echo)
++	if (echo)
 +		fprintf(tcc_state->ppfp, "/*");
 +	p++;
  	for (;;) {
@@ -8235,21 +8286,21 @@ index 8537681..ca97266 100644
  			if (c == '\n' || c == '*' || c == '\\')
  				break;
 -			c = *++p;
-+			if (print && pp_echo)
++			if (echo)
 +				fprintf(tcc_state->ppfp, "%c", c);
 +			p++;
 +			c = *p;
  			if (c == '\n' || c == '*' || c == '\\')
  				break;
-+			if (print && pp_echo)
++			if (echo)
 +				fprintf(tcc_state->ppfp, "%c", c);
 +			p++;
  		}
-+		if (print && pp_echo)
-+			fprintf(tcc_state->ppfp, "%c", c);
  		/* now we can handle all the cases */
  
  		if (c == '\n') {
++			if (echo)
++				fprintf(tcc_state->ppfp, "\n");
  			file->line_num++;
 +			p++;
  		} else if (c == '*') {
@@ -8261,10 +8312,14 @@ index 8537681..ca97266 100644
 -			if (c == '/')
 -				break;
 -			goto check_eof;
++			if (echo)
++				fprintf(tcc_state->ppfp, "*");
 +			p++;
 +			for (;;) {
 +				c = *p;
 +				if (c == '*') {
++					if (echo)
++						fprintf(tcc_state->ppfp, "*");
 +					p++;
 +				} else if (c == '/') {
 +					goto end_of_comment;
@@ -8278,6 +8333,8 @@ index 8537681..ca97266 100644
 +						/* skip '\[\r]\n', otherwise just skip the stray */
 +
 +						while (c == '\\') {
++							if (echo && p[1] != '\n' && p[1] != '\r')
++								fprintf(tcc_state->ppfp, "\\");
 +							PEEKC_EOB(c, p);
 +							if (c == '\n') {
 +								file->line_num++;
@@ -8303,7 +8360,9 @@ index 8537681..ca97266 100644
 -			c = handle_bs(&p);
 -check_eof:
 -			if (c == CH_EOF)
-+			/* stray, eob or eof */
++			/* stray, eob or eof: echo only what is really comment
++			   text, the CH_EOB marker is a fake '\\' and the
++			   backslash of a '\newline' splice is spliced away */
 +
 +			file->buf_ptr = p;
 +			c = handle_eob();
@@ -8313,14 +8372,17 @@ index 8537681..ca97266 100644
 -			if (c != '\\')
 -				goto redo;
 +			} else if (c == '\\') {
++				if (echo && p[1] != '\n' && p[1] != '\r')
++					fprintf(tcc_state->ppfp, "\\");
 +				p++;
 +			}
  		}
  	}
 -	return p + 1;
++
 +end_of_comment:
 +	p++;
-+	if (print && pp_echo)
++	if (echo)
 +		fprintf(tcc_state->ppfp, "/\n");
 +	return p;
  }
@@ -8441,7 +8503,7 @@ index 8537681..ca97266 100644
  {
  	int a, start_of_line, c, in_warn_or_error;
  	uint8_t *p;
-@@ -7494,9 +7634,13 @@ redo_start:
+@@ -7494,9 +7654,13 @@ redo_start:
  		case '\f':
  		case '\v':
  		case '\r':
@@ -8455,7 +8517,7 @@ index 8537681..ca97266 100644
  			file->line_num++;
  			p++;
  			goto redo_start;
-@@ -7514,7 +7658,11 @@ redo_start:
+@@ -7514,7 +7678,11 @@ redo_start:
  			if (in_warn_or_error)
  				goto _default;
  			tok_flags &= ~TOK_FLAG_BOL;
@@ -8468,7 +8530,7 @@ index 8537681..ca97266 100644
  			break;
  		/* skip comments */
  
-@@ -7524,17 +7672,24 @@ redo_start:
+@@ -7524,17 +7692,24 @@ redo_start:
  			++p;
  			c = handle_bs(&p);
  			if (c == '*') {
@@ -8495,7 +8557,7 @@ index 8537681..ca97266 100644
  				if (a == 0 &&
  				    (tok == TOK_ELSE || tok == TOK_ELIF || tok == TOK_ENDIF))
  					goto the_end;
-@@ -7547,15 +7702,19 @@ redo_start:
+@@ -7547,15 +7722,19 @@ redo_start:
  				else if (tok == TOK_LINEFEED)
  					goto redo_start;
  				else if (parse_flags & PARSE_FLAG_ASM_FILE)
@@ -8517,7 +8579,7 @@ index 8537681..ca97266 100644
  			p++;
  			break;
  		}
-@@ -7563,6 +7722,7 @@ _default:
+@@ -7563,6 +7742,7 @@ _default:
  	}
  the_end: ;
  	file->buf_ptr = p;
@@ -8525,7 +8587,7 @@ index 8537681..ca97266 100644
  }
  /* token string handling */
  ST_INLN void tok_str_new(TokenString *s)
-@@ -7813,7 +7973,11 @@ ST_INLN void define_push(int v, int macro_type, int *str, Sym *first_arg)
+@@ -7813,7 +7993,11 @@ ST_INLN void define_push(int v, int macro_type, int *str, Sym *first_arg)
  	s->next = first_arg;
  	table_ident[v - TOK_IDENT]->sym_define = s;
  
@@ -8538,7 +8600,7 @@ index 8537681..ca97266 100644
  		tcc_warning("%s redefined", get_tok_str(v, NULL));
  }
  /* undefined a define symbol. Its name is just set to zero */
-@@ -7868,26 +8032,46 @@ ST_FUNC void skip_to_eol(int warn)
+@@ -7868,26 +8052,46 @@ ST_FUNC void skip_to_eol(int warn)
  		tcc_warning("extra tokens after directive");
  	while (macro_stack)
  		end_macro();
@@ -8591,7 +8653,7 @@ index 8537681..ca97266 100644
  	} else {
  		/* computed #include : concatenate tokens until result is one of
  		           the two accepted forms.  Don't convert pp-tokens to tokens here. */
-@@ -7913,7 +8097,7 @@ static int parse_include(TCCState *s1, int do_next, int test)
+@@ -7913,7 +8117,7 @@ static int parse_include(TCCState *s1, int do_next, int test)
  		memmove(p, p + 1, i - 1), p[i - 1] = 0;
  	}
  
@@ -8600,7 +8662,7 @@ index 8537681..ca97266 100644
  		skip_to_eol(1);
  
  	i = do_next ? file->include_next_index : -1;
-@@ -7927,7 +8111,6 @@ static int parse_include(TCCState *s1, int do_next, int test)
+@@ -7927,7 +8131,6 @@ static int parse_include(TCCState *s1, int do_next, int test)
  			buf[0] = '\0';
  		} else if (i == 1) {
  			/* search in file's dir if "header.h" */
@@ -8608,7 +8670,7 @@ index 8537681..ca97266 100644
  			if (c != '\"')
  				continue;
  			p = file->true_filename;
-@@ -7940,6 +8123,8 @@ static int parse_include(TCCState *s1, int do_next, int test)
+@@ -7940,6 +8143,8 @@ static int parse_include(TCCState *s1, int do_next, int test)
  				p = s1->sysinclude_paths[k];
  			else if (test)
  				return 0;
@@ -8617,7 +8679,7 @@ index 8537681..ca97266 100644
  			else
  				tcc_error("include file '%s' not found", name);
  			pstrcpy(buf, sizeof buf, p);
-@@ -8366,6 +8551,7 @@ ST_FUNC void preprocess(int is_bof)
+@@ -8366,6 +8571,7 @@ ST_FUNC void preprocess(int is_bof)
  {
  	TCCState *s1 = tcc_state;
  	int c, n, saved_parse_flags;
@@ -8625,7 +8687,7 @@ index 8537681..ca97266 100644
  	char buf[1024], *q;
  	Sym *s;
  
-@@ -8405,7 +8591,9 @@ redo:
+@@ -8405,7 +8611,9 @@ redo:
  		c = 1;
  		goto do_ifdef;
  	case TOK_IF:
@@ -8636,7 +8698,7 @@ index 8537681..ca97266 100644
  		goto do_if;
  	case TOK_IFDEF:
  		c = 0;
-@@ -8413,6 +8601,9 @@ do_ifdef:
+@@ -8413,6 +8621,9 @@ do_ifdef:
  		next_nomacro();
  		if (tok < TOK_IDENT)
  			tcc_error("invalid argument for '#if%sdef'", c ? "n" : "");
@@ -8646,7 +8708,7 @@ index 8537681..ca97266 100644
  		if (is_bof) {
  			if (c) {
  
-@@ -8423,19 +8614,23 @@ do_ifdef:
+@@ -8423,19 +8634,23 @@ do_ifdef:
  		    || tok == TOK___HAS_INCLUDE
  		    || tok == TOK___HAS_INCLUDE_NEXT)
  			c ^= 1;
@@ -8672,7 +8734,7 @@ index 8537681..ca97266 100644
  		goto test_else;
  	case TOK_ELIF:
  		if (s1->ifdef_stack_ptr == s1->ifdef_stack)
-@@ -8445,6 +8640,8 @@ do_if:
+@@ -8445,6 +8660,8 @@ do_if:
  			tcc_error("#elif after #else");
  		/* last #if/#elif expression was true: we skip */
  
@@ -8681,7 +8743,7 @@ index 8537681..ca97266 100644
  		if (c == 1) {
  			skip_to_eol(0);
  			c = 0;
-@@ -8457,16 +8654,24 @@ test_else:
+@@ -8457,16 +8674,24 @@ test_else:
  			file->ifndef_macro = 0;
  test_skip:
  		if (!(c & 1)) {
@@ -8711,7 +8773,7 @@ index 8537681..ca97266 100644
  		s1->ifdef_stack_ptr--;
  		/* '#ifndef macro' was at the start of file. Now we check if
  		           an '#endif' is exactly at the end of file */
-@@ -8478,8 +8683,18 @@ test_skip:
+@@ -8478,8 +8703,18 @@ test_skip:
  			               #ifndef at middle of file */
  
  			file->ifndef_macro = 0;
@@ -8730,7 +8792,7 @@ index 8537681..ca97266 100644
  		break;
  
  	case TOK_LINE:
-@@ -8530,14 +8745,36 @@ _line_num:
+@@ -8530,14 +8765,36 @@ _line_num:
  			c = ninp();
  		}
  		*q = '\0';
@@ -8769,7 +8831,7 @@ index 8537681..ca97266 100644
  		if (!pragma_parse(s1))
  			goto ignore;
  		break;
-@@ -8554,11 +8791,26 @@ _line_num:
+@@ -8554,11 +8811,26 @@ _line_num:
  			goto ignore;
  		tcc_warning("ignoring unknown preprocessing directive #%s", get_tok_str(tok,
  				&tokc));
@@ -8798,7 +8860,7 @@ index 8537681..ca97266 100644
  the_end:
  	parse_flags = saved_parse_flags;
  }
-@@ -9204,7 +9456,9 @@ maybe_space:
+@@ -9204,7 +9476,9 @@ maybe_space:
  				tcc_close();
  				s1->include_stack_ptr--;
  				p = file->buf_ptr;
@@ -8809,7 +8871,7 @@ index 8537681..ca97266 100644
  			}
  		} else {
  			goto redo_no_start;
-@@ -9239,7 +9493,7 @@ maybe_newline:
+@@ -9239,7 +9513,7 @@ maybe_newline:
  			} else {
  
  				if (parse_flags & PARSE_FLAG_ASM_FILE) {
@@ -8818,7 +8880,7 @@ index 8537681..ca97266 100644
  					goto redo_no_start;
  				} else
  
-@@ -9433,7 +9687,7 @@ str_const:
+@@ -9433,7 +9707,7 @@ str_const:
  		if (is_long)
  			cstr_ccat(&tokcstr, 'L');
  		cstr_ccat(&tokcstr, c);
@@ -8827,7 +8889,7 @@ index 8537681..ca97266 100644
  		cstr_ccat(&tokcstr, c);
  		cstr_ccat(&tokcstr, '\0');
  		tokc.str.size = tokcstr.size;
-@@ -9541,13 +9795,13 @@ str_const:
+@@ -9541,13 +9815,13 @@ str_const:
  	case '/':
  		PEEKC(c, p);
  		if (c == '*') {
@@ -8843,7 +8905,7 @@ index 8537681..ca97266 100644
  			tok = ' ';
  			goto maybe_space;
  		} else if (c == '=') {
-@@ -9789,9 +10043,9 @@ static int peek_file (TokenString *ws_str)
+@@ -9789,9 +10063,9 @@ static int peek_file (TokenString *ws_str)
  		case '/':
  			PEEKC(c, p);
  			if (c == '*')
@@ -8855,7 +8917,7 @@ index 8537681..ca97266 100644
  			else {
  				c = *--p = '/';
  				goto leave;
-@@ -10409,7 +10663,7 @@ static void pp_line(TCCState *s1, BufferedFile *f, int level)
+@@ -10409,7 +10683,7 @@ static void pp_line(TCCState *s1, BufferedFile *f, int level)
  	} else if (s1->Pflag == LINE_MACRO_OUTPUT_FORMAT_STD) {
  		fprintf(s1->ppfp, "#line %d \"%s\"\n", f->line_num, f->filename);
  	} else {
@@ -8864,7 +8926,7 @@ index 8537681..ca97266 100644
  			level > 0 ? " 1" : level < 0 ? " 2" : "");
  	}
  	f->line_ref = f->line_num;
-@@ -10518,14 +10772,12 @@ ST_FUNC int tcc_preprocess(TCCState *s1)
+@@ -10518,14 +10792,12 @@ ST_FUNC int tcc_preprocess(TCCState *s1)
  		return 0;
  	}
  
@@ -8882,7 +8944,7 @@ index 8537681..ca97266 100644
  		if (tok == TOK_EOF)
  			break;
  
-@@ -10535,11 +10787,9 @@ ST_FUNC int tcc_preprocess(TCCState *s1)
+@@ -10535,11 +10807,9 @@ ST_FUNC int tcc_preprocess(TCCState *s1)
  				pp_line(s1, *iptr, 0);
  			pp_line(s1, file, level);
  		}
@@ -8897,7 +8959,7 @@ index 8537681..ca97266 100644
  
  		if (is_space(tok)) {
  			if (spcs < sizeof white - 1)
-@@ -32817,8 +33067,8 @@ static void error1(int mode, const char *fmt, va_list ap)
+@@ -32817,8 +33087,8 @@ static void error1(int mode, const char *fmt, va_list ap)
  	if (!s1->error_func) {
  		/* default case: stderr */
  
@@ -8909,7 +8971,7 @@ index 8537681..ca97266 100644
  		fflush(stdout);/* flush -v output */
  
 diff --git a/tcc_win64_x86_64.c b/tcc_win64_x86_64.c
-index 069218e..a3971c7 100644
+index 069218e..6c89e8a 100644
 --- a/tcc_win64_x86_64.c
 +++ b/tcc_win64_x86_64.c
 @@ -7050,6 +7050,38 @@ addv:
@@ -8986,7 +9048,7 @@ index 069218e..a3971c7 100644
  static int skip_spaces(void)
  {
  	int ch;
-@@ -7152,142 +7205,229 @@ static int skip_spaces(void)
+@@ -7152,142 +7205,249 @@ static int skip_spaces(void)
  	} while (isidnum_table[ch - CH_EOF] & IS_SPC);
  	return ch;
  }
@@ -9010,16 +9072,15 @@ index 069218e..a3971c7 100644
 +static uint8_t *parse_line_comment(uint8_t *p, int print)
  {
  	int c;
++	int echo = print && pp_echo;
 +
 +	p++;
-+	if (print && pp_echo)
++	if (echo)
 +		fprintf(tcc_state->ppfp, "//");
  	for (;;) {
 -		for (;;) {
 -			c = *++p;
 +		c = *p;
-+		if (print && pp_echo)
-+			fprintf(tcc_state->ppfp, "%c", c);
  redo:
 -			if (c == '\n' || c == '\\')
 -				break;
@@ -9032,6 +9093,8 @@ index 069218e..a3971c7 100644
 -		c = handle_bs(&p);
 -		if (c == CH_EOF)
 +		if (c == '\n' || c == CH_EOF) {
++			if (echo && c == '\n')
++				fprintf(tcc_state->ppfp, "%c", c);
  			break;
 -		if (c != '\\')
 -			goto redo;
@@ -9040,6 +9103,11 @@ index 069218e..a3971c7 100644
 +			c = handle_eob();
 +			p = file->buf_ptr;
 +			if (c == '\\') {
++				/* real stray: keep it, it may splice the
++				   next line into this comment. The CH_EOB
++				   marker never gets here. */
++				if (echo)
++					fprintf(tcc_state->ppfp, "\\");
 +				PEEKC_EOB(c, p);
 +				if (c == '\n') {
 +					file->line_num++;
@@ -9055,6 +9123,8 @@ index 069218e..a3971c7 100644
 +				goto redo;
 +			}
 +		} else {
++			if (echo)
++				fprintf(tcc_state->ppfp, "%c", c);
 +			p++;
 +		}
  	}
@@ -9067,8 +9137,9 @@ index 069218e..a3971c7 100644
 +static uint8_t *parse_comment(uint8_t *p, int print)
  {
  	int c;
++	int echo = print && pp_echo;
 +
-+	if (print && pp_echo)
++	if (echo)
 +		fprintf(tcc_state->ppfp, "/*");
 +	p++;
  	for (;;) {
@@ -9081,21 +9152,21 @@ index 069218e..a3971c7 100644
  			if (c == '\n' || c == '*' || c == '\\')
  				break;
 -			c = *++p;
-+			if (print && pp_echo)
++			if (echo)
 +				fprintf(tcc_state->ppfp, "%c", c);
 +			p++;
 +			c = *p;
  			if (c == '\n' || c == '*' || c == '\\')
  				break;
-+			if (print && pp_echo)
++			if (echo)
 +				fprintf(tcc_state->ppfp, "%c", c);
 +			p++;
  		}
-+		if (print && pp_echo)
-+			fprintf(tcc_state->ppfp, "%c", c);
  		/* now we can handle all the cases */
  
  		if (c == '\n') {
++			if (echo)
++				fprintf(tcc_state->ppfp, "\n");
  			file->line_num++;
 +			p++;
  		} else if (c == '*') {
@@ -9107,10 +9178,14 @@ index 069218e..a3971c7 100644
 -			if (c == '/')
 -				break;
 -			goto check_eof;
++			if (echo)
++				fprintf(tcc_state->ppfp, "*");
 +			p++;
 +			for (;;) {
 +				c = *p;
 +				if (c == '*') {
++					if (echo)
++						fprintf(tcc_state->ppfp, "*");
 +					p++;
 +				} else if (c == '/') {
 +					goto end_of_comment;
@@ -9124,6 +9199,8 @@ index 069218e..a3971c7 100644
 +						/* skip '\[\r]\n', otherwise just skip the stray */
 +
 +						while (c == '\\') {
++							if (echo && p[1] != '\n' && p[1] != '\r')
++								fprintf(tcc_state->ppfp, "\\");
 +							PEEKC_EOB(c, p);
 +							if (c == '\n') {
 +								file->line_num++;
@@ -9149,7 +9226,9 @@ index 069218e..a3971c7 100644
 -			c = handle_bs(&p);
 -check_eof:
 -			if (c == CH_EOF)
-+			/* stray, eob or eof */
++			/* stray, eob or eof: echo only what is really comment
++			   text, the CH_EOB marker is a fake '\\' and the
++			   backslash of a '\newline' splice is spliced away */
 +
 +			file->buf_ptr = p;
 +			c = handle_eob();
@@ -9159,14 +9238,17 @@ index 069218e..a3971c7 100644
 -			if (c != '\\')
 -				goto redo;
 +			} else if (c == '\\') {
++				if (echo && p[1] != '\n' && p[1] != '\r')
++					fprintf(tcc_state->ppfp, "\\");
 +				p++;
 +			}
  		}
  	}
 -	return p + 1;
++
 +end_of_comment:
 +	p++;
-+	if (print && pp_echo)
++	if (echo)
 +		fprintf(tcc_state->ppfp, "/\n");
 +	return p;
  }
@@ -9287,7 +9369,7 @@ index 069218e..a3971c7 100644
  {
  	int a, start_of_line, c, in_warn_or_error;
  	uint8_t *p;
-@@ -7305,9 +7445,13 @@ redo_start:
+@@ -7305,9 +7465,13 @@ redo_start:
  		case '\f':
  		case '\v':
  		case '\r':
@@ -9301,7 +9383,7 @@ index 069218e..a3971c7 100644
  			file->line_num++;
  			p++;
  			goto redo_start;
-@@ -7325,7 +7469,11 @@ redo_start:
+@@ -7325,7 +7489,11 @@ redo_start:
  			if (in_warn_or_error)
  				goto _default;
  			tok_flags &= ~TOK_FLAG_BOL;
@@ -9314,7 +9396,7 @@ index 069218e..a3971c7 100644
  			break;
  		/* skip comments */
  
-@@ -7335,17 +7483,24 @@ redo_start:
+@@ -7335,17 +7503,24 @@ redo_start:
  			++p;
  			c = handle_bs(&p);
  			if (c == '*') {
@@ -9341,7 +9423,7 @@ index 069218e..a3971c7 100644
  				if (a == 0 &&
  				    (tok == TOK_ELSE || tok == TOK_ELIF || tok == TOK_ENDIF))
  					goto the_end;
-@@ -7358,15 +7513,19 @@ redo_start:
+@@ -7358,15 +7533,19 @@ redo_start:
  				else if (tok == TOK_LINEFEED)
  					goto redo_start;
  				else if (parse_flags & PARSE_FLAG_ASM_FILE)
@@ -9363,7 +9445,7 @@ index 069218e..a3971c7 100644
  			p++;
  			break;
  		}
-@@ -7374,6 +7533,7 @@ _default:
+@@ -7374,6 +7553,7 @@ _default:
  	}
  the_end: ;
  	file->buf_ptr = p;
@@ -9371,7 +9453,7 @@ index 069218e..a3971c7 100644
  }
  /* token string handling */
  ST_INLN void tok_str_new(TokenString *s)
-@@ -7622,7 +7782,11 @@ ST_INLN void define_push(int v, int macro_type, int *str, Sym *first_arg)
+@@ -7622,7 +7802,11 @@ ST_INLN void define_push(int v, int macro_type, int *str, Sym *first_arg)
  	s->next = first_arg;
  	table_ident[v - TOK_IDENT]->sym_define = s;
  
@@ -9384,7 +9466,7 @@ index 069218e..a3971c7 100644
  		tcc_warning("%s redefined", get_tok_str(v, NULL));
  }
  /* undefined a define symbol. Its name is just set to zero */
-@@ -7677,8 +7841,8 @@ ST_FUNC void skip_to_eol(int warn)
+@@ -7677,8 +7861,8 @@ ST_FUNC void skip_to_eol(int warn)
  		tcc_warning("extra tokens after directive");
  	while (macro_stack)
  		end_macro();
@@ -9395,7 +9477,7 @@ index 069218e..a3971c7 100644
  }
  
  static CachedInclude *
-@@ -7686,17 +7850,38 @@ search_cached_include(TCCState *s1, const char *filename, int add);
+@@ -7686,17 +7870,38 @@ search_cached_include(TCCState *s1, const char *filename, int add);
  
  static int parse_include(TCCState *s1, int do_next, int test)
  {
@@ -9437,7 +9519,7 @@ index 069218e..a3971c7 100644
  	} else {
  		/* computed #include : concatenate tokens until result is one of
  		           the two accepted forms.  Don't convert pp-tokens to tokens here. */
-@@ -7722,7 +7907,7 @@ static int parse_include(TCCState *s1, int do_next, int test)
+@@ -7722,7 +7927,7 @@ static int parse_include(TCCState *s1, int do_next, int test)
  		memmove(p, p + 1, i - 1), p[i - 1] = 0;
  	}
  
@@ -9446,7 +9528,7 @@ index 069218e..a3971c7 100644
  		skip_to_eol(1);
  
  	i = do_next ? file->include_next_index : -1;
-@@ -7736,7 +7921,6 @@ static int parse_include(TCCState *s1, int do_next, int test)
+@@ -7736,7 +7941,6 @@ static int parse_include(TCCState *s1, int do_next, int test)
  			buf[0] = '\0';
  		} else if (i == 1) {
  			/* search in file's dir if "header.h" */
@@ -9454,7 +9536,7 @@ index 069218e..a3971c7 100644
  			if (c != '\"')
  				continue;
  			p = file->true_filename;
-@@ -7749,6 +7933,8 @@ static int parse_include(TCCState *s1, int do_next, int test)
+@@ -7749,6 +7953,8 @@ static int parse_include(TCCState *s1, int do_next, int test)
  				p = s1->sysinclude_paths[k];
  			else if (test)
  				return 0;
@@ -9463,7 +9545,7 @@ index 069218e..a3971c7 100644
  			else
  				tcc_error("include file '%s' not found", name);
  			pstrcpy(buf, sizeof buf, p);
-@@ -8177,6 +8363,7 @@ ST_FUNC void preprocess(int is_bof)
+@@ -8177,6 +8383,7 @@ ST_FUNC void preprocess(int is_bof)
  {
  	TCCState *s1 = tcc_state;
  	int c, n, saved_parse_flags;
@@ -9471,7 +9553,7 @@ index 069218e..a3971c7 100644
  	char buf[1024], *q;
  	Sym *s;
  
-@@ -8216,7 +8403,9 @@ redo:
+@@ -8216,7 +8423,9 @@ redo:
  		c = 1;
  		goto do_ifdef;
  	case TOK_IF:
@@ -9482,7 +9564,7 @@ index 069218e..a3971c7 100644
  		goto do_if;
  	case TOK_IFDEF:
  		c = 0;
-@@ -8224,6 +8413,9 @@ do_ifdef:
+@@ -8224,6 +8433,9 @@ do_ifdef:
  		next_nomacro();
  		if (tok < TOK_IDENT)
  			tcc_error("invalid argument for '#if%sdef'", c ? "n" : "");
@@ -9492,7 +9574,7 @@ index 069218e..a3971c7 100644
  		if (is_bof) {
  			if (c) {
  
-@@ -8234,19 +8426,23 @@ do_ifdef:
+@@ -8234,19 +8446,23 @@ do_ifdef:
  		    || tok == TOK___HAS_INCLUDE
  		    || tok == TOK___HAS_INCLUDE_NEXT)
  			c ^= 1;
@@ -9518,7 +9600,7 @@ index 069218e..a3971c7 100644
  		goto test_else;
  	case TOK_ELIF:
  		if (s1->ifdef_stack_ptr == s1->ifdef_stack)
-@@ -8256,6 +8452,8 @@ do_if:
+@@ -8256,6 +8472,8 @@ do_if:
  			tcc_error("#elif after #else");
  		/* last #if/#elif expression was true: we skip */
  
@@ -9527,7 +9609,7 @@ index 069218e..a3971c7 100644
  		if (c == 1) {
  			skip_to_eol(0);
  			c = 0;
-@@ -8268,16 +8466,24 @@ test_else:
+@@ -8268,16 +8486,24 @@ test_else:
  			file->ifndef_macro = 0;
  test_skip:
  		if (!(c & 1)) {
@@ -9557,7 +9639,7 @@ index 069218e..a3971c7 100644
  		s1->ifdef_stack_ptr--;
  		/* '#ifndef macro' was at the start of file. Now we check if
  		           an '#endif' is exactly at the end of file */
-@@ -8289,8 +8495,18 @@ test_skip:
+@@ -8289,8 +8515,18 @@ test_skip:
  			               #ifndef at middle of file */
  
  			file->ifndef_macro = 0;
@@ -9576,7 +9658,7 @@ index 069218e..a3971c7 100644
  		break;
  
  	case TOK_LINE:
-@@ -8341,14 +8557,36 @@ _line_num:
+@@ -8341,14 +8577,36 @@ _line_num:
  			c = ninp();
  		}
  		*q = '\0';
@@ -9615,7 +9697,7 @@ index 069218e..a3971c7 100644
  		if (!pragma_parse(s1))
  			goto ignore;
  		break;
-@@ -8365,11 +8603,26 @@ _line_num:
+@@ -8365,11 +8623,26 @@ _line_num:
  			goto ignore;
  		tcc_warning("ignoring unknown preprocessing directive #%s", get_tok_str(tok,
  				&tokc));
@@ -9644,7 +9726,7 @@ index 069218e..a3971c7 100644
  the_end:
  	parse_flags = saved_parse_flags;
  }
-@@ -9024,7 +9277,9 @@ maybe_space:
+@@ -9024,7 +9297,9 @@ maybe_space:
  				tcc_close();
  				s1->include_stack_ptr--;
  				p = file->buf_ptr;
@@ -9655,7 +9737,7 @@ index 069218e..a3971c7 100644
  			}
  		} else {
  			goto redo_no_start;
-@@ -9059,7 +9314,7 @@ maybe_newline:
+@@ -9059,7 +9334,7 @@ maybe_newline:
  			} else {
  
  				if (parse_flags & PARSE_FLAG_ASM_FILE) {
@@ -9664,7 +9746,7 @@ index 069218e..a3971c7 100644
  					goto redo_no_start;
  				} else
  
-@@ -9253,7 +9508,7 @@ str_const:
+@@ -9253,7 +9528,7 @@ str_const:
  		if (is_long)
  			cstr_ccat(&tokcstr, 'L');
  		cstr_ccat(&tokcstr, c);
@@ -9673,7 +9755,7 @@ index 069218e..a3971c7 100644
  		cstr_ccat(&tokcstr, c);
  		cstr_ccat(&tokcstr, '\0');
  		tokc.str.size = tokcstr.size;
-@@ -9361,13 +9616,13 @@ str_const:
+@@ -9361,13 +9636,13 @@ str_const:
  	case '/':
  		PEEKC(c, p);
  		if (c == '*') {
@@ -9689,7 +9771,7 @@ index 069218e..a3971c7 100644
  			tok = ' ';
  			goto maybe_space;
  		} else if (c == '=') {
-@@ -9609,9 +9864,9 @@ static int peek_file (TokenString *ws_str)
+@@ -9609,9 +9884,9 @@ static int peek_file (TokenString *ws_str)
  		case '/':
  			PEEKC(c, p);
  			if (c == '*')
@@ -9701,7 +9783,7 @@ index 069218e..a3971c7 100644
  			else {
  				c = *--p = '/';
  				goto leave;
-@@ -10227,7 +10482,7 @@ static void pp_line(TCCState *s1, BufferedFile *f, int level)
+@@ -10227,7 +10502,7 @@ static void pp_line(TCCState *s1, BufferedFile *f, int level)
  	} else if (s1->Pflag == LINE_MACRO_OUTPUT_FORMAT_STD) {
  		fprintf(s1->ppfp, "#line %d \"%s\"\n", f->line_num, f->filename);
  	} else {
@@ -9710,7 +9792,7 @@ index 069218e..a3971c7 100644
  			level > 0 ? " 1" : level < 0 ? " 2" : "");
  	}
  	f->line_ref = f->line_num;
-@@ -10336,14 +10591,12 @@ ST_FUNC int tcc_preprocess(TCCState *s1)
+@@ -10336,14 +10611,12 @@ ST_FUNC int tcc_preprocess(TCCState *s1)
  		return 0;
  	}
  
@@ -9728,7 +9810,7 @@ index 069218e..a3971c7 100644
  		if (tok == TOK_EOF)
  			break;
  
-@@ -10353,11 +10606,9 @@ ST_FUNC int tcc_preprocess(TCCState *s1)
+@@ -10353,11 +10626,9 @@ ST_FUNC int tcc_preprocess(TCCState *s1)
  				pp_line(s1, *iptr, 0);
  			pp_line(s1, file, level);
  		}
@@ -9743,7 +9825,7 @@ index 069218e..a3971c7 100644
  
  		if (is_space(tok)) {
  			if (spcs < sizeof white - 1)
-@@ -32275,8 +32526,8 @@ static void error1(int mode, const char *fmt, va_list ap)
+@@ -32275,8 +32546,8 @@ static void error1(int mode, const char *fmt, va_list ap)
  	if (!s1->error_func) {
  		/* default case: stderr */
  
