@@ -1,5 +1,5 @@
 #define TCC_VERSION "0.9.28rc"
-#define TCC_GITHASH "43c7708b85681a2fd4451c8a541af4494a8919b2"
+#define TCC_GITHASH "70adbb129760b77e3bdfec447c1f986def763f2c"
 /*
  *  TCC - Tiny C Compiler
  *
@@ -140,11 +140,11 @@ extern long double strtold (const char *__nptr, char **__endptr);
 /* ==================== libtcc.h ==================== */
 
 #define LIBTCCAPI
-/**/
+/*****************************/
 /* set custom allocator for all allocations (optional), NULL for default. */
 typedef void *TCCReallocFunc(void *ptr, unsigned long size);
 LIBTCCAPI void tcc_set_realloc(TCCReallocFunc *my_realloc);
-/**/
+/*****************************/
 
 typedef struct TCCState TCCState;
 /* create a new TCC compilation context */
@@ -164,7 +164,7 @@ LIBTCCAPI void tcc_set_error_func(TCCState *s, void *error_opaque,
 /* set options as from command line (multiple supported) */
 
 LIBTCCAPI int tcc_set_options(TCCState *s, const char *str);
-/**/
+/*****************************/
 /* preprocessor */
 /* add include path */
 
@@ -179,7 +179,7 @@ LIBTCCAPI void tcc_define_symbol(TCCState *s, const char *sym,
 /* undefine preprocess symbol 'sym' */
 
 LIBTCCAPI void tcc_undefine_symbol(TCCState *s, const char *sym);
-/**/
+/*****************************/
 /* compiling */
 /* add a file (C file, dll, object, library, ld script). Return -1 if error. */
 
@@ -189,7 +189,7 @@ LIBTCCAPI int tcc_add_file(TCCState *s, const char *filename);
 LIBTCCAPI int tcc_compile_string(TCCState *s, const char *buf);
 /* Tip: to have more specific errors/warnings from tcc_compile_string(),
    you can prefix the string with "#line <num> \"<filename>\"\n" */
-/**/
+/*****************************/
 /* linking commands */
 /* set output type. MUST BE CALLED before any compilation */
 LIBTCCAPI int tcc_set_output_type(TCCState *s, int output_type);
@@ -765,7 +765,7 @@ typedef struct {
 
 /* Machine dependent hints about
 					   processor capabilities.  */
-/* This entry gives some i\nformation about the FPU initialization
+/* This entry gives some information about the FPU initialization
    performed by the kernel.  */
 /* A special ignored value for PPC, used by the kernel to control the
    interpretation of the AUXV. Must be > 16.  */
@@ -1221,7 +1221,7 @@ enum __stab_debug_code {
 		| 28 LCSYM  | 2A MAIN	| 2C	    | 2E	|
 		| 30 PC	    | 32 NSYMS	| 34 NOMAP  | 36	|
 		| 38 OBJ    | 3A	| 3C OPT    | 3E	|
-		| 40 RSYM   | 42 M2C	| 44 SLINE\  | 46 DSLINE |
+		| 40 RSYM   | 42 M2C	| 44 SLINE  | 46 DSLINE |
 		| 48 BSLINE*| 4A DEFD	| 4C        | 4E	|
 		| 50 EHDECL*| 52	| 54 CATCH  | 56        |
 		| 58        | 5A        | 5C        | 5E	|
@@ -1534,8 +1534,8 @@ enum {
 /* define if return values need to be extended explicitely
    at caller side (for interfacing with non-TCC compilers) */
 ST_FUNC void gen_struct_copy(int size);
-/**/
-/**/
+/******************************************************/
+/******************************************************/
 /* ==================== x86_64-link.c ==================== */
 
 #define EM_TCC_TARGET EM_X86_64
@@ -1778,7 +1778,7 @@ typedef struct Section {
 
 	int sh_entsize;/* elf entry size */
 
-	unsigned long sh_size;/* section size (only used d\uring output) */
+	unsigned long sh_size;/* section size (only used during output) */
 
 	addr_t sh_addr;/* address at which the section is relocated */
 
@@ -2067,7 +2067,7 @@ struct TCCState {
 	unsigned char dwarf;
 	unsigned char do_backtrace;
 
-	unsigned char test_coverage;/* generate\ test coverage code */
+	unsigned char test_coverage;/* generate test coverage code */
 
 	/* use GNU C extensions */
 
@@ -2555,7 +2555,7 @@ enum tcc_token {
 	TOK_LAST = TOK_IDENT - 1
 #define DEF(id,str) ,id
 		   /* ==================== tcctok.h ==================== */
-		   /**/
+		   /*********************************************************************/
 		   /* keywords */
 
 		   DEF(TOK_IF, "if")
@@ -2636,7 +2636,7 @@ enum tcc_token {
 		   DEF(TOK_TYPEOF2, "__typeof")
 		   DEF(TOK_TYPEOF3, "__typeof__")
 		   DEF(TOK_LABEL, "__label__")
-		   /**/
+		   /*********************************************************************/
 		   /* the following are not keywords. They are included to ease parsing */
 		   /* preprocessor only */
 
@@ -2795,7 +2795,7 @@ enum tcc_token {
 
 		   DEF(TOK_alloca, "alloca")
 		   /* bound checking symbols */
-		   /**/
+		   /*********************************************************************/
 		   /* Tiny Assembler */
 #define DEF_ASM(x) DEF(TOK_ASM_ ## x, #x)
 #define DEF_ASMDIR(x) DEF(TOK_ASMDIR_ ## x, "." #x)
@@ -4861,7 +4861,7 @@ dwarf_read_sleb128(unsigned char **ln, unsigned char *end)
 #endif
 
 #define R_DATA_32DW R_X86_64_32
-/**/
+/********************************************************/
 #include <semaphore.h>
 typedef struct {
 	int init;
@@ -4881,12 +4881,12 @@ static inline void post_sem(TCCSem *p)
 #define TCC_SEM(s) TCCSem s
 #define WAIT_SEM wait_sem
 #define POST_SEM post_sem
-/**/
+/********************************************************/
 
 #undef ST_DATA
 
 #define ST_DATA static
-/**/
+/********************************************************/
 
 #define text_section TCC_STATE_VAR(text_section)
 #define data_section TCC_STATE_VAR(data_section)
@@ -4909,7 +4909,7 @@ PUB_FUNC void tcc_exit_state(TCCState *s1);
 /* conditional warning depending on switch */
 
 #define tcc_warning_c(sw) TCC_SET_STATE(( tcc_state->warn_num = offsetof(TCCState, sw) - offsetof(TCCState, warn_none), _tcc_warning))
-/**/
+/********************************************************/
 /* _TCC_H */
 
 #undef TCC_STATE_VAR
@@ -4929,7 +4929,7 @@ PUB_FUNC void tcc_exit_state(TCCState *s1);
 /* #define to 1 to enable (see parse_pp_string()) */
 
 #define ACCEPT_LF_IN_STRINGS 0
-/**/
+/********************************************************/
 /* global variables */
 
 ST_DATA int tok_flags;
@@ -4968,7 +4968,7 @@ static TokenString *macro_stack;
 
 static const char tcc_keywords[] =
 #define DEF(id,str) str "\0"
-	/**/
+	/*********************************************************************/
 	/* keywords */
 
 	DEF(TOK_IF, "if")
@@ -5049,7 +5049,7 @@ static const char tcc_keywords[] =
 	DEF(TOK_TYPEOF2, "__typeof")
 	DEF(TOK_TYPEOF3, "__typeof__")
 	DEF(TOK_LABEL, "__label__")
-	/**/
+	/*********************************************************************/
 	/* the following are not keywords. They are included to ease parsing */
 	/* preprocessor only */
 
@@ -5208,7 +5208,7 @@ static const char tcc_keywords[] =
 
 	DEF(TOK_alloca, "alloca")
 	/* bound checking symbols */
-	/**/
+	/*********************************************************************/
 	/* Tiny Assembler */
 #define DEF_ASM(x) DEF(TOK_ASM_ ## x, #x)
 #define DEF_ASMDIR(x) DEF(TOK_ASMDIR_ ## x, "." #x)
@@ -9818,7 +9818,7 @@ leave:
 	}
 }
 /* peek or read [ws_str == NULL] next token from function macro call,
-   walking up macro levels\ up to the file if necessary */
+   walking up macro levels up to the file if necessary */
 
 static int next_argstream(Sym **nested_list, TokenString *ws_str)
 {
@@ -10572,7 +10572,7 @@ ST_FUNC int tcc_preprocess(TCCState *s1)
 #define TCC_STATE_VAR(sym) tcc_state->sym
 #define TCC_SET_STATE(fn) fn
 #undef _tcc_error
-/**/
+/********************************************************/
 /* global variables */
 /* loc : local variable index
    ind : output code index
@@ -12127,7 +12127,7 @@ static void load_packed_bf(CType *type, int bit_pos, int bit_size)
 		vpushi(n), gen_op(TOK_SAR);
 	}
 }
-/* single-byte store mode for pac\ked or otherwise unaligned bitfields */
+/* single-byte store mode for packed or otherwise unaligned bitfields */
 
 static void store_packed_bf(int bit_pos, int bit_size)
 {
@@ -12977,7 +12977,7 @@ static int compare_types(CType *type1, CType *type2, int unqualified)
 		t1 &= ~VT_QUAL;
 		t2 &= ~VT_QUAL;
 	}
-	/* Default Vs explicit signedness only matte\rs for char */
+	/* Default Vs explicit signedness only matters for char */
 
 	if ((t1 & VT_BTYPE) != VT_BYTE) {
 		t1 &= ~VT_DEFSIGN;
@@ -13397,6 +13397,8 @@ error:
 			cast_error(&vtop->type, type);
 		}
 
+		if (df && !sf && !is_integer_btype(sbt_bt))
+			goto error;
 		c = (vtop->r & (VT_VALMASK | VT_LVAL | VT_SYM)) == VT_CONST;
 		if (c) {
 			/* constant case: we can do it now */
@@ -13471,7 +13473,7 @@ error:
 
 			goto done;
 		}
-		/* non constant case: generate co\de */
+		/* non constant case: generate code */
 
 		if (dbt == VT_BOOL) {
 			gen_test_zero(TOK_NE);
@@ -13742,7 +13744,7 @@ static void verify_assign_cast(CType *dt)
 		if (sbt == VT_PTR)
 			type2 = pointed_type(st);
 		else if (sbt == VT_FUNC)
-			type2 = st;/* a function is implicitly a function po\inter */
+			type2 = st;/* a function is implicitly a function pointer */
 
 		else
 			goto error;
@@ -13789,6 +13791,14 @@ static void verify_assign_cast(CType *dt)
 		} else if (sbt == VT_STRUCT) {
 			goto case_VT_STRUCT;
 		}
+		/* XXX: more tests */
+
+		break;
+	case VT_FLOAT:
+	case VT_DOUBLE:
+	case VT_LDOUBLE:
+		if (sbt == VT_PTR || sbt == VT_FUNC)
+			goto error;
 		/* XXX: more tests */
 
 		break;
@@ -14531,7 +14541,7 @@ static int in_range(long long n, int t)
 		return n <= (m << 1) + 1;
 	return n >= -(long long)m - 1 && n <= (long long)m;
 }
-/* enum\/struct/union declaration. u is VT_ENUM/VT_STRUCT/VT_UNION */
+/* enum/struct/union declaration. u is VT_ENUM/VT_STRUCT/VT_UNION */
 
 static void struct_decl(CType *type, int u)
 {
@@ -14770,7 +14780,7 @@ enum_done:
 
 						c = 1;
 					}
-					/* If\ member is a struct or bit-field, enforce
+					/* If member is a struct or bit-field, enforce
 							       placing into the struct (as anonymous).  */
 
 					if (v == 0 &&
@@ -15629,7 +15639,7 @@ static void parse_atomic(int atok)
 		         * b bool
 		         * a atomic
 		         * A read-only atomic
-		         * p\ pointer to memory
+		         * p pointer to memory
 		         * v value
 		         * l load pointer
 		         * s save pointer
@@ -15923,7 +15933,7 @@ str_init:
 		next();
 		unary();
 		/* functions names must be treated as function pointers,
-		         \  except for unary '&' and sizeof. Since we consider that
+		           except for unary '&' and sizeof. Since we consider that
 		           functions are not lvalues, we only have to handle it
 		           there and in function calls. */
 		/* arrays can also be used although they are not lvalues */
@@ -16422,7 +16432,7 @@ error_func:
 				while (n > 1) {
 					int rc = reg_classes[ret.r] & ~(RC_INT | RC_FLOAT);
 					/* We assume that when a structure is returned in multiple
-					                       \registers, their classes are consecutive values of the
+					                       registers, their classes are consecutive values of the
 					                       suite s(n) = 2^n */
 
 					rc <<= --n;
@@ -16669,7 +16679,7 @@ static void expr_cond(void)
 		if (c < 0 && is_cond_bool(vtop) && is_cond_bool(&sv)) {
 			/* optimize "if (f ? a > b : c || d) ..." for example, where normally
 			               "a < b" and "c || d" would be forced to "(int)0/1" first, whereas
-			               this code\ jumps directly to the if's then/else branches. */
+			               this code jumps directly to the if's then/else branches. */
 
 			t1 = gvtst(0, 0);
 			t2 = gjmp(0);
@@ -17657,6 +17667,7 @@ static void init_putz(init_params *p, unsigned long c, int size)
 #define DIF_SIZE_ONLY 2
 #define DIF_HAVE_ELEM 4
 #define DIF_CLEAR 8
+#define DIF_DIRTY 16
 /* delete relocations for specified range c ... c + size. Unfortunatly
    in very special cases, relocations may occur unordered */
 
@@ -17698,7 +17709,7 @@ static int decl_designator(init_params *p, CType *type, unsigned long c,
 			   Sym **cur_field, int flags, int al)
 {
 	Sym *s, *f;
-	int index, index_last, align, l, nb_elems, elem_size;
+	int index, index_last, align, l, nb_elems, elem_size, chain = 0;
 	unsigned long corig = c;
 
 	elem_size = 0;
@@ -17749,6 +17760,22 @@ struct_field:
 			c += cumofs;
 		}
 		cur_field = NULL;
+		if (nb_elems == 1 && (tok == '[' || tok == '.')) {
+			chain = 1;
+			break;
+		}
+	}
+	if (chain) {
+		/* more designators follow: continue in the subobject as an
+		           elided list, so that following items fill it and then
+		           return to the next element of this container */
+
+		elem_size = type_size(type, &align);
+		if (!(flags & DIF_SIZE_ONLY) && c - corig < al)
+			flags = (flags & ~DIF_CLEAR) | DIF_DIRTY;
+		decl_initializer(p, type, c, flags & ~DIF_FIRST);
+		c += elem_size;
+		return c - corig > al ? c - corig : al;
 	}
 	if (!cur_field) {
 		if (tok == '=') {
@@ -17788,13 +17815,13 @@ no_designator:
 	       than once.  In that case we need to delete possibly already
 	       existing relocations. */
 
-	if (!(flags & DIF_SIZE_ONLY) && c - corig < al) {
+	if (!(flags & DIF_SIZE_ONLY) && (c - corig < al || (flags & DIF_DIRTY))) {
 		decl_design_delrels(p->sec, c, elem_size * nb_elems);
 		flags &= ~DIF_CLEAR;/* mark stack dirty too */
 
 	}
 
-	decl_initializer(p, type, c, flags & ~DIF_FIRST);
+	decl_initializer(p, type, c, flags & ~(DIF_FIRST | DIF_DIRTY));
 
 	if (!(flags & DIF_SIZE_ONLY) && nb_elems > 1) {
 		Sym aref = {0};
@@ -18026,7 +18053,7 @@ static void decl_initializer(init_params *p, CType *type, unsigned long c,
 	    	   don't consume them as initializer value (which would commit them
 	    	   to some anonymous symbol).  */
 
-	    tok != TOK_LSTR && tok != TOK_STR &&
+	    tok != TOK_LSTR && tok != TOK_STR && tok != '[' && tok != '.' &&
 	    (!(flags & DIF_SIZE_ONLY)
 	     /* a struct may be initialized from a struct of same type, as in
 	                         struct {int x,y;} a = {1,2}, b = {3,4}, c[] = {a,b};
@@ -18137,7 +18164,7 @@ do_init_array:
 do_init_list:
 			/* zero memory once in advance */
 
-			if (!(flags & (DIF_CLEAR | DIF_SIZE_ONLY))) {
+			if (!(flags & (DIF_CLEAR | DIF_SIZE_ONLY | DIF_DIRTY))) {
 				init_putz(p, c, n*size1);
 				flags |= DIF_CLEAR;
 			}
@@ -18171,6 +18198,12 @@ do_init_list:
 				if (tok == '}')
 					break;
 				skip(',');
+				if (no_oblock && (tok == '[' || tok == '.')) {
+					/* designator for an enclosing container */
+
+					unget_tok(',');
+					break;
+				}
 			}
 		}
 		if (!no_oblock)
@@ -22537,7 +22570,7 @@ ST_FUNC int tcc_assemble(TCCState *s1, int do_preprocess)
 	tcc_debug_end(s1);
 	return ret;
 }
-/**/
+/********************************************************************/
 /* GCC inline asm support */
 /* assemble the string 'str' in the current C compilation unit without
    C preprocessing. */
@@ -22883,7 +22916,7 @@ ST_FUNC void asm_global_instr(void)
 
 	nocode_wanted = saved_nocode_wanted;
 }
-/**/
+/********************************************************/
 /* CONFIG_TCC_ASM */
 /* ==================== tccelf.c ==================== */
 
@@ -22896,7 +22929,7 @@ ST_FUNC void asm_global_instr(void)
 /* Define this to get some debug output during relocation processing.  */
 
 #undef DEBUG_RELOC
-/**/
+/********************************************************/
 /* global variables */
 /* elf version information */
 
@@ -25646,7 +25679,7 @@ static int elf_output_file(TCCState *s1, const char *filename)
 	/* fill with final data */
 
 	tcc_eh_frame_hdr(s1, 1);
-	/* Create the ELF file with name 'filename'\ */
+	/* Create the ELF file with name 'filename' */
 
 	ret = tcc_write_elf_file(s1, filename, dyninf.phnum, dyninf.phdr);
 the_end:
@@ -25895,7 +25928,7 @@ invalid:
 			}
 			goto found;
 		}
-		/* not found: create\ new section */
+		/* not found: create new section */
 
 		s = new_section(s1, sh_name, sh->sh_type, sh->sh_flags & ~SHF_GROUP);
 		/* take as much info as possible from the section. sh_link and
@@ -27117,7 +27150,7 @@ static int rt_get_caller_pc(addr_t *paddr, rt_frame *f, int level)
 /* TCC_IS_NATIVE */
 /* ------------------------------------------------------------- */
 
-/**/
+/******************************************************/
 
 /* _TCC_H */
 #undef TCC_STATE_VAR
@@ -28903,17 +28936,14 @@ void gen_cvt_ftoi(int t)
 	ft = vtop->type.t;
 	bt = ft & VT_BTYPE;
 	if (bt == VT_LDOUBLE) {
-		if (t != VT_INT) {
-			vpush_helper_func(TOK___fixxfdi);
-			vswap();
-			gfunc_call(1);
-			vpushi(0);
-			vtop->r = REG_IRET;
+		vpush_helper_func(TOK___fixxfdi);
+		vswap();
+		gfunc_call(1);
+		vpushi(0);
+		vtop->r = REG_IRET;
+		if (t != VT_INT)
 			vtop->r2 = REG_IRE2;
-			return;
-		}
-		gen_cvt_ftof(VT_DOUBLE);
-		bt = VT_DOUBLE;
+		return;
 	}
 
 	gv(RC_FLOAT);
@@ -29046,8 +29076,8 @@ ST_FUNC void gen_struct_copy(int size)
 	vpop();
 }
 /* end of x86-64 code generator */
-/**/
-/**/
+/*************************************************************/
+/******************************************************/
 
 /* _TCC_H */
 #undef TCC_STATE_VAR
@@ -32429,7 +32459,7 @@ ST_FUNC void asm_clobber(uint8_t *clobber_regs, const char *str)
 
 #define TCC_STATE_VAR(sym) s1->sym
 #define TCC_SET_STATE(fn) (tcc_enter_state(s1),fn)
-/**/
+/********************************************************/
 /* global variables */
 /* XXX: get rid of this ASAP (or maybe not) */
 
@@ -32442,8 +32472,8 @@ ST_DATA int nb_stk_data;
 /* option -d<num> (for general development purposes) */
 
 ST_DATA int g_debug;
-/**/
-/**/
+/********************************************************/
+/********************************************************/
 PUB_FUNC void tcc_enter_state(TCCState *s1)
 {
 	if (s1->error_set_jmp_enabled)
@@ -32459,7 +32489,7 @@ PUB_FUNC void tcc_exit_state(TCCState *s1)
 	tcc_state = NULL;
 	POST_SEM(&tcc_compile_sem);
 }
-/**/
+/********************************************************/
 /* copy a string and truncate it. */
 
 ST_FUNC char *pstrcpy(char *buf, size_t buf_size, const char *s)
@@ -32544,7 +32574,7 @@ static void tcc_concat_str(char **pp, const char *str, int sep)
 		((*pp)[l - 1] = sep);
 	strcpy(*pp + l, str);
 }
-/**/
+/********************************************************/
 /* memory management */
 /* we'll need the actual versions for a minute */
 
@@ -32634,7 +32664,7 @@ ST_FUNC int normalized_PATHCMP(const char *f1, const char *f2)
 	}
 	return ret;
 }
-/**/
+/********************************************************/
 /* dynarrays */
 
 ST_FUNC void dynarray_add(void *ptab, int *nb_ptr, void *data)
@@ -32743,7 +32773,7 @@ static void tcc_split_path(TCCState *s, void *p_ary, int *p_nb_ary,
 		in = p+1;
 	} while (*p);
 }
-/**/
+/********************************************************/
 /* warning / error */
 /* warn_... option bits */
 /* warning is on (-Woption) */
@@ -32753,7 +32783,7 @@ static void tcc_split_path(TCCState *s, void *p_ary, int *p_nb_ary,
 #define WARN_ERR 2
 /* warning is not an error (-Wno-error=option) */
 #define WARN_NOE 4
-/* error1() mode\s */
+/* error1() modes */
 
 enum { ERROR_WARN, ERROR_NOABORT, ERROR_ERROR };
 
@@ -32871,7 +32901,7 @@ PUB_FUNC void _tcc_warning(const char *fmt, ...)
 	error1(ERROR_WARN, fmt, ap);
 	va_end(ap);
 }
-/**/
+/********************************************************/
 /* I/O layer */
 
 ST_FUNC void tcc_open_bf(TCCState *s1, const char *filename, int initlen)
@@ -33350,7 +33380,7 @@ ST_FUNC void tcc_add_pragma_libs(TCCState *s1)
 	for (i = 0; i < s1->nb_pragma_libs; i++)
 		tcc_add_library(s1, s1->pragma_libs[i]);
 }
-/**/
+/********************************************************/
 /* options parser */
 
 static int strstart(const char *val, const char **str)

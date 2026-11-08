@@ -6,8 +6,8 @@ Entire core of TCC compiler in one file. Separate file for each target arch/plat
 Arch/Platform unrelated code stripped out.
 
 Supported architectures:
-tcc_linux_x86_64 - 35177L LOC
-tcc_win64_x86_64 - 35217L LOC
+tcc_linux_x86_64 - 35285L LOC
+tcc_win64_x86_64 - 34898L LOC
 
 RATIONALE
 ---------
