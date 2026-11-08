@@ -3574,20 +3574,20 @@ str_const:
 		fflush\(stdout\);/\* flush -v output \*/
 
 2??0?
-2??m 90220reg p OK tcc_linux_x86_64.c:32820:a22sc %? %@2152sc!1q0?
+2??m 90220reg p OK tcc_linux_x86_64.c:32850:a22sc %? %@2152sc!1q0?
 %f+ 		if \(s1 && s1->output_type == TCC_OUTPUT_PREPROCESS && s1->ppfp == stdout\)
 			printf\("\\n"\);/\* print a newline during tcc -E \*/3??0?
-3??m 90220reg p OK tcc_linux_x86_64.c:32820:a32sc %? %@2152sc!1q0?
+3??m 90220reg p OK tcc_linux_x86_64.c:32850:a32sc %? %@2152sc!1q0?
 %f+ 	if \(!s1->error_func\) \{
 		/\* default case: stderr \*/
 
 4??0?
-4??+3m 90220reg p OK tcc_linux_x86_64.c:32820:a42sc %? %@2152sc!1q0?
+4??+3m 90220reg p OK tcc_linux_x86_64.c:32850:a42sc %? %@2152sc!1q0?
 %f+ 
 		fflush\(stdout\);/\* flush -v output \*/
 
 5??0?
-5??-2m 90220reg p OK tcc_linux_x86_64.c:32820:a52sc %? %@2152sc!1q0?
+5??-2m 90220reg p OK tcc_linux_x86_64.c:32850:a52sc %? %@2152sc!1q0?
 %f+ ..f ....-.e.r......c...
 	... ...a................ \*.
 
@@ -3597,25 +3597,25 @@ str_const:
 ...f.us.....o.t.......u.h.-. o...u. ..
 
 6??0?
-6??+3m 90220reg p OK tcc_linux_x86_64.c:32820:a62sc %? %@2152sc!1q0?
+6??+3m 90220reg p OK tcc_linux_x86_64.c:32850:a62sc %? %@2152sc!1q0?
 grp 1%f+ 	if \(!s1->error_func\) \{.*?
 		/\* default case: stderr \*/.*?
 .*?
 (		if \(s1 && s1->output_type == TCC_OUTPUT_PREPROCESS && s1->ppfp == stdout\))7??0?
-grp 07??m 90220reg p OK tcc_linux_x86_64.c:32820:a72sc %? %@2152sc!1q0?
+grp 07??m 90220reg p OK tcc_linux_x86_64.c:32850:a72sc %? %@2152sc!1q0?
 m 01;0grp 1%f> 	cstr_printf\(&cs, mode == ERROR_WARN \? "warning: " : "error: "\);
 	if \(pp_expr > 1\)
 		pp_error\(&cs\);/\* special handler for preprocessor expression errors \*/.*(		s1->error_func\(s1->error_opaque, \(char\*\)cs\.data\);)
 	}
 	cstr_free\(&cs\);8??0?
-grp 08??-9m 90220reg p OK tcc_linux_x86_64.c:32820:a82sc %? %@2152sc!'\''08??1q0?
+grp 08??-9m 90220reg p OK tcc_linux_x86_64.c:32850:a82sc %? %@2152sc!'\''08??1q0?
 m 01;0grp 1%f> 	} else \{
 		cstr_printf\(&cs, "tcc: "\);
 	}.*(	if \(mode != ERROR_WARN\))
 		s1->nb_errors\+\+;
 	if \(mode == ERROR_ERROR && s1->error_set_jmp_enabled\) \{9??0?
-grp 09??-12m 90220reg p OK tcc_linux_x86_64.c:32820:a92sc %? %@2152sc!'\''00?
-1;2;3;4;5;6;7;8;9??!219reg tcc_linux_x86_64.c:328202sc %? %@2132sc!0?
+grp 09??-12m 90220reg p OK tcc_linux_x86_64.c:32850:a92sc %? %@2152sc!'\''00?
+1;2;3;4;5;6;7;8;9??!219reg tcc_linux_x86_64.c:328502sc %? %@2132sc!0?
 '\''1i /* Echo the original #if/#elif text without scanning past the input buffer.
    The lexer may refill the buffer while evaluating the expression (or while
    skipping an inactive #elif), so finish echoing at each such refill. */
@@ -4074,7 +4074,7 @@ end_of_comment:
 ??!219reg tcc_linux_x86_64.c:10538:m892sc %? %@2142sc!0?
 '\''90,#+1c 		/* No newline into ppfp here (stock/amal do): diagnostics go to
 		   stderr, so it would only punch a blank line into the -E dump. */
-??!219reg tcc_linux_x86_64.c:32820:m902sc %? %@2142sc!b1m!%ya 98?0?
+??!219reg tcc_linux_x86_64.c:32850:m902sc %? %@2142sc!b1m!%ya 98?0?
 %f> /\* return the current character, handling end of block if necessary
    \(but not stray\) \*/
 
@@ -7593,20 +7593,20 @@ str_const:
 		fflush\(stdout\);/\* flush -v output \*/
 
 2??0?
-2??m 89220reg p OK tcc_win64_x86_64.c:32278:a22sc %? %@2152sc!1q0?
+2??m 89220reg p OK tcc_win64_x86_64.c:32308:a22sc %? %@2152sc!1q0?
 %f+ 		if \(s1 && s1->output_type == TCC_OUTPUT_PREPROCESS && s1->ppfp == stdout\)
 			printf\("\\n"\);/\* print a newline during tcc -E \*/3??0?
-3??m 89220reg p OK tcc_win64_x86_64.c:32278:a32sc %? %@2152sc!1q0?
+3??m 89220reg p OK tcc_win64_x86_64.c:32308:a32sc %? %@2152sc!1q0?
 %f+ 	if \(!s1->error_func\) \{
 		/\* default case: stderr \*/
 
 4??0?
-4??+3m 89220reg p OK tcc_win64_x86_64.c:32278:a42sc %? %@2152sc!1q0?
+4??+3m 89220reg p OK tcc_win64_x86_64.c:32308:a42sc %? %@2152sc!1q0?
 %f+ 
 		fflush\(stdout\);/\* flush -v output \*/
 
 5??0?
-5??-2m 89220reg p OK tcc_win64_x86_64.c:32278:a52sc %? %@2152sc!1q0?
+5??-2m 89220reg p OK tcc_win64_x86_64.c:32308:a52sc %? %@2152sc!1q0?
 %f+ ..f ....-.e.r......c...
 	... ...a................ \*.
 
@@ -7616,25 +7616,25 @@ str_const:
 ...f.us.....o.t.......u.h.-. o...u. ..
 
 6??0?
-6??+3m 89220reg p OK tcc_win64_x86_64.c:32278:a62sc %? %@2152sc!1q0?
+6??+3m 89220reg p OK tcc_win64_x86_64.c:32308:a62sc %? %@2152sc!1q0?
 grp 1%f+ 	if \(!s1->error_func\) \{.*?
 		/\* default case: stderr \*/.*?
 .*?
 (		if \(s1 && s1->output_type == TCC_OUTPUT_PREPROCESS && s1->ppfp == stdout\))7??0?
-grp 07??m 89220reg p OK tcc_win64_x86_64.c:32278:a72sc %? %@2152sc!1q0?
+grp 07??m 89220reg p OK tcc_win64_x86_64.c:32308:a72sc %? %@2152sc!1q0?
 m 01;0grp 1%f> 	cstr_printf\(&cs, mode == ERROR_WARN \? "warning: " : "error: "\);
 	if \(pp_expr > 1\)
 		pp_error\(&cs\);/\* special handler for preprocessor expression errors \*/.*(		s1->error_func\(s1->error_opaque, \(char\*\)cs\.data\);)
 	}
 	cstr_free\(&cs\);8??0?
-grp 08??-9m 89220reg p OK tcc_win64_x86_64.c:32278:a82sc %? %@2152sc!'\''08??1q0?
+grp 08??-9m 89220reg p OK tcc_win64_x86_64.c:32308:a82sc %? %@2152sc!'\''08??1q0?
 m 01;0grp 1%f> 	} else \{
 		cstr_printf\(&cs, "tcc: "\);
 	}.*(	if \(mode != ERROR_WARN\))
 		s1->nb_errors\+\+;
 	if \(mode == ERROR_ERROR && s1->error_set_jmp_enabled\) \{9??0?
-grp 09??-12m 89220reg p OK tcc_win64_x86_64.c:32278:a92sc %? %@2152sc!'\''00?
-1;2;3;4;5;6;7;8;9??!219reg tcc_win64_x86_64.c:322782sc %? %@2132sc!0?
+grp 09??-12m 89220reg p OK tcc_win64_x86_64.c:32308:a92sc %? %@2152sc!'\''00?
+1;2;3;4;5;6;7;8;9??!219reg tcc_win64_x86_64.c:323082sc %? %@2132sc!0?
 '\''1i /* Echo the original #if/#elif text without scanning past the input buffer.
    The lexer may refill the buffer while evaluating the expression (or while
    skipping an inactive #elif), so finish echoing at each such refill. */
@@ -8092,7 +8092,7 @@ end_of_comment:
 ??!219reg tcc_win64_x86_64.c:10356:m882sc %? %@2142sc!0?
 '\''89,#+1c 		/* No newline into ppfp here (stock/amal do): diagnostics go to
 		   stderr, so it would only punch a blank line into the -E dump. */
-??!219reg tcc_win64_x86_64.c:32278:m892sc %? %@2142sc!vis 2b0wb1w2q' > "$P2VIF"
+??!219reg tcc_win64_x86_64.c:32308:m892sc %? %@2142sc!vis 2b0wb1w2q' > "$P2VIF"
 EXINIT='%ya 97:? %@97' $VI -e 'tcc_linux_x86_64.c' 'tcc_win64_x86_64.c' "$P2VIF"
 
 if [ $# -gt 0 ]; then
@@ -8105,7 +8105,7 @@ fi
 exit 0
 === PATCH2VI PATCH ===
 diff --git a/tcc_linux_x86_64.c b/tcc_linux_x86_64.c
-index 8537681..9087ebc 100644
+index 6d54f28..24978d8 100644
 --- a/tcc_linux_x86_64.c
 +++ b/tcc_linux_x86_64.c
 @@ -7239,6 +7239,38 @@ addv:
@@ -8959,7 +8959,7 @@ index 8537681..9087ebc 100644
  
  		if (is_space(tok)) {
  			if (spcs < sizeof white - 1)
-@@ -32817,8 +33087,8 @@ static void error1(int mode, const char *fmt, va_list ap)
+@@ -32847,8 +33117,8 @@ static void error1(int mode, const char *fmt, va_list ap)
  	if (!s1->error_func) {
  		/* default case: stderr */
  
@@ -8971,7 +8971,7 @@ index 8537681..9087ebc 100644
  		fflush(stdout);/* flush -v output */
  
 diff --git a/tcc_win64_x86_64.c b/tcc_win64_x86_64.c
-index 069218e..6c89e8a 100644
+index 76e6f1e..7d7b6c1 100644
 --- a/tcc_win64_x86_64.c
 +++ b/tcc_win64_x86_64.c
 @@ -7050,6 +7050,38 @@ addv:
@@ -9825,7 +9825,7 @@ index 069218e..6c89e8a 100644
  
  		if (is_space(tok)) {
  			if (spcs < sizeof white - 1)
-@@ -32275,8 +32546,8 @@ static void error1(int mode, const char *fmt, va_list ap)
+@@ -32305,8 +32576,8 @@ static void error1(int mode, const char *fmt, va_list ap)
  	if (!s1->error_func) {
  		/* default case: stderr */
  
